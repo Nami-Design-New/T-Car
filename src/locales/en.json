@@ -1,0 +1,62 @@
+{
+  "meta": {
+    "title": "T-Car | Rent the Latest Cars",
+    "description": "T-Car is a modern car rental platform that allows users to browse and rent the latest car models for business trips, family vacations, and personal transportation."
+  },
+  "nav": {
+    "home": "Home",
+    "partners": "Partners",
+    "whyChooseUs": "Why Choose Us",
+    "contact": "Contact Us",
+    "login": "Login",
+    "faqs": "FAQs"
+  },
+  "hero": {
+    "title": "Drive Your Journey, Your Way",
+    "subtitle": "Browse and rent the latest car models for business, vacations, and everyday life.",
+    "cta": "Explore Cars"
+  },
+  "search": {
+    "title": "Find Your Perfect Car",
+    "location": "Pickup Location",
+    "pickupDate": "Pickup Date",
+    "returnDate": "Return Date",
+    "submit": "Search"
+  },
+  "featuredCars": {
+    "title": "Featured Cars",
+    "subtitle": "Handpicked vehicles ready for your next trip",
+    "perDay": "/ day",
+    "rentNow": "Rent Now"
+  },
+"partners": {
+  "title": "Partners",
+  "subtitle": "Browse and rent the latest car models for business, vacations, and everyday life."
+},
+  "services": {
+    "title": "Our Services",
+    "subtitle": "Everything you need for a smooth rental experience"
+  },
+  "testimonials": {
+    "title": "What Our Customers Say"
+  },
+  "faq": {
+    "title": "Frequently Asked Questions",
+    "subtitle":"Everything you need for a smooth rental experience"
+  },
+  "footer": {
+    "rights": "All rights reserved.",
+    "quickLinks": "Quick Links",
+    "contactUs": "Contact Us"
+  },
+  "loading": "Loading...",
+  "notFound": {
+    "error": "Error 404",
+    "title": "Looks like we're lost",
+    "description": "The page you're looking for doesn't exist. It may have been moved or the URL is incorrect.",
+    "home": "Back to Home",
+    "browseCities": "Browse Cities",
+    "lost": "Where to?"
+  }
+
+}

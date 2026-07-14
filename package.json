@@ -1,0 +1,41 @@
+{
+  "name": "t-car",
+  "version": "1.0.0",
+  "private": true,
+  "description": "T-Car is a modern car rental platform that allows users to browse and rent the latest car models for business trips, family vacations, and personal transportation.",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "format": "prettier --write ."
+  },
+  "dependencies": {
+    "@react-google-maps/api": "^2.20.8",
+    "axios": "^1.7.7",
+    "bootstrap": "^5.3.8",
+    "i18next": "^23.15.1",
+    "i18next-browser-languagedetector": "^8.0.0",
+    "lottie-react": "^2.4.1",
+    "next": "15.0.3",
+    "react": "18.3.1",
+    "react-bootstrap": "^2.10.10",
+    "react-dom": "18.3.1",
+    "react-hook-form": "^7.53.0",
+    "react-i18next": "^15.0.2",
+    "react-icons": "^5.3.0",
+    "react-international-phone": "^4.8.0",
+    "react-phone-number-input": "^3.4.17",
+    "sass": "^1.79.4",
+    "swiper": "^14.0.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22.7.4",
+    "@types/react": "^18.3.10",
+    "@types/react-dom": "^18.3.0",
+    "eslint": "^8.57.1",
+    "eslint-config-next": "15.0.3",
+    "prettier": "^3.3.3",
+    "typescript": "^5.6.2"
+  }
+}
