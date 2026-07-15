@@ -9,7 +9,7 @@ import LanguageSwitcher from '@components/layout/LanguageSwitcher';
 import UserMenu from '@components/layout/UserMenu';
 import { NAV_LINKS, SITE_NAME } from '@constants/index';
 import Image from 'next/image';
-import logo from '@assets/images/fav.svg';
+import logo from '@assets/images/logo.png';
 import AuthModal from '@/components/auth/AuthModal';
 
 export default function Header() {
