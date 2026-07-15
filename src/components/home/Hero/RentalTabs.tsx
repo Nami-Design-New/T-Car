@@ -1,6 +1,7 @@
 'use client';
 
 import Image, { StaticImageData } from 'next/image';
+import { useTranslation } from 'react-i18next';
 
 import dailyIcon from '../../../assets/icons/daily.svg';
 import monthlyIcon from '../../../assets/icons/monthly.svg';
@@ -20,27 +21,27 @@ const tabs: {
 }[] = [
   {
     id: 'daily',
-    title: 'يومي',
+    title: 'rentalTabs.daily',
     icon: dailyIcon,
   },
   {
     id: 'monthly',
-    title: 'شهري',
+    title: 'rentalTabs.monthly',
     icon: monthlyIcon,
   },
   {
     id: 'airport',
-    title: 'من المطار',
+    title: 'rentalTabs.airport',
     icon: airportIcon,
   },
   {
     id: 'station',
-    title: 'محطة قطار',
+    title: 'rentalTabs.station',
     icon: stationIcon,
   },
   {
     id: 'international',
-    title: 'التأجير الدولي',
+    title: 'rentalTabs.international',
     icon: internationalIcon,
   },
 ];
@@ -48,6 +49,8 @@ const tabs: {
 export default function RentalTabs({
   onSelect,
 }: RentalTabsProps) {
+  const { t } = useTranslation();
+
   return (
     <div className="rental_tabs">
       <div className="tabs">
@@ -59,15 +62,15 @@ export default function RentalTabs({
           >
             <div className="icon">
               <Image
-              className='img-card'
+                className="img-card"
                 src={tab.icon}
-                alt={tab.title}
+                alt={t(tab.title)}
                 width={44}
                 height={44}
               />
             </div>
 
-            <h5>{tab.title}</h5>
+            <h5>{t(tab.title)}</h5>
           </button>
         ))}
       </div>

@@ -51,11 +51,11 @@ export default function Header() {
                 {t('nav.login')}
               </Button>
             )} */}
-              <UserMenu  onLogout={handleLogout} />
-        
-              <Button size="sm" onClick={() => setShowAuth(true)}>
-                {t('nav.login')}
-              </Button>
+            <UserMenu onLogout={handleLogout} />
+
+            <Button size="sm" onClick={() => setShowAuth(true)}>
+              {t('nav.login')}
+            </Button>
           </div>
         </nav>
 

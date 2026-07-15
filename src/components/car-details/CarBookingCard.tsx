@@ -88,7 +88,6 @@ export default function CarBookingCard({
         لن يتم خصم أي مبلغ الآن، الدفع عند الاستلام
       </p>
 
-      {/* اختيار التاريخ */}
 
       <BookingModal
         open={step === 'dates'}
@@ -96,8 +95,6 @@ export default function CarBookingCard({
         pricePerDay={pricePerDay}
         onConfirm={handleDatesConfirmed}
       />
-
-      {/* تأكيد الحجز */}
 
       {booking && (
         <BookingConfirmModal
@@ -114,14 +111,12 @@ export default function CarBookingCard({
         />
       )}
 
-      {/* نجاح الحجز */}
-
       <SuccessModal
         open={step === 'success'}
         title="تم تأكيد الحجز بنجاح!"
         description="جاري تحويلك إلى صفحة حجوزاتي..."
         buttonText="الانتقال الآن"
-        redirectTo="/my-bookings"
+        redirectTo="/account"
         autoRedirect
       />
 

@@ -1,14 +1,56 @@
-export type { Car, SearchCarsParams } from './car';
+export type {
+  // Core / Car
+  Car,
+  SearchCarsParams,
+  CarFilters,
+  CarListing,
 
-export interface Testimonial {
-  id: string;
-  name: string;
-  role: string;
-  avatar: string;
-  message: string;
-  rating: number;
-}
+  // Car / Details page
+  Review,
+  CarWarranty,
+  AddonService,
+  InsuranceOption,
+  CarDetails,
 
+  // Booking flow
+  PaymentMethod,
+  BookingDetails,
+  BookingStatus,
+  UserBooking,
+
+  // City
+  City,
+  CityDetails,
+
+  // Rental flow
+  RentalType,
+  PickupType,
+  RentalTabsProps,
+  PickupTypeModalProps,
+
+  // Location / Map
+  LocationData,
+  MapLocationModalProps,
+
+  // Branch
+  Branch,
+  BranchModalProps,
+
+  // Airport
+  Airport,
+  AirportModalProps,
+
+  // Station
+  Station,
+  StationModalProps,
+
+  // Account
+  UserProfile,
+  WalletTransaction,
+  AppNotification,
+} from './car';
+
+// Home page (FAQ / Services)
 export interface FAQItem {
   id: string;
   question: string;

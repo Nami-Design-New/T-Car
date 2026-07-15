@@ -11,12 +11,11 @@ export default function HomePage() {
     <>
       <Hero />
       <PopularCities />
-      <WhyChooseUs />
       <Partners />
+      <WhyChooseUs />
       <FAQ />
       <DownloadApp />
-            <Contact />
-
+      <Contact />
     </>
   );
 }

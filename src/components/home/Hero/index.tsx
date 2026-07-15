@@ -20,65 +20,45 @@ import BranchModal from '@/components/modals/BranchModal';
 import AirportModal from '@/components/modals/AirportModal';
 import StationModal from '@/components/modals/StationModal';
 
-import {
-  RentalType,
-  PickupType,
-  Branch,
-  Airport,
-  Station,
-  LocationData,
-} from '@/types/car';
+import { useTranslation } from 'react-i18next';
+import { RentalType, PickupType, Branch, Airport, Station, LocationData } from '@/types/car';
 
-const slides = [
-  hero1.src,
-  hero2.src,
-  hero3.src,
-];
+const slides = [hero1.src, hero2.src, hero3.src];
 
 export default function Hero() {
-  const [rentalType, setRentalType] =
-    useState<RentalType | null>(null);
+  const { t } = useTranslation();
+
+  const [rentalType, setRentalType] = useState<RentalType | null>(null);
 
   // Pickup
-  const [showPickupModal, setShowPickupModal] =
-    useState(false);
+  const [showPickupModal, setShowPickupModal] = useState(false);
 
   // Map
-  const [showMapModal, setShowMapModal] =
-    useState(false);
+  const [showMapModal, setShowMapModal] = useState(false);
 
   // Branch
-  const [showBranchModal, setShowBranchModal] =
-    useState(false);
+  const [showBranchModal, setShowBranchModal] = useState(false);
 
   // Airport
-  const [showAirportModal, setShowAirportModal] =
-    useState(false);
+  const [showAirportModal, setShowAirportModal] = useState(false);
 
   // Station
-  const [showStationModal, setShowStationModal] =
-    useState(false);
+  const [showStationModal, setShowStationModal] = useState(false);
 
   // Selected Data
-  const [selectedLocation, setSelectedLocation] =
-    useState<LocationData | null>(null);
+  const [selectedLocation, setSelectedLocation] = useState<LocationData | null>(null);
 
-  const [selectedBranch, setSelectedBranch] =
-    useState<Branch | null>(null);
+  const [selectedBranch, setSelectedBranch] = useState<Branch | null>(null);
 
-  const [selectedAirport, setSelectedAirport] =
-    useState<Airport | null>(null);
+  const [selectedAirport, setSelectedAirport] = useState<Airport | null>(null);
 
-  const [selectedStation, setSelectedStation] =
-    useState<Station | null>(null);
+  const [selectedStation, setSelectedStation] = useState<Station | null>(null);
 
   // ===========================
   // Rental Type
   // ===========================
 
-  const handleRentalSelect = (
-    type: RentalType
-  ) => {
+  const handleRentalSelect = (type: RentalType) => {
     setRentalType(type);
 
     switch (type) {
@@ -102,9 +82,7 @@ export default function Hero() {
   // Pickup
   // ===========================
 
-  const handlePickupSelect = (
-    type: PickupType
-  ) => {
+  const handlePickupSelect = (type: PickupType) => {
     setShowPickupModal(false);
 
     if (type === 'delivery') {
@@ -118,9 +96,7 @@ export default function Hero() {
   // Branch
   // ===========================
 
-  const handleBranchConfirm = (
-    branch: Branch
-  ) => {
+  const handleBranchConfirm = (branch: Branch) => {
     setSelectedBranch(branch);
 
     setShowBranchModal(false);
@@ -134,9 +110,7 @@ export default function Hero() {
   // Airport
   // ===========================
 
-  const handleAirportConfirm = (
-    airport: Airport
-  ) => {
+  const handleAirportConfirm = (airport: Airport) => {
     setSelectedAirport(airport);
 
     setShowAirportModal(false);
@@ -152,9 +126,7 @@ export default function Hero() {
   // Station
   // ===========================
 
-  const handleStationConfirm = (
-    station: Station
-  ) => {
+  const handleStationConfirm = (station: Station) => {
     setSelectedStation(station);
 
     setShowStationModal(false);
@@ -170,9 +142,7 @@ export default function Hero() {
   // Location
   // ===========================
 
-  const handleLocationConfirm = (
-    location: LocationData
-  ) => {
+  const handleLocationConfirm = (location: LocationData) => {
     setSelectedLocation(location);
 
     setShowMapModal(false);
@@ -209,21 +179,13 @@ export default function Hero() {
 
       <div className="container-tcar">
         <div className="hero_text">
-          <h1>
-            استأجر سيارتك بكل سهولة
-          </h1>
+          <h1>{t('hero.title')}</h1>
 
-          <p>
-            اختر من بين خيارات الإيجار اليومية
-            أو الشهرية أو الاستلام من المطار،
-            واستمتع بتجربة حجز سريعة وآمنة.
-          </p>
+          <p>{t('hero.subtitle')}</p>
         </div>
 
         <div className="hero_filter">
-          <RentalTabs
-            onSelect={handleRentalSelect}
-          />
+          <RentalTabs onSelect={handleRentalSelect} />
         </div>
       </div>
 
@@ -231,9 +193,7 @@ export default function Hero() {
 
       <PickupTypeModal
         open={showPickupModal}
-        onClose={() =>
-          setShowPickupModal(false)
-        }
+        onClose={() => setShowPickupModal(false)}
         onSelect={handlePickupSelect}
       />
 
@@ -241,9 +201,7 @@ export default function Hero() {
 
       <AirportModal
         open={showAirportModal}
-        onClose={() =>
-          setShowAirportModal(false)
-        }
+        onClose={() => setShowAirportModal(false)}
         onSelect={handleAirportConfirm}
       />
 
@@ -251,9 +209,7 @@ export default function Hero() {
 
       <StationModal
         open={showStationModal}
-        onClose={() =>
-          setShowStationModal(false)
-        }
+        onClose={() => setShowStationModal(false)}
         onSelect={handleStationConfirm}
       />
 
@@ -261,9 +217,7 @@ export default function Hero() {
 
       <MapLocationModal
         open={showMapModal}
-        onClose={() =>
-          setShowMapModal(false)
-        }
+        onClose={() => setShowMapModal(false)}
         onConfirm={handleLocationConfirm}
       />
 
@@ -271,9 +225,7 @@ export default function Hero() {
 
       <BranchModal
         open={showBranchModal}
-        onClose={() =>
-          setShowBranchModal(false)
-        }
+        onClose={() => setShowBranchModal(false)}
         onSelect={handleBranchConfirm}
       />
     </section>

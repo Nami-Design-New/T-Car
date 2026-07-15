@@ -12,7 +12,6 @@ export default function NotFound() {
       <div className="container-tcar not-found-content">
         <div className="not-found-illustration">
           <svg viewBox="0 0 400 240" xmlns="http://www.w3.org/2000/svg">
-            {/* الطريق */}
             <path
               d="M0 180 Q 200 140 400 180"
               stroke="var(--nf-road)"
@@ -30,7 +29,6 @@ export default function NotFound() {
               strokeLinecap="round"
             />
 
-            {/* لافتة */}
             <line
               x1="120"
               y1="60"
@@ -85,7 +83,6 @@ export default function NotFound() {
               </text>
             </g>
 
-            {/* السيارة */}
             <g className="nf-car">
               <path
                 d="M260 155 h70 a10 10 0 0 1 10 8 l4 14 h6 a6 6 0 0 1 6 6 v10 a4 4 0 0 1 -4 4 h-8 a14 14 0 0 1 -28 0 h-40 a14 14 0 0 1 -28 0 h-6 a4 4 0 0 1 -4 -4 v-16 a10 10 0 0 1 10 -10 z"
@@ -104,35 +101,34 @@ export default function NotFound() {
               />
 
               <circle
-                cx="288"
+                cx="260"
                 cy="197"
                 r="10"
                 fill="var(--nf-dark)"
               />
 
               <circle
-                cx="288"
+                cx="260"
                 cy="197"
                 r="4"
                 fill="#ccc"
               />
 
               <circle
-                cx="336"
+                cx="330"
                 cy="197"
                 r="10"
                 fill="var(--nf-dark)"
               />
 
               <circle
-                cx="336"
+                cx="330"
                 cy="197"
                 r="4"
                 fill="#ccc"
               />
             </g>
 
-            {/* علامة الاستفهام */}
             <text
               x="300"
               y="130"
@@ -158,23 +154,27 @@ export default function NotFound() {
           {t('notFound.description')}
         </p>
 
-        <div className="not-found-actions">
-          <Link
-            href="/"
-            className="btn btn-primary btn-md"
-          >
-            <FiHome />
-            {t('notFound.home')}
-          </Link>
+       <div className="not-found-actions">
+  <Link
+    href="/"
+    className="btn btn-primary btn-md"
+  >
+    <span>
+      <FiHome />
+      {t('notFound.home')}
+    </span>
+  </Link>
 
-          <Link
-            href="/cities"
-            className="btn btn-outline btn-md"
-          >
-            <FiSearch />
-            {t('notFound.browseCities')}
-          </Link>
-        </div>
+  <Link
+    href="/cities"
+    className="btn btn-outline btn-md"
+  >
+    <span>
+      <FiSearch />
+      {t('notFound.browseCities')}
+    </span>
+  </Link>
+</div>
       </div>
     </div>
   );

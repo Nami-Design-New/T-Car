@@ -12,10 +12,16 @@
     "faqs": "FAQs"
   },
   "hero": {
-    "title": "Drive Your Journey, Your Way",
-    "subtitle": "Browse and rent the latest car models for business, vacations, and everyday life.",
-    "cta": "Explore Cars"
+    "title": "Rent Your Car with Ease",
+    "subtitle": "Choose from daily, monthly, or airport pickup rentals and enjoy a fast, secure booking experience."
   },
+  "rentalTabs": {
+  "daily": "Daily Rental",
+  "monthly": "Monthly Rental",
+  "airport": "Airport Pickup",
+  "station": "Train Station Pickup",
+  "international": "International Rental"
+},
   "search": {
     "title": "Find Your Perfect Car",
     "location": "Pickup Location",
@@ -23,16 +29,17 @@
     "returnDate": "Return Date",
     "submit": "Search"
   },
-  "featuredCars": {
-    "title": "Featured Cars",
-    "subtitle": "Handpicked vehicles ready for your next trip",
-    "perDay": "/ day",
-    "rentNow": "Rent Now"
-  },
-"partners": {
-  "title": "Partners",
-  "subtitle": "Browse and rent the latest car models for business, vacations, and everyday life."
+"popularCities": {
+  "title": "Popular Cities",
+  "subtitle": "Wherever you are, your car is waiting for you",
+  "carsAvailable": "Cars Available",
+  "explore": "Explore"
 },
+  "partners": {
+    "smallTitle": "Our Partners",
+    "title": "Trusted by Leading Brands",
+    "subtitle": "We collaborate with trusted automotive brands and partners to provide you with a reliable and seamless car rental experience."
+  },
   "services": {
     "title": "Our Services",
     "subtitle": "Everything you need for a smooth rental experience"
@@ -41,13 +48,39 @@
     "title": "What Our Customers Say"
   },
   "faq": {
+    "smallTitle": "Support",
     "title": "Frequently Asked Questions",
-    "subtitle":"Everything you need for a smooth rental experience"
+    "subtitle": "Everything you need for a smooth rental experience"
+  },
+  "contact": {
+    "smallTitle": "Contact Us",
+    "title": "We'd Love to Hear From You",
+    "subtitle": "Have a question or need assistance? Get in touch with us and our team will respond as soon as possible.",
+    "getInTouch": "Get in Touch",
+    "description": "The T-Car team is always ready to help you with bookings, reservations, and any support you may need.",
+    "phone": "Phone Number",
+    "email": "Email Address",
+    "address": "Address",
+    "name": "Full Name",
+    "message": "Your Message",
+    "send": "Send Message"
   },
   "footer": {
     "rights": "All rights reserved.",
     "quickLinks": "Quick Links",
-    "contactUs": "Contact Us"
+    "contactUs": "Contact Us",
+    "terms": "Terms & Conditions",
+    "privacy": "Privacy Policy"
+  },
+  "terms": {
+    "smallTitle": "Terms",
+    "title": "Terms & Conditions",
+    "subtitle": "Please read these terms carefully before using T-Car services."
+  },
+  "privacy": {
+    "smallTitle": "Privacy",
+    "title": "Privacy Policy",
+    "subtitle": "Your privacy matters to us, and we are committed to protecting your personal information."
   },
   "loading": "Loading...",
   "notFound": {

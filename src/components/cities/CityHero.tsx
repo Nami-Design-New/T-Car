@@ -5,7 +5,7 @@ import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import type { CityDetails } from '@app-types/car';
 import DateTimePicker from '@components/common/DateTimePicker';
-import { FiCalendar, FiSearch } from "react-icons/fi";
+import { FiCalendar, FiSearch } from 'react-icons/fi';
 interface Props {
   city: CityDetails;
 }
@@ -53,46 +53,41 @@ export default function CityHero({ city }: Props) {
       </div>
 
       <div className="container-tcar">
-     <div className="city-search-card">
+        <div className="city-search-card">
+          <div className="city-search-card-field">
+            <div className="field-icon">
+              <FiCalendar />
+            </div>
 
-  <div className="city-search-card-field">
-    <div className="field-icon">
-      <FiCalendar />
-    </div>
+            <DateTimePicker
+              label="الاستلام"
+              value={pickup}
+              onChange={setPickup}
+              placeholder="اختر تاريخ الاستلام"
+            />
+          </div>
 
-    <DateTimePicker
-      label="الاستلام"
-      value={pickup}
-      onChange={setPickup}
-      placeholder="اختر تاريخ الاستلام"
-    />
-  </div>
+          <div className="city-search-card-divider" />
 
-  <div className="city-search-card-divider" />
+          <div className="city-search-card-field">
+            <div className="field-icon">
+              <FiCalendar />
+            </div>
 
-  <div className="city-search-card-field">
-    <div className="field-icon">
-      <FiCalendar />
-    </div>
+            <DateTimePicker
+              label="التسليم"
+              value={dropoff}
+              onChange={setDropoff}
+              minDate={pickup.date || undefined}
+              placeholder="اختر تاريخ التسليم"
+            />
+          </div>
 
-    <DateTimePicker
-      label="التسليم"
-      value={dropoff}
-      onChange={setDropoff}
-      minDate={pickup.date || undefined}
-      placeholder="اختر تاريخ التسليم"
-    />
-  </div>
-
-  <button
-    className="city-search-card-btn"
-    onClick={handleSearch}
-  >
-    <FiSearch />
-    بحث
-  </button>
-
-</div>
+          <button className="city-search-card-btn" onClick={handleSearch}>
+            <FiSearch />
+            بحث
+          </button>
+        </div>
       </div>
     </>
   );

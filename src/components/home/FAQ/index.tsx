@@ -90,6 +90,7 @@ export default function FAQ() {
       <div className="container-tcar">
 
         <SectionTitle
+          smallTitle={t('faq.smallTitle')}
           title={t('faq.title')}
           subtitle={t('faq.subtitle')}
         />

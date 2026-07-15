@@ -34,9 +34,10 @@ export default function Partners() {
   const { t } = useTranslation();
 
   return (
-    <section className="partners section" id='partners'>
+    <section className="partners section" id="partners">
       <div className="container-tcar">
         <SectionTitle
+          smallTitle={t('partners.smallTitle')}
           title={t('partners.title')}
           subtitle={t('partners.subtitle')}
         />
@@ -73,12 +74,7 @@ export default function Partners() {
           {logos.map((logo) => (
             <SwiperSlide key={logo.name}>
               <div className="partner_logo">
-                <Image
-                  src={logo.image}
-                  alt={logo.name}
-                  width={140}
-                  height={70}
-                />
+                <Image src={logo.image} alt={logo.name} width={140} height={70} />
               </div>
             </SwiperSlide>
           ))}

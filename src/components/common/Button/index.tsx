@@ -6,7 +6,6 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondary' | 'outline';
   size?: 'sm' | 'md' | 'lg';
 }
-
 export default function Button({
   children,
   variant = 'primary',
@@ -16,10 +15,15 @@ export default function Button({
 }: ButtonProps) {
   return (
     <button
-      className={classNames('btn', `btn-${variant}`, `btn-${size}`, className)}
+      className={classNames(
+        'btn',
+        `btn-${variant}`,
+        `btn-${size}`,
+        className
+      )}
       {...rest}
     >
-      {children}
+      <span>{children}</span>
     </button>
   );
 }

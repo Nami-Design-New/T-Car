@@ -1,16 +1,11 @@
 'use client';
 
+import Button from '@/components/common/Button';
+import SectionTitle from '@/components/common/SectionTitle';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  FiMail,
-  FiPhone,
-  FiMapPin,
-  FiFacebook,
-  FiInstagram,
-  FiTwitter,
-} from 'react-icons/fi';
-
+import { FiMail, FiPhone, FiMapPin, FiFacebook, FiInstagram, FiTwitter } from 'react-icons/fi';
+import PhoneField from '@/components/common/PhoneField';
 export default function Contact() {
   const { t } = useTranslation();
 
@@ -21,9 +16,7 @@ export default function Contact() {
     message: '',
   });
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setForm({
       ...form,
       [e.target.name]: e.target.value,
@@ -34,36 +27,24 @@ export default function Contact() {
     e.preventDefault();
 
     console.log(form);
-
-    // TODO API
   };
 
   return (
     <section className="section contact" id="contact">
       <div className="container-tcar">
-
-        <div className="contact_header">
-
-          <span>{t('contact.smallTitle')}</span>
-
-          <h2>{t('contact.title')}</h2>
-
-          <p>{t('contact.subtitle')}</p>
-
-        </div>
+        <SectionTitle
+          smallTitle={t('contact.smallTitle')}
+          title={t('contact.title')}
+          subtitle={t('contact.subtitle')}
+        />
 
         <div className="contact_wrapper">
-
           <div className="contact_info">
-
             <h3>{t('contact.getInTouch')}</h3>
 
-            <p>
-              {t('contact.description')}
-            </p>
+            <p>{t('contact.description')}</p>
 
             <div className="info_list">
-
               <div className="info_item">
                 <FiPhone />
                 <div>
@@ -87,11 +68,9 @@ export default function Contact() {
                   <strong>Riyadh, Saudi Arabia</strong>
                 </div>
               </div>
-
             </div>
 
             <div className="socials">
-
               <a href="#">
                 <FiFacebook />
               </a>
@@ -103,18 +82,11 @@ export default function Contact() {
               <a href="#">
                 <FiTwitter />
               </a>
-
             </div>
-
           </div>
 
-          <form
-            className="contact_form"
-            onSubmit={handleSubmit}
-          >
-
+          <form className="contact_form" onSubmit={handleSubmit}>
             <div className="row">
-
               <div className="field">
                 <label>{t('contact.name')}</label>
 
@@ -138,25 +110,23 @@ export default function Contact() {
                   placeholder={t('contact.email')}
                 />
               </div>
-
             </div>
 
+           <div className="field">
+  <label>{t('contact.phone')}</label>
+
+  <PhoneField
+    value={form.phone}
+    onChange={(phone) =>
+      setForm((prev) => ({
+        ...prev,
+        phone,
+      }))
+    }
+    defaultCountry="sa"
+  />
+</div>
             <div className="field">
-
-              <label>{t('contact.phone')}</label>
-
-              <input
-                type="text"
-                name="phone"
-                value={form.phone}
-                onChange={handleChange}
-                placeholder={t('contact.phone')}
-              />
-
-            </div>
-
-            <div className="field">
-
               <label>{t('contact.message')}</label>
 
               <textarea
@@ -166,20 +136,18 @@ export default function Contact() {
                 onChange={handleChange}
                 placeholder={t('contact.message')}
               />
-
             </div>
 
-            <button
-              type="submit"
-              className="contact_btn"
-            >
-              {t('contact.send')}
-            </button>
-
+      <Button
+  type="submit"
+  variant="primary"
+  size="md"
+  className="contact_btn"
+>
+  {t('contact.send')}
+</Button>
           </form>
-
         </div>
-
       </div>
     </section>
   );

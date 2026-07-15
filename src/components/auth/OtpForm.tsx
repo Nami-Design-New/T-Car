@@ -23,7 +23,6 @@ export default function OtpForm({ phone, onBack, onVerify }: Props) {
     return () => clearInterval(interval);
   }, [timer]);
 
-  // نفتح فوكس على أول خانة فاضية أول ما الفورم يتحمّل
   useEffect(() => {
     inputs.current[0]?.focus();
   }, []);
@@ -36,7 +35,6 @@ export default function OtpForm({ phone, onBack, onVerify }: Props) {
   const handleChange = (value: string, index: number) => {
     if (!/^\d*$/.test(value)) return;
 
-    // دعم لصق الكود كامل دفعة واحدة (SMS autofill / نسخ يدوي)
     if (value.length > 1) {
       const digits = value.slice(0, OTP_LENGTH).split('');
       const next = Array(OTP_LENGTH).fill('');
@@ -101,7 +99,7 @@ export default function OtpForm({ phone, onBack, onVerify }: Props) {
             type="text"
             inputMode="numeric"
             autoComplete={index === 0 ? 'one-time-code' : 'off'}
-            maxLength={OTP_LENGTH} // مش 1 عشان نسمح بلصق الكود كامل في أي خانة
+            maxLength={OTP_LENGTH} 
             value={digit}
             onChange={(e) => handleChange(e.target.value, index)}
             onKeyDown={(e) => handleKeyDown(e, index)}

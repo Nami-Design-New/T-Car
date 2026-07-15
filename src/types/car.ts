@@ -74,6 +74,22 @@ export interface CarDetails extends CarListing {
   reviews: Review[];
 }
 
+// Booking flow
+export type PaymentMethod = 'wallet' | 'visa';
+
+export interface BookingDetails {
+  startDate: Date;
+  endDate: Date;
+  time: string;
+  days: number;
+  pricePerDay: number;
+  subtotal: number;
+  vat: number;
+  total: number;
+  notes: string;
+}
+
+
 // City
 export interface City {
   id: string;
@@ -99,9 +115,7 @@ export type RentalType =
   | 'station'
   | 'international';
 
-export type PickupType =
-  | 'delivery'
-  | 'branch';
+export type PickupType = 'delivery' | 'branch';
 
 export interface RentalTabsProps {
   onSelect: (type: RentalType) => void;
@@ -166,16 +180,83 @@ export interface StationModalProps {
   onClose: () => void;
   onSelect: (station: Station) => void;
 }
-export type PaymentMethod = 'wallet' | 'visa';
 
-export interface BookingDetails {
-  startDate: Date;
-  endDate: Date;
+// Account (profile / wallet / notifications)
+export interface UserProfile {
+  fullName: string;
+  email: string;
+  birthDate: string;
+  phone: string;
+}
+
+export interface WalletTransaction {
+  id: string;
+  type: 'topup' | 'refund' | 'payment';
+  title: string;
+  amount: number;
+  reference: string;
+  date: string;
+}
+
+export interface AppNotification {
+  id: string;
+  title: string;
   time: string;
-  days: number;
+  read: boolean;
+}
+
+export type BookingStatus =
+  | 'active'
+  | 'upcoming'
+  | 'completed';
+
+export interface UserBooking {
+  id: string;
+
+  carName: string;
+  carBrand: string;
+  carImage: string | StaticImageData;
+
+  showroom: string;
+
+  year: number;
+  rating: number;
+
+  status: BookingStatus;
+  statusLabel: string;
+
+  dateLabel: string;
+}
+export interface BookingDetailsView {
+  id: string;
+
+  reference: string;
+
+  carName: string;
+  carBrand: string;
+  carImage: string | StaticImageData;
+
+  showroom: string;
+
+  status: BookingStatus;
+  statusLabel: string;
+
   pricePerDay: number;
+  originalPrice?: number;
+
+  pickupDateTime: string;
+  dropoffDateTime: string;
+
+  warrantyNote: string;
+
+  days: number;
+
   subtotal: number;
+
+  vatRate: number;
   vat: number;
+
   total: number;
-  notes: string;
+
+  bannerTimestamp?: string;
 }

@@ -3,10 +3,7 @@
 import { useState } from 'react';
 import { FiMapPin, FiSearch, FiX } from 'react-icons/fi';
 
-import {
-  Branch,
-  BranchModalProps,
-} from '@/types/car';
+import { Branch, BranchModalProps } from '@/types/car';
 
 const branches: Branch[] = [
   {
@@ -35,44 +32,30 @@ const branches: Branch[] = [
   },
 ];
 
-export default function BranchModal({
-  open,
-  onClose,
-  onSelect,
-}: BranchModalProps) {
+export default function BranchModal({ open, onClose, onSelect }: BranchModalProps) {
   const [search, setSearch] = useState('');
   const [selected, setSelected] = useState<Branch | null>(null);
 
   if (!open) return null;
 
   const filtered = branches.filter((item) =>
-    `${item.city} ${item.branch}`
-      .toLowerCase()
-      .includes(search.toLowerCase())
+    `${item.city} ${item.branch}`.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
     <div className="modal_overlay">
-
       <div className="branch_modal">
-
-        <button
-          className="close_btn"
-          onClick={onClose}
-        >
+        <button className="close_btn" onClick={onClose}>
           <FiX />
         </button>
 
         <div className="modal_header">
           <h2>اختر الفرع</h2>
 
-          <p>
-            اختر أقرب فرع لاستلام السيارة.
-          </p>
+          <p>اختر أقرب فرع لاستلام السيارة.</p>
         </div>
 
         <div className="search_box">
-
           <FiSearch />
 
           <input
@@ -81,21 +64,14 @@ export default function BranchModal({
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
-
         </div>
 
         <div className="branch_list">
-
           {filtered.map((branch) => (
-
             <button
               key={branch.id}
               type="button"
-              className={`branch_item ${
-                selected?.id === branch.id
-                  ? 'active'
-                  : ''
-              }`}
+              className={`branch_item ${selected?.id === branch.id ? 'active' : ''}`}
               onClick={() => setSelected(branch)}
             >
               <div className="icon">
@@ -103,19 +79,14 @@ export default function BranchModal({
               </div>
 
               <div className="content">
-
                 <h4>
                   {branch.city} - {branch.branch}
                 </h4>
 
                 <p>{branch.address}</p>
-
               </div>
-
             </button>
-
           ))}
-
         </div>
 
         <button
@@ -125,9 +96,7 @@ export default function BranchModal({
         >
           متابعة
         </button>
-
       </div>
-
     </div>
   );
 }

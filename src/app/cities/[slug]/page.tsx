@@ -3,15 +3,13 @@ import SortBar from '@components/cities/SortBar';
 import CityFilters from '@components/cities/CityFilters';
 import CityCarCard from '@components/cities/CityCarCard';
 import type { CityDetails, CarListing } from '@app-types/car';
-import carImage from '@assets/images/car1.jpg'; 
+import carImage from '@assets/images/car1.jpg';
 import cityHeroImage from '@assets/images/c1.jpg';
 
 interface Props {
   params: { slug: string };
 }
 
-// TODO: استبدلها بنداء API حقيقي بناءً على params.slug — في الـ API الحقيقي
-// هيرجع heroImage كـ string (URL كامل من السيرفر)، فمش هتحتاج static import خالص
 async function getCityDetails(slug: string): Promise<CityDetails> {
   return {
     id: '1',
@@ -21,9 +19,6 @@ async function getCityDetails(slug: string): Promise<CityDetails> {
     carsCount: 24,
   };
 }
-
-// TODO: استبدلها بنداء API حقيقي
-// أو أي صورة سيارة عندك
 
 async function getCarsForCity(slug: string): Promise<CarListing[]> {
   return [
@@ -131,14 +126,13 @@ export default async function CityDetailsPage({ params }: Props) {
           <SortBar resultsCount={city.carsCount} />
 
           <div className="city-listings-grid">
-                        <CityFilters />
+            <CityFilters />
 
             <div className="city-cars-grid">
               {cars.map((car) => (
                 <CityCarCard key={car.id} car={car} />
               ))}
             </div>
-
           </div>
         </div>
       </section>

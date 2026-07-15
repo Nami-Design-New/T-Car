@@ -5,7 +5,6 @@ import AddonsGrid from '@components/car-details/AddonsGrid';
 import InsuranceOptions from '@components/car-details/InsuranceOptions';
 import CarBookingCard from '@components/car-details/CarBookingCard';
 import ReviewsSummaryCard from '@components/car-details/ReviewsSummaryCard';
-// import BookingFooter from '@components/car-details/BookingFooter';
 import type { CarDetails } from '@app-types/car';
 
 import car1 from '@assets/images/car1.jpg';
@@ -38,8 +37,16 @@ async function getCarDetails(carId: string): Promise<CarDetails> {
       { icon: 'distance', label: '300 كم مجانًا' },
     ],
     warranties: [
-      { id: '1', title: 'ضمان الوصول في الوقت المحدد', description: 'خصم %20 في اليوم الأول إذا وصلت السيارة متأخرة، تطبق الشروط والأحكام.' },
-      { id: '2', title: 'ضمان نظافة السيارة', description: 'خصم %20 في اليوم الأول إذا وصلت السيارة غير نظيفة، تطبق الشروط والأحكام.' },
+      {
+        id: '1',
+        title: 'ضمان الوصول في الوقت المحدد',
+        description: 'خصم %20 في اليوم الأول إذا وصلت السيارة متأخرة، تطبق الشروط والأحكام.',
+      },
+      {
+        id: '2',
+        title: 'ضمان نظافة السيارة',
+        description: 'خصم %20 في اليوم الأول إذا وصلت السيارة غير نظيفة، تطبق الشروط والأحكام.',
+      },
     ],
     addons: [
       { id: '1', title: 'تفويض خارجي', price: 500, icon: 'external' },
@@ -47,7 +54,10 @@ async function getCarDetails(carId: string): Promise<CarDetails> {
     ],
     insuranceOptions: [
       {
-        id: '1', title: 'تأمين مع خصم', subtitle: 'في حالة وقوع حادث، سيتم تطبيق رسوم خصم', pricePerDay: 500,
+        id: '1',
+        title: 'تأمين مع خصم',
+        subtitle: 'في حالة وقوع حادث، سيتم تطبيق رسوم خصم',
+        pricePerDay: 500,
         terms: [
           'تقرير الحوادث: يجب إبلاغ الشركة والجهات الأمنية فور وقوع أي حادث للحفاظ على حقوقك في هذا التأمين.',
           'الالتزام بالمواعيد: يرجى الالتزام بموعد الاستلام والتسليم لتجنب رسوم إضافية ناتجة عن التأخير.',
@@ -59,7 +69,10 @@ async function getCarDetails(carId: string): Promise<CarDetails> {
         ],
       },
       {
-        id: '2', title: 'تأمين شامل', subtitle: 'تغطية كاملة بدون رسوم إضافية عند وقوع حادث', pricePerDay: 750,
+        id: '2',
+        title: 'تأمين شامل',
+        subtitle: 'تغطية كاملة بدون رسوم إضافية عند وقوع حادث',
+        pricePerDay: 750,
         terms: [
           'تغطية كاملة للأضرار الناتجة عن الحوادث بدون تحمل أي رسوم إضافية.',
           'يشمل التأمين تغطية السرقة والحوادث الجزئية والكلية.',
@@ -68,9 +81,27 @@ async function getCarDetails(carId: string): Promise<CarDetails> {
       },
     ],
     reviews: [
-      { id: '1', name: 'سعد النجار', rating: 5, date: '25 ديسمبر 2025', comment: 'السائق كان محترفًا ودودًا، وقاد السيارة بأمان وراحة. شكرًا جزيلًا!' },
-      { id: '2', name: 'منى العلي', rating: 5, date: '26 ديسمبر 2025', comment: 'تجربة رائعة! كانت السيارة نظيفة جدًا والسائق كان علي موعده بالضبط.' },
-      { id: '3', name: 'فهد القحطاني', rating: 5, date: '27 ديسمبر 2025', comment: 'السائق كان مرنًا والسائق ساعدني في حمل الأمتعة. سأستخدم الخدمة مرة أخرى.' },
+      {
+        id: '1',
+        name: 'سعد النجار',
+        rating: 5,
+        date: '25 ديسمبر 2025',
+        comment: 'السائق كان محترفًا ودودًا، وقاد السيارة بأمان وراحة. شكرًا جزيلًا!',
+      },
+      {
+        id: '2',
+        name: 'منى العلي',
+        rating: 5,
+        date: '26 ديسمبر 2025',
+        comment: 'تجربة رائعة! كانت السيارة نظيفة جدًا والسائق كان علي موعده بالضبط.',
+      },
+      {
+        id: '3',
+        name: 'فهد القحطاني',
+        rating: 5,
+        date: '27 ديسمبر 2025',
+        comment: 'السائق كان مرنًا والسائق ساعدني في حمل الأمتعة. سأستخدم الخدمة مرة أخرى.',
+      },
     ],
   };
 }
@@ -92,16 +123,16 @@ export default async function CarDetailsPage({ params }: Props) {
             </div>
 
             <div className="car-details-side">
-            <CarBookingCard
-  carId={car.id}
-  carName={car.name}
-  carBrand={car.brand}
-  carImage={car.image}
-  showroom={car.showroom}
-  rating={car.rating}
-  pricePerDay={car.pricePerDay}
-  originalPrice={car.originalPrice}
-/>
+              <CarBookingCard
+                carId={car.id}
+                carName={car.name}
+                carBrand={car.brand}
+                carImage={car.image}
+                showroom={car.showroom}
+                rating={car.rating}
+                pricePerDay={car.pricePerDay}
+                originalPrice={car.originalPrice}
+              />
 
               <ReviewsSummaryCard
                 rating={car.rating}
@@ -113,7 +144,6 @@ export default async function CarDetailsPage({ params }: Props) {
         </div>
       </section>
 
-      {/* <BookingFooter carId={car.id} totalPricePerDay={car.pricePerDay} /> */}
     </>
   );
 }

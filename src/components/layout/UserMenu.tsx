@@ -2,7 +2,8 @@
 
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
-import { FiUser, FiCalendar, FiLogOut, FiChevronDown } from 'react-icons/fi';
+import {FiLogOut, FiChevronDown } from 'react-icons/fi';
+import { ImUser } from "react-icons/im";
 import Image from 'next/image';
 
 import accountIcon from '@assets/icons/account.svg';
@@ -37,9 +38,8 @@ export default function UserMenu({ avatarUrl, onLogout }: Props) {
         aria-expanded={open}
       >
         <span className="user-menu-avatar">
-          {avatarUrl ? <Image src={avatarUrl} alt="avatar" fill sizes="32px" /> : <FiUser />}
+          {avatarUrl ? <Image src={avatarUrl} alt="avatar" fill sizes="32px" /> : <ImUser />}
         </span>
-            الملف الشخصي
 
         <FiChevronDown className={`user-menu-chevron ${open ? 'open' : ''}`} />
       </button>
@@ -53,12 +53,12 @@ export default function UserMenu({ avatarUrl, onLogout }: Props) {
             </Link>
           </li>
 
-          <li role="menuitem">
+          {/* <li role="menuitem">
             <Link href="/my-bookings" onClick={() => setOpen(false)}>
               <Image src={bookingIcon} alt="" width={18} height={18} className="menu-icon" />
               <span>حجوزاتي</span>
             </Link>
-          </li>
+          </li> */}
 
           <li className="user-menu-divider" role="separator" />
 

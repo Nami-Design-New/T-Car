@@ -24,8 +24,18 @@ interface Props {
 }
 
 const MONTHS = [
-  'يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو',
-  'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر',
+  'يناير',
+  'فبراير',
+  'مارس',
+  'أبريل',
+  'مايو',
+  'يونيو',
+  'يوليو',
+  'أغسطس',
+  'سبتمبر',
+  'أكتوبر',
+  'نوفمبر',
+  'ديسمبر',
 ];
 
 function formatFull(d: Date, time: string) {
@@ -72,7 +82,9 @@ export default function BookingConfirmModal({
             </div>
 
             <div className="confirm_car_summary_body">
-              <h4>{carBrand} {carName}</h4>
+              <h4>
+                {carBrand} {carName}
+              </h4>
               <span className="showroom">
                 <FiStar /> {showroom}
               </span>
@@ -99,88 +111,70 @@ export default function BookingConfirmModal({
           <div className="confirm_section">
             <h3>تفاصيل السعر</h3>
 
-          <div className="price_breakdown">
+            <div className="price_breakdown">
+              <div className="price_item">
+                <span>السعر اليومي</span>
+                <strong>{formatCurrency(booking.pricePerDay)}</strong>
+              </div>
 
-  <div className="price_item">
-    <span>السعر اليومي</span>
-    <strong>{formatCurrency(booking.pricePerDay)}</strong>
-  </div>
+              <div className="price_item">
+                <span>عدد الأيام</span>
+                <strong>{booking.days} يوم</strong>
+              </div>
 
-  <div className="price_item">
-    <span>عدد الأيام</span>
-    <strong>{booking.days} يوم</strong>
-  </div>
+              <div className="price_item">
+                <span>المجموع الفرعي</span>
+                <strong>{formatCurrency(booking.subtotal)}</strong>
+              </div>
 
-  <div className="price_item">
-    <span>المجموع الفرعي</span>
-    <strong>{formatCurrency(booking.subtotal)}</strong>
-  </div>
+              <div className="price_item">
+                <span>الضريبة</span>
+                <strong>{formatCurrency(booking.vat)}</strong>
+              </div>
 
-  <div className="price_item">
-    <span>الضريبة</span>
-    <strong>{formatCurrency(booking.vat)}</strong>
-  </div>
-
-  <div className="price_total">
-    <span>الإجمالي</span>
-    <h3>{formatCurrency(booking.total)}</h3>
-  </div>
-
-</div>
+              <div className="price_total">
+                <span>الإجمالي</span>
+                <h3>{formatCurrency(booking.total)}</h3>
+              </div>
+            </div>
           </div>
 
           <div className="confirm_section">
             <h3>طريقة الدفع</h3>
 
             <div className="payment_methods">
+              <label className={`payment_method ${method === 'wallet' ? 'selected' : ''}`}>
+                <input
+                  type="radio"
+                  name="payment"
+                  checked={method === 'wallet'}
+                  onChange={() => setMethod('wallet')}
+                />
 
-  <label
-    className={`payment_method ${
-      method === 'wallet' ? 'selected' : ''
-    }`}
-  >
-    <input
-      type="radio"
-      name="payment"
-      checked={method === 'wallet'}
-      onChange={() => setMethod('wallet')}
-    />
+                <Image
+                  src={walletIcon}
+                  alt="Wallet"
+                  width={26}
+                  height={26}
+                  className="payment_icon"
+                />
 
-    <Image
-      src={walletIcon}
-      alt="Wallet"
-      width={26}
-      height={26}
-      className="payment_icon"
-    />
+                <span>المحفظة</span>
+              </label>
 
-    <span>المحفظة</span>
-  </label>
+              <label className={`payment_method ${method === 'visa' ? 'selected' : ''}`}>
+                <input
+                  type="radio"
+                  name="payment"
+                  checked={method === 'visa'}
+                  onChange={() => setMethod('visa')}
+                />
 
-  <label
-    className={`payment_method ${
-      method === 'visa' ? 'selected' : ''
-    }`}
-  >
-    <input
-      type="radio"
-      name="payment"
-      checked={method === 'visa'}
-      onChange={() => setMethod('visa')}
-    />
+                <Image src={visaIcon} alt="Visa" width={30} height={20} className="payment_icon" />
 
-    <Image
-      src={visaIcon}
-      alt="Visa"
-      width={30}
-      height={20}
-      className="payment_icon"
-    />
-
-    <span>بطاقة ائتمان / فيزا</span>
-  </label>
-
-</div>
+                <span>بطاقة ائتمان / فيزا</span>
+              </label>
+            </div>
           </div>
         </div>
 

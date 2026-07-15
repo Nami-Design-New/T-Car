@@ -8,10 +8,7 @@ type Props = {
   onSuccess: () => void;
 };
 
-export default function RegisterForm({
-  onBack,
-  onSuccess,
-}: Props) {
+export default function RegisterForm({ onBack, onSuccess }: Props) {
   const [form, setForm] = useState({
     name: '',
     email: '',
@@ -19,39 +16,27 @@ export default function RegisterForm({
     agree: false,
   });
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
 
     setForm((prev) => ({
       ...prev,
-      [name]:
-        type === 'checkbox' ? checked : value,
+      [name]: type === 'checkbox' ? checked : value,
     }));
   };
 
   return (
     <div className="register_form">
-
       <button type="button" className="back_btn" onClick={onBack} aria-label="Back">
-          <FiArrowLeft />
-        </button>
+        <FiArrowLeft />
+      </button>
 
       <h2>إنشاء حساب</h2>
 
-      <p>
-        أكمل البيانات التالية
-      </p>
+      <p>أكمل البيانات التالية</p>
 
       <div className="inputs">
-
-        <input
-          name="name"
-          placeholder="الاسم الكامل"
-          value={form.name}
-          onChange={handleChange}
-        />
+        <input name="name" placeholder="الاسم الكامل" value={form.name} onChange={handleChange} />
 
         <input
           name="email"
@@ -61,37 +46,18 @@ export default function RegisterForm({
           onChange={handleChange}
         />
 
-        <input
-          name="birthDate"
-          type="date"
-          value={form.birthDate}
-          onChange={handleChange}
-        />
-
+        <input name="birthDate" type="date" value={form.birthDate} onChange={handleChange} />
       </div>
 
       <label className="agree">
+        <input type="checkbox" name="agree" checked={form.agree} onChange={handleChange} />
 
-        <input
-          type="checkbox"
-          name="agree"
-          checked={form.agree}
-          onChange={handleChange}
-        />
-
-        <span>
-          أوافق على الشروط والأحكام
-        </span>
-
+        <span>أوافق على الشروط والأحكام</span>
       </label>
 
-      <button
-        className="auth_btn"
-        onClick={onSuccess}
-      >
+      <button className="auth_btn" onClick={onSuccess}>
         إنشاء الحساب
       </button>
-
     </div>
   );
 }

@@ -2,8 +2,7 @@
 
 import Image from 'next/image';
 import { useState } from 'react';
-import { PhoneInput } from 'react-international-phone';
-import 'react-international-phone/style.css'; 
+import PhoneField from '@/components/common/PhoneField';
 import logo from '@assets/images/fav.svg';
 
 type Props = {
@@ -27,17 +26,10 @@ export default function LoginForm({
       <p>أدخل رقم الجوال لإرسال رمز التحقق</p>
 
       <div className="phone_wrapper">
-        <PhoneInput
-          defaultCountry="sa"
-          value={phone}
-          onChange={setPhone}
-          className="phone_field"
-          inputClassName="phone_input"
-          countrySelectorStyleProps={{
-            buttonClassName: 'country_selector_btn',
-          }}
-          forceDialCode
-        />
+<PhoneField
+  value={phone}
+  onChange={setPhone}
+/>
       </div>
 
       <button className="auth_btn" onClick={onNext}>

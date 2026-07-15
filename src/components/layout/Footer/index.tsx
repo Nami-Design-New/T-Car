@@ -25,24 +25,13 @@ export default function Footer() {
 
   return (
     <footer className="footer">
-
       <div className="container-tcar footer_top">
-
         <div className="footer_brand">
+          <Image src={logo} alt="T-Car" width={160} height={48} />
 
-          <Image
-            src={logo}
-            alt="T-Car"
-            width={160}
-            height={48}
-          />
-
-          <p>
-            {t('hero.subtitle')}
-          </p>
+          <p>{t('hero.subtitle')}</p>
 
           <div className="footer_socials">
-
             <a href="#">
               <FiFacebook />
             </a>
@@ -54,83 +43,72 @@ export default function Footer() {
             <a href="#">
               <FiTwitter />
             </a>
-
           </div>
-
         </div>
 
         <div className="footer_links">
+          <h4>{t('footer.quickLinks')}</h4>
 
-          <h4>
-            {t('footer.quickLinks')}
-          </h4>
-
-        <ul>
-  {NAV_LINKS.map((link) => (
-    <li key={link.href}>
-      <Link href={link.href}>
-        {t(link.label)}
-      </Link>
-    </li>
-  ))}
-</ul>
-
+          <ul>
+            {NAV_LINKS.map((link) => (
+              <li key={link.href}>
+                <Link href={link.href}>{t(link.label)}</Link>
+              </li>
+            ))}
+          </ul>
         </div>
 
-      <div className="footer_contact">
+        <div className="footer_contact">
+          <h4>{t('footer.contactUs')}</h4>
 
-  <h4>{t('footer.contactUs')}</h4>
+          <div className="contact_item">
+            <FiMail />
+            <a href="mailto:info@tcar.com">info@tcar.com</a>
+          </div>
 
-  <div className="contact_item">
-    <FiMail />
-    <span>info@tcar.com</span>
-  </div>
+          <div className="contact_item">
+            <FiPhone />
+            <a href="tel:+966500000000">+966 500000000</a>
+          </div>
 
-  <div className="contact_item">
-    <FiPhone />
-    <span>+966 500000000</span>
-  </div>
-
-  <div className="contact_item">
-    <FiMapPin />
-    <span>Riyadh, Saudi Arabia</span>
-  </div>
-
-</div>
+          <div className="contact_item">
+            <FiMapPin />
+            <a
+              href="https://maps.google.com/?q=Riyadh,Saudi Arabia"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Riyadh, Saudi Arabia
+            </a>
+          </div>
+        </div>
 
         <div className="footer_apps">
+          <h4>
+            <FiDownload />
+            حمل التطبيق
+          </h4>
 
-  <h4>
-    <FiDownload />
-    حمل التطبيق
-  </h4>
+          <a href="#">
+            <Image src={appStore} alt="App Store" width={170} />
+          </a>
 
-  <a href="#">
-    <Image
-      src={appStore}
-      alt="App Store"
-      width={170}
-    />
-  </a>
-
-  <a href="#">
-    <Image
-      src={googlePlay}
-      alt="Google Play"
-      width={170}
-    />
-  </a>
-
-</div>
-
+          <a href="#">
+            <Image src={googlePlay} alt="Google Play" width={170} />
+          </a>
+        </div>
       </div>
 
-      <div className="footer_bottom">
+      <div className="footer_bottom container">
+        <div className="footer_copy">
+          © {year} T-Car. {t('footer.rights')}
+        </div>
+        <div className="footer_bottom_links">
+          <Link href="/terms">{t('footer.terms')}</Link>
 
-        © {year} T-Car. {t('footer.rights')}
-
+          <Link href="/privacy">{t('footer.privacy')}</Link>
+        </div>
       </div>
-
     </footer>
   );
 }
