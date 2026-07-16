@@ -8,7 +8,7 @@ import type { BookingDetailsView } from '@app-types/car';
 import car1 from '@assets/images/car1.jpg';
 
 interface Props {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 async function getBookingDetails(id: string): Promise<BookingDetailsView> {
@@ -35,7 +35,8 @@ async function getBookingDetails(id: string): Promise<BookingDetailsView> {
 }
 
 export default async function BookingDetailsPage({ params }: Props) {
-  const booking = await getBookingDetails(params.id);
+  const { id } = await params;
+  const booking = await getBookingDetails(id);
 
   return (
     <section className="section booking-details-page">

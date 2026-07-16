@@ -13,7 +13,7 @@ import car1Back from '@assets/images/car1-back.jpg';
 import car1Interior from '@assets/images/car1-interior.jpg';
 
 interface Props {
-  params: { carId: string };
+  params: Promise<{ carId: string }>;
 }
 
 async function getCarDetails(carId: string): Promise<CarDetails> {
@@ -107,7 +107,8 @@ async function getCarDetails(carId: string): Promise<CarDetails> {
 }
 
 export default async function CarDetailsPage({ params }: Props) {
-  const car = await getCarDetails(params.carId);
+  const { carId } = await params;
+  const car = await getCarDetails(carId);
 
   return (
     <>

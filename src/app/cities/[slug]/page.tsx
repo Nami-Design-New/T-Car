@@ -7,7 +7,7 @@ import carImage from '@assets/images/car1.jpg';
 import cityHeroImage from '@assets/images/c1.jpg';
 
 interface Props {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }
 
 async function getCityDetails(slug: string): Promise<CityDetails> {
@@ -114,8 +114,9 @@ async function getCarsForCity(slug: string): Promise<CarListing[]> {
   ];
 }
 export default async function CityDetailsPage({ params }: Props) {
-  const city = await getCityDetails(params.slug);
-  const cars = await getCarsForCity(params.slug);
+  const { slug } = await params;
+  const city = await getCityDetails(slug);
+  const cars = await getCarsForCity(slug);
 
   return (
     <>
