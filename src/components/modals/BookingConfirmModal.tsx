@@ -8,7 +8,7 @@ import type { BookingDetails, PaymentMethod } from '@app-types/car';
 import type { StaticImageData } from 'next/image';
 import Image from 'next/image';
 
-import walletIcon from '@assets/icons/wallet.svg';
+import walletIcon from '@assets/icons/Wallet.svg';
 import visaIcon from '@assets/icons/Payment.svg';
 interface Props {
   open: boolean;

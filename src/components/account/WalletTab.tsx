@@ -2,7 +2,7 @@ import { formatCurrency } from '@utils/index';
 import type { WalletTransaction } from '@app-types/car';
 import Image from 'next/image';
 
-import walletIcon from '@assets/icons/wallet.svg';
+import walletIcon from '@assets/icons/Wallet.svg';
 import sarIcon from '@assets/icons/sar.svg';
 interface Props {
   balance: number;
