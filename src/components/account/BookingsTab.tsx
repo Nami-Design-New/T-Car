@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 
-import type { UserBooking, BookingStatus } from '@app-types/car';
+import type { UserBooking, BookingTab } from '@app-types/car';
 
 import BookingsTabs from '@components/bookings/BookingsTabs';
 import BookingCard from '@components/bookings/BookingCard';
@@ -12,34 +12,33 @@ interface Props {
   bookings: UserBooking[];
 }
 
+const ACTIVE_STATUSES = ['current', 'upcoming', 'late'] as const;
+const PAST_STATUSES = ['completed', 'cancelled'] as const;
+
 export default function BookingsTab({ bookings }: Props) {
-  const [tab, setTab] = useState<BookingStatus>('active');
+  const [tab, setTab] = useState<BookingTab>('active');
 
-  const activeBookings = bookings.filter(
-    (b) => b.status === 'active'
+  const activeBookings = bookings.filter((booking) =>
+    ACTIVE_STATUSES.includes(
+      booking.status as (typeof ACTIVE_STATUSES)[number]
+    )
   );
 
-  const upcomingBookings = bookings.filter(
-    (b) => b.status === 'upcoming'
-  );
-
-  const completedBookings = bookings.filter(
-    (b) => b.status === 'completed'
+  const pastBookings = bookings.filter((booking) =>
+    PAST_STATUSES.includes(
+      booking.status as (typeof PAST_STATUSES)[number]
+    )
   );
 
   const filtered =
     tab === 'active'
       ? activeBookings
-      : tab === 'upcoming'
-      ? upcomingBookings
-      : completedBookings;
+      : pastBookings;
 
   const emptyMessage =
     tab === 'active'
       ? 'لا توجد حجوزات حالية'
-      : tab === 'upcoming'
-      ? 'لا توجد حجوزات قادمة'
-      : 'لا توجد حجوزات مكتملة';
+      : 'لا توجد حجوزات سابقة';
 
   return (
     <div>
@@ -47,8 +46,7 @@ export default function BookingsTab({ bookings }: Props) {
         active={tab}
         onChange={setTab}
         activeCount={activeBookings.length}
-        upcomingCount={upcomingBookings.length}
-        completedCount={completedBookings.length}
+        pastCount={pastBookings.length}
       />
 
       {filtered.length === 0 ? (

@@ -32,29 +32,63 @@ const MOCK_NOTIFICATIONS = [
 
 const MOCK_BOOKINGS: UserBooking[] = [
   {
-    id: '1', carName: 'ماليبو', carBrand: 'شيفروليه', carImage: car1, year: 2022,
-    rating: 4.4, showroom: 'معرض القدس', status: 'active', statusLabel: 'حالي',
+    id: '1',
+    carName: 'ماليبو',
+    carBrand: 'شيفروليه',
+    carImage: car1,
+    year: 2022,
+    rating: 4.4,
+    showroom: 'معرض القدس',
+    status: 'current',
+    statusLabel: 'حالي',
     dateLabel: '30 يونيو 2026، 11:46 م',
   },
-
   {
-    id: '2', carName: 'ألتيما', carBrand: 'نيسان', carImage: car1, year: 2022,
-    rating: 4.5, showroom: 'معرض الخليج', status: 'active', statusLabel: 'حالي',
+    id: '2',
+    carName: 'ألتيما',
+    carBrand: 'نيسان',
+    carImage: car1,
+    year: 2022,
+    rating: 4.5,
+    showroom: 'معرض الخليج',
+    status: 'upcoming',
+    statusLabel: 'قادم',
     dateLabel: '18 يوليو 2026، 01:15 م',
   },
   {
-    id: '3', carName: 'أكورد', carBrand: 'هوندا', carImage: car1, year: 2023,
-    rating: 4.6, showroom: 'معرض العروبة', status: 'completed', statusLabel: 'مكتمل',
+    id: '3',
+    carName: 'أكورد',
+    carBrand: 'هوندا',
+    carImage: car1,
+    year: 2023,
+    rating: 4.6,
+    showroom: 'معرض العروبة',
+    status: 'late',
+    statusLabel: 'متأخر عن التسليم',
     dateLabel: '30 يونيو 2026، 11:46 م',
   },
   {
-    id: '4', carName: 'مازدا 6', carBrand: 'مازدا', carImage: car1, year: 2024,
-    rating: 4.8, showroom: 'معرض النخبة', status: 'completed', statusLabel: 'مكتمل',
+    id: '4',
+    carName: 'مازدا 6',
+    carBrand: 'مازدا',
+    carImage: car1,
+    year: 2024,
+    rating: 4.8,
+    showroom: 'معرض النخبة',
+    status: 'completed',
+    statusLabel: 'مكتمل',
     dateLabel: '8 أبريل 2026، 12:00 م',
   },
   {
-    id: '5', carName: 'إمبالا', carBrand: 'شيفروليه', carImage: car1, year: 2021,
-    rating: 4.2, showroom: 'معرض القدس', status: 'completed', statusLabel: 'مكتمل',
+    id: '5',
+    carName: 'إمبالا',
+    carBrand: 'شيفروليه',
+    carImage: car1,
+    year: 2021,
+    rating: 4.2,
+    showroom: 'معرض القدس',
+    status: 'cancelled',
+    statusLabel: 'ملغي',
     dateLabel: '22 مارس 2026، 07:45 م',
   },
 ];
@@ -75,7 +109,6 @@ export default function AccountPage() {
               <ProfileTab
                 profile={MOCK_PROFILE}
                 onSave={(profile) => {
-                  // TODO: نداء API حقيقي لحفظ بيانات الملف الشخصي
                   console.log(profile);
                 }}
               />
@@ -88,7 +121,6 @@ export default function AccountPage() {
                 balance={2500}
                 transactions={MOCK_TRANSACTIONS}
                 onTopUp={() => {
-                  // TODO: فتح مودال شحن الرصيد الحقيقي
                 }}
               />
             )}

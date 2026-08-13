@@ -12,11 +12,18 @@ interface Props {
   subtotal: number;
   vatRate: number;
   vat: number;
+  pointsUsed: number;
   total: number;
 }
-
 export default function BookingSidebar({
-  reference, pricePerDay, days, subtotal, vatRate, vat, total,
+  reference,
+  pricePerDay,
+  days,
+  subtotal,
+  vatRate,
+  vat,
+  pointsUsed,
+  total,
 }: Props) {
   const [showReview, setShowReview] = useState(false);
 
@@ -30,15 +37,26 @@ export default function BookingSidebar({
       </div>
 
       <div className="price-row">
-        <span className="value">{formatCurrency(subtotal)} <small>{days} × {formatCurrency(pricePerDay)}</small></span>
+        <span className="value">
+          {formatCurrency(subtotal)}{' '}
+          <small>
+            {days} × {formatCurrency(pricePerDay)}
+          </small>
+        </span>
         <span className="label">المجموع الفرعي</span>
       </div>
 
       <div className="price-row">
-        <span className="value">{formatCurrency(vat)} <small>{vatRate}%</small></span>
+        <span className="value">
+          {formatCurrency(vat)} <small>{vatRate}%</small>
+        </span>
         <span className="label">ضريبة القيمة المضافة</span>
       </div>
+      <div className="price-row points">
+        <span className="value">-{formatCurrency(pointsUsed)}</span>
 
+        <span className="label">استخدام النقاط</span>
+      </div>
       <div className="price-row total">
         <span className="value">{formatCurrency(total)}</span>
         <span className="label">الإجمالي</span>
