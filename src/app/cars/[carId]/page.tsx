@@ -5,6 +5,7 @@ import AddonsGrid from '@components/car-details/AddonsGrid';
 import InsuranceOptions from '@components/car-details/InsuranceOptions';
 import CarBookingCard from '@components/car-details/CarBookingCard';
 import ReviewsSummaryCard from '@components/car-details/ReviewsSummaryCard';
+import StationAndAirportInfo from '@components/car-details/StationAndAirportInfo';
 import type { CarDetails } from '@app-types/car';
 
 import car1 from '@assets/images/car1.jpg';
@@ -118,6 +119,7 @@ export default async function CarDetailsPage({ params }: Props) {
             <div className="car-details-main">
               <CarGallery images={car.images} alt={`${car.brand} ${car.name}`} />
               <CarQuickInfo car={car} />
+              <StationAndAirportInfo showroom={car.showroom} />
               <WarrantiesList warranties={car.warranties} />
               <AddonsGrid addons={car.addons} />
               <InsuranceOptions options={car.insuranceOptions} />
