@@ -18,31 +18,37 @@ const tabs: {
   id: RentalType;
   title: string;
   icon: StaticImageData;
+  type: RentalType;
 }[] = [
   {
     id: 'daily',
     title: 'rentalTabs.daily',
     icon: dailyIcon,
+    type:'daily',
   },
   {
     id: 'monthly',
     title: 'rentalTabs.monthly',
     icon: monthlyIcon,
+    type:'monthly',
   },
   {
     id: 'airport',
     title: 'rentalTabs.airport',
     icon: airportIcon,
+    type:'airport',
   },
   {
     id: 'station',
     title: 'rentalTabs.station',
     icon: stationIcon,
+    type:'station',
   },
   {
     id: 'international',
     title: 'rentalTabs.international',
     icon: internationalIcon,
+    type:'international',
   },
 ];
 
@@ -59,7 +65,7 @@ export default function RentalTabs({
           <button
             key={tab.id}
             type="button"
-            onClick={() => onSelect(tab.id)}
+            onClick={() => onSelect(tab.type)}
           >
             <div className="icon">
               <Image

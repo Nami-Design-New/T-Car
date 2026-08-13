@@ -87,6 +87,10 @@ export interface BookingDetails {
   vat: number;
   total: number;
   notes: string;
+  pickupAddress?: string;
+  dropoffAddress?: string;
+  pickupLocation?: LocationData | null;
+  dropoffLocation?: LocationData | null;
 }
 
 
@@ -138,6 +142,8 @@ export interface MapLocationModalProps {
   open: boolean;
   onClose: () => void;
   onConfirm: (location: LocationData) => void;
+  title?: string;
+  initialLocation?: LocationData | null;
 }
 
 // Branch

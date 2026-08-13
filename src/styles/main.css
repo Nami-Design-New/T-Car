@@ -15395,6 +15395,106 @@ img {
   font-weight: 600;
 }
 
+.station-airport-info {
+  display: grid;
+  gap: 22px;
+  margin-top: 28px;
+}
+.station-airport-info-banner, .station-airport-info-branch {
+  border-radius: 20px;
+}
+.station-airport-info-banner {
+  padding: 18px 22px;
+  background: rgba(31, 127, 250, 0.09);
+}
+.station-airport-info-banner p {
+  margin: 9px 0 0;
+  color: #0a2540;
+  font-size: 13px;
+  line-height: 1.7;
+}
+.station-airport-info-heading, .station-airport-info-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: #1f7ffa;
+}
+.station-airport-info-heading {
+  font-size: 15px;
+}
+.station-airport-info-heading svg {
+  flex-shrink: 0;
+  font-size: 21px;
+}
+.station-airport-info-branch {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  min-height: 128px;
+  padding: 18px 22px;
+  border: 1px solid #f0f0f0;
+  background: #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+.station-airport-info-branch-main {
+  min-width: 0;
+}
+.station-airport-info-branch-main h3, .station-airport-info-branch-main .h3 {
+  margin: 9px 0 5px;
+  color: #0a2540;
+  font-size: 16px;
+  font-weight: 700;
+}
+.station-airport-info-branch-main p {
+  margin: 0;
+  color: #1e1e1e;
+  font-size: 13px;
+  line-height: 1.7;
+}
+.station-airport-info-eyebrow {
+  font-size: 13px;
+  font-weight: 700;
+}
+.station-airport-info-eyebrow svg {
+  font-size: 16px;
+}
+.station-airport-info-branch-meta {
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+.station-airport-info-branch-meta a {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: #1e1e1e;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.station-airport-info-branch-meta a:hover {
+  color: #1f7ffa;
+}
+.station-airport-info-branch-meta span {
+  color: #6c757d;
+  font-size: 12px;
+}
+@media (max-width: 576px) {
+  .station-airport-info {
+    gap: 14px;
+  }
+  .station-airport-info-banner, .station-airport-info-branch {
+    padding: 16px;
+    border-radius: 12px;
+  }
+  .station-airport-info-branch {
+    gap: 12px;
+  }
+}
+
 .details-section {
   margin-top: 32px;
   padding-top: 24px;

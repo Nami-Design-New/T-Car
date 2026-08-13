@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import { formatCurrency } from '@utils/index';
 
-import BookingModal from '../modals/BookingModal';
 import BookingConfirmModal from '../modals/BookingConfirmModal';
 import SuccessModal from '../common/SuccessModal';
 import Image from "next/image";
@@ -14,6 +13,7 @@ import type {
 } from '@app-types/car';
 
 import type { StaticImageData } from 'next/image';
+import BookingDailyModal from '../modals/BookingDailyModal';
 
 type Step = 'closed' | 'dates' | 'confirm' | 'success';
 
@@ -98,7 +98,7 @@ export default function CarBookingCard({
       </p>
 
 
-      <BookingModal
+      <BookingDailyModal
         open={step === 'dates'}
         onClose={() => setStep('closed')}
         pricePerDay={pricePerDay}

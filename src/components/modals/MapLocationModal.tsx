@@ -3,7 +3,6 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { GoogleMap, Marker, useJsApiLoader } from '@react-google-maps/api';
 import { FiSearch, FiMapPin, FiNavigation, FiX, FiLoader } from 'react-icons/fi';
-import { useRouter } from 'next/navigation';
 import type { MapLocationModalProps } from '@/types/car';
 
 const containerStyle = {
@@ -20,9 +19,9 @@ export default function MapLocationModal({
   open,
   onClose,
   onConfirm,
+  title = 'حدد موقع الاستلام',
+  initialLocation,
 }: MapLocationModalProps) {
-  const router = useRouter();
-
   const [position, setPosition] = useState(defaultCenter);
   const [address, setAddress] = useState('');
   const [search, setSearch] = useState('');
@@ -38,6 +37,12 @@ export default function MapLocationModal({
     language: 'ar',
     libraries: ['places'],
   });
+
+  useEffect(() => {
+    if (!open || !initialLocation) return;
+    setPosition({ lat: initialLocation.lat, lng: initialLocation.lng });
+    setAddress(initialLocation.address);
+  }, [initialLocation, open]);
 
   const onMapLoad = useCallback((map: google.maps.Map) => {
     mapRef.current = map;
@@ -153,14 +158,14 @@ export default function MapLocationModal({
   if (!open) return null;
 
   return (
-    <div className="modal_overlay">
-      <div className="map_modal">
-        <button className="close_btn" onClick={onClose}>
+    <div className="modal_overlay" onClick={(event) => event.stopPropagation()} dir="rtl">
+      <div className="map_modal" onClick={(event) => event.stopPropagation()}>
+        <button type="button" className="close_btn" onClick={onClose} aria-label="إغلاق">
           <FiX />
         </button>
 
         <div className="modal_header">
-          <h2>حدد موقع الاستلام</h2>
+          <h2>{title}</h2>
         </div>
 
         <div className="search_box">
@@ -262,17 +267,13 @@ export default function MapLocationModal({
           <button
             type="button"
             className="confirm_btn"
-            onClick={() => {
+            onClick={() =>
               onConfirm({
                 lat: position.lat,
                 lng: position.lng,
                 address,
-              });
-
-              router.push(
-                `/cars?lat=${position.lat}&lng=${position.lng}&address=${encodeURIComponent(address)}`
-              );
-            }}
+              })
+            }
           >
             تأكيد الموقع
           </button>
