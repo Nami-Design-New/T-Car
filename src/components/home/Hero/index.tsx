@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, EffectFade } from 'swiper/modules';
@@ -28,6 +29,7 @@ const slides = [hero1.src, hero2.src, hero3.src];
 
 export default function Hero() {
   const { t } = useTranslation();
+  const router = useRouter();
 
   const [rentalType, setRentalType] = useState<RentalType | null>(null);
 
@@ -60,12 +62,29 @@ export default function Hero() {
 
   const [selectedCountry, setSelectedCountry] = useState<Country | null>(null);
 
+  const goToCars = (params: Record<string, string | number>) => {
+    if (!rentalType) return;
+
+    const searchParams = new URLSearchParams({ type: rentalType });
+
+    Object.entries(params).forEach(([key, value]) => {
+      searchParams.set(key, String(value));
+    });
+
+    router.push(`/cars?${searchParams.toString()}`);
+  };
+
   // ===========================
   // Rental Type
   // ===========================
 
   const handleRentalSelect = (type: RentalType) => {
     setRentalType(type);
+    setSelectedLocation(null);
+    setSelectedBranch(null);
+    setSelectedAirport(null);
+    setSelectedStation(null);
+    setSelectedCountry(null);
 
     switch (type) {
       case 'daily':
@@ -109,10 +128,10 @@ export default function Hero() {
     setSelectedBranch(branch);
 
     setShowBranchModal(false);
-
-    console.log(branch);
-
-    // DateTimeModal
+    goToCars({
+      branchId: branch.id,
+      address: branch.address,
+    });
   };
 
   // ===========================
@@ -170,10 +189,11 @@ export default function Hero() {
     setSelectedLocation(location);
 
     setShowMapModal(false);
-
-    console.log(location);
-
-    // DateTimeModal
+    goToCars({
+      lat: location.lat,
+      lng: location.lng,
+      address: location.address,
+    });
   };
 
   return (

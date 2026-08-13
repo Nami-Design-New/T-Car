@@ -3,7 +3,6 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { GoogleMap, Marker, useJsApiLoader } from '@react-google-maps/api';
 import { FiSearch, FiMapPin, FiNavigation, FiX, FiLoader } from 'react-icons/fi';
-import { useRouter } from 'next/navigation';
 import type { MapLocationModalProps } from '@/types/car';
 
 const containerStyle = {
@@ -21,8 +20,6 @@ export default function MapLocationModal({
   onClose,
   onConfirm,
 }: MapLocationModalProps) {
-  const router = useRouter();
-
   const [position, setPosition] = useState(defaultCenter);
   const [address, setAddress] = useState('');
   const [search, setSearch] = useState('');
@@ -262,17 +259,13 @@ export default function MapLocationModal({
           <button
             type="button"
             className="confirm_btn"
-            onClick={() => {
+            onClick={() =>
               onConfirm({
                 lat: position.lat,
                 lng: position.lng,
                 address,
-              });
-
-              router.push(
-                `/cars?lat=${position.lat}&lng=${position.lng}&address=${encodeURIComponent(address)}`
-              );
-            }}
+              })
+            }
           >
             تأكيد الموقع
           </button>
