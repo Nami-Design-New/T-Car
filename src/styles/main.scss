@@ -6808,27 +6808,28 @@ font-size: 2rem;}
     font-size: 0.72rem;
     font-weight: 700;
 
-    &.active {
-      background: #18b56b;
-      color: $white;
-    }
-
-    &.past {
-      background: rgba($dark, 0.55);
-      color: $white;
-    }
-    &.active {
+    &.current {
       background: $secondary;
       color: $white;
     }
 
     &.upcoming {
-      background: rgba($dark, 0.55);
+      background: #f5a623;
+      color: $white;
+    }
+
+    &.late {
+      background: #ff4d4f;
       color: $white;
     }
 
     &.completed {
       background: #18b56b;
+      color: $white;
+    }
+
+    &.cancelled {
+      background: #ff4d4f;
       color: $white;
     }
   }
@@ -6957,8 +6958,8 @@ font-size: 2rem;}
   }
 }
 ///////////////////////////////////////////////////////
-$gauge-bg: #1c2333; // instrument-panel navy, used only by the countdown gauge
-$gauge-amber: #e0993a; // headlight-amber accent, used only by the countdown gauge
+$gauge-bg: #1c2333; 
+$gauge-amber: #e0993a; 
 
 .booking-details-page {
   background: #f5f4f0;
@@ -6975,6 +6976,7 @@ $gauge-amber: #e0993a; // headlight-amber accent, used only by the countdown gau
 }
 
 // ── Header: slim breadcrumb bar, not a modal-style title row ──────────────
+// ── Header: slim breadcrumb bar ──────────────────────────────
 .booking-details-header {
   display: flex;
   align-items: center;
@@ -7018,23 +7020,175 @@ $gauge-amber: #e0993a; // headlight-amber accent, used only by the countdown gau
       color: $gray;
     }
   }
+
+  // Booking Status
+  .status {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    white-space: nowrap;
+
+    &.current {
+      background-color: #e8f7ee;
+      color: #16834b;
+    }
+
+    &.upcoming {
+      background-color: #eaf2ff;
+      color: #2563eb;
+    }
+
+    &.late {
+      background-color: #fff3e6;
+      color: #d97706;
+    }
+
+    &.completed {
+      background-color: #f0f0f0;
+      color: #666;
+    }
+
+    &.cancelled {
+      background-color: #fdecec;
+      color: #dc2626;
+    }
+  }
 }
 
-.booking-details-status {
-  padding: 5px 14px;
-  border-radius: 999px;
-  font-size: 0.78rem;
-  font-weight: 700;
-  flex-shrink: 0;
+.booking-details-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
 
-  &.active {
-    background: rgba(#18b56b, 0.1);
-    color: #18b56b;
+  .back_link {
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+
+    display: grid;
+    place-items: center;
+
+    border: 1px solid $gray-light;
+    border-radius: 10px;
+    color: $primary;
+    transition: 0.2s;
+
+    &:hover {
+      background-color: $secondary;
+      border-color: $secondary;
+      color: $white;
+    }
   }
 
-  &.past {
-    background: rgba($dark, 0.06);
-    color: $gray;
+  &-title {
+    flex: 1;
+
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+
+    h1 {
+      margin: 0;
+      font-size: 1rem;
+      font-weight: 700;
+      color: $primary;
+    }
+
+    .reference {
+      font-size: 0.82rem;
+      color: $gray;
+    }
+  }
+
+  .booking-actions {
+    position: relative;
+    flex-shrink: 0;
+
+    &-trigger {
+      width: 36px;
+      height: 36px;
+
+      display: grid;
+      place-items: center;
+
+      border: 1px solid $gray-light;
+      border-radius: 10px;
+
+      background: $white;
+      color: $primary;
+      cursor: pointer;
+
+      transition: 0.2s;
+
+      svg {
+        font-size: 18px;
+      }
+
+      &:hover {
+        background: $secondary;
+        border-color: $secondary;
+        color: $white;
+      }
+    }
+
+    &-menu {
+      position: absolute;
+      top: calc(100% + 8px);
+      left: 0;
+
+      min-width: 150px;
+      padding: 6px;
+
+      background: $white;
+      border: 1px solid #eee;
+      border-radius: 10px;
+
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+
+      z-index: 20;
+
+      button {
+        width: 100%;
+
+        display: flex;
+        align-items: center;
+        gap: 9px;
+
+        padding: 9px 10px;
+
+        border: 0;
+        border-radius: 7px;
+
+        background: transparent;
+        color: $primary;
+
+        font-family: inherit;
+        font-size: 0.78rem;
+        text-align: right;
+
+        cursor: pointer;
+        transition: 0.2s;
+
+        svg {
+          width: 15px;
+          height: 15px;
+          flex-shrink: 0;
+        }
+
+        &:hover {
+          background: #f7f7f7;
+        }
+
+        &.danger {
+          color: #e53935;
+
+          &:hover {
+            background: rgba(#e53935, 0.06);
+          }
+        }
+      }
+    }
   }
 }
 
@@ -7055,7 +7209,7 @@ $gauge-amber: #e0993a; // headlight-amber accent, used only by the countdown gau
 
   &-image {
     position: relative;
-    min-height: 260px;
+    min-height: 300px;
     background: #eef0f4;
 
     img {
@@ -7063,21 +7217,27 @@ $gauge-amber: #e0993a; // headlight-amber accent, used only by the countdown gau
     }
 
     @media (max-width: 860px) {
-      min-height: 200px;
+      min-height: 220px;
     }
   }
 
   &-body {
     padding: 28px 32px;
+
     display: flex;
     flex-direction: column;
     justify-content: center;
     gap: 14px;
 
+    @media (max-width: 600px) {
+      padding: 22px 20px;
+    }
+
     .showroom {
       display: flex;
       align-items: center;
       gap: 6px;
+
       font-size: 0.85rem;
       color: $gray;
 
@@ -7085,37 +7245,88 @@ $gauge-amber: #e0993a; // headlight-amber accent, used only by the countdown gau
         flex-shrink: 0;
       }
     }
+  }
 
-    h2 {
-      margin: 0;
-      font-size: 1.6rem;
-      font-weight: 800;
-      color: $primary;
+  h2 {
+    margin: 0;
+
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: $primary;
+  }
+
+.booking-status {
+  width: fit-content;
+
+  display: flex;
+  align-items: center;
+  gap: 15px;
+
+  padding: 5px 10px;
+
+  border-radius: 8px;
+
+  font-size: 0.72rem;
+  font-weight: 600;
+
+  .status-label {
+    font-weight: 700;
+  }
+
+  .status-date {
+    direction: rtl;
+    white-space: nowrap;
+  }
+
+  &.current {
+    background: rgba(#18b56b, 0.1);
+    color: #18b56b;
+  }
+
+  &.upcoming {
+    background: rgba(#2563eb, 0.1);
+    color: #2563eb;
+  }
+
+  &.late {
+    background: rgba(#d97706, 0.1);
+    color: #d97706;
+  }
+
+  &.completed {
+    background: rgba(#18b56b, 0.1);
+    color: #16834b;
+  }
+
+  &.cancelled {
+    background: rgba(#dc2626, 0.08);
+    color: #dc2626;
+  }
+}
+
+  .price-block {
+    margin-top: 4px;
+
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+
+    .old {
+      font-size: 0.9rem;
+      color: #aaa;
+      text-decoration: line-through;
     }
 
-    .price-block {
-      margin-top: 6px;
-      display: flex;
-      align-items: baseline;
-      gap: 10px;
+    .current {
+      font-variant-numeric: tabular-nums;
+      font-weight: 800;
+      color: $secondary;
+      font-size: 1.3rem;
 
-      .old {
-        font-size: 0.9rem;
-        color: #aaa;
-        text-decoration: line-through;
-      }
-
-      .current {
-        font-variant-numeric: tabular-nums;
-        font-weight: 800;
-        color: $secondary;
-        font-size: 1.3rem;
-
-        small {
-          color: $gray;
-          font-weight: 500;
-          font-size: 0.8rem;
-        }
+      small {
+        color: $gray;
+        font-weight: 500;
+        font-size: 0.8rem;
       }
     }
   }
@@ -7149,19 +7360,28 @@ $gauge-amber: #e0993a; // headlight-amber accent, used only by the countdown gau
 
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 22px;
 
-  .date-columns {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
+  .info-section {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
 
-    @media (max-width: 560px) {
-      grid-template-columns: 1fr;
+    &:not(:last-child) {
+      padding-bottom: 20px;
+      border-bottom: 1px solid #eee;
+    }
+
+    h3 {
+      margin: 0;
+
+      font-size: 0.9rem;
+      font-weight: 800;
+      color: $primary;
     }
   }
 
-  .date-row {
+  .info-row {
     display: flex;
     align-items: flex-start;
     gap: 12px;
@@ -7177,23 +7397,27 @@ $gauge-amber: #e0993a; // headlight-amber accent, used only by the countdown gau
       border-radius: 10px;
       background: rgba($secondary, 0.08);
       color: $secondary;
+
+      svg {
+        font-size: 16px;
+      }
     }
 
-    div {
+    > div {
       display: flex;
       flex-direction: column;
-      gap: 2px;
+      gap: 3px;
     }
 
     .label {
-      font-size: 0.78rem;
+      font-size: 0.75rem;
       color: $gray;
     }
 
     .value {
-      font-variant-numeric: tabular-nums;
-      font-size: 0.92rem;
+      font-size: 0.88rem;
       font-weight: 700;
+      line-height: 1.6;
       color: $primary;
     }
   }
@@ -7211,107 +7435,139 @@ $gauge-amber: #e0993a; // headlight-amber accent, used only by the countdown gau
     color: $primary;
     line-height: 1.7;
 
-    svg {
+    > svg {
       color: $secondary;
       flex-shrink: 0;
-      margin-top: 2px;
+      margin-top: 3px;
+    }
+
+    > div {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .label {
+      font-size: 0.75rem;
+      color: $gray;
+      font-weight: 500;
     }
   }
 }
-
 // ── Countdown: instrument-panel gauge, the signature element ──────────────
 .booking-countdown {
-  background: $gauge-bg;
-  border-radius: 18px;
-  padding: 24px 28px;
+  background: $white;
+  border: 1px solid #eee;
+  border-radius: 16px;
+
+  padding: 16px;
 
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: space-between;
-  gap: 24px;
+  gap: 12px;
 
-  @media (max-width: 560px) {
+  h3 {
+    margin: 0;
+
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: $primary;
+  }
+
+  .countdown-units {
+    direction: rtl;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 10px;
+  }
+
+  .unit {
+    width: 58px;
+    height: 66px;
+
+    display: flex;
     flex-direction: column;
-    align-items: stretch;
+    align-items: center;
+    justify-content: center;
+
+    background: linear-gradient(
+      to bottom,
+      #f3f3f3,
+      #fafafa
+    );
+
+    border: 1px solid #e4e4e4;
+    border-radius: 7px;
+
+    box-shadow:
+      0 1px 2px rgba(0, 0, 0, 0.04),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.03);
+
+    .number {
+      font-variant-numeric: tabular-nums;
+
+      font-size: 1.35rem;
+      line-height: 1;
+
+      font-weight: 800;
+      color: #222;
+    }
+
+    .label {
+      margin-top: 7px;
+
+      font-size: 0.65rem;
+      font-weight: 600;
+
+      color: #555;
+    }
+  }
+
+  .separator {
+    font-size: 1.4rem;
+    font-weight: 700;
+
+    color: #777;
+
+    margin-top: -4px;
   }
 
   &.expired {
     justify-content: center;
+
     padding: 20px;
 
     p {
       margin: 0;
-      color: $white;
-      font-weight: 600;
+
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: $gray;
     }
   }
 
-  &-left {
-    flex: 1;
-    min-width: 0;
-  }
+  @media (max-width: 400px) {
+    padding: 14px;
 
-  .countdown-title {
-    display: block;
-    font-size: 0.8rem;
-    color: rgba($white, 0.6);
-    margin-bottom: 4px;
-  }
-
-  .countdown-sub {
-    display: block;
-    font-size: 0.78rem;
-    color: rgba($gauge-amber, 0.9);
-  }
-
-  .countdown-units {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    flex-shrink: 0;
-
-    .separator {
-      color: rgba($white, 0.35);
-      font-weight: 700;
-      font-size: 1.3rem;
-      padding-bottom: 14px;
+    .countdown-units {
+      gap: 6px;
     }
 
     .unit {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-      min-width: 50px;
+      width: 52px;
+      height: 62px;
 
       .number {
-        font-variant-numeric: tabular-nums;
-        letter-spacing: 0.02em;
-        font-size: 1.7rem;
-        font-weight: 800;
-        color: $gauge-amber;
-      }
-
-      .label {
-        font-size: 0.68rem;
-        color: rgba($white, 0.55);
+        font-size: 1.2rem;
       }
     }
-  }
 
-  .countdown-gauge {
-    margin-top: 14px;
-    height: 4px;
-    border-radius: 999px;
-    background: rgba($white, 0.12);
-    overflow: hidden;
-
-    span {
-      display: block;
-      height: 100%;
-      background: $gauge-amber;
-      border-radius: 999px;
-      transition: width 0.4s ease;
+    .separator {
+      font-size: 1.2rem;
     }
   }
 }

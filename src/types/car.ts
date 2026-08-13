@@ -226,9 +226,13 @@ export interface AppNotification {
 }
 
 export type BookingStatus =
-  | 'active'
-  | 'upcoming'
-  | 'completed';
+  | 'current'     
+  | 'upcoming'    
+  | 'late'         
+  | 'completed'   
+  | 'cancelled'; 
+
+export type BookingTab = 'active' | 'past';
 
 export interface UserBooking {
   id: string;
@@ -266,9 +270,10 @@ export interface BookingDetailsView {
 
   pickupDateTime: string;
   dropoffDateTime: string;
-
+pickupLocation: string;
+dropoffLocation: string;
   warrantyNote: string;
-
+pointsUsed: number;
   days: number;
 
   subtotal: number;
