@@ -5119,6 +5119,67 @@ font-size: 2rem;}
         border-color: $secondary;
       }
     }
+
+    &.booking_location_field {
+      .booking_location_label {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 8px;
+
+        label {
+          margin-bottom: 0;
+          color: $primary;
+          font-weight: 700;
+        }
+
+        button {
+          display: inline-flex;
+          align-items: center;
+          gap: 4px;
+          padding: 0;
+          border: 0;
+          background: transparent;
+          color: $secondary;
+          cursor: pointer;
+          font-size: 0.75rem;
+          text-decoration: underline;
+          text-underline-offset: 2px;
+        }
+      }
+
+      input {
+        width: 100%;
+        height: 48px;
+        padding: 0 14px;
+        border: 1px solid #eee;
+        border-radius: $radius-md;
+        outline: none;
+        color: $primary;
+        font-family: inherit;
+        font-size: 0.9rem;
+        transition: 0.25s;
+
+        &:focus {
+          border-color: $secondary;
+        }
+
+        &::placeholder {
+          color: #aaa;
+        }
+      }
+
+      p {
+        margin: 6px 0 0;
+        color: $gray;
+        font-size: 0.7rem;
+
+        strong {
+          color: $secondary;
+          font-weight: 600;
+        }
+      }
+    }
   }
 
   .booking_modal_footer {
@@ -8040,5 +8101,524 @@ $gauge-amber: #e0993a; // headlight-amber accent, used only by the countdown gau
     .section_heading h2 {
       font-size: 26px;
     }
+  }
+}
+
+////////////////////// Daily booking modal //////////////////////
+.booking_daily_overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba($dark, 0.55);
+  backdrop-filter: blur(6px);
+}
+
+.booking_daily_modal {
+  width: min(390px, 100%);
+  max-height: calc(100dvh - 40px);
+  overflow-y: auto;
+  border-radius: 24px;
+  background: $white;
+  box-shadow: 0 18px 50px rgba($primary, 0.2);
+  color: $primary;
+  scrollbar-width: thin;
+}
+
+.booking_daily_header {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 54px;
+  padding: 9px 16px;
+  border-bottom: 0;
+  background: #edf5ff;
+
+  h2 {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 700;
+  }
+
+  button {
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    border: 1px solid #e6e8eb;
+    border-radius: 10px;
+    background: $white;
+    color: $primary;
+    cursor: pointer;
+    font-size: 20px;
+  }
+}
+
+.booking_daily_calendar {
+  padding: 10px 16px 14px;
+  background: #edf5ff;
+}
+
+.booking_daily_calendar_header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+
+  strong {
+    font-size: 12px;
+    font-weight: 500;
+  }
+
+  button {
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: $primary;
+    cursor: pointer;
+    font-size: 18px;
+  }
+}
+
+.booking_daily_weekdays,
+.booking_daily_days {
+  direction: rtl;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+}
+
+.booking_daily_weekdays {
+  margin-bottom: 4px;
+
+  span {
+    color: $gray;
+    font-size: 8px;
+    text-align: center;
+  }
+}
+
+.booking_daily_empty,
+.booking_daily_day_cell {
+  height: 33px;
+}
+
+.booking_daily_day_cell {
+  display: grid;
+  place-items: center;
+
+  button {
+    width: 100%;
+    height: 33px;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    color: $primary;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 600;
+
+    &:disabled {
+      color: #c6cbd1;
+      cursor: not-allowed;
+    }
+
+    &.selected {
+      border-radius: 7px;
+      background: $secondary;
+      color: $white;
+    }
+  }
+
+  &.in_range {
+    background: rgba($secondary, 0.11);
+  }
+
+  &.range_start {
+    background: linear-gradient(to left, transparent 50%, rgba($secondary, 0.11) 50%);
+  }
+
+  &.range_end {
+    background: linear-gradient(to right, transparent 50%, rgba($secondary, 0.11) 50%);
+  }
+}
+
+.booking_daily_range_summary {
+  margin-top: 10px;
+  padding: 9px;
+  border-radius: 9px;
+  background: rgba($secondary, 0.15);
+  color: $primary;
+  font-size: 10px;
+  text-align: center;
+}
+
+.booking_daily_form {
+  display: grid;
+  gap: 10px;
+  padding: 12px 16px 14px;
+  border-top: 0;
+}
+
+.booking_daily_field {
+  label {
+    display: block;
+    margin-bottom: 5px;
+    color: $accent;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  input,
+  textarea,
+  select {
+    font: inherit;
+  }
+
+  input,
+  textarea {
+    width: 100%;
+    border: 1px solid #e8eaed;
+    border-radius: 10px;
+    outline: none;
+    color: $primary;
+    font-size: 10px;
+    transition: border-color 0.2s;
+
+    &:focus {
+      border-color: $secondary;
+    }
+
+    &::placeholder {
+      color: #b6bbc2;
+    }
+  }
+
+  input {
+    height: 40px;
+    padding: 0 10px;
+  }
+
+  textarea {
+    min-height: 84px;
+    padding: 10px;
+    resize: vertical;
+  }
+
+  > p {
+    margin: 4px 0 0;
+    color: $gray;
+    font-size: 8px;
+
+    strong {
+      color: $secondary;
+      font-weight: 500;
+    }
+  }
+}
+
+.booking_daily_time_input {
+  display: flex;
+  align-items: center;
+  direction: ltr;
+  height: 40px;
+  padding: 0 10px;
+  border: 1px solid #e8eaed;
+  border-radius: 10px;
+
+  svg {
+    color: #98a0a8;
+  }
+
+  select {
+    flex: 1;
+    direction: ltr;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    color: $gray;
+    font-size: 11px;
+    text-align: right;
+  }
+}
+
+.booking_daily_address_label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  button {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: $secondary;
+    cursor: pointer;
+    font-size: 10px;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+
+    &:disabled {
+      cursor: default;
+      opacity: 0.6;
+    }
+  }
+}
+
+.booking_daily_address_card {
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  min-height: 62px;
+  padding: 9px 10px;
+  border: 0;
+  border-radius: 10px;
+  background: #f7f9fc;
+  color: $accent;
+  cursor: pointer;
+  text-align: start;
+}
+
+.booking_daily_address_icon {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 9px;
+  background: $white;
+
+  img {
+    width: 24px;
+    height: 24px;
+  }
+}
+
+.booking_daily_address_content {
+  min-width: 0;
+
+  strong,
+  small {
+    display: block;
+  }
+
+  strong {
+    margin-bottom: 3px;
+    font-size: 11px;
+  }
+
+  small {
+    overflow: hidden;
+    font-size: 9px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.booking_daily_address_distance {
+  color: $gray;
+  font-size: 9px;
+  white-space: nowrap;
+}
+
+.map_modal.booking_daily_map_modal {
+  width: min(390px, calc(100% - 32px));
+  max-height: calc(100dvh - 32px);
+  overflow: hidden;
+  padding: 0;
+  border-radius: 22px;
+
+  .close_btn {
+    top: 12px;
+    inset-inline-end: 12px;
+    z-index: 5;
+    width: 38px;
+    height: 38px;
+    border: 1px solid #e6e8eb;
+    border-radius: 10px;
+    background: $white;
+    font-size: 20px;
+  }
+
+  .modal_header {
+    min-height: 62px;
+    margin: 0;
+    padding: 20px 62px 12px 16px;
+
+    h2 {
+      margin: 0;
+      font-size: 15px;
+      text-align: center;
+    }
+  }
+
+  .search_box {
+    z-index: 4;
+    margin: 0 12px -48px;
+
+    input {
+      height: 42px;
+      border-radius: 10px;
+      background: rgba($white, 0.96);
+      font-size: 11px;
+    }
+  }
+
+  .map_placeholder {
+    position: relative;
+    height: 430px;
+    border: 0;
+    border-radius: 0;
+  }
+}
+
+.booking_daily_map_locate {
+  position: absolute;
+  z-index: 3;
+  bottom: 16px;
+  left: 12px;
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  border: 0;
+  border-radius: 10px;
+  background: $white;
+  box-shadow: $shadow-sm;
+  color: $primary;
+  cursor: pointer;
+}
+
+.booking_daily_map_sheet {
+  position: relative;
+  z-index: 4;
+  display: grid;
+  gap: 12px;
+  margin-top: -18px;
+  padding: 22px 12px 16px;
+  border-radius: 20px 20px 0 0;
+  background: $white;
+
+  p {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    margin: 0;
+    color: $accent;
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 1.6;
+
+    svg {
+      flex-shrink: 0;
+      color: $secondary;
+      font-size: 19px;
+    }
+  }
+
+  .confirm_btn {
+    width: 100%;
+    height: 44px;
+    border: 0;
+    border-radius: 9px;
+    background: $secondary;
+    color: $white;
+    font-weight: 600;
+  }
+
+  small {
+    color: $gray;
+    font-size: 9px;
+    text-align: center;
+
+    strong {
+      color: $secondary;
+    }
+  }
+}
+
+.booking_daily_footer {
+  position: sticky;
+  bottom: 0;
+  z-index: 3;
+  display: flex;
+  direction: ltr;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px max(10px, env(safe-area-inset-bottom));
+  border-top: 1px solid #eceef0;
+  background: rgba($white, 0.97);
+}
+
+.booking_daily_confirm {
+  flex: 1;
+  height: 44px;
+  border: 0;
+  border-radius: 9px;
+  background: $secondary;
+  color: $white;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+
+  &:hover:not(:disabled) {
+    background: darken($secondary, 6%);
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.45;
+  }
+}
+
+.booking_daily_total {
+  flex: 0 0 auto;
+  direction: rtl;
+  text-align: right;
+
+  span {
+    display: block;
+    margin-bottom: 2px;
+    color: $primary;
+    font-size: 10px;
+  }
+
+  strong {
+    color: $secondary;
+    font-size: 21px;
+
+    small {
+      color: $gray;
+      font-size: 9px;
+      font-weight: 500;
+    }
+  }
+}
+
+@media (max-width: $breakpoint-sm) {
+  .booking_daily_overlay {
+    align-items: center;
+    padding: 16px;
+  }
+
+  .booking_daily_modal {
+    width: min(390px, 100%);
+    max-height: calc(100dvh - 32px);
+    border-radius: 20px;
   }
 }

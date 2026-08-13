@@ -19,6 +19,8 @@ export default function MapLocationModal({
   open,
   onClose,
   onConfirm,
+  title = 'حدد موقع الاستلام',
+  initialLocation,
 }: MapLocationModalProps) {
   const [position, setPosition] = useState(defaultCenter);
   const [address, setAddress] = useState('');
@@ -35,6 +37,12 @@ export default function MapLocationModal({
     language: 'ar',
     libraries: ['places'],
   });
+
+  useEffect(() => {
+    if (!open || !initialLocation) return;
+    setPosition({ lat: initialLocation.lat, lng: initialLocation.lng });
+    setAddress(initialLocation.address);
+  }, [initialLocation, open]);
 
   const onMapLoad = useCallback((map: google.maps.Map) => {
     mapRef.current = map;
@@ -150,14 +158,14 @@ export default function MapLocationModal({
   if (!open) return null;
 
   return (
-    <div className="modal_overlay">
-      <div className="map_modal">
-        <button className="close_btn" onClick={onClose}>
+    <div className="modal_overlay" onClick={(event) => event.stopPropagation()} dir="rtl">
+      <div className="map_modal" onClick={(event) => event.stopPropagation()}>
+        <button type="button" className="close_btn" onClick={onClose} aria-label="إغلاق">
           <FiX />
         </button>
 
         <div className="modal_header">
-          <h2>حدد موقع الاستلام</h2>
+          <h2>{title}</h2>
         </div>
 
         <div className="search_box">
