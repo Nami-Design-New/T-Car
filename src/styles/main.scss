@@ -4994,11 +4994,11 @@ font-size: 2rem;}
         }
 
         &.range-start {
-          background: linear-gradient(to left, rgba($secondary, 0.08) 50%, transparent 50%);
+          background: linear-gradient(to right, rgba($secondary, 0.08) 50%, transparent 50%);
         }
 
         &.range-end {
-          background: linear-gradient(to right, rgba($secondary, 0.08) 50%, transparent 50%);
+          background: linear-gradient(to left, rgba($secondary, 0.08) 50%, transparent 50%);
         }
 
         &.range-start.range-end {
