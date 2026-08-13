@@ -8,6 +8,8 @@ import { MdTrain } from 'react-icons/md';
 
 import { Station, StationModalProps } from '@/types/car';
 
+
+
 const stations: Station[] = [
   {
     id: 1,

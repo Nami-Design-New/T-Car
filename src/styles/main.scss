@@ -1704,12 +1704,177 @@ img {
       color: $primary;
     }
 
-    p {
-      margin: 0;
-      color: #777;
+  }
+.search_box {
+  position: relative;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+
+  .search_icon {
+    position: absolute;
+    right: 18px;
+    font-size: 18px;
+    color: #999;
+    pointer-events: none;
+  }
+
+  .search_spinner {
+    position: absolute;
+    left: 14px;
+    color: $secondary;
+    animation: spin 0.8s linear infinite;
+  }
+
+  input {
+    width: 100%;
+    height: 52px;
+    border-radius: 14px;
+    border: 1px solid #e2e2e2;
+    background: #fafafa;
+    padding: 0 48px 0 40px;
+    font-size: 15px;
+    outline: none;
+    transition: 0.25s;
+
+    &:focus {
+      border-color: $secondary;
+      background: $white;
+      box-shadow: 0 0 0 3px rgba($secondary, 0.1);
+    }
+
+    &::placeholder {
+      color: #aaa;
     }
   }
 
+  .clear_search {
+    position: absolute;
+    left: 14px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #999;
+    display: flex;
+    align-items: center;
+    font-size: 16px;
+
+    &:hover {
+      color: $primary;
+    }
+  }
+
+  .predictions_list {
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 0;
+    left: 0;
+    z-index: 20;
+
+    background: $white;
+    border-radius: 14px;
+    border: 1px solid #eee;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    max-height: 260px;
+    overflow-y: auto;
+
+    list-style: none;
+    margin: 0;
+    padding: 8px;
+
+    li {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: 0.15s;
+
+      svg {
+        font-size: 16px;
+        color: $secondary;
+        flex-shrink: 0;
+      }
+
+      div {
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
+
+      .main_text {
+        font-weight: 600;
+        color: $primary;
+        font-size: 14px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .secondary_text {
+        font-size: 12px;
+        color: #888;
+      }
+
+      &:hover,
+      &.active {
+        background: rgba($secondary, 0.08);
+      }
+    }
+  }
+
+  .no_results {
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 0;
+    left: 0;
+    z-index: 20;
+
+    background: $white;
+    border-radius: 14px;
+    border: 1px solid #eee;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    padding: 16px;
+    text-align: center;
+    color: #999;
+    font-size: 13px;
+  }
+}
+.location_error {
+  color: #e14b4b;
+  font-size: 13px;
+  margin: 8px 0 0;
+}
+
+.current_location {
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+.spin {
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+.confirm_btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.spin {
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
   .map_placeholder {
     height: 420px;
     border-radius: $radius-lg;
@@ -3303,17 +3468,22 @@ img {
     justify-content: center;
     align-items: center;
     // max-width: 480px;
-
+@media (max-width: 992px) {
+  text-align: center;
+}
     h1 {
       color: $white;
       font-size: 3rem;
       font-weight: 800;
       margin-bottom: 12px;
+      @media (max-width: 992px) {
+font-size: 2rem;}
     }
 
     p {
       color: rgba($white, 0.85);
       line-height: 1.8;
+      
     }
   }
 }
@@ -3720,171 +3890,15 @@ img {
   @media (max-width: $breakpoint-lg) {
     grid-template-columns: 1fr;
 
-    .city_filters {
-      display: none;
-    }
+  .car_filters , .city_filters{
+    position: static;
+    top: auto;
+    width: 100%;
+  }
+
   }
 }
 
-.city_filters {
-  background: $white;
-  border-radius: 22px;
-  padding: 24px;
-  box-shadow: 0 4px 20px rgba($dark, 0.05);
-  border: 1px solid rgba($dark, 0.06);
-  position: sticky;
-  top: 100px;
-  align-self: start;
-  height: fit-content;
-
-  .filter_header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 24px;
-    padding-bottom: 16px;
-    border-bottom: 1px solid #eee;
-
-    h3 {
-      font-size: 18px;
-      font-weight: 700;
-      color: $primary;
-      margin: 0;
-    }
-
-    .reset_btn {
-      border: none;
-      background: transparent;
-      color: $secondary;
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-
-      &:hover {
-        text-decoration: underline;
-      }
-    }
-  }
-
-  .filter_group {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-bottom: 26px;
-
-    &:last-child {
-      margin-bottom: 0;
-    }
-
-    h4 {
-      flex-basis: 100%;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin: 0 0 6px;
-      color: $primary;
-      font-size: 14px;
-      font-weight: 700;
-
-      svg {
-        color: $secondary;
-        font-size: 15px;
-      }
-    }
-  }
-
-  // مجموعة السعر والتقييم: قائمة عمودية واضحة
-  .filter_group:nth-child(2),
-  .filter_group:nth-child(3) {
-    flex-direction: column;
-    flex-wrap: nowrap;
-
-    .radio_item {
-      width: 100%;
-    }
-  }
-
-  .radio_item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 9px 10px;
-    border-radius: 10px;
-    cursor: pointer;
-    transition: 0.2s;
-
-    &:hover {
-      background: rgba($secondary, 0.05);
-    }
-
-    &:has(input:checked) {
-      background: rgba($secondary, 0.08);
-
-      span {
-        color: $secondary;
-        font-weight: 700;
-      }
-    }
-
-    input {
-      width: 17px;
-      height: 17px;
-      accent-color: $secondary;
-      cursor: pointer;
-      flex-shrink: 0;
-    }
-
-    span {
-      color: #555;
-      font-size: 13.5px;
-      font-weight: 500;
-    }
-  }
-
-  // البراند/النوع/الخدمات: chips مضغوطة بدل قائمة طويلة
-  .check_item {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 8px 14px;
-    border: 1px solid #eee;
-    border-radius: 999px;
-    cursor: pointer;
-    transition: 0.2s;
-    background: $white;
-
-    &:hover {
-      border-color: rgba($secondary, 0.4);
-    }
-
-    &:has(input:checked) {
-      background: rgba($secondary, 0.1);
-      border-color: $secondary;
-
-      span {
-        color: $secondary;
-        font-weight: 700;
-      }
-    }
-
-    input {
-      position: absolute;
-      opacity: 0;
-      width: 100%;
-      height: 100%;
-      inset: 0;
-      cursor: pointer;
-      margin: 0;
-    }
-
-    span {
-      color: #555;
-      font-size: 13px;
-      font-weight: 600;
-    }
-  }
-}
 .city-cars-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -7209,11 +7223,10 @@ $gauge-amber: #e0993a; // headlight-amber accent, used only by the countdown gau
     }
   }
 }
-///////////filter cars//////////////////////
 .car-page {
   margin-top: 40px;
 }
-.car_filters {
+.filters_panel {
   background: $white;
   border-radius: 22px;
   padding: 24px;
@@ -7224,6 +7237,7 @@ $gauge-amber: #e0993a; // headlight-amber accent, used only by the countdown gau
   top: 100px;
   align-self: start;
   height: fit-content;
+
   .filter_header {
     display: flex;
     justify-content: space-between;
@@ -7237,15 +7251,6 @@ $gauge-amber: #e0993a; // headlight-amber accent, used only by the countdown gau
       color: $primary;
       font-size: 18px;
       font-weight: 700;
-    }
-
-    .reset_btn {
-      border: 0;
-      background: transparent;
-      color: $secondary;
-      cursor: pointer;
-      font-size: 13px;
-      font-weight: 600;
     }
   }
 
@@ -7305,6 +7310,7 @@ $gauge-amber: #e0993a; // headlight-amber accent, used only by the countdown gau
     }
   }
 
+  // ------- بحث الموقع -------
   .location_search {
     position: relative;
     margin-bottom: 18px;
@@ -7338,6 +7344,7 @@ $gauge-amber: #e0993a; // headlight-amber accent, used only by the countdown gau
     }
   }
 
+  // ------- radio / checkbox -------
   .radio_item {
     display: flex;
     align-items: center;
@@ -7372,6 +7379,7 @@ $gauge-amber: #e0993a; // headlight-amber accent, used only by the countdown gau
     input {
       width: 18px;
       height: 18px;
+      flex-shrink: 0;
       accent-color: $secondary;
       cursor: pointer;
     }
@@ -7382,8 +7390,247 @@ $gauge-amber: #e0993a; // headlight-amber accent, used only by the countdown gau
       font-weight: 500;
     }
   }
-}
 
+  .service_item {
+    align-items: flex-start;
+
+    input {
+      margin-top: 3px;
+    }
+
+    div {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .service_title {
+      color: $primary;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .service_desc {
+      color: #999;
+      font-size: 12px;
+      font-weight: 400;
+    }
+  }
+
+  // ------- زرار عرض الكل -------
+  .expand_btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 8px;
+    border: 0;
+    background: transparent;
+    color: $secondary;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+
+    svg {
+      font-size: 15px;
+      transition: transform 0.25s;
+
+      &.rotated {
+        transform: rotate(-90deg);
+      }
+    }
+  }
+
+  // ------- نطاق السعر (dual range slider) -------
+  .range_slider {
+    position: relative;
+    height: 24px;
+    margin-bottom: 16px;
+
+    .range_track {
+      position: absolute;
+      top: 50%;
+      left: 0;
+      right: 0;
+      height: 4px;
+      border-radius: 4px;
+      background: #e5e5e5;
+      transform: translateY(-50%);
+      overflow: hidden;
+
+      .range_fill {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        background: $secondary;
+      }
+    }
+
+    .thumb {
+      position: absolute;
+      top: 50%;
+      left: 0;
+      right: 0;
+      width: 100%;
+      transform: translateY(-50%);
+      margin: 0;
+      background: transparent;
+      pointer-events: none;
+      -webkit-appearance: none;
+      appearance: none;
+
+      &::-webkit-slider-thumb {
+        pointer-events: auto;
+        -webkit-appearance: none;
+        appearance: none;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: $white;
+        border: 3px solid $secondary;
+        cursor: pointer;
+        box-shadow: 0 2px 6px rgba($dark, 0.2);
+      }
+
+      &::-moz-range-thumb {
+        pointer-events: auto;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: $white;
+        border: 3px solid $secondary;
+        cursor: pointer;
+        box-shadow: 0 2px 6px rgba($dark, 0.2);
+      }
+
+      &::-webkit-slider-runnable-track {
+        background: transparent;
+      }
+    }
+  }
+
+  .price_inputs {
+    display: flex;
+    gap: 12px;
+
+    .price_box {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border: 1px solid #eee;
+      border-radius: 12px;
+      padding: 10px 12px;
+      background: #fafafa;
+
+      svg {
+        color: $secondary;
+        font-size: 18px;
+        flex-shrink: 0;
+      }
+
+      div {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+      }
+
+      .price_label {
+        color: #999;
+        font-size: 11px;
+        font-weight: 500;
+      }
+
+      input {
+        width: 100%;
+        border: 0;
+        background: transparent;
+        outline: none;
+        padding: 0;
+        color: $primary;
+        font-size: 14px;
+        font-weight: 700;
+
+        // إخفاء الأسهم بتاعة number input
+        &::-webkit-outer-spin-button,
+        &::-webkit-inner-spin-button {
+          -webkit-appearance: none;
+          margin: 0;
+        }
+        -moz-appearance: textfield;
+      }
+    }
+  }
+
+  // ------- العلامة التجارية (logo + اسم جنبها) -------
+  .brand_list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .brand_item {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border: 1px solid #eee;
+    border-radius: 12px;
+    background: #fafafa;
+    cursor: pointer;
+    padding: 8px 12px;
+    width: 100%;
+    text-align: right;
+    transition: 0.2s;
+
+    .brand_logo {
+      position: relative;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: $white;
+      border: 1px solid #eee;
+      overflow: hidden;
+      flex-shrink: 0;
+      transition: 0.2s;
+
+      img {
+        width: 20px;
+        height: 20px;
+        object-fit: contain;
+      }
+    }
+
+    .brand_name {
+      color: #555;
+      font-size: 13px;
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    &:hover {
+      border-color: rgba($secondary, 0.3);
+    }
+
+    &.active {
+      background: $secondary;
+      border-color: $secondary;
+
+      .brand_logo {
+        background: $white;
+      }
+
+      .brand_name {
+        color: $white;
+        font-weight: 700;
+      }
+    }
+  }
+}
 ////////////join us ////////////
 .form_group {
   display: flex;

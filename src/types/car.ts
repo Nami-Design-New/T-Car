@@ -181,6 +181,20 @@ export interface StationModalProps {
   onSelect: (station: Station) => void;
 }
 
+// Country (for international rentals)
+export interface Country {
+  id: number;
+  code?: string;
+  name: string;
+  flag: string | StaticImageData;
+}
+
+export interface CountryModalProps {
+  open: boolean;
+  onClose: () => void;
+  onSelect: (country: Country) => void;
+}
+
 // Account (profile / wallet / notifications)
 export interface UserProfile {
   fullName: string;

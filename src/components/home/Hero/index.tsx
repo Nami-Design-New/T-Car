@@ -19,9 +19,10 @@ import MapLocationModal from '@/components/modals/MapLocationModal';
 import BranchModal from '@/components/modals/BranchModal';
 import AirportModal from '@/components/modals/AirportModal';
 import StationModal from '@/components/modals/StationModal';
+import CountryModal from '@/components/modals/CountryModal';
 
 import { useTranslation } from 'react-i18next';
-import { RentalType, PickupType, Branch, Airport, Station, LocationData } from '@/types/car';
+import { RentalType, PickupType, Branch, Airport, Station, LocationData, Country } from '@/types/car';
 
 const slides = [hero1.src, hero2.src, hero3.src];
 
@@ -45,6 +46,9 @@ export default function Hero() {
   // Station
   const [showStationModal, setShowStationModal] = useState(false);
 
+  // Country (international)
+  const [showCountryModal, setShowCountryModal] = useState(false);
+
   // Selected Data
   const [selectedLocation, setSelectedLocation] = useState<LocationData | null>(null);
 
@@ -53,6 +57,8 @@ export default function Hero() {
   const [selectedAirport, setSelectedAirport] = useState<Airport | null>(null);
 
   const [selectedStation, setSelectedStation] = useState<Station | null>(null);
+
+  const [selectedCountry, setSelectedCountry] = useState<Country | null>(null);
 
   // ===========================
   // Rental Type
@@ -64,8 +70,11 @@ export default function Hero() {
     switch (type) {
       case 'daily':
       case 'monthly':
-      case 'international':
         setShowPickupModal(true);
+        break;
+
+      case 'international':
+        setShowCountryModal(true);
         break;
 
       case 'airport':
@@ -139,6 +148,21 @@ export default function Hero() {
   };
 
   // ===========================
+  // Country (international)
+  // ===========================
+
+  const handleCountryConfirm = (country: Country) => {
+    setSelectedCountry(country);
+
+    setShowCountryModal(false);
+
+    // after choosing country, show pickup type modal
+    setShowPickupModal(true);
+
+    console.log(country);
+  };
+
+  // ===========================
   // Location
   // ===========================
 
@@ -191,6 +215,12 @@ export default function Hero() {
 
       {/* Pickup */}
 
+      <CountryModal
+        open={showCountryModal}
+        onClose={() => setShowCountryModal(false)}
+        onSelect={handleCountryConfirm}
+      />
+
       <PickupTypeModal
         open={showPickupModal}
         onClose={() => setShowPickupModal(false)}
@@ -220,6 +250,7 @@ export default function Hero() {
         onClose={() => setShowMapModal(false)}
         onConfirm={handleLocationConfirm}
       />
+
 
       {/* Branch */}
 

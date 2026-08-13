@@ -102,6 +102,7 @@ export default async function CarsPage() {
   return (
     <section className="section city-listings car-page">
       <div className="container-tcar">
+        <h3 className="section-title">السيارات المتاحة</h3>
         <div className="city-listings-grid">
           <CarFilters />
           <div className="city-cars-grid">

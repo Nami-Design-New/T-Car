@@ -1,218 +1,114 @@
 'use client';
 
 import { useState } from 'react';
+import { FiTruck, FiGrid, FiShield } from 'react-icons/fi';
+import nissanLogo from '@/assets/icons/nissan.svg';
 
-import {
-  FiDollarSign,
-  FiStar,
-  FiTruck,
-  FiGrid,
-  FiShield,
-} from 'react-icons/fi';
+import FilterPanel from '@/components/filters/FilterPanel';
+import PriceRangeSlider from '@/components/filters/PriceRangeSlider';
+import CheckboxGroup from '@/components/filters/CheckboxGroup';
+import BrandGrid from '@/components/filters/BrandGrid';
+import { useToggleList } from '@/hooks/useToggleList';
 
-const PRICE_RANGES = [
-  'أصغر من 100 ريال',
-  '100 إلى 250 ريال',
-  '250 إلى 500 ريال',
-  '500 إلى 1000 ريال',
-  'أكبر من 1000 ريال',
-];
-
-const RATINGS = [5, 4, 3, 2, 1];
-
-const BRANDS = [
-  'مشاهدة الكل',
-  'إيسوزو',
-  'جيلي',
-  'تويوتا',
-  'هونداي',
-];
-
-const TYPES = [
-  'مشاهدة الكل',
-  'سيارة عائلية',
-  'سيارة اقتصادية',
-  'سيدان',
-  'سيارة فارهة',
-];
+const COMPANIES = ['معرض النخبة', 'معرض النخبة', 'معرض النخبة', 'معرض النخبة', 'معرض النخبة'];
+const TYPES = ['اقتصادية', 'سيدان', 'SUV', 'فاخرة'];
 
 const SERVICES = [
-  'تحديد الكل',
-  'خدمة التوصيل و الإرجاع',
-  'خدمة شوفير',
-  'كيلومترات غير محدودة',
-  'تأمين شامل',
+  { title: 'خدمة توصيل السيارات', desc: 'يتم توصيل السيارة عند باب منزلك' },
+  { title: 'خدمة توصيل السيارات', desc: 'يتم توصيل السيارة عند باب منزلك' },
+  { title: 'خدمة توصيل السيارات', desc: 'يتم توصيل السيارة عند باب منزلك' },
+  { title: 'خدمة توصيل السيارات', desc: 'يتم توصيل السيارة عند باب منزلك' },
 ];
 
-export default function CityFilters() {
-  const [price, setPrice] = useState(PRICE_RANGES[0]);
-  const [rating, setRating] = useState(5);
+const BRANDS = [
+  { name: 'نيسان', logo: nissanLogo },
+  { name: 'نيسان', logo: nissanLogo },
+  { name: 'نيسان', logo: nissanLogo },
+  { name: 'نيسان', logo: nissanLogo },
+];
 
-  const [brands, setBrands] = useState<string[]>([]);
-  const [types, setTypes] = useState<string[]>([]);
-  const [services, setServices] = useState<string[]>([]);
+const PRICE_MIN = 100;
+const PRICE_MAX = 30000;
 
-  const toggle = (
-    value: string,
-    list: string[],
-    setter: React.Dispatch<React.SetStateAction<string[]>>
-  ) => {
-    setter((prev) =>
-      prev.includes(value)
-        ? prev.filter((i) => i !== value)
-        : [...prev, value]
-    );
+export default function CitiesFilters() {
+  const [minPrice, setMinPrice] = useState(PRICE_MIN);
+  const [maxPrice, setMaxPrice] = useState(PRICE_MAX);
+
+  const companies = useToggleList();
+  const types = useToggleList();
+  const services = useToggleList();
+  const [selectedBrand, setSelectedBrand] = useState<number | null>(null);
+
+  const handleMinChange = (value: number) => {
+    if (Number.isNaN(value)) return;
+    setMinPrice(Math.min(Math.max(value, PRICE_MIN), maxPrice - 1));
+  };
+  const handleMaxChange = (value: number) => {
+    if (Number.isNaN(value)) return;
+    setMaxPrice(Math.max(Math.min(value, PRICE_MAX), minPrice + 1));
   };
 
   return (
-    <aside className="city_filters">
-
-      <div className="filter_header">
-
-        <h3>تصفية النتائج</h3>
-
-      </div>
-
-      <div className="filter_group">
-
-        <h4>
-
-          <FiDollarSign />
-
-          السعر
-
-        </h4>
-
-        {PRICE_RANGES.map((item) => (
-
-          <label key={item} className="radio_item">
-
-            <input
-              type="radio"
-              checked={price === item}
-              onChange={() => setPrice(item)}
-            />
-
-            <span>{item}</span>
-
-          </label>
-
-        ))}
-
-      </div>
-
-      <div className="filter_group">
-
-        <h4>
-
-          <FiStar />
-
-          التقييم
-
-        </h4>
-
-        {RATINGS.map((item) => (
-
-          <label key={item} className="radio_item">
-
-            <input
-              type="radio"
-              checked={rating === item}
-              onChange={() => setRating(item)}
-            />
-
-            <span>التقييم {item}</span>
-
-          </label>
-
-        ))}
-
-      </div>
-
-      <div className="filter_group">
-
-        <h4>
-
-          <FiTruck />
-
-          ماركة السيارة
-
-        </h4>
-
-        {BRANDS.map((item) => (
-
-          <label key={item} className="check_item">
-
-            <input
-              type="checkbox"
-              checked={brands.includes(item)}
-              onChange={() => toggle(item, brands, setBrands)}
-            />
-
-            <span>{item}</span>
-
-          </label>
-
-        ))}
-
-      </div>
-
-      <div className="filter_group">
-
-        <h4>
-
-          <FiGrid />
-
-          نوع السيارة
-
-        </h4>
-
-        {TYPES.map((item) => (
-
-          <label key={item} className="check_item">
-
-            <input
-              type="checkbox"
-              checked={types.includes(item)}
-              onChange={() => toggle(item, types, setTypes)}
-            />
-
-            <span>{item}</span>
-
-          </label>
-
-        ))}
-
-      </div>
-
-      <div className="filter_group">
-
-        <h4>
-
-          <FiShield />
-
-          الخدمات المتوفرة
-
-        </h4>
-
-        {SERVICES.map((item) => (
-
-          <label key={item} className="check_item">
-
-            <input
-              type="checkbox"
-              checked={services.includes(item)}
-              onChange={() => toggle(item, services, setServices)}
-            />
-
-            <span>{item}</span>
-
-          </label>
-
-        ))}
-
-      </div>
-
-    </aside>
+    <FilterPanel>
+      <PriceRangeSlider
+        min={PRICE_MIN}
+        max={PRICE_MAX}
+        minValue={minPrice}
+        maxValue={maxPrice}
+        onMinChange={handleMinChange}
+        onMaxChange={handleMaxChange}
+        onClear={() => {
+          setMinPrice(PRICE_MIN);
+          setMaxPrice(PRICE_MAX);
+        }}
+      />
+
+      <CheckboxGroup
+        icon={<FiTruck />}
+        title="الشركات"
+        items={COMPANIES}
+        selected={companies.selected}
+        onToggle={companies.toggle}
+        onClear={companies.clear}
+        visibleCount={3}
+      />
+
+      <CheckboxGroup
+        icon={<FiGrid />}
+        title="نوع السيارة"
+        items={TYPES}
+        selected={types.selected}
+        onToggle={types.toggle}
+        onClear={types.clear}
+      />
+
+      <CheckboxGroup
+        icon={<FiShield />}
+        title="خدمات إضافية"
+        items={SERVICES.map((s) => s.title)}
+        selected={services.selected}
+        onToggle={services.toggle}
+        onClear={services.clear}
+        visibleCount={2}
+        itemClassName="check_item service_item"
+        renderExtra={(item) => {
+          const service = SERVICES.find((s) => s.title === item);
+          return (
+            <div>
+              <span className="service_title">{item}</span>
+              <span className="service_desc">{service?.desc}</span>
+            </div>
+          );
+        }}
+      />
+
+      <BrandGrid
+        icon={<FiTruck />}
+        title="العلامة التجارية"
+        brands={BRANDS}
+        selected={selectedBrand}
+        onSelect={setSelectedBrand}
+      />
+    </FilterPanel>
   );
 }
