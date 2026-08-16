@@ -21,6 +21,9 @@ interface Props {
   duration?: number;
 
   onDone?: () => void;
+  variant?: 'default' | 'wallet-topup';
+  appearButton?: boolean;
+  autoCloseDuration?: number;
 }
 
 export default function SuccessModal({
@@ -32,6 +35,9 @@ export default function SuccessModal({
   autoRedirect = false,
   duration = 2200,
   onDone,
+  variant = 'default',
+  appearButton = true,
+  autoCloseDuration = 2000,
 }: Props) {
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
@@ -46,6 +52,7 @@ export default function SuccessModal({
     document.body.style.overflow = 'hidden';
 
     let timer: NodeJS.Timeout;
+    let closeTimer: NodeJS.Timeout;
 
     if (autoRedirect && redirectTo) {
       timer = setTimeout(() => {
@@ -53,12 +60,15 @@ export default function SuccessModal({
       }, duration);
     }
 
+    if (onDone) closeTimer = setTimeout(onDone, autoCloseDuration);
+
     return () => {
       document.body.style.overflow = '';
 
       if (timer) clearTimeout(timer);
+      if (closeTimer) clearTimeout(closeTimer);
     };
-  }, [open, autoRedirect, redirectTo, duration, router]);
+  }, [open, autoRedirect, redirectTo, duration, router, onDone, autoCloseDuration]);
 
   if (!open || !mounted) return null;
 
@@ -76,24 +86,16 @@ export default function SuccessModal({
   return createPortal(
     <div className="modal_overlay">
       <div className="success_modal">
-
-        <Lottie
-          animationData={successAnimation}
-          loop={false}
-          className="success_animation"
-        />
+        <Lottie animationData={successAnimation} loop={false} className="success_animation" />
 
         <h2>{title}</h2>
 
         <p>{description}</p>
-
-        <button
-          className="auth_btn"
-          onClick={handleClick}
-        >
-          {buttonText}
-        </button>
-
+        {appearButton && (
+          <button className="auth_btn" onClick={handleClick}>
+            {buttonText}
+          </button>
+        )}
       </div>
     </div>,
     document.body
