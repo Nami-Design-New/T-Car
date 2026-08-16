@@ -45,37 +45,37 @@ export default function StationAndAirportInfo({
   return (
     <>
       <section className="station-airport-info" aria-label="معلومات الاستلام والفرع">
-      <div className="station-airport-info-banner">
-        <div className="station-airport-info-heading">
-          <LuPlane aria-hidden="true" />
-          <strong>مواقف تي كار في المطار</strong>
-        </div>
-        <p>خدمة الاستلام والإرجاع السريعة في مواقف السيارات بالمطار</p>
-      </div>
-
-      <div className="station-airport-info-branch">
-        <div className="station-airport-info-branch-main">
-          <span className="station-airport-info-eyebrow">
-            <FiHome aria-hidden="true" />
-            أقرب فرع لك
-          </span>
-          <h3>{showroom}</h3>
-          <p>{address}</p>
+        <div className="station-airport-info-banner">
+          <div className="station-airport-info-heading">
+            <LuPlane aria-hidden="true" />
+            <strong>مواقف تي كار في المطار</strong>
+          </div>
+          <p>خدمة الاستلام والإرجاع السريعة في مواقف السيارات بالمطار</p>
         </div>
 
-        <div className="station-airport-info-branch-meta">
-          <button
-            type="button"
-            className="station-airport-info-branches-trigger"
-            aria-label={`عرض تفاصيل ${showroom}`}
-            onClick={() => setShowBranches(true)}
-          >
-            <FiExternalLink aria-hidden="true" />
-            الفروع
-          </button>
-          <span>{distanceKm.toLocaleString('ar-SA')} كم</span>
+        <div className="station-airport-info-branch">
+          <div className="station-airport-info-branch-main">
+            <span className="station-airport-info-eyebrow">
+              <FiHome aria-hidden="true" />
+              أقرب فرع لك
+            </span>
+            <h3>{showroom}</h3>
+            <p>{address}</p>
+          </div>
+
+          <div className="station-airport-info-branch-meta">
+            <button
+              type="button"
+              className="station-airport-info-branches-trigger"
+              aria-label={`عرض تفاصيل ${showroom}`}
+              onClick={() => setShowBranches(true)}
+            >
+              <FiExternalLink aria-hidden="true" />
+              الفروع
+            </button>
+            <span>{distanceKm.toLocaleString('ar-SA')} كم</span>
+          </div>
         </div>
-      </div>
       </section>
 
       {showBranches && (
