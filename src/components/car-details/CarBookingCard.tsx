@@ -11,8 +11,9 @@ import type { BookingDetails, PaymentMethod } from '@app-types/car';
 
 import type { StaticImageData } from 'next/image';
 import BookingDailyModal from '../modals/BookingDailyModal';
+import PaymentMethodModal from '../modals/PaymentMethodModal';
 
-type Step = 'closed' | 'dates' | 'confirm' | 'success';
+type Step = 'closed' | 'dates' | 'confirm' | 'payment' | 'success';
 
 interface Props {
   carId: string;
@@ -85,7 +86,7 @@ export default function CarBookingCard({
           open={step === 'confirm'}
           onClose={() => setStep('closed')}
           onBack={() => setStep('dates')}
-          onPay={handlePay}
+          onContinue={() => setStep('payment')}
           carName={carName}
           carBrand={carBrand}
           carImage={carImage}
@@ -94,6 +95,12 @@ export default function CarBookingCard({
           booking={booking}
         />
       )}
+
+      <PaymentMethodModal
+        open={step === 'payment'}
+        onClose={() => setStep('closed')}
+        onConfirm={handlePay}
+      />
 
       <SuccessModal
         open={step === 'success'}

@@ -2211,7 +2211,7 @@ img {
   display: flex;
   align-items: center;
   justify-content: center;
-
+  z-index: 1;
   cursor: pointer;
   font-size: 22px;
   transition: 0.3s;
@@ -4608,6 +4608,107 @@ font-size: 2rem;}
   }
 }
 
+// Payment method modal
+.payment_method_modal {
+  width: min(380px, calc(100% - 32px));
+  padding: 10px 12px 14px;
+  border: 1px solid $secondary;
+  border-radius: 18px 18px 14px 14px;
+  box-shadow: 0 14px 40px rgba($dark, 0.16);
+  animation: popup 0.35s ease;
+
+  .payment_drag_handle {
+    display: block;
+    width: 58px;
+    height: 5px;
+    margin: 0 auto 8px;
+    border-radius: $radius-lg;
+    background: #8d8d8d;
+  }
+
+  .payment_modal_header {
+    h3 {
+      margin: 0;
+      color: $primary;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .payment_modal_close {
+      width: 36px;
+      height: 36px;
+      place-items: center;
+      border: 1px solid #e4e4e4;
+      border-radius: 8px;
+      color: #555;
+    }
+  }
+
+  .payment_modal_option {
+    min-height: 58px;
+    padding: 0 12px;
+    border: 1px solid #e6e6e6;
+    border-radius: 8px;
+    background: #f8f8f8;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+
+    &.selected {
+      border-color: rgba($secondary, 0.5);
+      background: rgba($secondary, 0.1);
+    }
+  }
+
+  .payment_option_title {
+    color: $primary;
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  .payment_option_info,
+  .points_info {
+    direction: ltr;
+  }
+
+  .payment_option_info strong {
+    color: $primary;
+    font-size: 12px;
+  }
+
+  .points_info {
+    small {
+      color: #555;
+      font-size: 9px;
+
+      strong {
+        color: #e53935;
+        font-weight: 600;
+      }
+    }
+
+    .form-check-input {
+      float: none;
+      width: 34px;
+      height: 17px;
+      cursor: pointer;
+    }
+  }
+
+  .payment_confirm_btn {
+    height: 46px;
+    border: 0;
+    border-radius: 8px;
+    background: $secondary;
+    font-size: 13px;
+    font-weight: 600;
+
+    &:hover,
+    &:focus {
+      background: darken($secondary, 6%);
+    }
+  }
+}
+
 .details-section {
   margin-top: 32px;
   padding-top: 24px;
@@ -5854,7 +5955,7 @@ font-size: 2rem;}
   display: flex;
   flex-direction: column;
   gap: 10px;
-
+  border-radius:24px;
   .back_link_btn {
     background: none;
     border: none;
@@ -5881,6 +5982,181 @@ font-size: 2rem;}
 
     &:hover {
       background: darken($secondary, 6%);
+    }
+  }
+}
+
+// Booking confirmation sheet
+.confirm_booking_modal {
+  .confirm_modal_scroll {
+    padding: 24px 10px;
+    background: #f3f8fc;
+    border-radius:24px ;
+  }
+
+  .confirm_car_summary {
+    margin-bottom: 12px;
+    padding: 10px;
+    border: 1px solid #edf0f3;
+    border-radius: 12px;
+    background: $white;
+  }
+
+  .confirm_dates,
+  .confirm_section {
+    margin-bottom: 12px;
+    padding: 14px 12px;
+    border: 1px solid #edf0f3;
+    border-radius: 12px;
+    background: $white;
+  }
+
+  .confirm_dates {
+    position: relative;
+    gap: 0;
+    padding-inline-end: 18px;
+    border-bottom: 1px solid #edf0f3;
+
+    &::before {
+      position: absolute;
+      top: 18px;
+      right: 8px;
+      bottom: 18px;
+      width: 2px;
+      content: '';
+      // border-right: 2px dotted $secondary;
+    }
+
+    .confirm_date_row {
+      min-height: 42px;
+      padding: 6px 0;
+      border-bottom: 1px dotted #e2e2e2;
+      gap: 12px;
+
+      &:last-child {
+        border-bottom: 0;
+      }
+
+      .label {
+        flex: 0 0 auto;
+        color: #888;
+        font-size: 13px;
+      }
+
+      .value {
+        overflow: hidden;
+        color: $primary;
+        font-size: 14px;
+        font-weight: 500;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+    }
+  }
+
+  .confirm_section {
+    margin-bottom: 12px;
+
+    h3 {
+      margin-bottom: 10px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #edf0f3;
+      font-size: 16px;
+    }
+  }
+
+  .price_breakdown {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+
+    .price_item {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 32px;
+      padding: 4px 0;
+      border: 0;
+      border-bottom: 1px dotted #e2e2e2;
+      border-radius: 0;
+      background: transparent;
+
+      span {
+        color: #888;
+        font-size: 13px;
+      }
+
+      strong {
+        color: $primary;
+        font-size: 14px;
+      }
+    }
+
+    .price_total {
+      min-height: 42px;
+      margin-top: 4px;
+      padding: 4px 0;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+
+      span {
+        color: #888;
+        font-size: 14px;
+      }
+
+      h3 {
+        margin: 0;
+        padding: 0;
+        border: 0;
+        color: $secondary;
+        font-size: 18px;
+      }
+    }
+  }
+
+  .confirm_section:last-child {
+    margin-bottom: 0;
+
+    ul {
+      margin: 0 0 12px;
+      padding-inline-start: 18px;
+      color: $primary;
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: $primary;
+      font-size: 13px;
+      line-height: 1.5;
+
+      input {
+        width: 15px;
+        height: 15px;
+        flex: 0 0 auto;
+        accent-color: $secondary;
+      }
+    }
+  }
+
+  .confirm_modal_footer {
+    padding: 10px;
+    border-top: 1px solid #edf0f3;
+    background: $white;
+
+    .back_link_btn {
+      font-size: 11px;
+    }
+
+    .pay_btn {
+      height: 42px;
+      border-radius: 8px;
+      font-size: 13px;
     }
   }
 }
@@ -7451,6 +7727,58 @@ $gauge-amber: #e0993a;
       font-size: 0.75rem;
       color: $gray;
       font-weight: 500;
+    }
+  }
+}
+
+// Location card layout used on the booking details page
+.booking-dates-info {
+  .info-section:first-child {
+    position: relative;
+    gap: 0;
+    padding: 0;
+    border-bottom: 0;
+
+    &::before {
+      position: absolute;
+      top: 18px;
+      right: 8px;
+      bottom: 18px;
+      border-right: 2px dotted $secondary;
+      content: '';
+    }
+
+    h3,
+    .icon {
+      display: none;
+    }
+
+    .info-row {
+      min-height: 58px;
+      padding: 8px 0 8px 10px;
+      border-bottom: 1px dotted #e2e2e2;
+      gap: 0;
+
+      &:last-child {
+        border-bottom: 0;
+      }
+
+      > div {
+        width: 100%;
+        gap: 5px;
+        text-align: right;
+      }
+
+      .label {
+        color: #888;
+        font-size: 0.7rem;
+      }
+
+      .value {
+        color: $primary;
+        font-size: 0.82rem;
+        font-weight: 500;
+      }
     }
   }
 }
