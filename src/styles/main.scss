@@ -4901,6 +4901,40 @@ font-size: 2rem;}
   border-radius: 50%;
 }
 
+.wallet_result_animation {
+  width: 150px;
+  height: 150px;
+  flex-shrink: 0;
+}
+
+.failed_result_animation {
+  position: relative;
+  width: 150px;
+  height: 150px;
+  flex-shrink: 0;
+}
+
+.failed_result_animation .wallet_result_animation {
+  position: absolute;
+  inset: 0;
+}
+
+.failed_result_cross {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 1;
+  width: 88px;
+  height: 13px;
+  border-radius: 999px;
+  background: #fff;
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.failed_result_cross:last-child {
+  transform: translate(-50%, -50%) rotate(-45deg);
+}
+
 .wallet_result_icon_success {
   background: #2dcc70;
 }
