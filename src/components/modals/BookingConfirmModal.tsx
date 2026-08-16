@@ -68,7 +68,7 @@ export default function BookingConfirmModal({
 
   const content = (
     <div className="modal_overlay" onClick={onClose}>
-      <div className="confirm_modal" onClick={(e) => e.stopPropagation()}>
+      <div className="confirm_modal confirm_booking_modal" onClick={(e) => e.stopPropagation()}>
         <button className="close_btn" onClick={onClose} aria-label="إغلاق">
           <FiX />
         </button>
