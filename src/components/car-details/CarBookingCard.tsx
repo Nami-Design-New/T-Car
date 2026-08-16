@@ -110,6 +110,7 @@ export default function CarBookingCard({
         redirectTo="/account"
         autoRedirect
       />
+      
     </aside>
   );
 }
