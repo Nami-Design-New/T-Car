@@ -4,17 +4,15 @@ import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { FiX, FiStar } from 'react-icons/fi';
 import { formatCurrency } from '@utils/index';
-import type { BookingDetails, PaymentMethod } from '@app-types/car';
+import type { BookingDetails } from '@app-types/car';
 import type { StaticImageData } from 'next/image';
 import Image from 'next/image';
 
-import walletIcon from '@assets/icons/Wallet.svg';
-import visaIcon from '@assets/icons/Payment.svg';
 interface Props {
   open: boolean;
   onClose: () => void;
   onBack: () => void;
-  onPay: (method: PaymentMethod) => void;
+  onContinue: () => void;
   carName: string;
   carBrand: string;
   carImage: string | StaticImageData;
@@ -46,7 +44,7 @@ export default function BookingConfirmModal({
   open,
   onClose,
   onBack,
-  onPay,
+  onContinue,
   carName,
   carBrand,
   carImage,
@@ -54,7 +52,7 @@ export default function BookingConfirmModal({
   rating,
   booking,
 }: Props) {
-  const [method, setMethod] = useState<PaymentMethod>('wallet');
+  const [termsAccepted, setTermsAccepted] = useState(false);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => setMounted(true), []);
@@ -70,7 +68,7 @@ export default function BookingConfirmModal({
 
   const content = (
     <div className="modal_overlay" onClick={onClose}>
-      <div className="confirm_modal" onClick={(e) => e.stopPropagation()}>
+      <div className="confirm_modal confirm_booking_modal" onClick={(e) => e.stopPropagation()}>
         <button className="close_btn" onClick={onClose} aria-label="إغلاق">
           <FiX />
         </button>
@@ -98,6 +96,16 @@ export default function BookingConfirmModal({
 
           <div className="confirm_dates">
             <div className="confirm_date_row">
+              <span className="label">عنوان الاستلام</span>
+              <span className="value">{booking.pickupAddress || showroom}</span>
+            </div>
+
+            <div className="confirm_date_row">
+              <span className="label">عنوان التسليم</span>
+              <span className="value">{booking.dropoffAddress || showroom}</span>
+            </div>
+
+            <div className="confirm_date_row">
               <span className="label">موعد الاستلام</span>
               <span className="value">{formatFull(booking.startDate, booking.time)}</span>
             </div>
@@ -105,6 +113,24 @@ export default function BookingConfirmModal({
             <div className="confirm_date_row">
               <span className="label">موعد التسليم</span>
               <span className="value">{formatFull(booking.endDate, booking.time)}</span>
+            </div>
+
+            <div className="confirm_date_row">
+              <span className="label">تفاصيل التأمين</span>
+              <span className="value">تأمين السيارة تكون جاهزة قبل الموعد</span>
+            </div>
+
+            <div className="confirm_date_row">
+              <span className="label">وقت الطلب</span>
+              <span className="value">
+                {new Date().toLocaleString('ar-SA', {
+                  day: 'numeric',
+                  month: 'long',
+                  year: 'numeric',
+                  hour: 'numeric',
+                  minute: '2-digit',
+                })}
+              </span>
             </div>
           </div>
 
@@ -140,41 +166,23 @@ export default function BookingConfirmModal({
           </div>
 
           <div className="confirm_section">
-            <h3>طريقة الدفع</h3>
+            <h3>الشروط والأحكام</h3>
 
-            <div className="payment_methods">
-              <label className={`payment_method ${method === 'wallet' ? 'selected' : ''}`}>
-                <input
-                  type="radio"
-                  name="payment"
-                  checked={method === 'wallet'}
-                  onChange={() => setMethod('wallet')}
-                />
+            <ul>
+              <li>لدي رخصة قيادة سارية.</li>
+              <li>لدي هوية وطنية سارية / إقامة.</li>
+              <li>قد يتطلب بعض مواقف التأجير أو الدفع مقدماً مبلغاً قابلاً للاسترداد.</li>
+              <li>أوافق على جميع الشروط والأحكام.</li>
+            </ul>
 
-                <Image
-                  src={walletIcon}
-                  alt="Wallet"
-                  width={26}
-                  height={26}
-                  className="payment_icon"
-                />
-
-                <span>المحفظة</span>
-              </label>
-
-              <label className={`payment_method ${method === 'visa' ? 'selected' : ''}`}>
-                <input
-                  type="radio"
-                  name="payment"
-                  checked={method === 'visa'}
-                  onChange={() => setMethod('visa')}
-                />
-
-                <Image src={visaIcon} alt="Visa" width={30} height={20} className="payment_icon" />
-
-                <span>بطاقة ائتمان / فيزا</span>
-              </label>
-            </div>
+            <label>
+              <input
+                type="checkbox"
+                checked={termsAccepted}
+                onChange={(e) => setTermsAccepted(e.target.checked)}
+              />{' '}
+              أوافق على جميع هذه المتطلبات، أنا مؤهل للحجز.
+            </label>
           </div>
         </div>
 
@@ -183,8 +191,8 @@ export default function BookingConfirmModal({
             رجوع لتعديل التاريخ
           </button>
 
-          <button type="button" className="pay_btn" onClick={() => onPay(method)}>
-            الدفع والحجز
+          <button type="button" className="pay_btn" onClick={onContinue}>
+            متابعة للدفع
           </button>
         </div>
       </div>
