@@ -14,6 +14,7 @@ import type {
 
 import type { StaticImageData } from 'next/image';
 import BookingDailyModal from '../modals/BookingDailyModal';
+import BookingMonthlyModal from '../modals/BookingMonthlyModal';
 
 type Step = 'closed' | 'dates' | 'confirm' | 'success';
 
@@ -98,7 +99,7 @@ export default function CarBookingCard({
       </p>
 
 
-      <BookingDailyModal
+      <BookingMonthlyModal
         open={step === 'dates'}
         onClose={() => setStep('closed')}
         pricePerDay={pricePerDay}
