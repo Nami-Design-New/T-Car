@@ -15905,6 +15905,40 @@ img {
   border-radius: 50%;
 }
 
+.wallet_result_animation {
+  width: 150px;
+  height: 150px;
+  flex-shrink: 0;
+}
+
+.failed_result_animation {
+  position: relative;
+  width: 150px;
+  height: 150px;
+  flex-shrink: 0;
+}
+
+.failed_result_animation .wallet_result_animation {
+  position: absolute;
+  inset: 0;
+}
+
+.failed_result_cross {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 1;
+  width: 88px;
+  height: 13px;
+  border-radius: 999px;
+  background: #fff;
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.failed_result_cross:last-child {
+  transform: translate(-50%, -50%) rotate(-45deg);
+}
+
 .wallet_result_icon_success {
   background: #2dcc70;
 }
@@ -17173,7 +17207,7 @@ img {
   box-shadow: 0 0 0 3px rgba(31, 127, 250, 0.1);
 }
 
-.auth_modal .auth_btn {
+.license_modal .primary_btn, .auth_modal .otp_form .auth_btn, .auth_modal .auth_btn {
   width: 100%;
   height: 54px;
   border: none;
@@ -17184,7 +17218,7 @@ img {
   cursor: pointer;
   transition: 0.3s;
 }
-.auth_modal .auth_btn:hover {
+.license_modal .primary_btn:hover, .auth_modal .auth_btn:hover {
   opacity: 0.9;
 }
 
@@ -17300,6 +17334,156 @@ img {
   cursor: pointer;
   margin-inline-start: 6px;
 }
+.auth_modal.phone_modal {
+  width: min(460px, 100% - 32px);
+  background: #ffffff;
+  position: relative;
+}
+.auth_modal .phone_modal_header {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 28px;
+}
+.auth_modal .phone_modal_header h3, .auth_modal .phone_modal_header .h3 {
+  margin: 0;
+  color: #0a2540;
+  font-size: 20px;
+  font-weight: 700;
+  text-align: center;
+}
+.auth_modal .phone_modal_header .icon_btn {
+  position: absolute;
+  inset-inline-start: 0;
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: #555;
+  font-size: 20px;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+.auth_modal .phone_modal_header .icon_btn:hover {
+  background: #f5f5f5;
+  color: #0a2540;
+}
+.auth_modal .phone_modal_body {
+  width: 100%;
+}
+.auth_modal .phone_modal_body .field_label {
+  display: block;
+  margin-bottom: 10px;
+  color: #222;
+  font-size: 14px;
+  font-weight: 600;
+  text-align: right;
+}
+.auth_modal .phone_modal_body .phone_wrapper {
+  width: 100%;
+  margin-bottom: 24px;
+}
+.auth_modal .phone_modal_body .auth_btn {
+  width: 100%;
+}
+@media (max-width: 768px) {
+  .auth_modal.phone_modal {
+    width: calc(100% - 30px);
+    max-width: 420px;
+    padding: 28px 18px;
+  }
+  .auth_modal .phone_modal_header {
+    margin-bottom: 22px;
+  }
+  .auth_modal .phone_modal_header h3, .auth_modal .phone_modal_header .h3 {
+    font-size: 18px;
+  }
+  .auth_modal .phone_modal_header .icon_btn {
+    width: 30px;
+    height: 30px;
+    font-size: 18px;
+  }
+  .auth_modal .phone_modal_body .field_label {
+    font-size: 13px;
+  }
+}
+.auth_modal.verify_modal {
+  width: min(460px, 100% - 32px);
+  position: relative;
+  background: #ffffff;
+  padding: 32px 40px 40px;
+  border-radius: 24px;
+}
+.auth_modal .verify_modal_header {
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: 4px;
+}
+.auth_modal .verify_modal_header .icon_btn {
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: #555;
+  font-size: 20px;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+.auth_modal .verify_modal_header .icon_btn:hover {
+  background: #f5f5f5;
+  color: #0a2540;
+}
+.auth_modal .otp_form .phone {
+  margin-bottom: 8px;
+}
+.auth_modal .otp_form .edit_phone_btn {
+  padding: 0;
+  margin-bottom: 24px;
+  border: none;
+  background: transparent;
+  color: #1f7ffa;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.auth_modal .otp_form .edit_phone_btn:hover {
+  text-decoration: underline;
+}
+.auth_modal .otp_form .auth_btn {
+  width: 100%;
+}
+.auth_modal .otp_form .auth_btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+@media (max-width: 768px) {
+  .auth_modal.verify_modal {
+    width: calc(100% - 30px);
+    max-width: 420px;
+    padding: 28px 20px;
+  }
+  .auth_modal .otp_form .otp_inputs {
+    gap: 8px;
+  }
+  .auth_modal .otp_form .otp_inputs input {
+    width: 50px;
+    height: 50px;
+    font-size: 20px;
+  }
+}
+
 .otp_form {
   display: flex;
   flex-direction: column;
@@ -17309,7 +17493,7 @@ img {
 .otp_form .phone {
   color: #1f7ffa;
   font-weight: 600;
-  margin-bottom: 28px;
+  margin-bottom: 10px;
 }
 .otp_form .otp_inputs {
   display: flex;
@@ -19998,5 +20182,269 @@ img {
   .cancel_booking_modal {
     max-height: 94vh;
     padding-top: 32px;
+  }
+}
+
+.account-panel.profile_tab {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+.account-panel.profile_tab .profile_action_field {
+  width: 100%;
+  border-radius: 9px;
+  background: #ffffff;
+  transition: background 0.2s ease;
+}
+.account-panel.profile_tab .profile_action_field.warning {
+  background: #fff1f2;
+}
+.account-panel.profile_tab .profile_action_field.warning .profile_action_title {
+  color: #222;
+}
+.account-panel.profile_tab .profile_action_field.warning .profile_action_value {
+  color: #777;
+}
+.account-panel.profile_tab .profile_action_field.warning .profile_action_value svg {
+  color: #e53935;
+}
+.account-panel.profile_tab .profile_action_field .profile_action_btn {
+  width: 100%;
+  min-height: 62px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  text-align: right;
+}
+.account-panel.profile_tab .profile_action_field .profile_action_btn .profile_action_content {
+  min-width: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.account-panel.profile_tab .profile_action_field .profile_action_btn .profile_action_title {
+  color: #222;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+.account-panel.profile_tab .profile_action_field .profile_action_btn .profile_action_value {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #777;
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 1.5;
+}
+.account-panel.profile_tab .profile_action_field .profile_action_btn .profile_action_value svg {
+  flex-shrink: 0;
+  color: #36b37e;
+  font-size: 14px;
+}
+.account-panel.profile_tab .profile_action_field .profile_action_btn .profile_action_value span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.account-panel.profile_tab .profile_action_field .profile_action_btn .profile_action_value.verified {
+  color: #777;
+}
+.account-panel.profile_tab .profile_action_field .profile_action_btn .profile_action_value.verified svg {
+  color: #36b37e;
+}
+.account-panel.profile_tab .profile_action_field .profile_action_btn .arrow {
+  flex-shrink: 0;
+  color: #888;
+  font-size: 18px;
+}
+.account-panel.profile_tab .profile_action_field .profile_action_btn:hover {
+  opacity: 0.85;
+}
+.account-panel.profile_tab .delete_account_btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 7px;
+  padding: 4px 0;
+  border: none;
+  background: transparent;
+  color: #e53935;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: right;
+}
+.account-panel.profile_tab .delete_account_btn svg {
+  font-size: 17px;
+}
+.account-panel.profile_tab .delete_account_btn:hover {
+  opacity: 0.8;
+}
+.account-panel.profile_tab .save_btn {
+  width: 100%;
+  height: 48px;
+  margin-top: 6px;
+  border: none;
+  border-radius: 8px;
+  background: #1f7ffa;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s ease, transform 0.15s ease;
+}
+.account-panel.profile_tab .save_btn:hover {
+  opacity: 0.92;
+}
+.account-panel.profile_tab .save_btn:active {
+  transform: scale(0.98);
+}
+@media (max-width: 768px) {
+  .account-panel.profile_tab {
+    gap: 12px;
+  }
+  .account-panel.profile_tab .form_field {
+    gap: 5px;
+  }
+  .account-panel.profile_tab .form_field label {
+    font-size: 12px;
+  }
+  .account-panel.profile_tab .form_field input {
+    height: 46px;
+    padding: 0 12px;
+    font-size: 12px;
+  }
+  .account-panel.profile_tab .form_field .input_wrapper .icon {
+    left: 12px;
+    font-size: 15px;
+  }
+  .account-panel.profile_tab .form_field .input_wrapper input {
+    padding-left: 38px;
+  }
+  .account-panel.profile_tab .profile_action_field .profile_action_btn {
+    min-height: 58px;
+    padding: 9px 10px;
+  }
+  .account-panel.profile_tab .profile_action_field .profile_action_btn .profile_action_title {
+    font-size: 12px;
+  }
+  .account-panel.profile_tab .profile_action_field .profile_action_btn .profile_action_value {
+    font-size: 10px;
+  }
+  .account-panel.profile_tab .profile_action_field .profile_action_btn .profile_action_value svg {
+    font-size: 13px;
+  }
+  .account-panel.profile_tab .profile_action_field .profile_action_btn .arrow {
+    font-size: 16px;
+  }
+  .account-panel.profile_tab .delete_account_btn {
+    font-size: 12px;
+  }
+  .account-panel.profile_tab .delete_account_btn svg {
+    font-size: 15px;
+  }
+  .account-panel.profile_tab .save_btn {
+    height: 46px;
+    font-size: 12px;
+  }
+}
+
+.license_modal {
+  width: min(100% - 32px, 420px);
+  background: #ffffff;
+  border-radius: 16px;
+}
+.license_modal .modal_body {
+  padding: 16px 14px 12px;
+  display: flex;
+  flex-direction: column;
+}
+.license_modal .license_upload_area {
+  width: 100%;
+  min-height: 100px;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  border: 1px dashed #ddd;
+  border-radius: 8px;
+  background: #fff;
+  color: #aaa;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+.license_modal .license_upload_area svg {
+  width: 22px;
+  height: 22px;
+  stroke-width: 1.4;
+}
+.license_modal .license_upload_area span {
+  font-size: 12px;
+  font-weight: 400;
+}
+.license_modal .license_upload_area small, .license_modal .license_upload_area .small {
+  color: #aaa;
+  font-size: 10px;
+}
+.license_modal .license_upload_area:hover {
+  border-color: #1f7ffa;
+  background: #fafafa;
+}
+.license_modal .license_upload_area.has_file {
+  border-color: #1f7ffa;
+  color: #1f7ffa;
+}
+.license_modal .license_upload_area.has_file .file_name {
+  max-width: 90%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #444;
+}
+.license_modal .primary_btn {
+  margin-top: 12px;
+  height: 38px;
+  font-size: 12px;
+}
+.license_modal .primary_btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+@media (max-width: 480px) {
+  .license_modal {
+    width: calc(100% - 30px);
+    max-width: 350px;
+  }
+  .license_modal .modal_header {
+    padding-inline: 10px;
+  }
+  .license_modal .modal_header h3, .license_modal .modal_header .h3 {
+    font-size: 11px;
+  }
+  .license_modal .modal_body {
+    padding: 12px 10px 10px;
+  }
+  .license_modal .license_upload_area {
+    min-height: 85px;
+  }
+  .license_modal .license_upload_area span {
+    font-size: 8px;
+  }
+  .license_modal .license_upload_area small, .license_modal .license_upload_area .small {
+    font-size: 7px;
+  }
+  .license_modal .primary_btn {
+    height: 34px;
+    font-size: 9px;
   }
 }/*# sourceMappingURL=main.css.map */
