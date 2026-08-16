@@ -14,6 +14,8 @@ interface Props {
   onClose: () => void;
   pricePerDay: number;
   onConfirm: (details: BookingDetails) => void;
+  initialDetails?: BookingDetails | null;
+  mode?: 'create' | 'edit';
 }
 
 interface DateRange {
@@ -55,8 +57,8 @@ function getAddressTitle(address: string, fallback: string) {
   return address.split(',')[0]?.trim() || fallback;
 }
 
-export default function BookingDailyModal({ open, onClose, pricePerDay, onConfirm }: Props) {
-  const [cursor, setCursor] = useState(new Date());
+export default function BookingDailyModal({ open, onClose, pricePerDay, onConfirm, initialDetails = null, mode = 'create' }: Props) {
+  const [cursor, setCursor] = useState<Date>(new Date());
   const [range, setRange] = useState<DateRange>({ start: null, end: null });
   const [time, setTime] = useState('9:00 AM');
   const [notes, setNotes] = useState('');
@@ -68,6 +70,29 @@ export default function BookingDailyModal({ open, onClose, pricePerDay, onConfir
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => setMounted(true), []);
+
+  // Prefill when opened in edit mode or when initialDetails provided
+  useEffect(() => {
+    if (!open) return;
+
+    if (initialDetails) {
+      try {
+        const start = initialDetails.startDate ? new Date(initialDetails.startDate) : new Date();
+        const end = initialDetails.endDate ? new Date(initialDetails.endDate) : null;
+
+        setCursor(start);
+        setRange({ start, end });
+
+        if (initialDetails.time) setTime(initialDetails.time);
+        if (initialDetails.notes) setNotes(initialDetails.notes || '');
+        if (initialDetails.pickupAddress) setPickupAddress(initialDetails.pickupAddress || '');
+        if (initialDetails.dropoffAddress) setDropoffAddress(initialDetails.dropoffAddress || '');
+        if (initialDetails.pickupLocation) setPickupLocation(initialDetails.pickupLocation || null);
+        if (initialDetails.dropoffLocation) setDropoffLocation(initialDetails.dropoffLocation || null);
+      } catch (e) {
+      }
+    }
+  }, [open, initialDetails]);
 
   useEffect(() => {
     document.body.style.overflow = open ? 'hidden' : '';
@@ -321,7 +346,7 @@ export default function BookingDailyModal({ open, onClose, pricePerDay, onConfir
             disabled={!range.start || !range.end}
             onClick={handleConfirmClick}
           >
-            متابعة الحجز
+            {mode === 'edit' ? 'إرسال طلب التعديل' : 'متابعة الحجز'}
           </button>
 
           <div className="booking_total">
