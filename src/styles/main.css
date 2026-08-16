@@ -15911,6 +15911,67 @@ img {
   flex-shrink: 0;
 }
 
+.delete_account_modal {
+  padding: 24px 20px 20px;
+  border-radius: 20px;
+  width: min(100% - 32px, 440px);
+  text-align: center;
+}
+.delete_account_modal .wallet_result_drag_handle {
+  display: block;
+  width: 28px;
+  height: 4px;
+  border-radius: 10px;
+  background: #999;
+  margin: 0 auto 18px;
+}
+.delete_account_modal .wallet_result_icon {
+  margin: 0 auto 16px;
+}
+.delete_account_modal .delete_account_content h2, .delete_account_modal .delete_account_content .h2 {
+  margin: 0 0 10px;
+  font-size: 16px;
+  font-weight: 700;
+  color: #111;
+}
+.delete_account_modal .delete_account_content p {
+  margin: 0 auto;
+  max-width: 390px;
+  font-size: 13px;
+  line-height: 1.8;
+  color: #777;
+}
+.delete_account_modal .delete_account_actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 22px;
+}
+.delete_account_modal .delete_account_actions button {
+  flex: 1;
+  height: 42px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+.delete_account_modal .delete_account_actions .delete_account_confirm {
+  border: 1px solid #e52b2b;
+  background: #e52b2b;
+  color: #fff;
+}
+.delete_account_modal .delete_account_actions .delete_account_confirm:hover {
+  background: #d92323;
+}
+.delete_account_modal .delete_account_actions .delete_account_cancel {
+  border: 1px solid #0a2540;
+  background: #fff;
+  color: #0a2540;
+}
+.delete_account_modal .delete_account_actions .delete_account_cancel:hover {
+  background: rgba(10, 37, 64, 0.05);
+}
+
 .failed_result_animation {
   position: relative;
   width: 150px;
@@ -15939,6 +16000,291 @@ img {
   transform: translate(-50%, -50%) rotate(-45deg);
 }
 
+.wallet_result_icon_success {
+  background: #2dcc70;
+}
+
+.wallet_result_icon_success span {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #fff;
+}
+
+.wallet_result_icon_success span:first-child {
+  top: 12px;
+}
+
+.wallet_result_icon_success span:last-child {
+  bottom: 12px;
+}
+
+.wallet_result_icon_failed {
+  background: #ff0505;
+}
+
+.wallet_result_icon_failed span {
+  position: absolute;
+  width: 72px;
+  height: 11px;
+  border-radius: 999px;
+  background: #fff;
+  transform: rotate(45deg);
+}
+
+.wallet_result_icon_failed span:last-child {
+  transform: rotate(-45deg);
+}
+
+.wallet_result_modal h2, .wallet_result_modal .h2 {
+  margin: 0;
+  color: #171717;
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.wallet_result_modal {
+  display: flex;
+  width: min(420px, 100% - 30px);
+  min-height: 276px;
+  padding: 36px 28px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 24px;
+  background: #fff;
+}
+
+.wallet_result_drag_handle {
+  display: block;
+  width: 68px;
+  height: 7px;
+  margin-bottom: 4px;
+  border-radius: 999px;
+  background: #999;
+}
+
+.wallet_result_icon {
+  position: relative;
+  display: grid;
+  width: 94px;
+  height: 94px;
+  place-items: center;
+  border-radius: 50%;
+}
+
+.wallet_result_animation {
+  width: 150px;
+  height: 150px;
+  flex-shrink: 0;
+}
+
+.failed_result_animation {
+  position: relative;
+  width: 150px;
+  height: 150px;
+  flex-shrink: 0;
+}
+
+.failed_result_animation .wallet_result_animation {
+  position: absolute;
+  inset: 0;
+}
+
+.failed_result_cross {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 1;
+  width: 88px;
+  height: 13px;
+  border-radius: 999px;
+  background: #fff;
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.failed_result_cross:last-child {
+  transform: translate(-50%, -50%) rotate(-45deg);
+}
+
+.wallet_result_icon_success {
+  background: #2dcc70;
+}
+
+.wallet_result_icon_success span {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #fff;
+}
+
+.wallet_result_icon_success span:first-child {
+  top: 12px;
+}
+
+.wallet_result_icon_success span:last-child {
+  bottom: 12px;
+}
+
+.wallet_result_icon_failed {
+  background: #ff0505;
+}
+
+.wallet_result_icon_failed span {
+  position: absolute;
+  width: 72px;
+  height: 11px;
+  border-radius: 999px;
+  background: #fff;
+  transform: rotate(45deg);
+}
+
+.wallet_result_icon_failed span:last-child {
+  transform: rotate(-45deg);
+}
+
+.wallet_result_modal h2, .wallet_result_modal .h2 {
+  margin: 0;
+  color: #171717;
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.wallet_result_modal {
+  display: flex;
+  width: min(420px, 100% - 30px);
+  min-height: 276px;
+  padding: 36px 28px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 24px;
+  background: #fff;
+}
+
+.wallet_result_drag_handle {
+  display: block;
+  width: 68px;
+  height: 7px;
+  margin-bottom: 4px;
+  border-radius: 999px;
+  background: #999;
+}
+
+.wallet_result_icon {
+  position: relative;
+  display: grid;
+  width: 94px;
+  height: 94px;
+  place-items: center;
+  border-radius: 50%;
+}
+
+.wallet_result_animation {
+  width: 150px;
+  height: 150px;
+  flex-shrink: 0;
+}
+
+/* ================================================= */
+/* Delete Account Modal */
+/* ================================================= */
+.delete_account_modal {
+  padding: 24px 20px 20px;
+  border-radius: 20px;
+  width: min(100% - 32px, 440px);
+  min-height: auto;
+  text-align: center;
+}
+.delete_account_modal .wallet_result_drag_handle {
+  display: block;
+  width: 28px;
+  height: 4px;
+  border-radius: 10px;
+  background: #999;
+  margin: 0 auto 18px;
+}
+.delete_account_modal .wallet_result_icon {
+  margin: 0 auto 16px;
+}
+.delete_account_modal .delete_account_content h2, .delete_account_modal .delete_account_content .h2 {
+  margin: 0 0 10px;
+  font-size: 16px;
+  font-weight: 700;
+  color: #111;
+}
+.delete_account_modal .delete_account_content p {
+  margin: 0 auto;
+  max-width: 390px;
+  font-size: 13px;
+  line-height: 1.8;
+  color: #777;
+}
+.delete_account_modal .delete_account_actions {
+  display: flex;
+  width: 100%;
+  gap: 10px;
+  margin-top: 22px;
+}
+.delete_account_modal .delete_account_actions button {
+  flex: 1;
+  height: 42px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+.delete_account_modal .delete_account_actions .delete_account_confirm {
+  border: 1px solid #e52b2b;
+  background: #e52b2b;
+  color: #fff;
+}
+.delete_account_modal .delete_account_actions .delete_account_confirm:hover {
+  background: #d92323;
+}
+.delete_account_modal .delete_account_actions .delete_account_cancel {
+  border: 1px solid #0a2540;
+  background: #fff;
+  color: #0a2540;
+}
+.delete_account_modal .delete_account_actions .delete_account_cancel:hover {
+  background: rgba(10, 37, 64, 0.05);
+}
+
+.failed_result_animation {
+  position: relative;
+  width: 150px;
+  height: 150px;
+  flex-shrink: 0;
+}
+
+.failed_result_animation .wallet_result_animation {
+  position: absolute;
+  inset: 0;
+}
+
+.failed_result_cross {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 1;
+  width: 88px;
+  height: 13px;
+  border-radius: 999px;
+  background: #fff;
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.failed_result_cross:last-child {
+  transform: translate(-50%, -50%) rotate(-45deg);
+}
+
+/* ================================================= */
+/* Result Icons */
+/* ================================================= */
 .wallet_result_icon_success {
   background: #2dcc70;
 }

@@ -14,6 +14,7 @@ import type { UserProfile } from '@app-types/car';
 import EditPhoneModal from '@components/modals/Editphonemodal';
 import VerifyPhoneModal from '@components/modals/Verifyphonemodal';
 import LicenseModal from '../modals/LicenseModal';
+import FailedModal from '@components/common/FailedModal';
 
 interface Props {
   profile: UserProfile;
@@ -29,6 +30,7 @@ export default function ProfileTab({
   const [form, setForm] = useState(profile);
 
   // ==================== Phone ====================
+
   const [phoneStep, setPhoneStep] =
     useState<PhoneStep>(null);
 
@@ -36,7 +38,13 @@ export default function ProfileTab({
     useState('');
 
   // ==================== License ====================
+
   const [showLicenseModal, setShowLicenseModal] =
+    useState(false);
+
+  // ==================== Delete Account ====================
+
+  const [showDeleteModal, setShowDeleteModal] =
     useState(false);
 
   // ==================== Form Change ====================
@@ -91,9 +99,21 @@ export default function ProfileTab({
     setShowLicenseModal(false);
   };
 
+  // ==================== Delete Account ====================
+
+  const handleDeleteAccount = () => {
+    // TODO:
+    // API request لحذف الحساب
+
+    console.log('Delete account');
+
+    setShowDeleteModal(false);
+  };
+
   return (
     <div className="account-panel profile_tab">
 
+      {/* ==================== Full Name ==================== */}
 
       <div className="form_field">
         <label>
@@ -112,6 +132,7 @@ export default function ProfileTab({
         />
       </div>
 
+      {/* ==================== Email ==================== */}
 
       <div className="form_field">
         <label>
@@ -130,15 +151,14 @@ export default function ProfileTab({
         />
       </div>
 
+      {/* ==================== Birth Date ==================== */}
 
- 
       <div className="form_field">
         <label>
           تاريخ الميلاد
         </label>
 
         <div className="input_wrapper">
-
           <span className="icon">
             <FiCalendar />
           </span>
@@ -153,12 +173,12 @@ export default function ProfileTab({
               )
             }
           />
-
         </div>
       </div>
 
-      <div className="profile_action_field">
+      {/* ==================== Phone ==================== */}
 
+      <div className="profile_action_field">
         <button
           type="button"
           className="profile_action_btn"
@@ -166,7 +186,6 @@ export default function ProfileTab({
             setPhoneStep('edit')
           }
         >
-
           <div className="profile_action_content">
 
             <span className="profile_action_title">
@@ -174,25 +193,22 @@ export default function ProfileTab({
             </span>
 
             <div className="profile_action_value">
-
               <FiCheck />
 
               <span>
                 {form.phone}
               </span>
-
             </div>
 
           </div>
 
           <FiChevronLeft className="arrow" />
-
         </button>
-
       </div>
 
-      <div className="profile_action_field warning">
+      {/* ==================== License Not Verified ==================== */}
 
+      <div className="profile_action_field warning">
         <button
           type="button"
           className="profile_action_btn"
@@ -200,7 +216,6 @@ export default function ProfileTab({
             setShowLicenseModal(true)
           }
         >
-
           <div className="profile_action_content">
 
             <span className="profile_action_title">
@@ -208,25 +223,23 @@ export default function ProfileTab({
             </span>
 
             <div className="profile_action_value">
-
               <FiAlertCircle />
 
               <span>
-                يرجى إرفاق رخصة لكي نتمكن من التحقق من الحجز
+                يرجى إرفاق رخصة لكي نتمكن من
+                التحقق من الحجز
               </span>
-
             </div>
 
           </div>
 
           <FiChevronLeft className="arrow" />
-
         </button>
-
       </div>
 
-      <div className="profile_action_field">
+      {/* ==================== License Verified ==================== */}
 
+      <div className="profile_action_field">
         <button
           type="button"
           className="profile_action_btn"
@@ -235,7 +248,6 @@ export default function ProfileTab({
             // فتح تفاصيل الرخصة
           }}
         >
-
           <div className="profile_action_content">
 
             <span className="profile_action_title">
@@ -243,50 +255,48 @@ export default function ProfileTab({
             </span>
 
             <div className="profile_action_value verified">
-
               <FiCheck />
 
               <span>
                 تم التحقق من الرخصة
               </span>
-
             </div>
 
           </div>
 
           <FiChevronLeft className="arrow" />
-
         </button>
-
       </div>
 
+      {/* ==================== Delete Account ==================== */}
 
       <button
         type="button"
         className="delete_account_btn mb-2"
-        onClick={() => {
-          // TODO:
-          // فتح DeleteAccountModal
-        }}
+        onClick={() =>
+          setShowDeleteModal(true)
+        }
       >
-
         <FiTrash2 />
 
         <span>
           حذف الحساب
         </span>
-
       </button>
 
-
+      {/* ==================== Save ==================== */}
 
       <button
         type="button"
         className="save_btn"
-        onClick={() => onSave(form)}
+        onClick={() =>
+          onSave(form)
+        }
       >
         حفظ
       </button>
+
+      {/* ==================== Edit Phone Modal ==================== */}
 
       <EditPhoneModal
         open={phoneStep === 'edit'}
@@ -297,10 +307,7 @@ export default function ProfileTab({
         onSendCode={handleSendCode}
       />
 
-
-      {/* ================================================= */}
-      {/* Verify Phone Modal */}
-      {/* ================================================= */}
+      {/* ==================== Verify Phone Modal ==================== */}
 
       <VerifyPhoneModal
         open={phoneStep === 'verify'}
@@ -315,10 +322,7 @@ export default function ProfileTab({
         onResendCode={handleResendCode}
       />
 
-
-      {/* ================================================= */}
-      {/* License Modal */}
-      {/* ================================================= */}
+      {/* ==================== License Modal ==================== */}
 
       <LicenseModal
         open={showLicenseModal}
@@ -326,6 +330,21 @@ export default function ProfileTab({
           setShowLicenseModal(false)
         }
         onSubmit={handleLicenseSubmit}
+      />
+
+      {/* ==================== Delete Account Modal ==================== */}
+
+      <FailedModal
+        open={showDeleteModal}
+        title="تأسف لرغبتك في المغادرة."
+        description="عند حذف الحساب سيتم إزالة بياناتك الشخصية وسجل حجوزاتك بشكل نهائي ولن يكون بإمكانك استرجاعها لاحقاً. هل أنت متأكد من رغبتك بالمتابعة؟"
+        primaryButtonText="حذف الحساب"
+        secondaryButtonText="الاحتفاظ بالحساب"
+        showButtons
+        onPrimary={handleDeleteAccount}
+        onSecondary={() =>
+          setShowDeleteModal(false)
+        }
       />
 
     </div>
