@@ -5,16 +5,12 @@ import { formatCurrency } from '@utils/index';
 
 import BookingConfirmModal from '../modals/BookingConfirmModal';
 import SuccessModal from '../common/SuccessModal';
-import Image from "next/image";
-import RiyalIcon from "@/assets/icons/sar.svg";
-import type {
-  BookingDetails,
-  PaymentMethod,
-} from '@app-types/car';
+import Image from 'next/image';
+import RiyalIcon from '@/assets/icons/sar.svg';
+import type { BookingDetails, PaymentMethod } from '@app-types/car';
 
 import type { StaticImageData } from 'next/image';
 import BookingDailyModal from '../modals/BookingDailyModal';
-import BookingMonthlyModal from '../modals/BookingMonthlyModal';
 
 type Step = 'closed' | 'dates' | 'confirm' | 'success';
 
@@ -41,20 +37,14 @@ export default function CarBookingCard({
 }: Props) {
   const [step, setStep] = useState<Step>('closed');
 
-  const [booking, setBooking] =
-    useState<BookingDetails | null>(null);
+  const [booking, setBooking] = useState<BookingDetails | null>(null);
 
-  const handleDatesConfirmed = (
-    details: BookingDetails
-  ) => {
+  const handleDatesConfirmed = (details: BookingDetails) => {
     setBooking(details);
     setStep('confirm');
   };
 
-  const handlePay = (
-    method: PaymentMethod
-  ) => {
-
+  const handlePay = (method: PaymentMethod) => {
     console.log(carId, booking, method);
 
     setStep('success');
@@ -62,44 +52,28 @@ export default function CarBookingCard({
 
   return (
     <aside className="car-booking-card">
+      <div className="car-booking-card-price">
+        {originalPrice && (
+          <span className="car-booking-card-old-price">{formatCurrency(originalPrice)}</span>
+        )}
 
-   <div className="car-booking-card-price">
-  {originalPrice && (
-    <span className="car-booking-card-old-price">
-      {formatCurrency(originalPrice)}
-    </span>
-  )}
+        <div className="car-booking-card-current">
+          <h2>
+            {pricePerDay}
+            <Image src={RiyalIcon} alt="ريال" width={18} height={18} className="riyal-icon" />
+          </h2>
 
-<div className="car-booking-card-current">
-  <h2>
-    {pricePerDay}
-    <Image
-      src={RiyalIcon}
-      alt="ريال"
-      width={18}
-      height={18}
-      className="riyal-icon"
-    />
-  </h2>
+          <small>/ يوم</small>
+        </div>
+      </div>
 
-  <small>/ يوم</small>
-</div>
-</div>
-
-      <button
-        type="button"
-        className="car-booking-card-btn"
-        onClick={() => setStep('dates')}
-      >
+      <button type="button" className="car-booking-card-btn" onClick={() => setStep('dates')}>
         احجز الآن
       </button>
 
-      <p className="car-booking-card-note">
-        لن يتم خصم أي مبلغ الآن، الدفع عند الاستلام
-      </p>
+      <p className="car-booking-card-note">لن يتم خصم أي مبلغ الآن، الدفع عند الاستلام</p>
 
-
-      <BookingMonthlyModal
+      <BookingDailyModal
         open={step === 'dates'}
         onClose={() => setStep('closed')}
         pricePerDay={pricePerDay}
@@ -129,7 +103,6 @@ export default function CarBookingCard({
         redirectTo="/account"
         autoRedirect
       />
-
     </aside>
   );
 }

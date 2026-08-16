@@ -137,15 +137,11 @@ export default async function CarDetailsPage({ params }: Props) {
                 originalPrice={car.originalPrice}
               />
 
-             <ReviewsSummaryCard
-  rating={car.rating}
-  reviewsCount={car.reviewsCount}
-/>
+              <ReviewsSummaryCard rating={car.rating} reviewsCount={car.reviewsCount} />
             </div>
           </div>
         </div>
       </section>
-
     </>
   );
 }
