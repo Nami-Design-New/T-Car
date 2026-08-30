@@ -3889,13 +3889,6 @@ font-size: 2rem;}
 
   @media (max-width: $breakpoint-lg) {
     grid-template-columns: 1fr;
-
-  .car_filters , .city_filters{
-    position: static;
-    top: auto;
-    width: 100%;
-  }
-
   }
 }
 
@@ -9044,6 +9037,41 @@ $gauge-amber: #e0993a;
 .car-page {
   margin-top: 40px;
 }
+// ------- بحث في الفلاتر -------
+.filter_search {
+  position: relative;
+  margin-bottom: 18px;
+
+  svg {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #9ca3af;
+    font-size: 18px;
+  }
+
+  input {
+    width: 100%;
+    height: 48px;
+    border-radius: 12px;
+    border: 1px solid #ddd;
+    background: $white;
+    outline: none;
+    padding: 0 44px 0 14px;
+    transition: 0.25s;
+    font-size: 14px;
+
+    &::placeholder {
+      color: #aaa;
+    }
+
+    &:focus {
+      border-color: $secondary;
+    }
+  }
+}
+
 .filters_panel {
   background: $white;
   border-radius: 22px;
@@ -9125,40 +9153,6 @@ $gauge-amber: #e0993a;
 
     svg {
       color: $secondary;
-    }
-  }
-
-  // ------- بحث الموقع -------
-  .location_search {
-    position: relative;
-    margin-bottom: 18px;
-
-    svg {
-      position: absolute;
-      right: 14px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: #9ca3af;
-      font-size: 18px;
-    }
-
-    input {
-      width: 100%;
-      height: 48px;
-      border-radius: 12px;
-      border: 1px solid #ddd;
-      background: $white;
-      outline: none;
-      padding: 0 44px 0 14px;
-      transition: 0.25s;
-
-      &::placeholder {
-        color: #aaa;
-      }
-
-      &:focus {
-        border-color: $secondary;
-      }
     }
   }
 
@@ -9446,6 +9440,125 @@ $gauge-amber: #e0993a;
         color: $white;
         font-weight: 700;
       }
+    }
+  }
+}
+
+// ------- شريط البحث والفلتر في الموبايل -------
+.filters_mobile_bar {
+  display: none;
+}
+
+.filters_toggle_btn {
+  position: relative;
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  background: $white;
+  color: $secondary;
+
+  font-size: 20px;
+  cursor: pointer;
+  transition: 0.25s;
+
+  &:hover {
+    border-color: $secondary;
+    background: rgba($secondary, 0.08);
+  }
+
+  .filters_toggle_dot {
+    position: absolute;
+    top: 6px;
+    inset-inline-end: 6px;
+
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+
+    background: #ef4444;
+    border: 2px solid $white;
+  }
+}
+
+.filters_close_btn {
+  display: none;
+  align-items: center;
+  justify-content: center;
+
+  border: 0;
+  background: transparent;
+
+  color: $gray;
+  font-size: 22px;
+  cursor: pointer;
+
+  &:hover {
+    color: $primary;
+  }
+}
+
+.filters_overlay {
+  display: none;
+}
+
+@media (max-width: $breakpoint-lg) {
+  .filters_mobile_bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+
+    .filter_search {
+      flex: 1;
+      margin-bottom: 0;
+    }
+  }
+
+  .filter_search_desktop {
+    display: none;
+  }
+
+  .filters_close_btn {
+    display: flex;
+  }
+
+  .filters_overlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+
+    background: rgba($dark, 0.45);
+    backdrop-filter: blur(4px);
+  }
+
+  .filters_panel {
+    display: none;
+
+    position: fixed;
+    inset: 0;
+    top: auto;
+    z-index: 1001;
+
+    width: 100%;
+    height: 85vh;
+    max-height: 85vh;
+
+    border-radius: 22px 22px 0 0;
+
+    overflow-y: auto;
+
+    animation: popup 0.35s ease;
+
+    &.is-open {
+      display: block;
     }
   }
 }

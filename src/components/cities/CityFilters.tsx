@@ -31,6 +31,7 @@ const PRICE_MIN = 100;
 const PRICE_MAX = 30000;
 
 export default function CitiesFilters() {
+  const [search, setSearch] = useState('');
   const [minPrice, setMinPrice] = useState(PRICE_MIN);
   const [maxPrice, setMaxPrice] = useState(PRICE_MAX);
 
@@ -48,8 +49,21 @@ export default function CitiesFilters() {
     setMaxPrice(Math.max(Math.min(value, PRICE_MAX), minPrice + 1));
   };
 
+  const hasActiveFilters =
+    search.trim() !== '' ||
+    minPrice !== PRICE_MIN ||
+    maxPrice !== PRICE_MAX ||
+    companies.selected.length > 0 ||
+    types.selected.length > 0 ||
+    services.selected.length > 0 ||
+    selectedBrand !== null;
+
   return (
-    <FilterPanel>
+    <FilterPanel
+      searchValue={search}
+      onSearchChange={setSearch}
+      hasActiveFilters={hasActiveFilters}
+    >
       <PriceRangeSlider
         min={PRICE_MIN}
         max={PRICE_MAX}
