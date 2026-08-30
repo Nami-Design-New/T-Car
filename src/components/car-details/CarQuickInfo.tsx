@@ -1,6 +1,8 @@
 'use client';
 
 import { FiStar, FiHome, FiShield, FiTruck, FiMapPin } from 'react-icons/fi';
+import { LuPlane } from 'react-icons/lu';
+import { MdTrain } from 'react-icons/md';
 import type { CarDetails } from '@app-types/car';
 
 const FACT_ICONS = { shield: FiShield, delivery: FiTruck, distance: FiMapPin };
@@ -31,6 +33,13 @@ export default function CarQuickInfo({ car }: Props) {
         <span className="fact showroom">
           <FiHome /> {car.showroom}
         </span>
+
+        {car.pickupPoint && (
+          <span className="fact pickup">
+            {car.pickupPoint === 'airport' ? <LuPlane /> : <MdTrain />}
+            {car.pickupPoint === 'airport' ? 'استلام من المطار' : 'استلام من محطة'}
+          </span>
+        )}
 
         {car.quickFacts.map((fact, i) => {
           const Icon = FACT_ICONS[fact.icon];

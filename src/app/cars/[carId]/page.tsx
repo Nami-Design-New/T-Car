@@ -7,6 +7,7 @@ import CarBookingCard from '@components/car-details/CarBookingCard';
 import ReviewsSummaryCard from '@components/car-details/ReviewsSummaryCard';
 import StationAndAirportInfo from '@components/car-details/StationAndAirportInfo';
 import type { CarDetails } from '@app-types/car';
+import { MOCK_CARS, getCarListingById } from '@/data/cars';
 
 import car1 from '@assets/images/car1.jpg';
 import car1Side from '@assets/images/car1-side.jpg';
@@ -18,20 +19,11 @@ interface Props {
 }
 
 async function getCarDetails(carId: string): Promise<CarDetails> {
+  const listing = getCarListingById(carId) ?? MOCK_CARS[0];
+
   return {
-    id: carId,
-    name: 'E-Class',
-    brand: 'مرسيدس',
-    image: car1,
+    ...listing,
     images: [car1, car1Side, car1Back, car1Interior],
-    pricePerDay: 500,
-    seats: 5,
-    year: 2220,
-    transmission: 'Automatic',
-    fuelType: 'Petrol',
-    rating: 4.9,
-    reviewsCount: 453,
-    showroom: 'معرض السلطان',
     quickFacts: [
       { icon: 'shield', label: 'تأمين قابل للخصم' },
       { icon: 'delivery', label: 'التوصيل خلال 15 دقيقة' },
@@ -119,7 +111,9 @@ export default async function CarDetailsPage({ params }: Props) {
             <div className="car-details-main">
               <CarGallery images={car.images} alt={`${car.brand} ${car.name}`} />
               <CarQuickInfo car={car} />
-              <StationAndAirportInfo showroom={car.showroom} />
+              {car.pickupPoint && (
+                <StationAndAirportInfo showroom={car.showroom} type={car.pickupPoint} />
+              )}
               <WarrantiesList warranties={car.warranties} />
               <AddonsGrid addons={car.addons} />
               <InsuranceOptions options={car.insuranceOptions} />

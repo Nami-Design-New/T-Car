@@ -3511,6 +3511,7 @@ font-size: 2rem;}
 
   @media (max-width: $breakpoint-md) {
     flex-direction: column;
+    align-items: unset;
     gap: 14px;
   }
 
@@ -3918,17 +3919,63 @@ font-size: 2rem;}
     }
   }
 
-  .discount_badge {
+  .card_badges {
     position: absolute;
     top: 16px;
     inset-inline-start: 16px;
+    z-index: 3;
+
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .discount_badge {
+    display: inline-flex;
+    align-items: center;
+
     background: #18b56b;
     color: $white;
+
     padding: 6px 12px;
     border-radius: 30px;
+
     font-size: 12px;
     font-weight: 700;
-    z-index: 3;
+  }
+
+  .pickup_badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+
+    background: mix($secondary, $white, 15%);
+    color: darken($secondary, 12%);
+    box-shadow: 0 2px 8px rgba($dark, 0.12);
+
+    padding-block: 4px;
+    padding-inline: 4px 12px;
+    border-radius: 30px;
+
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+
+    .pickup_badge_icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+
+      background: $secondary;
+      color: $white;
+      font-size: 12px;
+    }
   }
 
   &-image {
@@ -4339,6 +4386,17 @@ font-size: 2rem;}
       &.showroom {
         color: $primary;
         font-weight: 600;
+      }
+
+      &.pickup {
+        background: mix($secondary, $white, 15%);
+        border-color: transparent;
+        color: darken($secondary, 12%);
+        font-weight: 600;
+
+        svg {
+          color: darken($secondary, 12%);
+        }
       }
     }
   }
@@ -9459,18 +9517,17 @@ $gauge-amber: #e0993a;
   align-items: center;
   justify-content: center;
 
-  border: 1px solid #ddd;
-  border-radius: 12px;
-  background: $white;
-  color: $secondary;
+  border: 0;
+  border-radius: 14px;
+  background: $secondary;
+  color: $white;
 
   font-size: 20px;
   cursor: pointer;
   transition: 0.25s;
 
   &:hover {
-    border-color: $secondary;
-    background: rgba($secondary, 0.08);
+    background: darken($secondary, 6%);
   }
 
   .filters_toggle_dot {

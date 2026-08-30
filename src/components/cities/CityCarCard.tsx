@@ -2,8 +2,11 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { FiStar, FiCalendar, FiMapPin, FiDroplet } from 'react-icons/fi';
+import { LuPlane } from 'react-icons/lu';
+import { MdTrain } from 'react-icons/md';
 import { formatCurrency } from '@utils/index';
 import type { BookingDetails, CarListing, PaymentMethod } from '@app-types/car';
 import Button from '../common/Button';
@@ -18,13 +21,26 @@ interface Props {
 }
 
 export default function CityCarCard({ car }: Props) {
+  const router = useRouter();
   const [bookingType, setBookingType] = useState<'monthly' | 'daily' | null>(null);
   const [step, setStep] = useState<'closed' | 'dates' | 'confirm' | 'payment' | 'success'>(
     'closed'
   );
   const [booking, setBooking] = useState<BookingDetails | null>(null);
 
-  const handleBookNow = () => {
+  const goToDetails = () => {
+    router.push(`/cars/${car.id}`);
+  };
+
+  const handleCardKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      goToDetails();
+    }
+  };
+
+  const handleBookNow = (e: React.MouseEvent) => {
+    e.stopPropagation();
     const type = new URLSearchParams(window.location.search).get('type');
     setBookingType(type === 'monthly' ? 'monthly' : 'daily');
     setStep('dates');
@@ -48,8 +64,26 @@ export default function CityCarCard({ car }: Props) {
 
   return (
     <>
-      <div className="city-car-card">
-        {car.originalPrice && <span className="discount_badge">خصم خاص</span>}
+      <div
+        className="city-car-card"
+        role="link"
+        tabIndex={0}
+        onClick={goToDetails}
+        onKeyDown={handleCardKeyDown}
+      >
+        {(car.originalPrice || car.pickupPoint) && (
+          <div className="card_badges">
+            {car.originalPrice && <span className="discount_badge">خصم خاص</span>}
+            {car.pickupPoint && (
+              <span className="pickup_badge">
+                <span className="pickup_badge_icon">
+                  {car.pickupPoint === 'airport' ? <LuPlane /> : <MdTrain />}
+                </span>
+                {car.pickupPoint === 'airport' ? 'استلام من المطار' : 'استلام من محطة'}
+              </span>
+            )}
+          </div>
+        )}
 
         <Link href={`/cars/${car.id}`} className="city-car-card-image">
           <Image src={car.image} alt={car.name} fill sizes="350px" />

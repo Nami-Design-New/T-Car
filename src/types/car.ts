@@ -26,11 +26,14 @@ export interface CarFilters {
   carTypes: string[];
 }
 
+export type PickupPoint = 'airport' | 'station';
+
 export interface CarListing extends Car {
   originalPrice?: number;
   reviewsCount: number;
   year: number;
   showroom: string;
+  pickupPoint?: PickupPoint;
 }
 
 // Car / Details page

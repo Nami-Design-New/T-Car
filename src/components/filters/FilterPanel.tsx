@@ -1,7 +1,21 @@
 'use client';
 
 import { ReactNode, useEffect, useState } from 'react';
-import { FiSearch, FiSliders, FiX } from 'react-icons/fi';
+import { FiSearch, FiX } from 'react-icons/fi';
+
+function FilterFunnelIcon() {
+  return (
+    <svg width="22" height="20" viewBox="0 0 32 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path
+        d="M2.628 1.601C5.028 1.206 7.49 1 10 1s4.973.206 7.372.601a.75.75 0 0 1 .628.74v2.288a2.25 2.25 0 0 1-.659 1.59l-4.682 4.683a2.25 2.25 0 0 0-.659 1.59v3.037c0 .684-.31 1.33-.844 1.757l-1.937 1.55A.75.75 0 0 1 8 18.75v-5.757a2.25 2.25 0 0 0-.659-1.591L2.659 6.72a2.25 2.25 0 0 1-.659-1.591V2.34a.75.75 0 0 1 .628-.74Z"
+        fill="currentColor"
+      />
+      <rect x="23" y="3" width="9" height="2" rx="1" fill="currentColor" />
+      <rect x="23" y="9" width="9" height="2" rx="1" fill="currentColor" />
+      <rect x="23" y="15" width="9" height="2" rx="1" fill="currentColor" />
+    </svg>
+  );
+}
 
 interface FilterPanelProps {
   title?: string;
@@ -55,7 +69,7 @@ export default function FilterPanel({
           onClick={() => setIsOpen(true)}
           aria-label="فتح الفلاتر"
         >
-          <FiSliders />
+          <FilterFunnelIcon />
           {hasActiveFilters && <span className="filters_toggle_dot" />}
         </button>
       </div>

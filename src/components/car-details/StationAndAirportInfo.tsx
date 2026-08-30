@@ -4,12 +4,15 @@ import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { FiExternalLink, FiHome, FiX } from 'react-icons/fi';
 import { LuPlane } from 'react-icons/lu';
+import { MdTrain } from 'react-icons/md';
 import branchIcon from '@assets/icons/branch-car.svg';
+import type { PickupPoint } from '@app-types/car';
 
 interface Props {
   showroom: string;
   address?: string;
   distanceKm?: number;
+  type?: PickupPoint;
 }
 
 const branches = [
@@ -22,8 +25,11 @@ export default function StationAndAirportInfo({
   showroom,
   address = 'جدة، شارع الملك عبدالله بن عبدالعزيز',
   distanceKm = 2.9,
+  type = 'airport',
 }: Props) {
   const [showBranches, setShowBranches] = useState(false);
+
+  const isAirport = type === 'airport';
 
   useEffect(() => {
     if (!showBranches) return;
@@ -47,10 +53,14 @@ export default function StationAndAirportInfo({
       <section className="station-airport-info" aria-label="معلومات الاستلام والفرع">
         <div className="station-airport-info-banner">
           <div className="station-airport-info-heading">
-            <LuPlane aria-hidden="true" />
-            <strong>مواقف تي كار في المطار</strong>
+            {isAirport ? <LuPlane aria-hidden="true" /> : <MdTrain aria-hidden="true" />}
+            <strong>{isAirport ? 'مواقف تي كار في المطار' : 'مواقف تي كار في المحطة'}</strong>
           </div>
-          <p>خدمة الاستلام والإرجاع السريعة في مواقف السيارات بالمطار</p>
+          <p>
+            {isAirport
+              ? 'خدمة الاستلام والإرجاع السريعة في مواقف السيارات بالمطار'
+              : 'خدمة الاستلام والإرجاع السريعة في مواقف السيارات بالمحطة'}
+          </p>
         </div>
 
         <div className="station-airport-info-branch">

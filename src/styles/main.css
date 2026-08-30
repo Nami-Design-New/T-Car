@@ -14671,6 +14671,7 @@ img {
 @media (max-width: 768px) {
   .city-search-card {
     flex-direction: column;
+    align-items: unset;
     gap: 14px;
   }
 }
@@ -14996,11 +14997,6 @@ img {
   .city-listings-grid {
     grid-template-columns: 1fr;
   }
-  .city-listings-grid .car_filters, .city-listings-grid .city_filters {
-    position: static;
-    top: auto;
-    width: 100%;
-  }
 }
 
 .city-cars-grid {
@@ -15027,17 +15023,51 @@ img {
 .city-car-card:hover .city-car-card-image img {
   transform: scale(1.06);
 }
-.city-car-card .discount_badge {
+.city-car-card .card_badges {
   position: absolute;
   top: 16px;
   inset-inline-start: 16px;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+.city-car-card .discount_badge {
+  display: inline-flex;
+  align-items: center;
   background: #18b56b;
   color: #ffffff;
   padding: 6px 12px;
   border-radius: 30px;
   font-size: 12px;
   font-weight: 700;
-  z-index: 3;
+}
+.city-car-card .airport_badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgb(221.4, 235.8, 254.25);
+  color: rgb(4.7991266376, 96.9423580786, 215.0008733624);
+  box-shadow: 0 2px 8px rgba(16, 24, 32, 0.12);
+  padding-block: 4px;
+  padding-inline: 4px 12px;
+  border-radius: 30px;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.city-car-card .airport_badge .airport_badge_icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #1f7ffa;
+  color: #ffffff;
+  font-size: 12px;
 }
 .city-car-card-image {
   position: relative;
@@ -15394,6 +15424,15 @@ img {
 .car-quick-info-facts .fact.showroom {
   color: #0a2540;
   font-weight: 600;
+}
+.car-quick-info-facts .fact.airport {
+  background: rgb(221.4, 235.8, 254.25);
+  border-color: transparent;
+  color: rgb(4.7991266376, 96.9423580786, 215.0008733624);
+  font-weight: 600;
+}
+.car-quick-info-facts .fact.airport svg {
+  color: rgb(4.7991266376, 96.9423580786, 215.0008733624);
 }
 
 .station-airport-info {
@@ -19223,6 +19262,39 @@ img {
   margin-top: 40px;
 }
 
+.filter_search {
+  position: relative;
+  margin-bottom: 18px;
+}
+.filter_search svg {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #9ca3af;
+  font-size: 18px;
+}
+.filter_search input {
+  width: 100%;
+  height: 48px;
+  border-radius: 12px;
+  border: 1px solid #ddd;
+  background: #ffffff;
+  outline: none;
+  padding: 0 44px 0 14px;
+  transition: 0.25s;
+  font-size: 14px;
+}
+.filter_search input::-moz-placeholder {
+  color: #aaa;
+}
+.filter_search input::placeholder {
+  color: #aaa;
+}
+.filter_search input:focus {
+  border-color: #1f7ffa;
+}
+
 .filters_panel {
   background: #ffffff;
   border-radius: 22px;
@@ -19296,37 +19368,6 @@ img {
 }
 .filters_panel .filter_group > h4 svg, .filters_panel .filter_group > .h4 svg {
   color: #1f7ffa;
-}
-.filters_panel .location_search {
-  position: relative;
-  margin-bottom: 18px;
-}
-.filters_panel .location_search svg {
-  position: absolute;
-  right: 14px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #9ca3af;
-  font-size: 18px;
-}
-.filters_panel .location_search input {
-  width: 100%;
-  height: 48px;
-  border-radius: 12px;
-  border: 1px solid #ddd;
-  background: #ffffff;
-  outline: none;
-  padding: 0 44px 0 14px;
-  transition: 0.25s;
-}
-.filters_panel .location_search input::-moz-placeholder {
-  color: #aaa;
-}
-.filters_panel .location_search input::placeholder {
-  color: #aaa;
-}
-.filters_panel .location_search input:focus {
-  border-color: #1f7ffa;
 }
 .filters_panel .radio_item {
   display: flex;
@@ -19577,6 +19618,100 @@ img {
   font-weight: 700;
 }
 
+.filters_mobile_bar {
+  display: none;
+}
+
+.filters_toggle_btn {
+  position: relative;
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 14px;
+  background: #1f7ffa;
+  color: #ffffff;
+  font-size: 20px;
+  cursor: pointer;
+  transition: 0.25s;
+}
+.filters_toggle_btn:hover {
+  background: rgb(5.4672489083, 110.4384279476, 244.9327510917);
+}
+.filters_toggle_btn .filters_toggle_dot {
+  position: absolute;
+  top: 6px;
+  inset-inline-end: 6px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #ef4444;
+  border: 2px solid #ffffff;
+}
+
+.filters_close_btn {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  background: transparent;
+  color: #6c757d;
+  font-size: 22px;
+  cursor: pointer;
+}
+.filters_close_btn:hover {
+  color: #0a2540;
+}
+
+.filters_overlay {
+  display: none;
+}
+
+@media (max-width: 992px) {
+  .filters_mobile_bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  .filters_mobile_bar .filter_search {
+    flex: 1;
+    margin-bottom: 0;
+  }
+  .filter_search_desktop {
+    display: none;
+  }
+  .filters_close_btn {
+    display: flex;
+  }
+  .filters_overlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    background: rgba(16, 24, 32, 0.45);
+    backdrop-filter: blur(4px);
+  }
+  .filters_panel {
+    display: none;
+    position: fixed;
+    inset: 0;
+    top: auto;
+    z-index: 1001;
+    width: 100%;
+    height: 85vh;
+    max-height: 85vh;
+    border-radius: 22px 22px 0 0;
+    overflow-y: auto;
+    animation: popup 0.35s ease;
+  }
+  .filters_panel.is-open {
+    display: block;
+  }
+}
 .form_group {
   display: flex;
   flex-direction: column;
