@@ -15434,35 +15434,47 @@ img {
   font-size: 15px;
 }
 .car-card__price {
+  display: flex;
   min-width: 0;
-  text-align: end;
+  align-items: center;
+  gap: 12px;
+  direction: rtl;
+  white-space: nowrap;
 }
 .car-card__price del {
-  display: block;
-  margin-bottom: 3px;
-  color: #99a1aa;
-  font-size: 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: #9a9a9a;
+  font-size: 16px;
+  font-weight: 500;
   line-height: 1;
+  text-decoration-color: currentColor;
+  text-decoration-thickness: 1.5px;
 }
 .car-card__current-price {
-  display: flex;
-  align-items: baseline;
-  justify-content: flex-end;
-  gap: 4px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
 }
 .car-card__current-price strong {
   color: #1f7ffa;
-  font-size: 18px;
+  font-size: 24px;
   font-weight: 700;
   line-height: 1;
   white-space: nowrap;
 }
 .car-card__current-price small,
 .car-card__current-price .small {
-  color: #596573;
-  font-size: 10px;
-  font-weight: 500;
+  color: #737373;
+  font-size: 15px;
+  font-weight: 700;
   white-space: nowrap;
+}
+.car-card__riyal-icon {
+  width: 16px;
+  height: auto;
+  flex: 0 0 auto;
 }
 @media (max-width: 576px) {
   .car-card {

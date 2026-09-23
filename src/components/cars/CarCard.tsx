@@ -3,13 +3,18 @@
 import { Link } from '@/i18n/navigation';
 import type { CarListing } from '@app-types/car';
 import giftImage from '@assets/images/gift.svg';
-import { classNames, formatCurrency } from '@utils/index';
-import { useLocale, useTranslations } from 'next-intl';
+import RiyalIcon from '@assets/ryal.svg';
+import { classNames } from '@utils/index';
+import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import { FaStar } from 'react-icons/fa6';
 import { FiMapPin } from 'react-icons/fi';
 import { LuPlane } from 'react-icons/lu';
 import { MdTrain } from 'react-icons/md';
+
+const priceFormatter = new Intl.NumberFormat('en-US', {
+  maximumFractionDigits: 0,
+});
 
 export interface CarCardProps {
   car: CarListing;
@@ -24,10 +29,8 @@ export default function CarCard({
   imageSizes = '(max-width: 767px) 86vw, (max-width: 1199px) 45vw, 350px',
   priority = false,
 }: CarCardProps) {
-  const locale = useLocale();
   const t = useTranslations('carCard');
   const detailsHref = `/cars/${car.id}` as const;
-  const currencyLocale = locale === 'ar' ? 'ar-SA' : 'en-SA';
   const discountPercent = car.originalPrice
     ? Math.max(1, Math.round((1 - car.pricePerDay / car.originalPrice) * 100))
     : null;
@@ -82,27 +85,30 @@ export default function CarCard({
           </h3>
 
           <div className="car-card__meta">
-            <span className="car-card__year">{car.year}</span>
             <span className="car-card__showroom">
               <FiMapPin aria-hidden="true" />
               <span>{car.showroom}</span>
             </span>
+            <span className="car-card__year">{car.year}</span>
           </div>
 
           <div className="car-card__footer">
+            <span className="car-card__price">
+              <span className="car-card__current-price">
+                <strong>{priceFormatter.format(car.pricePerDay)}</strong>
+                <Image src={RiyalIcon} alt="ريال" className="car-card__riyal-icon" />
+                <small>{t('perDay')}</small>
+              </span>
+              {car.originalPrice ? (
+                <del className="car-card__old-price">
+                  <span>{priceFormatter.format(car.originalPrice)}</span>
+                  <Image src={RiyalIcon} alt="ريال" className="car-card__riyal-icon" />
+                </del>
+              ) : null}
+            </span>
             <span className="car-card__rating" aria-label={t('rating', { rating: car.rating })}>
               <span>{car.rating}</span>
               <FaStar aria-hidden="true" />
-            </span>
-
-            <span className="car-card__price">
-              {car.originalPrice ? (
-                <del>{formatCurrency(car.originalPrice, currencyLocale, 'SAR')}</del>
-              ) : null}
-              <span className="car-card__current-price">
-                <strong>{formatCurrency(car.pricePerDay, currencyLocale, 'SAR')}</strong>
-                <small>{t('perDay')}</small>
-              </span>
             </span>
           </div>
         </div>
