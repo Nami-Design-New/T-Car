@@ -1,6 +1,6 @@
 'use client';
 
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
 import Lottie from 'lottie-react';
 
 import emptyBookingsAnimation from '@assets/images/non_data.json';

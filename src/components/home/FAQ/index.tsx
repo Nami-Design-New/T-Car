@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import { useTranslations } from 'next-intl';;
 import { FiChevronDown } from 'react-icons/fi';
 import SectionTitle from '@components/common/SectionTitle';
 import type { FAQItem } from '@app-types/index';
@@ -47,7 +47,8 @@ const FAQS: FAQItem[] = [
 ];
 
 export default function FAQ() {
-  const { t } = useTranslation();
+  const t = useTranslations();
+
 
   const [openId, setOpenId] = useState<string | null>('1');
 

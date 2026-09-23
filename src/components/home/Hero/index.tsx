@@ -22,13 +22,14 @@ import AirportModal from '@/components/modals/AirportModal';
 import StationModal from '@/components/modals/StationModal';
 import CountryModal from '@/components/modals/CountryModal';
 
-import { useTranslation } from 'react-i18next';
+import { useTranslations } from 'next-intl';;
 import { RentalType, PickupType, Branch, Airport, Station, LocationData, Country } from '@/types/car';
 
 const slides = [hero1.src, hero2.src, hero3.src];
 
 export default function Hero() {
-  const { t } = useTranslation();
+  const t = useTranslations();
+
   const router = useRouter();
 
   const [rentalType, setRentalType] = useState<RentalType | null>(null);

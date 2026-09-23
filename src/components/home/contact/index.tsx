@@ -1,13 +1,14 @@
 'use client';
 
-import { useTranslation } from 'react-i18next';
+import { useTranslations } from 'next-intl';;
 
 import SectionTitle from '@/components/common/SectionTitle';
 import ContactInfo from './ContactInfo';
 import ContactForm from './ContactForm';
 
 export default function Contact() {
-  const { t } = useTranslation();
+  const t = useTranslations();
+
 
   return (
     <section className="contact section" id="contact">

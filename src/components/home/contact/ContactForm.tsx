@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import { useTranslations } from 'next-intl';;
 
 import Button from '@/components/common/Button';
 import FormInput from '@/components/common/FormInput';
@@ -9,7 +9,8 @@ import FormTextarea from '@/components/common/FormTextarea';
 import PhoneField from '@/components/common/PhoneField';
 
 export default function ContactForm() {
-  const { t } = useTranslation();
+  const t = useTranslations();
+
 
   const [form, setForm] = useState({
     name: '',

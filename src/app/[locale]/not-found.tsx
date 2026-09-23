@@ -1,11 +1,12 @@
 'use client';
 
-import Link from 'next/link';
-import { useTranslation } from 'react-i18next';
+import { useTranslations } from 'next-intl';
+import { Link } from '@/i18n/navigation';
 import { FiHome, FiSearch } from 'react-icons/fi';
 
 export default function NotFound() {
-  const { t } = useTranslation();
+  const t = useTranslations();
+
 
   return (
     <div className="not-found-page">

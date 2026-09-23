@@ -1,6 +1,6 @@
 'use client';
 
-import { useTranslation } from 'react-i18next';
+import { useTranslations } from 'next-intl';;
 import SectionTitle from '@/components/common/SectionTitle';
 
 const sections = [
@@ -32,7 +32,8 @@ const sections = [
 ];
 
 export default function TermsPage() {
-  const { t } = useTranslation();
+  const t = useTranslations();
+
 
   return (
     <section className="section legal-page">

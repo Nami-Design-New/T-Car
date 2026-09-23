@@ -1,6 +1,6 @@
 'use client';
 
-import { useTranslation } from 'react-i18next';
+import { useTranslations } from 'next-intl';;
 import {
   FiFacebook,
   FiInstagram,
@@ -11,7 +11,8 @@ import {
 } from 'react-icons/fi';
 
 export default function ContactInfo() {
-  const { t } = useTranslation();
+  const t = useTranslations();
+
 
   return (
     <div className="contact_info">

@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
 import { FiStar, FiHome, FiCalendar } from 'react-icons/fi';
 import type { UserBooking } from '@app-types/car';
 

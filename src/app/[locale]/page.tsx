@@ -6,8 +6,11 @@ import DownloadApp from '@/components/home/Download';
 import FAQ from '@components/home/FAQ';
 import Contact from '@/components/home/contact';
 import CTA from '@/components/home/CTA/CTA';
+import { useTranslations } from 'next-intl';
 
 export default function HomePage() {
+    const t = useTranslations();
+
   return (
     <>
       <Hero />

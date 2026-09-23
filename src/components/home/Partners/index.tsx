@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { useTranslation } from 'react-i18next';
+import { useTranslations } from 'next-intl';;
 
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay } from 'swiper/modules';
@@ -31,7 +31,8 @@ const logos = [
 ];
 
 export default function Partners() {
-  const { t } = useTranslation();
+  const t = useTranslations();
+
 
   return (
     <section className="partners section" id="partners">

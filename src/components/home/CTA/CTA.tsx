@@ -1,5 +1,5 @@
 import Button from '@/components/common/Button';
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
 
 export default function CTA() {
   return (

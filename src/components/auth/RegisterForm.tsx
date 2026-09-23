@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import { useTranslations } from 'next-intl';;
 import { FiArrowLeft } from 'react-icons/fi';
 
 type Props = {
@@ -10,7 +10,8 @@ type Props = {
 };
 
 export default function RegisterForm({ onBack, onSuccess }: Props) {
-  const { t } = useTranslation();
+  const t = useTranslations();
+
   const [form, setForm] = useState({
     name: '',
     email: '',

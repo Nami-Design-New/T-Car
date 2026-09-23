@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import { useTranslations } from 'next-intl';;
 import PhoneField from '@/components/common/PhoneField';
 import logo from '@assets/images/fav.svg';
 import whatsappIcon from '@assets/icons/whatsapp-icon.svg';
@@ -13,7 +13,8 @@ type Props = {
 };
 
 export default function LoginForm({ onNext, onRegister }: Props) {
-  const { t } = useTranslation();
+  const t = useTranslations();
+
   const [phone, setPhone] = useState('+966');
 
   return (

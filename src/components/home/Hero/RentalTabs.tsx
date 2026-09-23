@@ -1,7 +1,7 @@
 'use client';
 
 import Image, { StaticImageData } from 'next/image';
-import { useTranslation } from 'react-i18next';
+import { useTranslations } from 'next-intl';;
 
 import dailyIcon from '../../../assets/icons/dailytab.svg';
 import monthlyIcon from '../../../assets/icons/monthlytab.svg';
@@ -56,7 +56,8 @@ const tabs: {
 export default function RentalTabs({
   onSelect,
 }: RentalTabsProps) {
-  const { t } = useTranslation();
+  const t = useTranslations();
+
 
   return (
     <div className="rental_tabs">

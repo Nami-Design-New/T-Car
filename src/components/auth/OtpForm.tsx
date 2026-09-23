@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import { useTranslations } from 'next-intl';;
 import { FiArrowLeft } from 'react-icons/fi';
 
 type Props = {
@@ -15,7 +15,8 @@ const OTP_LENGTH = 4;
 const OTP_RESEND_SECONDS = 60;
 
 export default function OtpForm({ phone, onBack, onVerify, onResend }: Props) {
-  const { t } = useTranslation();
+  const t = useTranslations();
+
   const [otp, setOtp] = useState<string[]>(Array(OTP_LENGTH).fill(''));
   const [timer, setTimer] = useState(OTP_RESEND_SECONDS);
 

@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { useTranslation } from 'react-i18next';
-import Link from 'next/link';
+import { useTranslations } from 'next-intl';;
+import { Link } from '@/i18n/navigation';
 import Image from 'next/image';
 import { FiSearch, FiMapPin, FiArrowRight } from 'react-icons/fi';
 import type { City } from '@app-types/car';
@@ -24,7 +24,8 @@ const ALL_CITIES: (Omit<City, 'image'> & { image: typeof c1 })[] = [
 ];
 
 export default function CitiesGrid() {
-  const { t } = useTranslation();
+  const t = useTranslations();
+
   const [query, setQuery] = useState('');
 
   const filteredCities = useMemo(() => {

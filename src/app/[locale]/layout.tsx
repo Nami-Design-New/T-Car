@@ -1,8 +1,9 @@
-import type { Metadata } from 'next';
-import Header from '@components/layout/Header';
 import Footer from '@components/layout/Footer';
-import I18nProvider from '@components/layout/I18nProvider';
-import '../styles/main.css';
+import Header from '@components/layout/Header';
+import type { Metadata } from 'next';
+import { NextIntlClientProvider } from 'next-intl';
+import '../../styles/main.css';
+
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
 
 
@@ -60,11 +61,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="ar" dir="rtl">
       <body>
-        <I18nProvider>
-          <Header />
-          <main>{children}</main>
-          <Footer />
-        </I18nProvider>
+         <NextIntlClientProvider>
+            <Header />
+               <main>{children}</main>
+            <Footer />
+         </NextIntlClientProvider>
       </body>
     </html>
   );

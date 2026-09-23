@@ -1,8 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import Link from 'next/link';
-import { useTranslation } from 'react-i18next';
+import { Link } from '@/i18n/navigation';
+import { useTranslations } from 'next-intl';;
 import { FiMenu, FiX } from 'react-icons/fi';
 import Button from '@components/common/Button';
 import LanguageSwitcher from '@components/layout/LanguageSwitcher';
@@ -13,7 +13,8 @@ import logo from '@assets/images/logo.png';
 import AuthModal from '@/components/auth/AuthModal';
 
 export default function Header() {
-  const { t } = useTranslation();
+  const t = useTranslations();
+
   const [isOpen, setIsOpen] = useState(false);
   const [showAuth, setShowAuth] = useState(false);
 

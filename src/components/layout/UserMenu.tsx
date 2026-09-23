@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
 import {FiLogOut, FiChevronDown } from 'react-icons/fi';
 import { ImUser } from "react-icons/im";
 import Image from 'next/image';
