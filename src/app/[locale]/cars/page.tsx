@@ -1,5 +1,5 @@
 import CarFilters from '@components/cars/CarFilters';
-import CityCarCard from '@components/cities/CityCarCard';
+import CarCard from '@components/cars/CarCard';
 import type { CarListing } from '@app-types/car';
 import { MOCK_CARS } from '@/data/cars';
 
@@ -18,7 +18,7 @@ export default async function CarsPage() {
           <CarFilters />
           <div className="city-cars-grid">
             {cars.map((car) => (
-              <CityCarCard key={car.id} car={car} />
+              <CarCard key={car.id} car={car} />
             ))}
           </div>
         </div>

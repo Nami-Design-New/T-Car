@@ -69,6 +69,16 @@
     "carsAvailable": "Cars Available",
     "explore": "Explore"
   },
+  "carCard": {
+    "viewCar": "View {brand} {name} details",
+    "airportPickup": "Airport pickup",
+    "stationPickup": "Station pickup",
+    "limitedOffer": "Limited-time offer",
+    "saveNow": "Save when you book now",
+    "discount": "off",
+    "rating": "Rated {rating} out of 5",
+    "perDay": "/ day"
+  },
   "partners": {
     "smallTitle": "Our Partners",
     "title": "Trusted by Leading Brands",

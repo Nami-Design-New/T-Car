@@ -1,7 +1,7 @@
 import CityHero from '@components/cities/CityHero';
 import SortBar from '@components/cities/SortBar';
 import CityFilters from '@components/cities/CityFilters';
-import CityCarCard from '@components/cities/CityCarCard';
+import CarCard from '@components/cars/CarCard';
 import type { CityDetails, CarListing } from '@app-types/car';
 import { MOCK_CARS } from '@/data/cars';
 import cityHeroImage from '@assets/images/c1.jpg';
@@ -41,7 +41,7 @@ export default async function CityDetailsPage({ params }: Props) {
 
             <div className="city-cars-grid">
               {cars.map((car) => (
-                <CityCarCard key={car.id} car={car} />
+                <CarCard key={car.id} car={car} />
               ))}
             </div>
           </div>

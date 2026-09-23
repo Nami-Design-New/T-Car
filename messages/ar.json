@@ -69,6 +69,16 @@
     "carsAvailable": "سيارة متاحة",
     "explore": "استكشف"
   },
+  "carCard": {
+    "viewCar": "عرض تفاصيل {brand} {name}",
+    "airportPickup": "استلام من المطار",
+    "stationPickup": "استلام من المحطة",
+    "limitedOffer": "احجز 3 أيام واحصل على",
+    "saveNow": "يوم مجاناً",
+    "discount": "خصم",
+    "rating": "التقييم {rating} من 5",
+    "perDay": "/ يوم"
+  },
   "partners": {
     "smallTitle": "شركاؤنا",
     "title": "شركاء النجاح",
