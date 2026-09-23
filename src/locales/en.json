@@ -31,6 +31,18 @@
       "resendIn": "Resend in {{seconds}} seconds",
       "resend": "Resend code",
       "verify": "Verify and continue"
+    },
+    "register": {
+      "title": "Create your account",
+      "description": "Complete your details to get started.",
+      "backLabel": "Back to verification",
+      "fullNameLabel": "Full name",
+      "fullNamePlaceholder": "Ahmed Abdullah Al-Qahtani",
+      "emailLabel": "Email address",
+      "emailPlaceholder": "name@domain.com",
+      "birthDateLabel": "Date of birth",
+      "agreeToTerms": "I agree to the terms and conditions",
+      "submit": "Create account"
     }
   },
   "hero": {

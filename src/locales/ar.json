@@ -31,6 +31,18 @@
       "resendIn": "إعادة الإرسال خلال {{seconds}} ثانية",
       "resend": "إعادة إرسال الرمز",
       "verify": "تحقق ومتابعة"
+    },
+    "register": {
+      "title": "إنشاء حساب",
+      "description": "أكمل بياناتك التالية للبدء.",
+      "backLabel": "العودة إلى التحقق",
+      "fullNameLabel": "الاسم بالكامل",
+      "fullNamePlaceholder": "أحمد عبدالله القحطاني",
+      "emailLabel": "البريد الإلكتروني",
+      "emailPlaceholder": "name@domain.com",
+      "birthDateLabel": "تاريخ الميلاد",
+      "agreeToTerms": "أوافق على الشروط والأحكام",
+      "submit": "إنشاء الحساب"
     }
   },
   "hero": {

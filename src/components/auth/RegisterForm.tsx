@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { FiArrowLeft } from 'react-icons/fi';
 
 type Props = {
@@ -9,6 +10,7 @@ type Props = {
 };
 
 export default function RegisterForm({ onBack, onSuccess }: Props) {
+  const { t } = useTranslation();
   const [form, setForm] = useState({
     name: '',
     email: '',
@@ -25,39 +27,82 @@ export default function RegisterForm({ onBack, onSuccess }: Props) {
     }));
   };
 
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    onSuccess();
+  };
+
   return (
-    <div className="register_form">
-      <button type="button" className="back_btn" onClick={onBack} aria-label="Back">
-        <FiArrowLeft />
+    <form className="register_form auth_register_form" onSubmit={handleSubmit}>
+      <button
+        type="button"
+        className="back_btn register_back_btn"
+        onClick={onBack}
+        aria-label={t('auth.register.backLabel')}
+      >
+        <FiArrowLeft aria-hidden="true" />
       </button>
 
-      <h2>إنشاء حساب</h2>
+      <h2>{t('auth.register.title')}</h2>
 
-      <p>أكمل البيانات التالية</p>
+      <p className="register_description">{t('auth.register.description')}</p>
 
       <div className="inputs">
-        <input name="name" placeholder="الاسم الكامل" value={form.name} onChange={handleChange} />
+        <label className="form_field" htmlFor="register-name">
+          <span>{t('auth.register.fullNameLabel')}</span>
+          <input
+            id="register-name"
+            name="name"
+            type="text"
+            placeholder={t('auth.register.fullNamePlaceholder')}
+            autoComplete="name"
+            value={form.name}
+            onChange={handleChange}
+            required
+          />
+        </label>
 
-        <input
-          name="email"
-          type="email"
-          placeholder="البريد الإلكتروني"
-          value={form.email}
-          onChange={handleChange}
-        />
+        <label className="form_field" htmlFor="register-email">
+          <span>{t('auth.register.emailLabel')}</span>
+          <input
+            id="register-email"
+            className="email_input"
+            name="email"
+            type="email"
+            dir="ltr"
+            placeholder={t('auth.register.emailPlaceholder')}
+            autoComplete="email"
+            value={form.email}
+            onChange={handleChange}
+            required
+          />
+        </label>
 
-        <input name="birthDate" type="date" value={form.birthDate} onChange={handleChange} />
+        <label className="form_field" htmlFor="register-birth-date">
+          <span>{t('auth.register.birthDateLabel')}</span>
+          <input
+            id="register-birth-date"
+            className="date_input"
+            name="birthDate"
+            type="date"
+            dir="ltr"
+            autoComplete="bday"
+            value={form.birthDate}
+            onChange={handleChange}
+            required
+          />
+        </label>
       </div>
 
       <label className="agree">
-        <input type="checkbox" name="agree" checked={form.agree} onChange={handleChange} />
+        <input type="checkbox" name="agree" checked={form.agree} onChange={handleChange} required />
 
-        <span>أوافق على الشروط والأحكام</span>
+        <span>{t('auth.register.agreeToTerms')}</span>
       </label>
 
-      <button className="auth_btn" onClick={onSuccess}>
-        إنشاء الحساب
+      <button type="submit" className="auth_btn">
+        {t('auth.register.submit')}
       </button>
-    </div>
+    </form>
   );
 }
