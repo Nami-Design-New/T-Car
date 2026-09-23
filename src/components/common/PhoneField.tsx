@@ -8,6 +8,8 @@ interface PhoneFieldProps {
   onChange: (phone: string) => void;
   defaultCountry?: string;
   disabled?: boolean;
+  searchPlaceholder?: string;
+  inputAriaLabel?: string;
 }
 
 export default function PhoneField({
@@ -15,6 +17,8 @@ export default function PhoneField({
   onChange,
   defaultCountry = 'sa',
   disabled = false,
+  searchPlaceholder = 'Search countries...',
+  inputAriaLabel = 'Phone number',
 }: PhoneFieldProps) {
   return (
     <PhoneInput
@@ -23,12 +27,13 @@ export default function PhoneField({
       onChange={onChange}
       disabled={disabled}
       enableSearch
-      searchPlaceholder="ابحث عن الدولة..."
+      searchPlaceholder={searchPlaceholder}
       disableSearchIcon
       countryCodeEditable={false}
       inputProps={{
         name: 'phone',
         autoComplete: 'tel',
+        'aria-label': inputAriaLabel,
       }}
       containerClass="phone_field"
       inputClass="phone_input"

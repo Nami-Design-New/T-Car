@@ -11,17 +11,29 @@
     "login": "Login",
     "faqs": "FAQs"
   },
+  "auth": {
+    "login": {
+      "logoAlt": "T-Car",
+      "title": "Welcome back",
+      "description": "Enter your mobile number to receive a verification code.",
+      "phoneLabel": "Mobile number",
+      "countrySearchPlaceholder": "Search countries...",
+      "sendViaWhatsApp": "Send code via WhatsApp",
+      "noAccount": "New to T-Car?",
+      "createAccount": "Create an account"
+    }
+  },
   "hero": {
     "title": "Rent Your Car with Ease",
     "subtitle": "Choose from daily, monthly, or airport pickup rentals and enjoy a fast, secure booking experience."
   },
   "rentalTabs": {
-  "daily": "Daily Rental",
-  "monthly": "Monthly Rental",
-  "airport": "Airport Pickup",
-  "station": "Train Station Pickup",
-  "international": "International Rental"
-},
+    "daily": "Daily Rental",
+    "monthly": "Monthly Rental",
+    "airport": "Airport Pickup",
+    "station": "Train Station Pickup",
+    "international": "International Rental"
+  },
   "search": {
     "title": "Find Your Perfect Car",
     "location": "Pickup Location",
@@ -29,12 +41,12 @@
     "returnDate": "Return Date",
     "submit": "Search"
   },
-"popularCities": {
-  "title": "Popular Cities",
-  "subtitle": "Wherever you are, your car is waiting for you",
-  "carsAvailable": "Cars Available",
-  "explore": "Explore"
-},
+  "popularCities": {
+    "title": "Popular Cities",
+    "subtitle": "Wherever you are, your car is waiting for you",
+    "carsAvailable": "Cars Available",
+    "explore": "Explore"
+  },
   "partners": {
     "smallTitle": "Our Partners",
     "title": "Trusted by Leading Brands",
@@ -91,5 +103,4 @@
     "browseCities": "Browse Cities",
     "lost": "Where to?"
   }
-
 }

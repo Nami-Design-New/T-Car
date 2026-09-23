@@ -15043,7 +15043,7 @@ img {
   font-size: 12px;
   font-weight: 700;
 }
-.city-car-card .airport_badge {
+.city-car-card .pickup_badge {
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -15057,7 +15057,7 @@ img {
   font-weight: 700;
   white-space: nowrap;
 }
-.city-car-card .airport_badge .airport_badge_icon {
+.city-car-card .pickup_badge .pickup_badge_icon {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -15425,13 +15425,13 @@ img {
   color: #0a2540;
   font-weight: 600;
 }
-.car-quick-info-facts .fact.airport {
+.car-quick-info-facts .fact.pickup {
   background: rgb(221.4, 235.8, 254.25);
   border-color: transparent;
   color: rgb(4.7991266376, 96.9423580786, 215.0008733624);
   font-weight: 600;
 }
-.car-quick-info-facts .fact.airport svg {
+.car-quick-info-facts .fact.pickup svg {
   color: rgb(4.7991266376, 96.9423580786, 215.0008733624);
 }
 
@@ -17601,10 +17601,21 @@ img {
   color: #ffffff;
   font-weight: 600;
   cursor: pointer;
-  transition: 0.3s;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
 }
 .license_modal .primary_btn:hover, .auth_modal .auth_btn:hover {
   opacity: 0.9;
+}
+.license_modal .primary_btn:focus-visible, .auth_modal .auth_btn:focus-visible {
+  outline: 3px solid rgba(31, 127, 250, 0.2);
+  outline-offset: 3px;
+}
+.license_modal .primary_btn:active, .auth_modal .auth_btn:active {
+  transform: scale(0.98);
+}
+.license_modal .primary_btn:disabled, .auth_modal .auth_btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
 }
 
 .auth_modal_wrapper .modal-content {
@@ -17706,6 +17717,52 @@ img {
 .auth_modal .login_form .phone_wrapper {
   width: 100%;
   margin-bottom: 24px;
+}
+.auth_modal .login_form .auth_btn--whatsapp {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 56px;
+  padding-inline: 20px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  overflow: hidden;
+  isolation: isolate;
+}
+.auth_modal .login_form .auth_btn--whatsapp .auth_btn_label {
+  line-height: 1.4;
+}
+.auth_modal .login_form .auth_btn--whatsapp .auth_btn_icon {
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 30px;
+  height: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.12);
+}
+.auth_modal .login_form .auth_btn--whatsapp .auth_btn_icon img {
+  width: 18px;
+  height: 18px;
+}
+.auth_modal .login_form .auth_btn--whatsapp:hover {
+  opacity: 1;
+  transform: translateY(-2px);
+  box-shadow: 0 14px 30px rgba(18, 140, 93, 0.26), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+.auth_modal .login_form .auth_btn--whatsapp:hover::before {
+  opacity: 1;
+}
+.auth_modal .login_form .auth_btn--whatsapp:focus-visible {
+  outline-color: rgba(18, 140, 93, 0.3);
+}
+.auth_modal .login_form .auth_btn--whatsapp:active {
+  transform: translateY(0) scale(0.985);
+  box-shadow: 0 6px 16px rgba(18, 140, 93, 0.2);
 }
 .auth_modal .login_form .bottom_text {
   margin-top: 18px;
@@ -17991,6 +18048,9 @@ img {
 .success_modal .auth_btn {
   width: 100%;
   height: 52px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   border: none;
   border-radius: 14px;
   background: #1f7ffa;
