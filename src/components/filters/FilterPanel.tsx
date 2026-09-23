@@ -24,6 +24,10 @@ interface FilterPanelProps {
   onSearchChange?: (value: string) => void;
   searchPlaceholder?: string;
   hasActiveFilters?: boolean;
+  applyLabel?: string;
+  clearAllLabel?: string;
+  onApply?: () => void;
+  onClearAll?: () => void;
 }
 
 export default function FilterPanel({
@@ -33,6 +37,10 @@ export default function FilterPanel({
   onSearchChange,
   searchPlaceholder = 'ابحث عن سيارة أو ماركة...',
   hasActiveFilters = false,
+  applyLabel = 'بحث',
+  clearAllLabel = 'مسح الكل',
+  onApply,
+  onClearAll,
 }: FilterPanelProps) {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -100,6 +108,29 @@ export default function FilterPanel({
         </div>
 
         {children}
+
+        {(onApply || onClearAll) && (
+          <div className="filter_actions">
+            <button
+              type="button"
+              className="filter_action_btn filter_clear_all_btn"
+              onClick={onClearAll}
+              disabled={!hasActiveFilters}
+            >
+              {clearAllLabel}
+            </button>
+            <button
+              type="button"
+              className="filter_action_btn filter_apply_btn"
+              onClick={() => {
+                onApply?.();
+                setIsOpen(false);
+              }}
+            >
+              {applyLabel}
+            </button>
+          </div>
+        )}
       </aside>
     </>
   );
