@@ -21,6 +21,16 @@
       "sendViaWhatsApp": "Send code via WhatsApp",
       "noAccount": "New to T-Car?",
       "createAccount": "Create an account"
+    },
+    "otp": {
+      "title": "Enter verification code",
+      "description": "We sent a 4-digit code to",
+      "backLabel": "Back to mobile number",
+      "codeLabel": "Verification code",
+      "digitLabel": "Digit {{position}} of {{total}}",
+      "resendIn": "Resend in {{seconds}} seconds",
+      "resend": "Resend code",
+      "verify": "Verify and continue"
     }
   },
   "hero": {

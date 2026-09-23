@@ -1,19 +1,23 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { FiArrowLeft } from 'react-icons/fi';
 
 type Props = {
   phone: string;
   onBack: () => void;
   onVerify: (code: string) => void;
+  onResend?: () => void;
 };
 
 const OTP_LENGTH = 4;
+const OTP_RESEND_SECONDS = 60;
 
-export default function OtpForm({ phone, onBack, onVerify }: Props) {
+export default function OtpForm({ phone, onBack, onVerify, onResend }: Props) {
+  const { t } = useTranslation();
   const [otp, setOtp] = useState<string[]>(Array(OTP_LENGTH).fill(''));
-  const [timer, setTimer] = useState(30);
+  const [timer, setTimer] = useState(OTP_RESEND_SECONDS);
 
   const inputs = useRef<(HTMLInputElement | null)[]>([]);
 
@@ -43,10 +47,6 @@ export default function OtpForm({ phone, onBack, onVerify }: Props) {
 
       const lastFilledIndex = Math.min(digits.length, OTP_LENGTH) - 1;
       focusInput(lastFilledIndex >= OTP_LENGTH - 1 ? OTP_LENGTH - 1 : lastFilledIndex + 1);
-
-      if (digits.length >= OTP_LENGTH) {
-        onVerify(next.join(''));
-      }
       return;
     }
 
@@ -58,10 +58,6 @@ export default function OtpForm({ phone, onBack, onVerify }: Props) {
       focusInput(index + 1);
     }
 
-    if (value && index === OTP_LENGTH - 1) {
-      const fullCode = copy.join('');
-      if (fullCode.length === OTP_LENGTH) onVerify(fullCode);
-    }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, index: number) => {
@@ -79,17 +75,34 @@ export default function OtpForm({ phone, onBack, onVerify }: Props) {
     }
   };
 
+  const handleResend = () => {
+    setOtp(Array(OTP_LENGTH).fill(''));
+    setTimer(OTP_RESEND_SECONDS);
+    onResend?.();
+    inputs.current[0]?.focus();
+  };
+
+  const code = otp.join('');
+  const isComplete = code.length === OTP_LENGTH;
+
   return (
     <div className="otp_form">
-      <button type="button" className="back_btn" onClick={onBack} aria-label="Back">
-        <FiArrowLeft />
+      <button
+        type="button"
+        className="back_btn otp_back_btn"
+        onClick={onBack}
+        aria-label={t('auth.otp.backLabel')}
+      >
+        <FiArrowLeft aria-hidden="true" />
       </button>
 
-      <h2>رمز التحقق</h2>
-      <p>تم إرسال رمز التحقق إلى</p>
-      <span className="phone">{phone}</span>
+      <h2>{t('auth.otp.title')}</h2>
+      <p className="otp_description">{t('auth.otp.description')}</p>
+      <bdi className="phone" dir="ltr">
+        {phone}
+      </bdi>
 
-      <div className="otp_inputs">
+      <div className="otp_inputs" dir="ltr" role="group" aria-label={t('auth.otp.codeLabel')}>
         {otp.map((digit, index) => (
           <input
             key={index}
@@ -99,22 +112,37 @@ export default function OtpForm({ phone, onBack, onVerify }: Props) {
             type="text"
             inputMode="numeric"
             autoComplete={index === 0 ? 'one-time-code' : 'off'}
-            maxLength={OTP_LENGTH} 
+            pattern="[0-9]*"
+            maxLength={OTP_LENGTH}
             value={digit}
+            className={digit ? 'is-filled' : ''}
+            aria-label={t('auth.otp.digitLabel', {
+              position: index + 1,
+              total: OTP_LENGTH,
+            })}
             onChange={(e) => handleChange(e.target.value, index)}
             onKeyDown={(e) => handleKeyDown(e, index)}
           />
         ))}
       </div>
 
-      {timer > 0 ? (
-        <p className="timer">إعادة الإرسال خلال {timer}s</p>
-      ) : (
-        <button className="resend">إعادة إرسال الرمز</button>
-      )}
+      <div className="otp_resend_status" aria-live="polite">
+        {timer > 0 ? (
+          <p className="timer">{t('auth.otp.resendIn', { seconds: timer })}</p>
+        ) : (
+          <button type="button" className="resend" onClick={handleResend}>
+            {t('auth.otp.resend')}
+          </button>
+        )}
+      </div>
 
-      <button className="auth_btn" onClick={() => onVerify(otp.join(''))}>
-        تحقق
+      <button
+        type="button"
+        className="auth_btn"
+        disabled={!isComplete}
+        onClick={() => onVerify(code)}
+      >
+        {t('auth.otp.verify')}
       </button>
     </div>
   );

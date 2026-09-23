@@ -21,6 +21,16 @@
       "sendViaWhatsApp": "إرسال الرمز عبر واتساب",
       "noAccount": "جديد في تي كار؟",
       "createAccount": "إنشاء حساب"
+    },
+    "otp": {
+      "title": "أدخل رمز التحقق",
+      "description": "أرسلنا رمزاً مكوّناً من 4 أرقام إلى",
+      "backLabel": "العودة إلى رقم الجوال",
+      "codeLabel": "رمز التحقق",
+      "digitLabel": "الرقم {{position}} من {{total}}",
+      "resendIn": "إعادة الإرسال خلال {{seconds}} ثانية",
+      "resend": "إعادة إرسال الرمز",
+      "verify": "تحقق ومتابعة"
     }
   },
   "hero": {

@@ -7089,16 +7089,12 @@ img {
       min-height: 56px;
       padding-inline: 20px;
 
-    
-
       font-size: 0.95rem;
       font-weight: 700;
       letter-spacing: -0.01em;
 
       overflow: hidden;
       isolation: isolate;
-
-
 
       .auth_btn_label {
         line-height: 1.4;
@@ -7126,21 +7122,17 @@ img {
         opacity: 1;
         transform: translateY(-2px);
         box-shadow:
-          0 14px 30px rgba(#128c5d, 0.26),
+          0 14px 30px rgba($secondary, 0.26),
           inset 0 1px 0 rgba($white, 0.2);
-
-        &::before {
-          opacity: 1;
-        }
       }
 
       &:focus-visible {
-        outline-color: rgba(#128c5d, 0.3);
+        outline-color: rgba($secondary, 0.3);
       }
 
       &:active {
         transform: translateY(0) scale(0.985);
-        box-shadow: 0 6px 16px rgba(#128c5d, 0.2);
+        box-shadow: 0 6px 16px rgba($secondary, 0.2);
       }
     }
 
@@ -7339,7 +7331,7 @@ img {
 
   .otp_form {
     .phone {
-      margin-bottom: 8px;
+      margin-bottom: 26px;
     }
 
     .edit_phone_btn {
@@ -7403,23 +7395,56 @@ img {
 }
 // ============ OTP form ============
 .otp_form {
+  width: 100%;
+
   display: flex;
   flex-direction: column;
   align-items: center;
   position: relative;
 
-  h2 {
-    @extend %auth_heading;
+  text-align: center;
+
+  .otp_back_btn {
+    inset-inline-start: 0;
+    inset-inline-end: auto;
   }
 
-  p {
+  h2 {
+    @extend %auth_heading;
+
+    padding-inline: 48px;
+
+    font-size: clamp(1.35rem, 4vw, 1.65rem);
+    font-weight: 800;
+    line-height: 1.4;
+  }
+
+  .otp_description {
     @extend %auth_subtext;
+
+    margin: 0;
+
+    font-size: 0.92rem;
+    line-height: 1.8;
   }
 
   .phone {
+    display: inline-flex;
+    align-items: center;
+
+    margin: 8px 0 26px;
+    padding: 7px 12px;
+
+    border: 1px solid rgba($secondary, 0.12);
+    border-radius: 999px;
+    background: rgba($secondary, 0.07);
+
     color: $secondary;
+    font-size: 0.9rem;
     font-weight: 600;
-    margin-bottom: 10px;
+    letter-spacing: 0.025em;
+    line-height: 1.4;
+    unicode-bidi: isolate;
   }
 
   .otp_inputs {
@@ -7436,34 +7461,85 @@ img {
 
       padding-inline: 0;
 
+      border-color: #dce5ef;
+      background: #f8fbff;
+
+      color: $primary;
       text-align: center;
       font-size: 22px;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      caret-color: $secondary;
+
+      &.is-filled {
+        border-color: rgba($secondary, 0.45);
+        background: rgba($secondary, 0.05);
+      }
 
       &:focus {
+        background: $white;
         @include focus-ring($opacity: 0.15);
       }
     }
   }
 
+  .otp_resend_status {
+    min-height: 44px;
+    margin-bottom: 12px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
   .timer {
-    color: #888;
+    margin: 0;
 
-    margin-bottom: 20px;
-
+    color: #7a8490;
     font-size: 14px;
+    line-height: 1.6;
   }
 
   .resend {
-    background: transparent;
+    min-height: 40px;
+    padding-inline: 14px;
+
+    background: rgba($secondary, 0.07);
     border: none;
+    border-radius: 10px;
 
     color: $secondary;
-
+    font-size: 14px;
     font-weight: 600;
 
-    margin-bottom: 20px;
-
     cursor: pointer;
+
+    transition:
+      background 0.2s ease,
+      transform 0.2s ease;
+
+    &:hover {
+      background: rgba($secondary, 0.13);
+    }
+
+    &:focus-visible {
+      outline: 3px solid rgba($secondary, 0.18);
+      outline-offset: 2px;
+    }
+
+    &:active {
+      transform: scale(0.97);
+    }
+  }
+}
+
+html[dir='rtl'] .otp_form {
+  .otp_back_btn svg {
+    transform: rotate(180deg);
+  }
+
+  .otp_back_btn:hover svg {
+    transform: rotate(180deg) translateX(-2px);
   }
 }
 
