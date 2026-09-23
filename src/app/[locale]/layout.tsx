@@ -3,6 +3,36 @@ import Header from '@components/layout/Header';
 import type { Metadata } from 'next';
 import { NextIntlClientProvider } from 'next-intl';
 import '../../styles/main.css';
+import localFont from 'next/font/local'
+
+
+const expo = localFont({
+  src: [
+    {
+      path: '../../assets/fonts/Expo-Arabic-light.ttf',
+      weight: '400',
+      style: 'normal',
+    },
+    {
+      path: '../../assets/fonts/Expo-Arabic-Medium.ttf',
+      weight: '500',
+      style: 'normal',
+    },
+    {
+      path: '../../assets/fonts/Expo-Arabic-SemiBold.ttf',
+      weight: '600',
+      style: 'normal',
+    }, 
+    {
+      path: '../../assets/fonts/Expo-Arabic-Bold.ttf',
+      weight: '700',
+      style: 'normal',
+    }, 
+   
+  ], 
+  variable: '--font-expo',
+  display: 'swap',
+})
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
 
@@ -59,7 +89,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="ar" dir="rtl">
+    <html lang="ar" dir="rtl"    className={expo.variable}>
       <body>
          <NextIntlClientProvider>
             <Header />
