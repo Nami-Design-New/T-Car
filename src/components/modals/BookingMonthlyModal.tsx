@@ -149,10 +149,10 @@ export default function BookingMonthlyModal({ open, onClose, pricePerDay, onConf
     <div className="modal_overlay" onClick={onClose}>
       <div className="booking_modal" onClick={(e) => e.stopPropagation()}>
         <div className="booking_modal_calendar">
-          <div dir="rtl" style={{ padding: '20px 22px', borderRadius: 14, background: '#eaf3ff', textAlign: 'center' }}>
+          <div style={{ padding: '20px 22px', borderRadius: 14, background: '#eaf3ff', textAlign: 'center' }}>
             <div style={{ marginBottom: 8, color: '#101820', fontSize: 14 }}>عدد الشهور</div>
 
-            <div style={{ display: 'flex', direction: 'rtl', alignItems: 'center', justifyContent: 'space-between', maxWidth: 225, margin: '0 auto 18px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', maxWidth: 225, margin: '0 auto 18px' }}>
               <button
                 type="button"
                 aria-label="زيادة عدد الشهور"
@@ -177,11 +177,11 @@ export default function BookingMonthlyModal({ open, onClose, pricePerDay, onConf
             </div>
 
             <div style={{ position: 'relative', height: 60, marginBottom: 14, overflow: 'hidden', borderRadius: 13, background: '#a4a4a4', color: '#fff' }}>
-              <span style={{ position: 'absolute', top: 0, right: 0, width: `${monthProgress}%`, height: '100%', borderRadius: 13, background: '#287ff0', transition: 'width 0.2s ease' }} />
+              <span style={{ position: 'absolute', top: 0, insetInlineStart: 0, width: `${monthProgress}%`, height: '100%', borderRadius: 13, background: '#287ff0', transition: 'width 0.2s ease' }} />
               <span style={{ position: 'absolute', inset: 0, display: 'grid', placeItems: 'center', fontSize: 14, pointerEvents: 'none' }}>
                 {rentalMonths} {rentalMonths === 1 ? 'شهر' : 'شهور'}
               </span>
-              <span style={{ position: 'absolute', right: `calc(${monthProgress}% - 28px)`, top: '50%', display: 'flex', alignItems: 'center', gap: 3, transform: 'translateY(-50%)', color: '#fff', fontSize: 15, transition: 'right 0.2s ease', pointerEvents: 'none' }}>
+              <span style={{ position: 'absolute', insetInlineStart: `calc(${monthProgress}% - 28px)`, top: '50%', display: 'flex', alignItems: 'center', gap: 3, transform: 'translateY(-50%)', color: '#fff', fontSize: 15, transition: 'inset-inline-start 0.2s ease', pointerEvents: 'none' }}>
                 <span>▶</span>
                 <span style={{ width: 24, height: 24, border: '2px solid #fff', borderRadius: '50%', background: '#287ff0', boxShadow: '0 1px 2px rgba(0, 0, 0, 0.18)' }} />
                 <span>◀</span>
@@ -194,7 +194,7 @@ export default function BookingMonthlyModal({ open, onClose, pricePerDay, onConf
                 value={rentalMonths}
                 aria-label="عدد شهور الحجز"
                 onChange={(e) => changeRentalMonths(Number(e.target.value))}
-                style={{ position: 'absolute', inset: 0, zIndex: 2, width: '100%', height: '100%', margin: 0, opacity: 0, cursor: 'pointer', direction: 'rtl' }}
+                style={{ position: 'absolute', inset: 0, zIndex: 2, width: '100%', height: '100%', margin: 0, opacity: 0, cursor: 'pointer' }}
               />
             </div>
 

@@ -70,7 +70,7 @@ export default function CitiesGrid() {
                 <h3>{city.name}</h3>
                 <span className="city-card-cta">
                   {t('popularCities.explore')}
-                  <FiArrowRight className="cta-icon" />
+                  <FiArrowRight className="cta-icon mirror-in-rtl" />
                 </span>
               </div>
             </Link>

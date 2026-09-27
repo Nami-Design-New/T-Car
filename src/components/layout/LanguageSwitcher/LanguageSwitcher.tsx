@@ -2,13 +2,12 @@
 
 import {useState, useRef, useEffect} from 'react';
 import {useLocale} from 'next-intl';
-import {useRouter, usePathname} from 'next/navigation';
+import {usePathname} from 'next/navigation';
 import {FiGlobe, FiCheck} from 'react-icons/fi';
 import {SUPPORTED_LANGUAGES} from '@constants/index';
 
 export default function LanguageSwitcher() {
   const locale = useLocale();
-  const router = useRouter();
   const pathname = usePathname();
 
   const [open, setOpen] = useState(false);
@@ -21,6 +20,8 @@ export default function LanguageSwitcher() {
   const handleSelect = (code: string) => {
     setOpen(false);
 
+    if (code === locale) return;
+
     const segments = pathname.split('/');
 
     // Replace current locale in URL
@@ -30,7 +31,14 @@ export default function LanguageSwitcher() {
       segments.splice(1, 0, code);
     }
 
-    router.push(segments.join('/'));
+    // A full navigation rather than router.push. The Google Maps script is
+    // injected once per page session and cannot be re-requested with a
+    // different language, so a client-side switch would leave the map stuck
+    // in the previous language. Reloading is what lets it load the new one.
+    // Query string and hash are carried over; usePathname() omits both.
+    window.location.assign(
+      segments.join('/') + window.location.search + window.location.hash
+    );
   };
 
   useEffect(() => {

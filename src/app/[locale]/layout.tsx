@@ -2,6 +2,7 @@ import Footer from '@components/layout/Footer';
 import Header from '@components/layout/Header';
 import type { Metadata } from 'next';
 import { NextIntlClientProvider } from 'next-intl';
+import { getDirection } from '@utils/index';
 import '../../styles/main.css';
 import localFont from 'next/font/local'
 
@@ -87,9 +88,17 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({
+  children,
+  params,
+}: {
+  children: React.ReactNode;
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+
   return (
-    <html lang="ar" dir="rtl"    className={expo.variable}>
+    <html lang={locale} dir={getDirection(locale)} className={expo.variable}>
       <body>
          <NextIntlClientProvider>
             <Header />

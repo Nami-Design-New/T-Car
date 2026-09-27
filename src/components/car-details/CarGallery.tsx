@@ -31,10 +31,10 @@ export default function CarGallery({ images, alt }: Props) {
         {images.length > 1 && (
           <>
             <button type="button" className="car-gallery-nav prev" onClick={goPrev} aria-label="الصورة السابقة">
-              <FiChevronRight />
+              <FiChevronLeft className="mirror-in-rtl" />
             </button>
             <button type="button" className="car-gallery-nav next" onClick={goNext} aria-label="الصورة التالية">
-              <FiChevronLeft />
+              <FiChevronRight className="mirror-in-rtl" />
             </button>
 
             <span className="car-gallery-counter">{active + 1} / {images.length}</span>

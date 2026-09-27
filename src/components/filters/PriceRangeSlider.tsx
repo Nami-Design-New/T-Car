@@ -38,7 +38,10 @@ export default function PriceRangeSlider({
         <div className="range_track">
           <div
             className="range_fill"
-            style={{ right: `${minPercent}%`, left: `${100 - maxPercent}%` }}
+            style={{
+              insetInlineStart: `${minPercent}%`,
+              insetInlineEnd: `${100 - maxPercent}%`,
+            }}
           />
         </div>
 

@@ -91,7 +91,6 @@ export default function FailedModal({
             ? 'wallet_result_modal delete_account_modal'
             : 'wallet_result_modal'
         }
-        dir="rtl"
         onClick={(event) =>
           event.stopPropagation()
         }

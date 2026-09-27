@@ -5,7 +5,7 @@ import { Link } from '@/i18n/navigation';
 import { useTranslations } from 'next-intl';;
 import { FiMenu, FiX } from 'react-icons/fi';
 import Button from '@components/common/Button';
-import LanguageSwitcher from '@components/layout/LanguageSwitcher';
+import LanguageSwitcher from '@/components/layout/LanguageSwitcher/LanguageSwitcher';
 import UserMenu from '@components/layout/UserMenu';
 import { NAV_LINKS, SITE_NAME } from '@constants/index';
 import Image from 'next/image';

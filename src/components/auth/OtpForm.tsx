@@ -94,7 +94,7 @@ export default function OtpForm({ phone, onBack, onVerify, onResend }: Props) {
         onClick={onBack}
         aria-label={t('auth.otp.backLabel')}
       >
-        <FiArrowLeft aria-hidden="true" />
+        <FiArrowLeft className="mirror-in-rtl" aria-hidden="true" />
       </button>
 
       <h2>{t('auth.otp.title')}</h2>

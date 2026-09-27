@@ -69,7 +69,6 @@ export default function EditPhoneModal({
       <div
         className="auth_modal phone_modal"
         onClick={(e) => e.stopPropagation()}
-        dir="rtl"
       >
         {/* Header */}
         <div className="phone_modal_header">

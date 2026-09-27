@@ -11,6 +11,7 @@ import {
 
 import SectionTitle from '@components/common/SectionTitle';
 import type {City} from '@app-types/car';
+import { getDirection } from '@/utils';
 
 import c1 from '@assets/images/c1.jpg';
 import c2 from '@assets/images/c2.jpg';
@@ -71,7 +72,7 @@ export default function PopularCities() {
   const t = useTranslations();
   const locale = useLocale();
 
-  const isRTL = locale === 'ar';
+  const isRTL = getDirection(locale) === 'rtl';
 
   const trackRef = useRef<HTMLDivElement>(null);
 
@@ -219,10 +220,7 @@ export default function PopularCities() {
                 handleManualScroll('prev')
               }
             >
-              {isRTL
-                ? <FiArrowRight />
-                : <FiArrowLeft />
-              }
+              <FiArrowLeft className="mirror-in-rtl" />
 
             </button>
 
@@ -236,10 +234,7 @@ export default function PopularCities() {
               }
             >
 
-              {isRTL
-                ? <FiArrowLeft />
-                : <FiArrowRight />
-              }
+              <FiArrowRight className="mirror-in-rtl" />
 
             </button>
 
@@ -310,11 +305,7 @@ export default function PopularCities() {
                     'popularCities.explore'
                   )}
 
-                  {isRTL
-                    ? <FiArrowLeft className="cta-icon" />
-                    : <FiArrowRight className="cta-icon" />
-                  }
-
+                  <FiArrowRight className="cta-icon mirror-in-rtl" />
 
                 </span>
 

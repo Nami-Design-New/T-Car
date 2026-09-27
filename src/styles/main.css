@@ -12020,21 +12020,15 @@ body {
     opacity: 1;
   }
 }
-html[dir=rtl] body {
-  font-family: var(--bs-font-sans-serif);
-}
-html[dir=rtl] body .popular-cities .city-card .city-card-cta .cta-icon {
-  transform: rotate(180deg);
-  transition: 0.3s ease;
-}
-html[dir=rtl] body .popular-cities .city-card:hover .city-card-cta .cta-icon {
-  transform: translateX(-5px);
+.mirror-in-rtl:dir(rtl) {
+  transform: scaleX(-1);
 }
 
-html[dir=ltr] body .car-gallery-nav.next {
-  transform: rotate(180deg);
+body:dir(rtl) {
+  font-family: var(--bs-font-sans-serif);
 }
-html[dir=ltr] body .download_app .download_app_card {
+
+body:dir(ltr) .download_app .download_app_card {
   justify-content: flex-start;
 }
 
@@ -13301,14 +13295,14 @@ img {
 }
 .map_modal .search_box .search_icon {
   position: absolute;
-  right: 18px;
+  inset-inline-end: 18px;
   font-size: 18px;
   color: #969696;
   pointer-events: none;
 }
 .map_modal .search_box .search_spinner {
   position: absolute;
-  left: 14px;
+  inset-inline-start: 14px;
   color: #1f7ffa;
   animation: spin 0.8s linear infinite;
 }
@@ -13318,7 +13312,9 @@ img {
   border-radius: 12px;
   border: 1px solid #e9e9e9;
   background: #f8f8f8;
-  padding: 0 48px 0 40px;
+  padding-block: 0;
+  padding-inline-start: 40px;
+  padding-inline-end: 48px;
   font-size: 15px;
   outline: none;
   transition: 0.25s;
@@ -13336,7 +13332,7 @@ img {
 }
 .map_modal .search_box .clear_search {
   position: absolute;
-  left: 14px;
+  inset-inline-start: 14px;
   background: none;
   border: none;
   cursor: pointer;
@@ -13351,8 +13347,7 @@ img {
 .map_modal .search_box .predictions_list {
   position: absolute;
   top: calc(100% + 6px);
-  right: 0;
-  left: 0;
+  inset-inline: 0;
   z-index: 20;
   background: #ffffff;
   border-radius: 12px;
@@ -13401,8 +13396,7 @@ img {
 .map_modal .search_box .no_results {
   position: absolute;
   top: calc(100% + 6px);
-  right: 0;
-  left: 0;
+  inset-inline: 0;
   z-index: 20;
   background: #ffffff;
   border-radius: 12px;
@@ -13571,7 +13565,7 @@ img {
   flex-direction: column;
   gap: 10px;
   margin-bottom: 18px;
-  padding-right: 4px;
+  padding-inline-end: 4px;
 }
 .branch_modal .branch_list::-webkit-scrollbar {
   width: 5px;
@@ -13689,7 +13683,6 @@ img {
 .close_btn {
   position: absolute;
   top: -20px;
-  right: 20px;
   inset-inline-end: 18px;
   width: 42px;
   height: 42px;
@@ -13760,7 +13753,7 @@ img {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  padding-right: 4px;
+  padding-inline-end: 4px;
 }
 .selection_modal .selection_list::-webkit-scrollbar {
   width: 5px;
@@ -13797,7 +13790,7 @@ img {
 }
 .selection_modal .selection_item .content {
   flex: 1;
-  text-align: right;
+  text-align: end;
 }
 .selection_modal .selection_item .content h4, .selection_modal .selection_item .content .h4 {
   font-size: 15px;
@@ -14000,13 +13993,13 @@ img {
   font-weight: 600;
 }
 .popular-cities .city-card-cta .cta-icon {
-  transition: 0.3s ease;
+  transition: margin-inline-end 0.3s ease;
 }
 .popular-cities .city-card:hover .city-card-image {
   transform: scale(1.08);
 }
 .popular-cities .city-card:hover .city-card-cta .cta-icon {
-  transform: translateX(5px);
+  margin-inline-end: 5px;
 }
 
 .partners {
@@ -14205,10 +14198,9 @@ img {
 }
 .download_app .download_app_content {
   width: 48%;
-  margin-left: auto;
   position: relative;
   z-index: 10;
-  text-align: right;
+  text-align: end;
 }
 .download_app .download_app_content .tag {
   display: inline-flex;
@@ -14544,7 +14536,7 @@ img {
 .cta .cta_content::before {
   content: "";
   position: absolute;
-  left: -2px;
+  inset-inline-start: -2px;
   top: 29%;
   width: 320px;
   height: 320px;
@@ -15146,7 +15138,7 @@ img {
   content: "";
   position: absolute;
   top: 50%;
-  left: 0;
+  inset-inline-start: 0;
   width: 12px;
   height: 12px;
   border-radius: 9999px;
@@ -16009,7 +16001,7 @@ img {
   margin: 5px 4px 12px;
   color: #969696;
   font-size: 9px;
-  text-align: right;
+  text-align: end;
 }
 
 .wallet_topup_submit {
@@ -17562,7 +17554,7 @@ img {
 .confirm_booking_modal .confirm_dates::before {
   position: absolute;
   top: 18px;
-  right: 8px;
+  inset-inline-end: 8px;
   bottom: 18px;
   width: 2px;
   content: "";
@@ -17780,7 +17772,7 @@ img {
   box-shadow: 0 8px 20px rgba(31, 127, 250, 0.12);
 }
 .back_btn:hover svg {
-  transform: translateX(-2px);
+  margin-inline-start: -2px;
 }
 .back_btn:active {
   transform: scale(0.96);
@@ -17935,7 +17927,7 @@ img {
   color: #1e1e1e;
   font-size: 14px;
   font-weight: 600;
-  text-align: right;
+  text-align: end;
 }
 .auth_modal .phone_modal_body .phone_wrapper {
   width: 100%;
@@ -18138,13 +18130,6 @@ img {
   transform: scale(0.97);
 }
 
-html[dir=rtl] .otp_form .otp_back_btn svg {
-  transform: rotate(180deg);
-}
-html[dir=rtl] .otp_form .otp_back_btn:hover svg {
-  transform: rotate(180deg) translateX(-2px);
-}
-
 .register_form {
   position: relative;
   display: flex;
@@ -18286,13 +18271,6 @@ html[dir=rtl] .otp_form .otp_back_btn:hover svg {
   }
 }
 
-html[dir=rtl] .auth_register_form .register_back_btn svg {
-  transform: rotate(180deg);
-}
-html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
-  transform: rotate(180deg) translateX(-2px);
-}
-
 .success_modal {
   width: min(420px, 100% - 30px);
   background: #ffffff;
@@ -18387,8 +18365,8 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
 
 .account-sidebar {
   background: #ffffff;
-  border: 1px solid #eee;
-  border-radius: 18px;
+  border: 1px solid #e9e9e9;
+  border-radius: 16px;
   padding: 10px;
   display: flex;
   flex-direction: column;
@@ -18426,7 +18404,7 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
   flex-shrink: 0;
 }
 .account-sidebar-item:hover {
-  background: rgba(31, 127, 250, 0.06);
+  background: #f3f8ff;
 }
 .account-sidebar-item.active {
   background: #1f7ffa;
@@ -18450,7 +18428,7 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
 .form_field > input {
   width: 100%;
   height: 52px;
-  border: 1px solid #eee;
+  border: 1px solid #e9e9e9;
   border-radius: 12px;
   padding-inline: 16px;
   outline: none;
@@ -18474,7 +18452,7 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
 .form_field .input_wrapper input {
   width: 100%;
   height: 52px;
-  border: 1px solid #eee;
+  border: 1px solid #e9e9e9;
   border-radius: 12px;
   padding-inline-end: 44px;
   padding-inline-start: 16px;
@@ -18503,15 +18481,15 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
 
 .account-panel {
   background: #ffffff;
-  border: 1px solid #eee;
-  border-radius: 20px;
+  border: 1px solid #e9e9e9;
+  border-radius: 24px;
   padding: 24px;
 }
 .account-panel .wallet_balance_card {
   margin-bottom: 28px;
   padding: 28px 20px;
   text-align: center;
-  border-radius: 18px;
+  border-radius: 16px;
   background: linear-gradient(135deg, rgba(31, 127, 250, 0.08), rgba(31, 127, 250, 0.03));
 }
 .account-panel .wallet_balance_card .wallet_balance_label {
@@ -18541,7 +18519,7 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
 }
 .account-panel .wallet_balance_card .wallet_balance_amount h2, .account-panel .wallet_balance_card .wallet_balance_amount .h2 {
   margin: 0;
-  color: #0a2540;
+  color: #1e1e1e;
   font-size: 2.2rem;
   font-weight: 800;
   line-height: 1;
@@ -18569,7 +18547,7 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
 }
 .account-panel .wallet_history_title {
   margin-bottom: 14px;
-  color: #0a2540;
+  color: #1e1e1e;
   font-size: 1rem;
   font-weight: 700;
 }
@@ -18583,18 +18561,18 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
   justify-content: space-between;
   align-items: center;
   padding: 14px 16px;
-  border-radius: 14px;
+  border-radius: 12px;
   border-inline-start: 3px solid transparent;
-  background: #f8f9fb;
+  background: #f8f8f8;
 }
 .account-panel .wallet_history_item.topup {
   background: linear-gradient(135deg, rgba(31, 127, 250, 0.08), rgba(31, 127, 250, 0.03));
 }
 .account-panel .wallet_history_item.refund {
-  background: #f8f9fb;
+  background: #f8f8f8;
 }
 .account-panel .wallet_history_item.payment {
-  background: rgba(225, 29, 72, 0.08);
+  background: rgba(220, 38, 38, 0.08);
 }
 .account-panel .wallet_history_item_body {
   display: flex;
@@ -18602,7 +18580,7 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
   gap: 3px;
 }
 .account-panel .wallet_history_item_title {
-  color: #0a2540;
+  color: #1e1e1e;
   font-size: 0.88rem;
   font-weight: 700;
 }
@@ -18611,12 +18589,12 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
   font-size: 0.75rem;
 }
 .account-panel .wallet_history_item_amount {
-  color: #18b56b;
+  color: #16a34a;
   font-size: 0.95rem;
   font-weight: 800;
 }
 .account-panel .wallet_history_item_amount.negative {
-  color: #e11d48;
+  color: #dc2626;
 }
 .account-panel .notifications_header {
   display: flex;
@@ -18626,7 +18604,7 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
 }
 .account-panel .notifications_header h3, .account-panel .notifications_header .h3 {
   margin: 0;
-  color: #0a2540;
+  color: #1e1e1e;
   font-size: 1.05rem;
   font-weight: 700;
 }
@@ -18651,25 +18629,25 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
   align-items: flex-start;
   gap: 12px;
   padding: 14px 4px;
-  border-bottom: 1px solid #f2f2f2;
+  border-bottom: 1px solid #e9e9e9;
 }
 .account-panel .notifications_item:last-child {
   border-bottom: none;
 }
 .account-panel .notifications_item.read .notification_dot {
-  background: #ddd;
+  background: #d6d6d6;
 }
 .account-panel .notifications_item .notification_dot {
   width: 8px;
   height: 8px;
   margin-top: 6px;
   flex-shrink: 0;
-  border-radius: 50%;
+  border-radius: 9999px;
   background: #1f7ffa;
 }
 .account-panel .notifications_item .notification_body p {
   margin: 0 0 4px;
-  color: #0a2540;
+  color: #1e1e1e;
   font-size: 0.88rem;
   line-height: 1.6;
 }
@@ -18684,7 +18662,7 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
 .bookings-page-header h1, .bookings-page-header .h1 {
   font-size: clamp(1.5rem, 3vw, 2rem);
   font-weight: 800;
-  color: #0a2540;
+  color: #1e1e1e;
   margin-bottom: 6px;
 }
 .bookings-page-header p {
@@ -18699,8 +18677,8 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
   padding: 6px;
   background: #ffffff;
   border: 1px solid #e9e9e9;
-  border-radius: 18px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(30, 30, 30, 0.06);
   margin-bottom: 16px;
 }
 .bookings-tabs button {
@@ -18711,12 +18689,12 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
   justify-content: center;
   gap: 10px;
   border: none;
-  border-radius: 14px;
+  border-radius: 12px;
   background: transparent;
   cursor: pointer;
   font-size: 0.95rem;
   font-weight: 700;
-  color: #0a2540;
+  color: #1e1e1e;
   transition: 0.25s ease;
 }
 .bookings-tabs button .count {
@@ -18725,15 +18703,15 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 50%;
-  background: rgba(30, 30, 30, 0.06);
+  border-radius: 9999px;
+  background: #f8f8f8;
   font-size: 0.78rem;
   font-weight: 700;
   color: #737373;
   transition: inherit;
 }
 .bookings-tabs button:hover:not(.active) {
-  background: rgba(31, 127, 250, 0.05);
+  background: #f3f8ff;
 }
 .bookings-tabs button.active {
   background: #1f7ffa;
@@ -18764,8 +18742,8 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
 .booking-card {
   display: block;
   background: #ffffff;
-  border: 1px solid #eee;
-  border-radius: 18px;
+  border: 1px solid #e9e9e9;
+  border-radius: 16px;
   overflow: hidden;
   text-decoration: none;
   color: inherit;
@@ -18773,13 +18751,13 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
 }
 .booking-card:hover {
   border-color: rgba(31, 127, 250, 0.3);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 24px rgba(30, 30, 30, 0.1);
   transform: translateY(-4px);
 }
 .booking-card-image {
   position: relative;
   height: 170px;
-  background: #f8f9fb;
+  background: #f8f8f8;
 }
 .booking-card-status {
   position: absolute;
@@ -18787,7 +18765,7 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
   inset-inline-start: 12px;
   z-index: 2;
   padding: 5px 12px;
-  border-radius: 999px;
+  border-radius: 9999px;
   font-size: 0.72rem;
   font-weight: 700;
 }
@@ -18796,19 +18774,19 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
   color: #ffffff;
 }
 .booking-card-status.upcoming {
-  background: #f5a623;
+  background: #d97706;
   color: #ffffff;
 }
 .booking-card-status.late {
-  background: #ff4d4f;
+  background: #dc2626;
   color: #ffffff;
 }
 .booking-card-status.completed {
-  background: #18b56b;
+  background: #16a34a;
   color: #ffffff;
 }
 .booking-card-status.cancelled {
-  background: #ff4d4f;
+  background: #dc2626;
   color: #ffffff;
 }
 .booking-card-body {
@@ -18824,7 +18802,7 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
   margin: 0;
   font-size: 1.05rem;
   font-weight: 700;
-  color: #0a2540;
+  color: #1e1e1e;
 }
 .booking-card-rating {
   display: flex;
@@ -18833,7 +18811,7 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
   flex-shrink: 0;
   font-size: 0.82rem;
   font-weight: 700;
-  color: #ffb800;
+  color: #e0993a;
 }
 .booking-card-year {
   display: block;
@@ -18846,7 +18824,7 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
   flex-direction: column;
   gap: 8px;
   padding-top: 12px;
-  border-top: 1px solid #f2f2f2;
+  border-top: 1px solid #e9e9e9;
 }
 .booking-card-meta span {
   display: flex;
@@ -18868,7 +18846,7 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
   text-align: center;
   padding: 4rem 2rem;
   border: 1px solid rgba(31, 127, 250, 0.08);
-  border-radius: 20px;
+  border-radius: 24px;
   background: linear-gradient(180deg, rgba(31, 127, 250, 0.05), #ffffff);
 }
 .bookings-empty-animation {
@@ -18878,7 +18856,7 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
 }
 .bookings-empty h3, .bookings-empty .h3 {
   margin-bottom: 0.75rem;
-  color: #0a2540;
+  color: #1e1e1e;
   font-size: 1.4rem;
   font-weight: 700;
 }
@@ -18910,7 +18888,7 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
 }
 
 .booking-details-page {
-  background: #f5f4f0;
+  background: #f8f8f8;
   padding-block: 32px 64px;
 }
 
@@ -18934,8 +18912,8 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
   display: grid;
   place-items: center;
   border: 1px solid #e9e9e9;
-  border-radius: 10px;
-  color: #0a2540;
+  border-radius: 8px;
+  color: #1e1e1e;
   transition: 0.2s;
 }
 .booking-details-header .back_link:hover {
@@ -18953,7 +18931,7 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
   margin: 0;
   font-size: 1rem;
   font-weight: 700;
-  color: #0a2540;
+  color: #1e1e1e;
 }
 .booking-details-header-title .reference {
   font-size: 0.82rem;
@@ -18961,29 +18939,29 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
 }
 .booking-details-header .status {
   padding: 6px 12px;
-  border-radius: 20px;
+  border-radius: 24px;
   font-size: 0.8rem;
   font-weight: 600;
   white-space: nowrap;
 }
 .booking-details-header .status.current {
-  background-color: #e8f7ee;
-  color: #16834b;
+  background-color: #f0fdf4;
+  color: #16a34a;
 }
 .booking-details-header .status.upcoming {
-  background-color: #eaf2ff;
-  color: #2563eb;
+  background-color: #e6f0fe;
+  color: #1f7ffa;
 }
 .booking-details-header .status.late {
-  background-color: #fff3e6;
+  background-color: #fffbeb;
   color: #d97706;
 }
 .booking-details-header .status.completed {
-  background-color: #f0f0f0;
-  color: #666;
+  background-color: #f8f8f8;
+  color: #737373;
 }
 .booking-details-header .status.cancelled {
-  background-color: #fdecec;
+  background-color: #fff1f2;
   color: #dc2626;
 }
 
@@ -18999,8 +18977,8 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
   display: grid;
   place-items: center;
   border: 1px solid #e9e9e9;
-  border-radius: 10px;
-  color: #0a2540;
+  border-radius: 8px;
+  color: #1e1e1e;
   transition: 0.2s;
 }
 .booking-details-header .back_link:hover {
@@ -19018,7 +18996,7 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
   margin: 0;
   font-size: 1rem;
   font-weight: 700;
-  color: #0a2540;
+  color: #1e1e1e;
 }
 .booking-details-header-title .reference {
   font-size: 0.82rem;
@@ -19034,9 +19012,9 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
   display: grid;
   place-items: center;
   border: 1px solid #e9e9e9;
-  border-radius: 10px;
+  border-radius: 8px;
   background: #ffffff;
-  color: #0a2540;
+  color: #1e1e1e;
   cursor: pointer;
   transition: 0.2s;
 }
@@ -19051,13 +19029,13 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
 .booking-details-header .booking-actions-menu {
   position: absolute;
   top: calc(100% + 8px);
-  left: 0;
+  inset-inline-start: 0;
   min-width: 150px;
   padding: 6px;
   background: #ffffff;
-  border: 1px solid #eee;
-  border-radius: 10px;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e9e9e9;
+  border-radius: 8px;
+  box-shadow: 0 8px 25px rgba(30, 30, 30, 0.1);
   z-index: 20;
 }
 .booking-details-header .booking-actions-menu button {
@@ -19067,12 +19045,12 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
   gap: 9px;
   padding: 9px 10px;
   border: 0;
-  border-radius: 7px;
+  border-radius: 4px;
   background: transparent;
-  color: #0a2540;
+  color: #1e1e1e;
   font-family: inherit;
   font-size: 0.78rem;
-  text-align: right;
+  text-align: end;
   cursor: pointer;
   transition: 0.2s;
 }
@@ -19082,13 +19060,13 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
   flex-shrink: 0;
 }
 .booking-details-header .booking-actions-menu button:hover {
-  background: #f7f7f7;
+  background: #f8f8f8;
 }
 .booking-details-header .booking-actions-menu button.danger {
-  color: #e53935;
+  color: #dc2626;
 }
 .booking-details-header .booking-actions-menu button.danger:hover {
-  background: rgba(229, 57, 53, 0.06);
+  background: rgba(220, 38, 38, 0.06);
 }
 
 .booking-hero {
@@ -19096,8 +19074,8 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
   grid-template-columns: 340px 1fr;
   gap: 0;
   background: #ffffff;
-  border: 1px solid #eee;
-  border-radius: 20px;
+  border: 1px solid #e9e9e9;
+  border-radius: 24px;
   overflow: hidden;
 }
 @media (max-width: 860px) {
@@ -19108,7 +19086,7 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
 .booking-hero-image {
   position: relative;
   min-height: 300px;
-  background: #eef0f4;
+  background: #f8f8f8;
 }
 .booking-hero-image img {
   -o-object-fit: cover;
@@ -19145,7 +19123,7 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
   margin: 0;
   font-size: 1.6rem;
   font-weight: 800;
-  color: #0a2540;
+  color: #1e1e1e;
 }
 .booking-hero .booking-status {
   width: -moz-fit-content;
@@ -19162,24 +19140,23 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
   font-weight: 700;
 }
 .booking-hero .booking-status .status-date {
-  direction: rtl;
   white-space: nowrap;
 }
 .booking-hero .booking-status.current {
-  background: rgba(24, 181, 107, 0.1);
-  color: #18b56b;
+  background: rgba(22, 163, 74, 0.1);
+  color: #16a34a;
 }
 .booking-hero .booking-status.upcoming {
-  background: rgba(37, 99, 235, 0.1);
-  color: #2563eb;
+  background: rgba(31, 127, 250, 0.1);
+  color: #1f7ffa;
 }
 .booking-hero .booking-status.late {
   background: rgba(217, 119, 6, 0.1);
   color: #d97706;
 }
 .booking-hero .booking-status.completed {
-  background: rgba(24, 181, 107, 0.1);
-  color: #16834b;
+  background: rgba(22, 163, 74, 0.1);
+  color: #16a34a;
 }
 .booking-hero .booking-status.cancelled {
   background: rgba(220, 38, 38, 0.08);
@@ -19193,7 +19170,7 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
 }
 .booking-hero .price-block .old {
   font-size: 0.9rem;
-  color: #aaa;
+  color: #969696;
   text-decoration: line-through;
 }
 .booking-hero .price-block .current {
@@ -19229,8 +19206,8 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
 
 .booking-dates-info {
   background: #ffffff;
-  border: 1px solid #eee;
-  border-radius: 18px;
+  border: 1px solid #e9e9e9;
+  border-radius: 16px;
   padding: 24px;
   display: flex;
   flex-direction: column;
@@ -19243,13 +19220,13 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
 }
 .booking-dates-info .info-section:not(:last-child) {
   padding-bottom: 20px;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid #e9e9e9;
 }
 .booking-dates-info .info-section h3, .booking-dates-info .info-section .h3 {
   margin: 0;
   font-size: 0.9rem;
   font-weight: 800;
-  color: #0a2540;
+  color: #1e1e1e;
 }
 .booking-dates-info .info-row {
   display: flex;
@@ -19262,8 +19239,8 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
   flex-shrink: 0;
   display: grid;
   place-items: center;
-  border-radius: 10px;
-  background: rgba(31, 127, 250, 0.08);
+  border-radius: 8px;
+  background: #f3f8ff;
   color: #1f7ffa;
 }
 .booking-dates-info .info-row .icon svg {
@@ -19282,7 +19259,7 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
   font-size: 0.88rem;
   font-weight: 700;
   line-height: 1.6;
-  color: #0a2540;
+  color: #1e1e1e;
 }
 .booking-dates-info .warranty-note {
   display: flex;
@@ -19290,9 +19267,9 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
   gap: 10px;
   padding: 12px 14px;
   border-radius: 12px;
-  background: rgba(31, 127, 250, 0.05);
+  background: #f3f8ff;
   font-size: 0.82rem;
-  color: #0a2540;
+  color: #1e1e1e;
   line-height: 1.7;
 }
 .booking-dates-info .warranty-note > svg {
@@ -19320,9 +19297,9 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
 .booking-dates-info .info-section:first-child::before {
   position: absolute;
   top: 18px;
-  right: 8px;
+  inset-inline-end: 8px;
   bottom: 18px;
-  border-right: 2px dotted #1f7ffa;
+  border-inline-end: 2px dotted #1f7ffa;
   content: "";
 }
 .booking-dates-info .info-section:first-child h3, .booking-dates-info .info-section:first-child .h3,
@@ -19332,7 +19309,7 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
 .booking-dates-info .info-section:first-child .info-row {
   min-height: 58px;
   padding: 8px 0 8px 10px;
-  border-bottom: 1px dotted #e2e2e2;
+  border-bottom: 1px dotted #e9e9e9;
   gap: 0;
 }
 .booking-dates-info .info-section:first-child .info-row:last-child {
@@ -19341,21 +19318,21 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
 .booking-dates-info .info-section:first-child .info-row > div {
   width: 100%;
   gap: 5px;
-  text-align: right;
+  text-align: end;
 }
 .booking-dates-info .info-section:first-child .info-row .label {
-  color: #888;
+  color: #737373;
   font-size: 0.7rem;
 }
 .booking-dates-info .info-section:first-child .info-row .value {
-  color: #0a2540;
+  color: #1e1e1e;
   font-size: 0.82rem;
   font-weight: 500;
 }
 
 .booking-countdown {
   background: #ffffff;
-  border: 1px solid #eee;
+  border: 1px solid #e9e9e9;
   border-radius: 16px;
   padding: 16px;
   display: flex;
@@ -19367,10 +19344,9 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
   margin: 0;
   font-size: 0.9rem;
   font-weight: 700;
-  color: #0a2540;
+  color: #1e1e1e;
 }
 .booking-countdown .countdown-units {
-  direction: rtl;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -19383,28 +19359,28 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(to bottom, #f3f3f3, #fafafa);
-  border: 1px solid #e4e4e4;
-  border-radius: 7px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), inset 0 -1px 0 rgba(0, 0, 0, 0.03);
+  background: linear-gradient(to bottom, #f8f8f8, #ffffff);
+  border: 1px solid #e9e9e9;
+  border-radius: 4px;
+  box-shadow: 0 1px 2px rgba(30, 30, 30, 0.04), inset 0 -1px 0 rgba(30, 30, 30, 0.03);
 }
 .booking-countdown .unit .number {
   font-variant-numeric: tabular-nums;
   font-size: 1.35rem;
   line-height: 1;
   font-weight: 800;
-  color: #222;
+  color: #1e1e1e;
 }
 .booking-countdown .unit .label {
   margin-top: 7px;
   font-size: 0.65rem;
   font-weight: 600;
-  color: #555;
+  color: #737373;
 }
 .booking-countdown .separator {
   font-size: 1.4rem;
   font-weight: 700;
-  color: #777;
+  color: #737373;
   margin-top: -4px;
 }
 .booking-countdown.expired {
@@ -19440,8 +19416,8 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
   position: sticky;
   top: 24px;
   background: #ffffff;
-  border: 1px solid #eee;
-  border-radius: 18px;
+  border: 1px solid #e9e9e9;
+  border-radius: 16px;
   padding: 24px;
   display: flex;
   flex-direction: column;
@@ -19456,7 +19432,7 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
   margin: 0;
   font-size: 1rem;
   font-weight: 700;
-  color: #0a2540;
+  color: #1e1e1e;
 }
 .booking-sidebar .price-row {
   display: flex;
@@ -19472,7 +19448,7 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
   font-variant-numeric: tabular-nums;
   font-size: 0.9rem;
   font-weight: 600;
-  color: #0a2540;
+  color: #1e1e1e;
 }
 .booking-sidebar .price-row .value small, .booking-sidebar .price-row .value .small {
   color: #737373;
@@ -19482,11 +19458,11 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
 .booking-sidebar .price-row.total {
   margin-top: 4px;
   padding-top: 16px;
-  border-top: 1px dashed #eee;
+  border-top: 1px dashed #e9e9e9;
 }
 .booking-sidebar .price-row.total .label {
   font-weight: 700;
-  color: #0a2540;
+  color: #1e1e1e;
 }
 .booking-sidebar .price-row.total .value {
   font-size: 1.25rem;
@@ -19518,7 +19494,7 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
   color: #ffffff;
 }
 .booking-sidebar .sidebar-actions .primary-action:hover {
-  background: #0a2540;
+  background: rgb(5.4672489083, 110.4384279476, 244.9327510917);
 }
 
 .review-modal-overlay {
@@ -19984,8 +19960,7 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
 .filters_panel .range_slider .range_track {
   position: absolute;
   top: 50%;
-  left: 0;
-  right: 0;
+  inset-inline: 0;
   height: 4px;
   border-radius: 4px;
   background: #e9e9e9;
@@ -20001,8 +19976,7 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
 .filters_panel .range_slider .thumb {
   position: absolute;
   top: 50%;
-  left: 0;
-  right: 0;
+  inset-inline: 0;
   width: 100%;
   transform: translateY(-50%);
   margin: 0;
@@ -20099,7 +20073,7 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
   cursor: pointer;
   padding: 8px 12px;
   width: 100%;
-  text-align: right;
+  text-align: end;
   transition: 0.2s;
 }
 .filters_panel .brand_item .brand_logo {
@@ -20257,10 +20231,10 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
 .form_label {
   font-size: 14px;
   font-weight: 600;
-  color: #0a2540;
+  color: #1e1e1e;
 }
 .form_label span {
-  color: #ef4444;
+  color: #dc2626;
   margin-inline-start: 4px;
 }
 
@@ -20268,10 +20242,10 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
 .form_textarea,
 .form_select {
   width: 100%;
-  border: 1px solid #dcdcdc;
+  border: 1px solid #e9e9e9;
   border-radius: 12px;
   padding: 14px 16px;
-  background: #fff;
+  background: #ffffff;
   transition: 0.25s;
   font-size: 15px;
 }
@@ -20296,7 +20270,7 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
 }
 
 .form_error {
-  color: #ef4444;
+  color: #dc2626;
   font-size: 13px;
 }
 
@@ -20311,28 +20285,28 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
   margin-bottom: 10px;
 }
 .upload_field label span {
-  color: #ef4444;
+  color: #dc2626;
 }
 .upload_field input[type=file] {
   width: 100%;
   padding: 14px;
   border: 1px dashed #d6d6d6;
-  border-radius: 14px;
-  background: #fafafa;
+  border-radius: 12px;
+  background: #f8f8f8;
   cursor: pointer;
   transition: 0.25s;
 }
 .upload_field input[type=file]:hover {
-  border-color: #0a2540;
-  background: rgba(10, 37, 64, 0.03);
+  border-color: #1f7ffa;
+  background: #f3f8ff;
 }
 .upload_field input[type=file]::file-selector-button {
   margin-inline-end: 12px;
   border: none;
-  background: #0a2540;
-  color: #fff;
+  background: #1f7ffa;
+  color: #ffffff;
   padding: 10px 16px;
-  border-radius: 10px;
+  border-radius: 8px;
   cursor: pointer;
   font-weight: 600;
 }
@@ -20348,7 +20322,7 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
   margin-bottom: 40px;
 }
 .register_showroom .section_heading h2, .register_showroom .section_heading .h2 {
-  color: #0a2540;
+  color: #1e1e1e;
   font-size: 32px;
   font-weight: 700;
   margin-bottom: 10px;
@@ -20408,8 +20382,8 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
   overflow-y: auto;
   border-radius: 24px;
   background: #ffffff;
-  box-shadow: 0 18px 50px rgba(10, 37, 64, 0.2);
-  color: #0a2540;
+  box-shadow: 0 18px 50px rgba(30, 30, 30, 0.2);
+  color: #1e1e1e;
   scrollbar-width: thin;
 }
 
@@ -20423,7 +20397,7 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
   min-height: 54px;
   padding: 9px 16px;
   border-bottom: 0;
-  background: #edf5ff;
+  background: #f3f8ff;
 }
 .booking_daily_header h2, .booking_daily_header .h2 {
   margin: 0;
@@ -20436,17 +20410,17 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
   width: 36px;
   height: 36px;
   padding: 0;
-  border: 1px solid #e6e8eb;
-  border-radius: 10px;
+  border: 1px solid #e9e9e9;
+  border-radius: 8px;
   background: #ffffff;
-  color: #0a2540;
+  color: #1e1e1e;
   cursor: pointer;
   font-size: 20px;
 }
 
 .booking_daily_calendar {
   padding: 10px 16px 14px;
-  background: #edf5ff;
+  background: #f3f8ff;
 }
 
 .booking_daily_calendar_header {
@@ -20467,14 +20441,13 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
   padding: 0;
   border: 0;
   background: transparent;
-  color: #0a2540;
+  color: #1e1e1e;
   cursor: pointer;
   font-size: 18px;
 }
 
 .booking_daily_weekdays,
 .booking_daily_days {
-  direction: rtl;
   display: grid;
   grid-template-columns: repeat(7, 1fr);
 }
@@ -20504,17 +20477,17 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
   border: 0;
   border-radius: 0;
   background: transparent;
-  color: #0a2540;
+  color: #1e1e1e;
   cursor: pointer;
   font-size: 12px;
   font-weight: 600;
 }
 .booking_daily_day_cell button:disabled {
-  color: #c6cbd1;
+  color: #d6d6d6;
   cursor: not-allowed;
 }
 .booking_daily_day_cell button.selected {
-  border-radius: 7px;
+  border-radius: 4px;
   background: #1f7ffa;
   color: #ffffff;
 }
@@ -20531,9 +20504,9 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
 .booking_daily_range_summary {
   margin-top: 10px;
   padding: 9px;
-  border-radius: 9px;
+  border-radius: 8px;
   background: rgba(31, 127, 250, 0.15);
-  color: #0a2540;
+  color: #1e1e1e;
   font-size: 10px;
   text-align: center;
 }
@@ -20560,10 +20533,10 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
 .booking_daily_field input,
 .booking_daily_field textarea {
   width: 100%;
-  border: 1px solid #e8eaed;
-  border-radius: 10px;
+  border: 1px solid #e9e9e9;
+  border-radius: 8px;
   outline: none;
-  color: #0a2540;
+  color: #1e1e1e;
   font-size: 10px;
   transition: border-color 0.2s;
 }
@@ -20572,11 +20545,11 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
   border-color: #1f7ffa;
 }
 .booking_daily_field input::-moz-placeholder, .booking_daily_field textarea::-moz-placeholder {
-  color: #b6bbc2;
+  color: #969696;
 }
 .booking_daily_field input::placeholder,
 .booking_daily_field textarea::placeholder {
-  color: #b6bbc2;
+  color: #969696;
 }
 .booking_daily_field input {
   height: 40px;
@@ -20603,11 +20576,11 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
   direction: ltr;
   height: 40px;
   padding: 0 10px;
-  border: 1px solid #e8eaed;
-  border-radius: 10px;
+  border: 1px solid #e9e9e9;
+  border-radius: 8px;
 }
 .booking_daily_time_input svg {
-  color: #98a0a8;
+  color: #969696;
 }
 .booking_daily_time_input select {
   flex: 1;
@@ -20652,8 +20625,8 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
   min-height: 62px;
   padding: 9px 10px;
   border: 0;
-  border-radius: 10px;
-  background: #f7f9fc;
+  border-radius: 8px;
+  background: #f8f8f8;
   color: #1e1e1e;
   cursor: pointer;
   text-align: start;
@@ -20664,7 +20637,7 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
   place-items: center;
   width: 36px;
   height: 36px;
-  border-radius: 9px;
+  border-radius: 8px;
   background: #ffffff;
 }
 .booking_daily_address_icon img {
@@ -20702,7 +20675,7 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
   max-height: calc(100dvh - 32px);
   overflow: hidden;
   padding: 0;
-  border-radius: 22px;
+  border-radius: 24px;
 }
 .map_modal.booking_daily_map_modal .close_btn {
   top: 12px;
@@ -20710,8 +20683,8 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
   z-index: 5;
   width: 38px;
   height: 38px;
-  border: 1px solid #e6e8eb;
-  border-radius: 10px;
+  border: 1px solid #e9e9e9;
+  border-radius: 8px;
   background: #ffffff;
   font-size: 20px;
 }
@@ -20731,7 +20704,7 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
 }
 .map_modal.booking_daily_map_modal .search_box input {
   height: 42px;
-  border-radius: 10px;
+  border-radius: 8px;
   background: rgba(255, 255, 255, 0.96);
   font-size: 11px;
 }
@@ -20746,17 +20719,17 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
   position: absolute;
   z-index: 3;
   bottom: 16px;
-  left: 12px;
+  inset-inline-start: 12px;
   display: grid;
   place-items: center;
   width: 38px;
   height: 38px;
   padding: 0;
   border: 0;
-  border-radius: 10px;
+  border-radius: 8px;
   background: #ffffff;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-  color: #0a2540;
+  box-shadow: 0 2px 8px rgba(30, 30, 30, 0.06);
+  color: #1e1e1e;
   cursor: pointer;
 }
 
@@ -20767,7 +20740,7 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
   gap: 12px;
   margin-top: -18px;
   padding: 22px 12px 16px;
-  border-radius: 20px 20px 0 0;
+  border-radius: 24px 24px 0 0;
   background: #ffffff;
 }
 .booking_daily_map_sheet p {
@@ -20789,7 +20762,7 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
   width: 100%;
   height: 44px;
   border: 0;
-  border-radius: 9px;
+  border-radius: 8px;
   background: #1f7ffa;
   color: #ffffff;
   font-weight: 600;
@@ -20812,7 +20785,7 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
   align-items: center;
   gap: 12px;
   padding: 10px 16px max(10px, env(safe-area-inset-bottom));
-  border-top: 1px solid #eceef0;
+  border-top: 1px solid #e9e9e9;
   background: rgba(255, 255, 255, 0.97);
 }
 
@@ -20820,7 +20793,7 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
   flex: 1;
   height: 44px;
   border: 0;
-  border-radius: 9px;
+  border-radius: 8px;
   background: #1f7ffa;
   color: #ffffff;
   cursor: pointer;
@@ -20837,13 +20810,15 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
 
 .booking_daily_total {
   flex: 0 0 auto;
+  text-align: end;
+}
+.booking_daily_total:dir(rtl) {
   direction: rtl;
-  text-align: right;
 }
 .booking_daily_total span {
   display: block;
   margin-bottom: 2px;
-  color: #0a2540;
+  color: #1e1e1e;
   font-size: 10px;
 }
 .booking_daily_total strong {
@@ -20864,31 +20839,31 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
   .booking_daily_modal {
     width: min(390px, 100%);
     max-height: calc(100dvh - 32px);
-    border-radius: 20px;
+    border-radius: 24px;
   }
 }
 .extend_modal {
   width: min(420px, 100% - 32px);
   background: #ffffff;
-  border-radius: 20px;
+  border-radius: 24px;
   padding: 20px;
   position: relative;
 }
 .extend_modal .modal_header h2, .extend_modal .modal_header .h2 {
   font-size: 22px;
-  color: #0a2540;
+  color: #1e1e1e;
   padding: 10px 0;
 }
 .extend_modal .duration_picker {
   margin: 0 0 18px;
-  background: #e7f1ff;
-  border-radius: 10px;
+  background: #f3f8ff;
+  border-radius: 8px;
   padding: 16px 14px 12px;
   text-align: center;
 }
 .extend_modal .duration_picker .label {
   margin: 0 0 8px;
-  color: #333;
+  color: #1e1e1e;
   font-size: 14px;
   font-weight: 500;
   line-height: 1.5;
@@ -20909,9 +20884,9 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
   justify-content: center;
   padding: 0;
   border: none;
-  border-radius: 7px;
+  border-radius: 4px;
   background: #ffffff;
-  color: #222;
+  color: #1e1e1e;
   font-size: 21px;
   font-weight: 400;
   line-height: 1;
@@ -20923,7 +20898,7 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #222;
+  color: #1e1e1e;
   font-size: 30px;
   font-weight: 700;
   line-height: 1;
@@ -20931,7 +20906,7 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
 }
 .extend_modal .duration_picker .note {
   margin: 9px 0 0;
-  color: #333;
+  color: #1e1e1e;
   font-size: 11px;
   font-weight: 400;
   line-height: 1.5;
@@ -20941,10 +20916,10 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
 }
 .extend_modal .price_details .details_title {
   margin: 0 0 8px;
-  color: #222;
+  color: #1e1e1e;
   font-size: 14px;
   font-weight: 700;
-  text-align: right;
+  text-align: end;
 }
 .extend_modal .price_details .row {
   min-height: 34px;
@@ -20954,26 +20929,26 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
   -moz-column-gap: 12px;
        column-gap: 12px;
   padding: 0 10px;
-  border-bottom: 1px dashed #e5e5e5;
+  border-bottom: 1px dashed #e9e9e9;
 }
 .extend_modal .price_details .row:last-child {
   border-bottom: none;
 }
 .extend_modal .price_details .row .label {
-  color: #777;
+  color: #737373;
   font-size: 14px;
   font-weight: 400;
-  text-align: right;
+  text-align: end;
 }
 .extend_modal .price_details .row .calculation {
-  color: #777;
+  color: #737373;
   font-size: 14px;
   font-weight: 400;
   text-align: center;
   white-space: nowrap;
 }
 .extend_modal .price_details .row strong {
-  color: #222;
+  color: #1e1e1e;
   font-size: 14px;
   font-weight: 500;
   text-align: left;
@@ -20981,7 +20956,7 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
 }
 .extend_modal .price_details .row.late_fee .calculation,
 .extend_modal .price_details .row.late_fee strong {
-  color: #e53935;
+  color: #dc2626;
 }
 .extend_modal .price_details .total {
   margin-top: 4px;
@@ -20989,7 +20964,7 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
   border-bottom: none;
 }
 .extend_modal .price_details .total .label {
-  color: #777;
+  color: #737373;
   font-size: 14px;
 }
 .extend_modal .price_details .total strong {
@@ -21001,7 +20976,7 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
   width: 100%;
   height: 48px;
   border: none;
-  border-radius: 10px;
+  border-radius: 8px;
   background: #1f7ffa;
   color: #ffffff;
   font-size: 14px;
@@ -21036,8 +21011,8 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
   max-width: 100%;
   padding: 40px 24px 24px;
   background: #ffffff;
-  border-radius: 20px;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+  border-radius: 24px;
+  box-shadow: 0 20px 50px rgba(30, 30, 30, 0.15);
   max-height: 92vh;
 }
 .cancel_booking_modal .cancel_booking_modal_header {
@@ -21045,7 +21020,7 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
 }
 .cancel_booking_modal .cancel_booking_modal_header h2, .cancel_booking_modal .cancel_booking_modal_header .h2 {
   font-size: 22px;
-  color: #0a2540;
+  color: #1e1e1e;
   padding: 10px 0;
 }
 .cancel_booking_modal .cancel_booking_modal_illustration {
@@ -21069,7 +21044,7 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
 }
 .cancel_booking_modal .cancel_booking_modal_question h3, .cancel_booking_modal .cancel_booking_modal_question .h3 {
   margin: 0;
-  color: #222;
+  color: #1e1e1e;
   font-size: 15px;
   font-weight: 700;
   line-height: 1.6;
@@ -21078,13 +21053,13 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
   margin-bottom: 18px;
   width: 100%;
   padding: 11px 16px;
-  background: #fff0f2;
-  border-radius: 10px;
+  background: #fff1f2;
+  border-radius: 8px;
   text-align: center;
 }
 .cancel_booking_modal .cancel_booking_modal_warning p {
   margin: 0;
-  color: #555;
+  color: #737373;
   font-size: 11.5px;
   font-weight: 400;
   line-height: 1.7;
@@ -21095,10 +21070,10 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
 }
 .cancel_booking_modal .cancel_booking_modal_price_details .cancel_booking_modal_details_title {
   margin: 0 0 6px;
-  color: #222;
+  color: #1e1e1e;
   font-size: 15px;
   font-weight: 700;
-  text-align: right;
+  text-align: end;
 }
 .cancel_booking_modal .cancel_booking_modal_price_details .cancel_booking_modal_row {
   width: 100%;
@@ -21110,19 +21085,19 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
   flex-wrap: nowrap;
   gap: 8px;
   padding: 0 4px;
-  border-bottom: 1px dashed #e5e5e5;
+  border-bottom: 1px dashed #e9e9e9;
 }
 .cancel_booking_modal .cancel_booking_modal_price_details .cancel_booking_modal_row:last-child {
   border-bottom: none;
 }
 .cancel_booking_modal .cancel_booking_modal_price_details .cancel_booking_modal_row span {
-  color: #777;
+  color: #737373;
   font-size: 13px;
   font-weight: 400;
   min-width: 0;
 }
 .cancel_booking_modal .cancel_booking_modal_price_details .cancel_booking_modal_row strong {
-  color: #222;
+  color: #1e1e1e;
   font-size: 13px;
   font-weight: 500;
   min-width: 0;
@@ -21130,7 +21105,7 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
 }
 .cancel_booking_modal .cancel_booking_modal_price_details .cancel_booking_modal_row.cancel_booking_modal_row--danger span,
 .cancel_booking_modal .cancel_booking_modal_price_details .cancel_booking_modal_row.cancel_booking_modal_row--danger strong {
-  color: #e53935;
+  color: #dc2626;
 }
 .cancel_booking_modal .cancel_booking_modal_price_details .cancel_booking_modal_row.cancel_booking_modal_row--strong strong {
   font-weight: 600;
@@ -21139,8 +21114,8 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
   width: 100%;
   margin-bottom: 16px;
   padding: 12px;
-  background: #e5f0ff;
-  border-radius: 10px;
+  background: #f3f8ff;
+  border-radius: 8px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -21149,12 +21124,12 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
 }
 .cancel_booking_modal .cancel_booking_modal_refund_box span {
   margin-bottom: 3px;
-  color: #666;
+  color: #737373;
   font-size: 11px;
   font-weight: 400;
 }
 .cancel_booking_modal .cancel_booking_modal_refund_box strong {
-  color: #222;
+  color: #1e1e1e;
   font-size: 20px;
   font-weight: 700;
 }
@@ -21167,7 +21142,7 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
 }
 .cancel_booking_modal .cancel_booking_modal_actions button {
   height: 46px;
-  border-radius: 10px;
+  border-radius: 8px;
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
@@ -21191,9 +21166,9 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
   width: 80px;
   flex-shrink: 0;
   order: 2;
-  border: 1px solid #aaa;
+  border: 1px solid #d6d6d6;
   background: #ffffff;
-  color: #555;
+  color: #737373;
 }
 @media (max-height: 620px) {
   .cancel_booking_modal {
@@ -21209,7 +21184,7 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
 }
 .account-panel.profile_tab .profile_action_field {
   width: 100%;
-  border-radius: 9px;
+  border-radius: 8px;
   background: #ffffff;
   transition: background 0.2s ease;
 }
@@ -21217,13 +21192,13 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
   background: #fff1f2;
 }
 .account-panel.profile_tab .profile_action_field.warning .profile_action_title {
-  color: #222;
+  color: #1e1e1e;
 }
 .account-panel.profile_tab .profile_action_field.warning .profile_action_value {
-  color: #777;
+  color: #737373;
 }
 .account-panel.profile_tab .profile_action_field.warning .profile_action_value svg {
-  color: #e53935;
+  color: #dc2626;
 }
 .account-panel.profile_tab .profile_action_field .profile_action_btn {
   width: 100%;
@@ -21236,7 +21211,7 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
   border: none;
   background: transparent;
   cursor: pointer;
-  text-align: right;
+  text-align: end;
 }
 .account-panel.profile_tab .profile_action_field .profile_action_btn .profile_action_content {
   min-width: 0;
@@ -21246,7 +21221,7 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
   gap: 5px;
 }
 .account-panel.profile_tab .profile_action_field .profile_action_btn .profile_action_title {
-  color: #222;
+  color: #1e1e1e;
   font-size: 13px;
   font-weight: 600;
   line-height: 1.4;
@@ -21256,14 +21231,14 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
   display: flex;
   align-items: center;
   gap: 6px;
-  color: #777;
+  color: #737373;
   font-size: 11px;
   font-weight: 400;
   line-height: 1.5;
 }
 .account-panel.profile_tab .profile_action_field .profile_action_btn .profile_action_value svg {
   flex-shrink: 0;
-  color: #36b37e;
+  color: #16a34a;
   font-size: 14px;
 }
 .account-panel.profile_tab .profile_action_field .profile_action_btn .profile_action_value span {
@@ -21271,14 +21246,14 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
   overflow-wrap: anywhere;
 }
 .account-panel.profile_tab .profile_action_field .profile_action_btn .profile_action_value.verified {
-  color: #777;
+  color: #737373;
 }
 .account-panel.profile_tab .profile_action_field .profile_action_btn .profile_action_value.verified svg {
-  color: #36b37e;
+  color: #16a34a;
 }
 .account-panel.profile_tab .profile_action_field .profile_action_btn .arrow {
   flex-shrink: 0;
-  color: #888;
+  color: #737373;
   font-size: 18px;
 }
 .account-panel.profile_tab .profile_action_field .profile_action_btn:hover {
@@ -21293,11 +21268,11 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
   padding: 4px 0;
   border: none;
   background: transparent;
-  color: #e53935;
+  color: #dc2626;
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  text-align: right;
+  text-align: end;
 }
 .account-panel.profile_tab .delete_account_btn svg {
   font-size: 17px;
@@ -21340,11 +21315,11 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
     font-size: 12px;
   }
   .account-panel.profile_tab .form_field .input_wrapper .icon {
-    left: 12px;
+    inset-inline-start: 12px;
     font-size: 15px;
   }
   .account-panel.profile_tab .form_field .input_wrapper input {
-    padding-left: 38px;
+    padding-inline-start: 38px;
   }
   .account-panel.profile_tab .profile_action_field .profile_action_btn {
     min-height: 58px;
@@ -21393,10 +21368,10 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
   align-items: center;
   justify-content: center;
   gap: 7px;
-  border: 1px dashed #ddd;
+  border: 1px dashed #d6d6d6;
   border-radius: 8px;
-  background: #fff;
-  color: #aaa;
+  background: #ffffff;
+  color: #969696;
   cursor: pointer;
   transition: border-color 0.2s ease, background 0.2s ease;
 }
@@ -21410,12 +21385,12 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
   font-weight: 400;
 }
 .license_modal .license_upload_area small, .license_modal .license_upload_area .small {
-  color: #aaa;
+  color: #969696;
   font-size: 10px;
 }
 .license_modal .license_upload_area:hover {
   border-color: #1f7ffa;
-  background: #fafafa;
+  background: #f8f8f8;
 }
 .license_modal .license_upload_area.has_file {
   border-color: #1f7ffa;
@@ -21426,7 +21401,7 @@ html[dir=rtl] .auth_register_form .register_back_btn:hover svg {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  color: #444;
+  color: #1e1e1e;
 }
 .license_modal .primary_btn {
   margin-top: 12px;

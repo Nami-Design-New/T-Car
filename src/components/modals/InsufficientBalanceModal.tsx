@@ -30,7 +30,6 @@ export default function InsufficientBalanceModal({ open , onClose, onConfirm }: 
     <div className="modal_overlay" onClick={onClose}>
       <div
         className="insufficient_balance_modal bg-white"
-        dir="rtl"
         onClick={(event) => event.stopPropagation()}
       >
         <span className="insufficient_balance_drag_handle" aria-hidden="true" />

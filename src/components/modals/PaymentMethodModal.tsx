@@ -32,7 +32,7 @@ export default function PaymentMethodModal({ open, onClose, onConfirm }: Props) 
 
   return createPortal(
     <div className="modal_overlay" onClick={onClose}>
-      <div className="payment_method_modal bg-white" dir="rtl" onClick={(e) => e.stopPropagation()}>
+      <div className="payment_method_modal bg-white" onClick={(e) => e.stopPropagation()}>
         <span className="payment_drag_handle" />
 
         <div className="payment_modal_header d-flex align-items-center justify-content-between mb-3">

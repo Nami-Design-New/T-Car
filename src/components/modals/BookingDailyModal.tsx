@@ -25,7 +25,10 @@ interface DateRange {
 
 type MapField = 'pickup' | 'dropoff';
 
-const WEEKDAYS = ['الجمعة', 'الخميس', 'الأربعاء', 'الثلاثاء', 'الاثنين', 'الأحد', 'السبت'];
+// Sunday-first, matching Date#getDay() (0 = Sunday) used by startOffset below.
+// Column order is then handled by the inherited `dir`, not by reversing this
+// array -- reversing it silently mislabels every column.
+const WEEKDAYS = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
 
 const MONTHS = [
   'يناير',

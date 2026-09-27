@@ -1,3 +1,13 @@
+import {SUPPORTED_LANGUAGES} from '@constants/index';
+
+export type Direction = 'ltr' | 'rtl';
+
+export function getDirection(locale: string): Direction {
+  return (
+    SUPPORTED_LANGUAGES.find((lang) => lang.code === locale)?.dir ?? 'ltr'
+  );
+}
+
 export function formatCurrency(
   value: number,
   locale: string = 'en-US',
@@ -12,8 +22,4 @@ export function formatCurrency(
 
 export function classNames(...classes: Array<string | false | null | undefined>): string {
   return classes.filter(Boolean).join(' ');
-}
-
-export function isRTL(lang: string): boolean {
-  return lang === 'ar';
 }

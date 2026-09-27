@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useCallback, useEffect, useRef } from 'react';
+import { useLocale } from 'next-intl';
 import { GoogleMap, Marker, useJsApiLoader } from '@react-google-maps/api';
 import { FiSearch, FiMapPin, FiNavigation, FiX, FiLoader } from 'react-icons/fi';
 import type { MapLocationModalProps } from '@/types/car';
@@ -29,12 +30,24 @@ export default function MapLocationModal({
   const [isLocating, setIsLocating] = useState(false);
   const [locationError, setLocationError] = useState('');
 
+  const locale = useLocale();
+
+  // The Maps script is injected once per page session, and useJsApiLoader
+  // throws ("must not be called again with different options") if it is later
+  // called with a different `language`. Pinning the locale that was active on
+  // first mount keeps the loader params stable, so switching language can
+  // never retrigger the script or crash the render.
+  // Trade-off: the map keeps the language it first loaded with until the page
+  // is reloaded. That is a limit of the Maps API, not something we can fix
+  // here -- the script exposes no way to change its language after load.
+  const [mapsLanguage] = useState(locale);
+
   const searchTimeout = useRef<number | null>(null);
   const mapRef = useRef<google.maps.Map | null>(null);
 
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY!,
-    language: 'ar',
+    language: mapsLanguage,
     libraries: ['places'],
   });
 
@@ -126,7 +139,7 @@ export default function MapLocationModal({
 
       const service = new window.google.maps.places.AutocompleteService();
 
-      service.getPlacePredictions({ input: search, language: 'ar' }, (preds) => {
+      service.getPlacePredictions({ input: search, language: mapsLanguage }, (preds) => {
         setPredictions(preds || null);
       });
     }, 300);
@@ -134,7 +147,7 @@ export default function MapLocationModal({
     return () => {
       if (searchTimeout.current) window.clearTimeout(searchTimeout.current);
     };
-  }, [search, isLoaded]);
+  }, [search, isLoaded, mapsLanguage]);
 
   const selectPrediction = (placeId: string, description?: string) => {
     if (!window.google) return;
@@ -158,7 +171,7 @@ export default function MapLocationModal({
   if (!open) return null;
 
   return (
-    <div className="modal_overlay" onClick={(event) => event.stopPropagation()} dir="rtl">
+    <div className="modal_overlay" onClick={(event) => event.stopPropagation()}>
       <div className="map_modal" onClick={(event) => event.stopPropagation()}>
         <button type="button" className="close_btn" onClick={onClose} aria-label="إغلاق">
           <FiX />

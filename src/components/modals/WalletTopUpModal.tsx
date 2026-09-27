@@ -37,7 +37,7 @@ export default function WalletTopUpModal({ open, onClose, onConfirm }: Props) {
 
   return createPortal(
     <div className="modal_overlay" onClick={onClose}>
-      <div className="wallet_topup_modal bg-white" dir="rtl" onClick={(event) => event.stopPropagation()}>
+      <div className="wallet_topup_modal bg-white" onClick={(event) => event.stopPropagation()}>
         <span className="wallet_topup_drag_handle" aria-hidden="true" />
 
         <div className="wallet_topup_header d-flex align-items-center justify-content-between">

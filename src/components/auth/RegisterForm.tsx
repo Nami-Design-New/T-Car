@@ -41,7 +41,7 @@ export default function RegisterForm({ onBack, onSuccess }: Props) {
         onClick={onBack}
         aria-label={t('auth.register.backLabel')}
       >
-        <FiArrowLeft aria-hidden="true" />
+        <FiArrowLeft className="mirror-in-rtl" aria-hidden="true" />
       </button>
 
       <h2>{t('auth.register.title')}</h2>

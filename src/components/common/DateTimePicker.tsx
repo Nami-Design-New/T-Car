@@ -75,11 +75,11 @@ export default function DateTimePicker({ label, value, onChange, minDate, placeh
         <div className="dt-picker-popover">
           <div className="dt-picker-calendar-header">
             <button type="button" onClick={() => setCursor(new Date(year, month - 1, 1))} aria-label="الشهر السابق">
-              <FiChevronRight />
+              <FiChevronLeft className="mirror-in-rtl" />
             </button>
             <span>{MONTHS[month]} {year}</span>
             <button type="button" onClick={() => setCursor(new Date(year, month + 1, 1))} aria-label="الشهر التالي">
-              <FiChevronLeft />
+              <FiChevronRight className="mirror-in-rtl" />
             </button>
           </div>
 

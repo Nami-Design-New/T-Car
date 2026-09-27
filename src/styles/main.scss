@@ -174,31 +174,31 @@ body {
   }
 }
 //////////////////////////////////////////////////////
-html[dir='rtl'] body {
-  font-family: $font-family-base;
-  .popular-cities {
-    .city-card {
-      .city-card-cta {
-        .cta-icon {
-          transform: rotate(180deg);
-          transition: 0.3s ease;
-        }
-      }
-
-      &:hover {
-        .city-card-cta {
-          .cta-icon {
-            transform: translateX(-5px);
-          }
-        }
-      }
-    }
+// Direction-agnostic icon mirroring.
+//
+// Author directional glyphs (arrows, chevrons, carets) once in their LTR
+// form and add this class; it is mirrored when the document language is rtl.
+// This is the single source of truth for icon direction.
+//
+// The old `html[dir='rtl'] .x { transform: rotate(180deg) }` pattern forced
+// every icon to be hardcoded to one language and then corrected in CSS, so the
+// JSX and the stylesheet could silently disagree -- and did: Cities already
+// swapped the icon for rtl in JSX, so the CSS rotated it a second time and the
+// arabic cta arrow pointed backwards.
+//
+// Do not use for logos and brand marks, or for transforms that express state
+// rather than direction (an open/closed accordion chevron, for example).
+.mirror-in-rtl {
+  &:dir(rtl) {
+    transform: scaleX(-1);
   }
 }
-html[dir='ltr'] body {
-  .car-gallery-nav.next {
-    transform: rotate(180deg);
-  }
+
+body:dir(rtl) {
+  font-family: $font-family-base;
+}
+
+body:dir(ltr) {
   .download_app .download_app_card {
     justify-content: flex-start;
   }
@@ -1808,7 +1808,7 @@ img {
 
     .search_icon {
       position: absolute;
-      right: 18px;
+      inset-inline-end: 18px;
       font-size: 18px;
       color: $ds-text-placeholder;
       pointer-events: none;
@@ -1816,7 +1816,7 @@ img {
 
     .search_spinner {
       position: absolute;
-      left: 14px;
+      inset-inline-start: 14px;
       color: $ds-action-primary;
       animation: spin 0.8s linear infinite;
     }
@@ -1827,7 +1827,9 @@ img {
       border-radius: $ds-radius-md;
       border: 1px solid $ds-stroke-light;
       background: $ds-surface-on-background;
-      padding: 0 48px 0 40px;
+      padding-block: 0;
+      padding-inline-start: 40px;
+      padding-inline-end: 48px;
       font-size: 15px;
       outline: none;
       transition: 0.25s;
@@ -1845,7 +1847,7 @@ img {
 
     .clear_search {
       position: absolute;
-      left: 14px;
+      inset-inline-start: 14px;
       background: none;
       border: none;
       cursor: pointer;
@@ -1862,8 +1864,7 @@ img {
     .predictions_list {
       position: absolute;
       top: calc(100% + 6px);
-      right: 0;
-      left: 0;
+      inset-inline: 0;
       z-index: 20;
 
       background: $ds-surface-elevated;
@@ -1922,8 +1923,7 @@ img {
     .no_results {
       position: absolute;
       top: calc(100% + 6px);
-      right: 0;
-      left: 0;
+      inset-inline: 0;
       z-index: 20;
 
       background: $ds-surface-elevated;
@@ -2138,7 +2138,7 @@ img {
     gap: 10px;
 
     margin-bottom: 18px;
-    padding-right: 4px;
+    padding-inline-end: 4px;
 
     &::-webkit-scrollbar {
       width: 5px;
@@ -2300,7 +2300,6 @@ img {
 .close_btn {
   position: absolute;
   top: -20px;
-  right: 20px;
   inset-inline-end: 18px;
 
   width: 42px;
@@ -2400,7 +2399,7 @@ img {
 
     gap: 10px;
 
-    padding-right: 4px;
+    padding-inline-end: 4px;
 
     &::-webkit-scrollbar {
       width: 5px;
@@ -2453,7 +2452,7 @@ img {
 
     .content {
       flex: 1;
-      text-align: right;
+      text-align: end;
 
       h4 {
         font-size: 15px;
@@ -2710,7 +2709,9 @@ img {
       font-weight: 600;
 
       .cta-icon {
-        transition: 0.3s ease;
+        // margin rather than transform: the nudge then mirrors for free, and
+        // cannot overwrite the transform set by .mirror-in-rtl
+        transition: margin-inline-end 0.3s ease;
       }
     }
 
@@ -2721,7 +2722,7 @@ img {
 
       .city-card-cta {
         .cta-icon {
-          transform: translateX(5px);
+          margin-inline-end: 5px;
         }
       }
     }
@@ -3014,12 +3015,10 @@ img {
   .download_app_content {
     width: 48%;
 
-    margin-left: auto;
-
     position: relative;
     z-index: 10;
 
-    text-align: right;
+    text-align: end;
 
     .tag {
       display: inline-flex;
@@ -3455,7 +3454,7 @@ img {
     &::before {
       content: '';
       position: absolute;
-      left: -2px;
+      inset-inline-start: -2px;
       top: 29%;
 
       width: 320px;
@@ -4166,7 +4165,7 @@ img {
       content: '';
       position: absolute;
       top: 50%;
-      left: 0;
+      inset-inline-start: 0;
       width: $ds-space-4;
       height: $ds-space-4;
       border-radius: $ds-radius-full;
@@ -5130,7 +5129,7 @@ img {
   margin: 5px 4px 12px;
   color: $ds-text-placeholder;
   font-size: 9px;
-  text-align: right;
+  text-align: end;
 }
 
 .wallet_topup_submit {
@@ -6958,7 +6957,7 @@ img {
     &::before {
       position: absolute;
       top: 18px;
-      right: 8px;
+      inset-inline-end: 8px;
       bottom: 18px;
       width: 2px;
       content: '';
@@ -7225,7 +7224,10 @@ img {
     box-shadow: 0 8px 20px rgba($ds-action-primary, 0.12);
 
     svg {
-      transform: translateX(-2px);
+      // margin, not transform: the back arrow points inline-start, so a
+      // negative inline-start margin nudges it the right way in both
+      // directions, and cannot overwrite the transform from .mirror-in-rtl
+      margin-inline-start: -2px;
     }
   }
 
@@ -7447,7 +7449,7 @@ img {
       font-size: 14px;
       font-weight: 600;
 
-      text-align: right;
+      text-align: end;
     }
 
     .phone_wrapper {
@@ -7750,16 +7752,6 @@ img {
   }
 }
 
-html[dir='rtl'] .otp_form {
-  .otp_back_btn svg {
-    transform: rotate(180deg);
-  }
-
-  .otp_back_btn:hover svg {
-    transform: rotate(180deg) translateX(-2px);
-  }
-}
-
 // ============ Register form ============
 .register_form {
   position: relative;
@@ -7943,15 +7935,6 @@ html[dir='rtl'] .otp_form {
   }
 }
 
-html[dir='rtl'] .auth_register_form {
-  .register_back_btn svg {
-    transform: rotate(180deg);
-  }
-
-  .register_back_btn:hover svg {
-    transform: rotate(180deg) translateX(-2px);
-  }
-}
 // success modal
 .success_modal {
   width: min(420px, calc(100% - 30px));
@@ -8902,7 +8885,7 @@ html[dir='rtl'] .auth_register_form {
     &-menu {
       position: absolute;
       top: calc(100% + 8px);
-      left: 0;
+      inset-inline-start: 0;
 
       min-width: 150px;
       padding: 6px;
@@ -8932,7 +8915,7 @@ html[dir='rtl'] .auth_register_form {
 
         font-family: inherit;
         font-size: 0.78rem;
-        text-align: right;
+        text-align: end;
 
         cursor: pointer;
         transition: 0.2s;
@@ -9041,7 +9024,6 @@ html[dir='rtl'] .auth_register_form {
     }
 
     .status-date {
-      direction: rtl;
       white-space: nowrap;
     }
 
@@ -9233,9 +9215,9 @@ html[dir='rtl'] .auth_register_form {
     &::before {
       position: absolute;
       top: 18px;
-      right: 8px;
+      inset-inline-end: 8px;
       bottom: 18px;
-      border-right: 2px dotted $ds-action-primary;
+      border-inline-end: 2px dotted $ds-action-primary;
       content: '';
     }
 
@@ -9257,7 +9239,7 @@ html[dir='rtl'] .auth_register_form {
       > div {
         width: 100%;
         gap: 5px;
-        text-align: right;
+        text-align: end;
       }
 
       .label {
@@ -9295,8 +9277,6 @@ html[dir='rtl'] .auth_register_form {
   }
 
   .countdown-units {
-    direction: rtl;
-
     display: flex;
     align-items: center;
     justify-content: center;
@@ -10073,8 +10053,7 @@ html[dir='rtl'] .auth_register_form {
     .range_track {
       position: absolute;
       top: 50%;
-      left: 0;
-      right: 0;
+      inset-inline: 0;
       height: 4px;
       border-radius: $ds-radius-xs;
       background: $ds-stroke-light;
@@ -10092,8 +10071,7 @@ html[dir='rtl'] .auth_register_form {
     .thumb {
       position: absolute;
       top: 50%;
-      left: 0;
-      right: 0;
+      inset-inline: 0;
       width: 100%;
       transform: translateY(-50%);
       margin: 0;
@@ -10203,7 +10181,7 @@ html[dir='rtl'] .auth_register_form {
     cursor: pointer;
     padding: 8px 12px;
     width: 100%;
-    text-align: right;
+    text-align: end;
     transition: 0.2s;
 
     .brand_logo {
@@ -10629,7 +10607,6 @@ html[dir='rtl'] .auth_register_form {
 
 .booking_daily_weekdays,
 .booking_daily_days {
-  direction: rtl;
   display: grid;
   grid-template-columns: repeat(7, 1fr);
 }
@@ -10926,7 +10903,7 @@ html[dir='rtl'] .auth_register_form {
   position: absolute;
   z-index: 3;
   bottom: 16px;
-  left: 12px;
+  inset-inline-start: 12px;
   display: grid;
   place-items: center;
   width: 38px;
@@ -11024,8 +11001,13 @@ html[dir='rtl'] .auth_register_form {
 
 .booking_daily_total {
   flex: 0 0 auto;
-  direction: rtl;
-  text-align: right;
+  text-align: end;
+
+  // parent .booking_daily_footer is forced ltr; re-enable rtl reading order
+  // for the price block only when the document language is rtl
+  &:dir(rtl) {
+    direction: rtl;
+  }
 
   span {
     display: block;
@@ -11193,7 +11175,7 @@ html[dir='rtl'] .auth_register_form {
 
       font-weight: 700;
 
-      text-align: right;
+      text-align: end;
     }
 
     .row {
@@ -11222,7 +11204,7 @@ html[dir='rtl'] .auth_register_form {
 
         font-weight: 400;
 
-        text-align: right;
+        text-align: end;
       }
 
       .calculation {
@@ -11417,7 +11399,7 @@ html[dir='rtl'] .auth_register_form {
       color: $ds-text-primary;
       font-size: 15px;
       font-weight: 700;
-      text-align: right;
+      text-align: end;
     }
 
     .cancel_booking_modal_row {
@@ -11602,7 +11584,7 @@ html[dir='rtl'] .auth_register_form {
 
         cursor: pointer;
 
-        text-align: right;
+        text-align: end;
 
         .profile_action_content {
           min-width: 0;
@@ -11698,7 +11680,7 @@ html[dir='rtl'] .auth_register_form {
 
       cursor: pointer;
 
-      text-align: right;
+      text-align: end;
 
       svg {
         font-size: 17px;
@@ -11762,13 +11744,13 @@ html[dir='rtl'] .auth_register_form {
 
         .input_wrapper {
           .icon {
-            left: 12px;
+            inset-inline-start: 12px;
 
             font-size: 15px;
           }
 
           input {
-            padding-left: 38px;
+            padding-inline-start: 38px;
           }
         }
       }

@@ -28,5 +28,3 @@ export const SUPPORTED_LANGUAGES = [
   { code: 'en', label: 'English', dir: 'ltr' },
   { code: 'ar', label: 'العربية', dir: 'rtl' },
 ] as const;
-
-export const DEFAULT_LANGUAGE = 'ar';
