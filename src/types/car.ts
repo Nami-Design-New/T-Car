@@ -94,7 +94,7 @@ export interface CarDetails extends CarListing {
 }
 
 // Booking flow
-export type PaymentMethod = 'wallet' | 'visa';
+export type PaymentMethod = 'wallet' | 'visa' | 'tabby' | 'tamara';
 
 export interface BookingDetails {
   startDate: Date;

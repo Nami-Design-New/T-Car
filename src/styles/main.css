@@ -15725,7 +15725,7 @@ img {
 .payment_method_modal .payment_modal_header h3, .payment_method_modal .payment_modal_header .h3 {
   margin: 0;
   color: #1e1e1e;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 700;
 }
 .payment_method_modal .payment_modal_header .payment_modal_close {
@@ -15738,10 +15738,10 @@ img {
 }
 .payment_method_modal .payment_modal_option {
   min-height: 58px;
-  padding: 0 12px;
+  padding: 10px 12px;
   border: 1px solid #e9e9e9;
   border-radius: 8px;
-  background: #f8f8f8;
+  background: #ffffff;
   cursor: pointer;
   transition: border-color 0.2s, background 0.2s;
 }
@@ -15749,31 +15749,53 @@ img {
   border-color: rgba(31, 127, 250, 0.5);
   background: #f3f8ff;
 }
+.payment_method_modal .payment_option_text {
+  gap: 4px;
+  min-width: 0;
+}
 .payment_method_modal .payment_option_title {
   color: #1e1e1e;
   font-size: 12px;
   font-weight: 700;
 }
+.payment_method_modal .payment_option_desc {
+  color: #545454;
+  font-size: 11px;
+}
 .payment_method_modal .payment_option_info,
 .payment_method_modal .points_info {
+  flex-shrink: 0;
   direction: ltr;
 }
 .payment_method_modal .payment_option_info strong {
   color: #1e1e1e;
-  font-size: 12px;
+  font-size: 16px;
+  font-weight: 700;
+}
+.payment_method_modal .points_info .points_value {
+  gap: 2px;
+  align-items: flex-start;
 }
 .payment_method_modal .points_info small, .payment_method_modal .points_info .small {
-  color: #545454;
-  font-size: 9px;
+  color: #1e1e1e;
+  font-size: 10px;
 }
 .payment_method_modal .points_info small strong, .payment_method_modal .points_info .small strong {
   color: #dc2626;
   font-weight: 600;
 }
+.payment_method_modal .points_info .points_amount {
+  color: #1e1e1e;
+  font-size: 11px;
+}
+.payment_method_modal .points_info .points_amount strong {
+  font-size: 12px;
+  font-weight: 700;
+}
 .payment_method_modal .points_info .form-check-input {
   float: none;
-  width: 34px;
-  height: 17px;
+  width: 40px;
+  height: 20px;
   cursor: pointer;
 }
 .payment_method_modal .payment_confirm_btn {

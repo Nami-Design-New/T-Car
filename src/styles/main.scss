@@ -4825,7 +4825,7 @@ img {
     h3 {
       margin: 0;
       color: $ds-text-primary;
-      font-size: 14px;
+      font-size: 16px;
       font-weight: 700;
     }
 
@@ -4841,10 +4841,10 @@ img {
 
   .payment_modal_option {
     min-height: 58px;
-    padding: 0 12px;
+    padding: 10px 12px;
     border: 1px solid $ds-stroke-light;
     border-radius: $ds-radius-sm;
-    background: $ds-surface-on-background;
+    background: $ds-surface-elevated;
     cursor: pointer;
     transition:
       border-color 0.2s,
@@ -4856,26 +4856,43 @@ img {
     }
   }
 
+  .payment_option_text {
+    gap: 4px;
+    min-width: 0;
+  }
+
   .payment_option_title {
     color: $ds-text-primary;
     font-size: 12px;
     font-weight: 700;
   }
 
+  .payment_option_desc {
+    color: $ds-text-disabled;
+    font-size: 11px;
+  }
+
   .payment_option_info,
   .points_info {
+    flex-shrink: 0;
     direction: ltr;
   }
 
   .payment_option_info strong {
     color: $ds-text-primary;
-    font-size: 12px;
+    font-size: 16px;
+    font-weight: 700;
   }
 
   .points_info {
+    .points_value {
+      gap: 2px;
+      align-items: flex-start;
+    }
+
     small {
-      color: $ds-text-disabled;
-      font-size: 9px;
+      color: $ds-text-primary;
+      font-size: 10px;
 
       strong {
         color: $ds-status-error;
@@ -4883,10 +4900,20 @@ img {
       }
     }
 
+    .points_amount {
+      color: $ds-text-primary;
+      font-size: 11px;
+
+      strong {
+        font-size: 12px;
+        font-weight: 700;
+      }
+    }
+
     .form-check-input {
       float: none;
-      width: 34px;
-      height: 17px;
+      width: 40px;
+      height: 20px;
       cursor: pointer;
     }
   }

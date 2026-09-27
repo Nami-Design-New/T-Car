@@ -1,18 +1,61 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import Image from 'next/image';
+import Image, { type StaticImageData } from 'next/image';
 import { createPortal } from 'react-dom';
 import { FiX } from 'react-icons/fi';
 import type { PaymentMethod } from '@app-types/car';
 import walletIcon from '@assets/icons/Wallet.svg';
-import visaIcon from '@assets/icons/Payment.svg';
+import cardIcon from '@assets/card.svg';
+import tabyIcon from '@assets/taby.svg';
+import tamaraIcon from '@assets/tamara.svg';
+import riyalIcon from '@assets/icons/sar.svg';
 
 interface Props {
   open: boolean;
   onClose: () => void;
   onConfirm: (method: PaymentMethod) => void;
 }
+
+interface PaymentOption {
+  id: PaymentMethod;
+  title: string;
+  description: string;
+  icon: StaticImageData;
+  iconAlt: string;
+  iconWidth: number;
+  iconHeight: number;
+}
+
+const OPTIONS: PaymentOption[] = [
+  {
+    id: 'visa',
+    title: 'دفع الكتروني ( فيزا / ماستركارد )',
+    description: 'دعم مدي , فيزا , ماستركارد من اي مكان بالعالم',
+    icon: cardIcon,
+    iconAlt: '',
+    iconWidth: 24,
+    iconHeight: 24,
+  },
+  {
+    id: 'tabby',
+    title: 'ادفع لاحقاً عبر تـابي',
+    description: 'قسم فاتورتك على 4 دفعات بدون فوائد',
+    icon: tabyIcon,
+    iconAlt: 'تابي',
+    iconWidth: 58,
+    iconHeight: 24,
+  },
+  {
+    id: 'tamara',
+    title: 'ادفع لاحقاً عبر تمـارا',
+    description: 'ادفع على 3 دفعات مريحة ومتوافقة مع الشريعة',
+    icon: tamaraIcon,
+    iconAlt: 'تمارا',
+    iconWidth: 66,
+    iconHeight: 24,
+  },
+];
 
 export default function PaymentMethodModal({ open, onClose, onConfirm }: Props) {
   const [method, setMethod] = useState<PaymentMethod>('wallet');
@@ -49,7 +92,7 @@ export default function PaymentMethodModal({ open, onClose, onConfirm }: Props) 
 
         <div className="payment_modal_options d-flex flex-column gap-3">
           <label
-            className={`payment_modal_option d-flex align-items-center justify-content-between ${method === 'wallet' ? 'selected' : ''}`}
+            className={`payment_modal_option d-flex align-items-center justify-content-between gap-3 ${method === 'wallet' ? 'selected' : ''}`}
           >
             <input
               className="visually-hidden"
@@ -58,32 +101,52 @@ export default function PaymentMethodModal({ open, onClose, onConfirm }: Props) 
               checked={method === 'wallet'}
               onChange={() => setMethod('wallet')}
             />
-            <span className="payment_option_title">المحفظة</span>
+            <span className="payment_option_text d-flex flex-column">
+              <span className="payment_option_title">المحفظة</span>
+              <span className="payment_option_desc">ادفع بالمحفظة بطريقة اسرع</span>
+            </span>
             <span className="payment_option_info d-flex align-items-center gap-2">
-              <Image src={walletIcon} alt="" width={20} height={20} />
-              <strong>500 ر.س</strong>
+              <Image src={walletIcon} alt="" width={24} height={24} />
+              <strong className="d-flex align-items-center gap-1">
+                500
+                <Image src={riyalIcon} alt="ريال" width={14} height={14} />
+              </strong>
             </span>
           </label>
 
-          <label
-            className={`payment_modal_option d-flex align-items-center justify-content-between ${method === 'visa' ? 'selected' : ''}`}
-          >
-            <input
-              className="visually-hidden"
-              type="radio"
-              name="payment"
-              checked={method === 'visa'}
-              onChange={() => setMethod('visa')}
-            />
-            <span className="payment_option_title">دفع إلكتروني</span>
-            <span className="payment_option_info d-flex align-items-center gap-2">
-              <Image src={visaIcon} alt="" width={30} height={20} />
-            </span>
-          </label>
+          {OPTIONS.map((option) => (
+            <label
+              key={option.id}
+              className={`payment_modal_option d-flex align-items-center justify-content-between gap-3 ${method === option.id ? 'selected' : ''}`}
+            >
+              <input
+                className="visually-hidden"
+                type="radio"
+                name="payment"
+                checked={method === option.id}
+                onChange={() => setMethod(option.id)}
+              />
+              <span className="payment_option_text d-flex flex-column">
+                <span className="payment_option_title">{option.title}</span>
+                <span className="payment_option_desc">{option.description}</span>
+              </span>
+              <span className="payment_option_info d-flex align-items-center">
+                <Image
+                  src={option.icon}
+                  alt={option.iconAlt}
+                  width={option.iconWidth}
+                  height={option.iconHeight}
+                />
+              </span>
+            </label>
+          ))}
 
-          <label className="payment_modal_option d-flex align-items-center justify-content-between">
-            <span className="payment_option_title">استخدام النقاط</span>
-            <span className="points_info d-flex align-items-center gap-2">
+          <label className="payment_modal_option d-flex align-items-center justify-content-between gap-3">
+            <span className="payment_option_text d-flex flex-column">
+              <span className="payment_option_title">استخدم النقاط</span>
+              <span className="payment_option_desc">وفر وادفع بالنقاط اللي ليك</span>
+            </span>
+            <span className="points_info d-flex align-items-center gap-3">
               <span className="form-check form-switch m-0 p-0">
                 <input
                   className="form-check-input m-0"
@@ -93,16 +156,23 @@ export default function PaymentMethodModal({ open, onClose, onConfirm }: Props) 
                   onChange={(e) => setUsePoints(e.target.checked)}
                 />
               </span>
-              <small>
-                حتى <strong>100 نقطة</strong> متاحة
-              </small>
+              <span className="points_value d-flex flex-column" dir="rtl">
+                <small>
+                  حتي <strong>100 نقطة</strong>
+                </small>
+                <span className="points_amount d-flex align-items-center gap-1">
+                  <span>=</span>
+                  <strong>500</strong>
+                  <Image src={riyalIcon} alt="ريال" width={12} height={12} />
+                </span>
+              </span>
             </span>
           </label>
         </div>
 
         <button
           type="button"
-          className="payment_confirm_btn btn btn-primary w-100 mt-2"
+          className="payment_confirm_btn btn btn-primary w-100 mt-3"
           onClick={() => onConfirm(method)}
         >
           تأكيد
