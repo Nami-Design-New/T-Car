@@ -8,6 +8,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "css:sync-office": "node scripts/sync-office-css.mjs",
     "format": "prettier --write ."
   },
   "dependencies": {

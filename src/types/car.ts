@@ -36,6 +36,22 @@ export interface CarListing extends Car {
   pickupPoint?: PickupPoint;
 }
 
+// Office (car rental branch / showroom grouping for the cars page)
+export interface Office {
+  id: string;
+  slug: string;
+  /** Short name shown in the row title: "مكتب {name}" */
+  name: string;
+  /** Value matched against `CarListing.showroom` to bucket cars into this office. */
+  showroom: string;
+  logo: string | StaticImageData;
+}
+
+export interface OfficeCarGroup {
+  office: Office;
+  cars: CarListing[];
+}
+
 // Car / Details page
 export interface Review {
   id: string;

@@ -80,6 +80,17 @@
     "rating": "Rated {rating} out of 5",
     "perDay": "/ day"
   },
+  "officeRow": {
+    "office": "Branch",
+    "carsCount": "{count, plural, =0 {No cars} one {# car} other {# cars}}",
+    "previous": "Previous cars",
+    "next": "Next cars"
+  },
+  "carsPage": {
+    "eyebrow": "Find your next drive",
+    "title": "Available cars",
+    "subtitle": "Browse every rental office and compare the best available cars in one place."
+  },
   "carSections": {
     "offers": "Offers",
     "offersSubtitle": "Choose from our best car rental offers right now",

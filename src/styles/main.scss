@@ -2975,11 +2975,7 @@ img {
 
     border-radius: $ds-radius-2xl;
 
-    background: linear-gradient(
-      135deg,
-      $ds-surface-brand 0%,
-      darken($ds-action-primary, 6%) 100%
-    );
+    background: linear-gradient(135deg, $ds-surface-brand 0%, darken($ds-action-primary, 6%) 100%);
 
     color: $ds-text-on-brand;
 
@@ -3441,11 +3437,7 @@ img {
     position: relative;
     overflow: hidden;
 
-    background: linear-gradient(
-      135deg,
-      $ds-action-primary,
-      darken($ds-action-primary, 8%)
-    );
+    background: linear-gradient(135deg, $ds-action-primary, darken($ds-action-primary, 8%));
 
     border-radius: $ds-radius-2xl;
     padding: 60px 30px;
@@ -6032,7 +6024,11 @@ img {
         }
 
         &.range-start {
-          background: linear-gradient(to right, rgba($ds-action-primary, 0.08) 50%, transparent 50%);
+          background: linear-gradient(
+            to right,
+            rgba($ds-action-primary, 0.08) 50%,
+            transparent 50%
+          );
         }
 
         &.range-end {
@@ -8191,7 +8187,11 @@ img {
 
     border-radius: $ds-radius-lg;
 
-    background: linear-gradient(135deg, rgba($ds-action-primary, 0.08), rgba($ds-action-primary, 0.03));
+    background: linear-gradient(
+      135deg,
+      rgba($ds-action-primary, 0.08),
+      rgba($ds-action-primary, 0.03)
+    );
 
     .wallet_balance_label {
       display: flex;
@@ -8288,7 +8288,11 @@ img {
 
       &.topup {
         // border-inline-start-color: $ds-status-success;
-        background: linear-gradient(135deg, rgba($ds-action-primary, 0.08), rgba($ds-action-primary, 0.03));
+        background: linear-gradient(
+          135deg,
+          rgba($ds-action-primary, 0.08),
+          rgba($ds-action-primary, 0.03)
+        );
       }
 
       &.refund {
@@ -9593,8 +9597,297 @@ img {
   }
 }
 .car-page {
-  margin-top: 40px;
+  margin-top: $ds-space-9;
+
+  &__heading {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: $ds-space-4;
+    max-width: 720px;
+    margin-bottom: $ds-space-9;
+
+    h1 {
+      margin: 0;
+      color: $ds-text-primary;
+      font-size: clamp(1.5rem, 2vw, 3rem);
+      font-weight: 800;
+      letter-spacing: -0.035em;
+      line-height: 1.18;
+    }
+  }
+
+  &__back {
+    display: grid;
+    flex: 0 0 auto;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border: 1px solid $ds-stroke-light;
+    border-radius: $ds-radius-md;
+    background: $ds-surface-elevated;
+    color: $ds-text-primary;
+    font-size: 1.2rem;
+    box-shadow: 0 6px 18px rgba($ds-shadow-color, 0.05);
+    transition:
+      border-color 0.2s ease,
+      background 0.2s ease,
+      color 0.2s ease,
+      transform 0.2s ease,
+      box-shadow 0.2s ease;
+
+    &:hover {
+      border-color: $ds-action-primary;
+      background: $ds-action-primary;
+      color: $ds-text-on-action;
+      transform: translateY(-1px);
+      box-shadow: 0 8px 20px rgba($ds-action-primary, 0.2);
+    }
+
+    &:focus-visible {
+      outline: 3px solid rgba($ds-action-primary, 0.2);
+      outline-offset: 3px;
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
+  }
+
+  @media (max-width: $breakpoint-md) {
+    margin-top: $ds-space-7;
+
+    &__heading {
+      margin-bottom: $ds-space-8;
+
+      h1 {
+        font-size: clamp(1.85rem, 9vw, 2.4rem);
+      }
+
+      p {
+        font-size: 0.88rem;
+      }
+    }
+
+    &__back {
+      width: 40px;
+      height: 40px;
+      font-size: 1.1rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &__back {
+      transition: none;
+    }
+  }
 }
+
+// ------- صف مكتب (سلايدر) -------
+.office-rows {
+  display: flex;
+  flex-direction: column;
+  gap-y: $ds-space-3;
+  min-width: 0;
+}
+
+.office-row {
+  min-width: 0;
+
+  &:last-child {
+    padding-bottom: 0;
+    border-bottom: 0;
+  }
+
+  &__header {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: $ds-space-5;
+    min-height: 82px;
+    margin-bottom: $ds-space-5;
+    overflow: hidden;
+  }
+
+  &__title {
+    display: flex;
+    align-items: center;
+    gap: $ds-space-4;
+    min-width: 0;
+    margin: 0;
+  }
+
+  &__logo {
+    display: grid;
+    flex-shrink: 0;
+    place-items: center;
+    width: 56px;
+    height: 56px;
+    padding: $ds-space-3;
+    overflow: hidden;
+    border: 1px solid $ds-stroke-light;
+    border-radius: $ds-radius-md;
+    background: $ds-surface-on-background;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+  }
+
+  &__copy {
+    display: flex;
+    min-width: 0;
+    gap: 2px;
+    font-size: 1.35rem;
+    font-weight: 800;
+    line-height: 1.35;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__label {
+    color: $ds-action-primary;
+  }
+
+  &__name {
+    color: $ds-text-primary;
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: $ds-space-4;
+    flex-shrink: 0;
+    margin-inline-start: auto;
+  }
+
+  &__count {
+    flex-shrink: 0;
+    padding: 0.4rem 0.8rem;
+    border: 1px solid rgba($ds-action-primary, 0.12);
+    border-radius: $ds-radius-full;
+    background: $ds-surface-card-primary;
+    color: $ds-action-primary;
+    font-size: 0.78rem;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  &__navs {
+    display: flex;
+    gap: $ds-space-2;
+    padding: $ds-space-2;
+    border: 1px solid $ds-stroke-light;
+    border-radius: $ds-radius-full;
+    background: $ds-surface-on-background;
+  }
+
+  &__nav {
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    border: 0;
+    border-radius: $ds-radius-full;
+    background: $ds-surface-elevated;
+    color: $ds-text-primary;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition:
+      background 0.2s ease,
+      color 0.2s ease,
+      box-shadow 0.2s ease,
+      transform 0.2s ease;
+
+    &:hover:not(:disabled) {
+      background: $ds-action-primary;
+      color: $ds-text-on-action;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 14px rgba($ds-action-primary, 0.22);
+    }
+
+    &:focus-visible {
+      outline: 3px solid rgba($ds-action-primary, 0.2);
+      outline-offset: 3px;
+    }
+
+    &:disabled {
+      background: transparent;
+      color: $ds-text-placeholder;
+      cursor: not-allowed;
+      opacity: 0.55;
+    }
+  }
+
+  &__swiper {
+    min-width: 0;
+    padding: 2px 2px 6px;
+
+    &:active {
+      cursor: grabbing;
+    }
+  }
+
+  &__slide {
+    height: auto;
+
+    .car-card {
+      height: 100%;
+    }
+  }
+
+  @media (max-width: $breakpoint-md) {
+    padding-bottom: $ds-space-8;
+
+    &__header {
+      flex-wrap: wrap;
+      gap: $ds-space-3;
+      min-height: 72px;
+      margin-bottom: $ds-space-4;
+      padding: $ds-space-4;
+    }
+
+    &__title {
+      flex: 1 1 180px;
+      gap: $ds-space-3;
+    }
+
+    &__logo {
+      width: 46px;
+      height: 46px;
+      padding: 6px;
+    }
+
+    &__name {
+      font-size: 1.05rem;
+    }
+
+    &__actions {
+      gap: $ds-space-3;
+    }
+
+    &__count {
+      padding: 0.35rem 0.65rem;
+      font-size: 0.7rem;
+    }
+
+    &__nav {
+      width: 32px;
+      height: 32px;
+      font-size: 1.05rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &__nav {
+      transition: none;
+    }
+  }
+}
+
 // ------- بحث في الفلاتر -------
 .filter_search {
   position: relative;
@@ -9648,8 +9941,6 @@ img {
   border: 1px solid rgba($ds-shadow-color, 0.06);
   box-shadow: 0 4px 20px rgba($ds-shadow-color, 0.05);
 
-  position: sticky;
-  top: 100px;
   align-self: start;
   height: fit-content;
 
@@ -11967,8 +12258,12 @@ img {
     font-weight: 600;
     text-decoration: none;
 
-    transition: background 0.3s ease, border-color 0.3s ease,
-      color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+    transition:
+      background 0.3s ease,
+      border-color 0.3s ease,
+      color 0.3s ease,
+      transform 0.3s ease,
+      box-shadow 0.3s ease;
 
     &:hover {
       border-color: $ds-action-primary;

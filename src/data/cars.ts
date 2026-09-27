@@ -19,6 +19,22 @@ export const MOCK_CARS: CarListing[] = [
     pickupPoint: 'airport',
   },
   {
+    id: '5',
+    name: 'كريتا',
+    brand: 'هيونداي',
+    image: carImage,
+    pricePerDay: 148.75,
+    originalPrice: 200,
+    seats: 5,
+    transmission: 'Automatic',
+    fuelType: 'Petrol',
+    rating: 4.6,
+    reviewsCount: 32,
+    year: 2024,
+    showroom: 'معرض النخبة',
+    pickupPoint: 'airport',
+  },
+  {
     id: '2',
     name: 'أورلاندر',
     brand: 'ميتسوبيشي',
@@ -222,7 +238,5 @@ export function getOfferCars(): CarListing[] {
 }
 
 export function getHandpickedCars(): CarListing[] {
-  return MOCK_CARS.filter((car) => !car.originalPrice).sort(
-    (a, b) => b.rating - a.rating
-  );
+  return MOCK_CARS.filter((car) => !car.originalPrice).sort((a, b) => b.rating - a.rating);
 }
