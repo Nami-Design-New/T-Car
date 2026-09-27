@@ -10,9 +10,6 @@ import type { CarDetails } from '@app-types/car';
 import { MOCK_CARS, getCarListingById } from '@/data/cars';
 
 import car1 from '@assets/images/car1.jpg';
-import car1Side from '@assets/images/car1-side.jpg';
-import car1Back from '@assets/images/car1-back.jpg';
-import car1Interior from '@assets/images/car1-interior.jpg';
 
 interface Props {
   params: Promise<{ carId: string }>;
@@ -23,7 +20,7 @@ async function getCarDetails(carId: string): Promise<CarDetails> {
 
   return {
     ...listing,
-    images: [car1, car1Side, car1Back, car1Interior],
+    images: [car1],
     quickFacts: [
       { icon: 'shield', label: 'تأمين قابل للخصم' },
       { icon: 'delivery', label: 'التوصيل خلال 15 دقيقة' },
@@ -109,14 +106,14 @@ export default async function CarDetailsPage({ params }: Props) {
         <div className="container-tcar">
           <div className="car-details-grid">
             <div className="car-details-main">
-              <CarGallery images={car.images} alt={`${car.brand} ${car.name}`} />
+              <CarGallery image={car.images[0]} alt={`${car.brand} ${car.name}`} />
               <CarQuickInfo car={car} />
               {car.pickupPoint && (
                 <StationAndAirportInfo showroom={car.showroom} type={car.pickupPoint} />
               )}
               <WarrantiesList warranties={car.warranties} />
               <AddonsGrid addons={car.addons} />
-              <InsuranceOptions options={car.insuranceOptions} />
+              <InsuranceOptions option={car.insuranceOptions[0]} />
             </div>
 
             <div className="car-details-side">

@@ -4443,74 +4443,6 @@ img {
   &-image {
     object-fit: cover;
   }
-
-  &-nav {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 40px;
-    height: 40px;
-    border-radius: $ds-radius-full;
-    border: none;
-    background: rgba($ds-surface-elevated, 0.5);
-    color: $ds-text-primary;
-    display: grid;
-    place-items: center;
-    cursor: pointer;
-    transition: 0.2s;
-    font-size: 28px;
-    &.prev {
-      inset-inline-start: 14px;
-    }
-    &.next {
-      inset-inline-end: 14px;
-    }
-
-    &:hover {
-      background: $ds-surface-elevated;
-      box-shadow: 0 2px 8px rgba($ds-shadow-color, 0.06);
-    }
-  }
-
-  &-counter {
-    position: absolute;
-    bottom: 14px;
-    inset-inline-end: 14px;
-    background: rgba($ds-shadow-color, 0.55);
-    color: $ds-text-on-brand;
-    font-size: 12px;
-    font-weight: 600;
-    padding: 4px 10px;
-    border-radius: $ds-radius-full;
-  }
-
-  &-thumbs {
-    display: flex;
-    gap: 10px;
-    margin-top: 12px;
-    overflow-x: auto;
-
-    scrollbar-width: none;
-    &::-webkit-scrollbar {
-      display: none;
-    }
-  }
-
-  &-thumb {
-    position: relative;
-    flex-shrink: 0;
-    width: 80px;
-    height: 60px;
-    border-radius: $ds-radius-md;
-    overflow: hidden;
-    border: 2px solid transparent;
-    cursor: pointer;
-    padding: 0;
-
-    &.active {
-      border-color: $ds-action-primary;
-    }
-  }
 }
 
 .car-quick-info {
@@ -5660,22 +5592,10 @@ img {
       display: flex;
       align-items: center;
       gap: 12px;
-
       padding: 14px 16px;
-
       border: 1px solid $ds-stroke-light;
       border-radius: $ds-radius-md;
-
-      cursor: pointer;
-      transition: 0.25s;
-
-      input {
-        width: 18px;
-        height: 18px;
-        accent-color: $ds-action-primary;
-        flex-shrink: 0;
-      }
-
+      background: $ds-surface-card-primary;
       &-body {
         flex: 1;
 
@@ -5709,15 +5629,6 @@ img {
           font-size: 0.75rem;
           font-weight: 500;
         }
-      }
-
-      &:hover {
-        border-color: rgba($ds-action-primary, 0.4);
-      }
-
-      &.selected {
-        border-color: $ds-action-primary;
-        background: $ds-surface-card-primary;
       }
     }
   }
