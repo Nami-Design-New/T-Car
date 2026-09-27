@@ -1,6 +1,5 @@
 'use client';
 
-import {useRef, useEffect, useCallback} from 'react';
 import {useLocale, useTranslations} from 'next-intl';
 import Image from 'next/image';
 import {
@@ -11,6 +10,7 @@ import {
 
 import SectionTitle from '@components/common/SectionTitle';
 import type {City} from '@app-types/car';
+import { useCarouselRail } from '@hooks/useCarouselRail';
 import { getDirection } from '@/utils';
 
 import c1 from '@assets/images/c1.jpg';
@@ -20,8 +20,6 @@ import c4 from '@assets/images/c4.jpg';
 import c5 from '@assets/images/c5.jpg';
 import c6 from '@assets/images/c6.jpg';
 import { Link } from '@/i18n/navigation';
-
-const AUTOPLAY_INTERVAL = 3500;
 
 const MOCK_CITIES: (Omit<City, 'image'> & {image: typeof c1})[] = [
   {
@@ -74,123 +72,13 @@ export default function PopularCities() {
 
   const isRTL = getDirection(locale) === 'rtl';
 
-  const trackRef = useRef<HTMLDivElement>(null);
-
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(
-    null
-  );
-
-
-  const stopAutoplay = () => {
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current);
-      intervalRef.current = null;
-    }
-  };
-
-
-  const scroll = useCallback(
-    (direction: 'prev' | 'next') => {
-      const el = trackRef.current;
-
-      if (!el) return;
-
-      const cardWidth =
-        el.firstElementChild?.clientWidth ?? 300;
-
-      const amount = cardWidth + 24;
-
-
-      const sign =
-        direction === 'next'
-          ? isRTL
-            ? -1
-            : 1
-          : isRTL
-          ? 1
-          : -1;
-
-
-      const maxScroll =
-        el.scrollWidth - el.clientWidth;
-
-
-      const currentScroll = Math.abs(el.scrollLeft);
-
-
-      const atEnd =
-        currentScroll >= maxScroll - 5;
-
-
-      const atStart =
-        currentScroll <= 5;
-
-
-      if (direction === 'next' && atEnd) {
-        el.scrollTo({
-          left: isRTL ? -maxScroll : 0,
-          behavior: 'smooth'
-        });
-
-        return;
-      }
-
-
-      if (direction === 'prev' && atStart) {
-        el.scrollTo({
-          left: isRTL ? 0 : maxScroll,
-          behavior: 'smooth'
-        });
-
-        return;
-      }
-
-
-      el.scrollBy({
-        left: sign * amount,
-        behavior: 'smooth'
-      });
-
-    },
-    [isRTL]
-  );
-
-
-  const startAutoplay = useCallback(() => {
-
-    stopAutoplay();
-
-    intervalRef.current = setInterval(() => {
-      scroll('next');
-    }, AUTOPLAY_INTERVAL);
-
-  }, [scroll]);
-
-
-  useEffect(() => {
-
-    startAutoplay();
-
-    return () => {
-      stopAutoplay();
-    };
-
-  }, [startAutoplay]);
-
-
-
-  const handleManualScroll = (
-    direction: 'prev' | 'next'
-  ) => {
-
-    stopAutoplay();
-
-    scroll(direction);
-
-    startAutoplay();
-
-  };
-
+  const {
+    trackRef,
+    scrollPrev,
+    scrollNext,
+    pause: stopAutoplay,
+    resume: startAutoplay
+  } = useCarouselRail({isRTL});
 
   return (
     <section
@@ -216,9 +104,7 @@ export default function PopularCities() {
             <button
               type="button"
               aria-label="previous"
-              onClick={() =>
-                handleManualScroll('prev')
-              }
+              onClick={scrollPrev}
             >
               <FiArrowLeft className="mirror-in-rtl" />
 
@@ -229,9 +115,7 @@ export default function PopularCities() {
             <button
               type="button"
               aria-label="next"
-              onClick={() =>
-                handleManualScroll('next')
-              }
+              onClick={scrollNext}
             >
 
               <FiArrowRight className="mirror-in-rtl" />

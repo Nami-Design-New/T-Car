@@ -71,6 +71,7 @@
   },
   "carCard": {
     "viewCar": "View {brand} {name} details",
+    "gift": "Gift",
     "airportPickup": "Airport pickup",
     "stationPickup": "Station pickup",
     "limitedOffer": "Limited-time offer",
@@ -78,6 +79,13 @@
     "discount": "off",
     "rating": "Rated {rating} out of 5",
     "perDay": "/ day"
+  },
+  "carSections": {
+    "offers": "Offers",
+    "offersSubtitle": "Choose from our best car rental offers right now",
+    "selectedForYou": "Selected just for you",
+    "selectedForYouSubtitle": "A curated collection picked to match your preferences",
+    "seeAll": "See all"
   },
   "partners": {
     "smallTitle": "Our Partners",

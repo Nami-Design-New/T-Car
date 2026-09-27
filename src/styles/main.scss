@@ -11924,3 +11924,98 @@ img {
     }
   }
 }
+
+// Cars rail (scroll-snap, RTL-friendly)
+.cars-rail {
+  // tighter than .section so consecutive rails read as one car block
+  padding: 3rem 0 0;
+
+  &-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+
+    @media (max-width: $breakpoint-md) {
+      margin-bottom: 0.75rem;
+
+      .section-title-heading {
+        font-size: 24px;
+      }
+
+      .section-title-subtitle {
+        font-size: 14px;
+      }
+    }
+  }
+
+  &-see-all {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    flex-shrink: 0;
+
+    min-height: 44px;
+    padding: 0 1.1rem;
+
+    border: 1px solid $ds-stroke-light;
+    border-radius: $ds-radius-full;
+    background: $ds-surface-elevated;
+
+    color: $ds-text-primary;
+    font-weight: 600;
+    text-decoration: none;
+
+    transition: background 0.3s ease, border-color 0.3s ease,
+      color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+
+    &:hover {
+      border-color: $ds-action-primary;
+      background: $ds-action-primary;
+      color: $ds-text-on-action;
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba($ds-action-primary, 0.18);
+    }
+
+    &:focus-visible {
+      outline: 3px solid rgba($ds-action-primary, 0.2);
+      outline-offset: 3px;
+    }
+  }
+
+  &-see-all-icon {
+    font-size: 1.25rem;
+    // margin rather than transform: the nudge then mirrors for free, and
+    // cannot overwrite the transform set by .mirror-in-rtl
+    transition: margin-inline-end 0.25s ease;
+  }
+
+  &-see-all:hover &-see-all-icon {
+    margin-inline-end: 2px;
+  }
+
+  &-track {
+    display: flex;
+    gap: 1.5rem;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    padding-bottom: 8px;
+
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  &-item {
+    flex: 0 0 auto;
+    scroll-snap-align: start;
+    width: 320px;
+
+    @media (max-width: $breakpoint-md) {
+      width: 78vw;
+    }
+  }
+}

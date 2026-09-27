@@ -71,6 +71,7 @@
   },
   "carCard": {
     "viewCar": "عرض تفاصيل {brand} {name}",
+    "gift": "هدية",
     "airportPickup": "استلام من المطار",
     "stationPickup": "استلام من المحطة",
     "limitedOffer": "احجز 3 أيام واحصل على",
@@ -78,6 +79,13 @@
     "discount": "خصم",
     "rating": "التقييم {rating} من 5",
     "perDay": "/ يوم"
+  },
+  "carSections": {
+    "offers": "العروض",
+    "offersSubtitle": "اختر من أفضل عروض السيارات المتاحة الآن",
+    "selectedForYou": "اخترنا لك بعناية",
+    "selectedForYouSubtitle": "مجموعة مختارة خصيصًا لتناسب ذوقك واحتياجاتك",
+    "seeAll": "عرض الكل"
   },
   "partners": {
     "smallTitle": "شركاؤنا",

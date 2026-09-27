@@ -21439,4 +21439,80 @@ img {
     height: 34px;
     font-size: 9px;
   }
+}
+
+.cars-rail {
+  padding: 3rem 0 0;
+}
+.cars-rail-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+@media (max-width: 768px) {
+  .cars-rail-header {
+    margin-bottom: 0.75rem;
+  }
+  .cars-rail-header .section-title-heading {
+    font-size: 24px;
+  }
+  .cars-rail-header .section-title-subtitle {
+    font-size: 14px;
+  }
+}
+.cars-rail-see-all {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-shrink: 0;
+  min-height: 44px;
+  padding: 0 1.1rem;
+  border: 1px solid #e9e9e9;
+  border-radius: 9999px;
+  background: #ffffff;
+  color: #1e1e1e;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.3s ease, border-color 0.3s ease, color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+}
+.cars-rail-see-all:hover {
+  border-color: #1f7ffa;
+  background: #1f7ffa;
+  color: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(31, 127, 250, 0.18);
+}
+.cars-rail-see-all:focus-visible {
+  outline: 3px solid rgba(31, 127, 250, 0.2);
+  outline-offset: 3px;
+}
+.cars-rail-see-all-icon {
+  font-size: 1.25rem;
+  transition: margin-inline-end 0.25s ease;
+}
+.cars-rail-see-all:hover .cars-rail-see-all-icon {
+  margin-inline-end: 2px;
+}
+.cars-rail-track {
+  display: flex;
+  gap: 1.5rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  padding-bottom: 8px;
+  scrollbar-width: none;
+}
+.cars-rail-track::-webkit-scrollbar {
+  display: none;
+}
+.cars-rail-item {
+  flex: 0 0 auto;
+  scroll-snap-align: start;
+  width: 320px;
+}
+@media (max-width: 768px) {
+  .cars-rail-item {
+    width: 78vw;
+  }
 }/*# sourceMappingURL=main.css.map */
