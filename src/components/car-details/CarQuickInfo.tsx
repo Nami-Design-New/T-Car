@@ -13,7 +13,9 @@ interface Props {
 
 export default function CarQuickInfo({ car }: Props) {
   const scrollToReviews = () => {
-    document.getElementById('reviews-summary')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    document
+      .getElementById('reviews-summary')
+      ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
   return (
@@ -21,13 +23,15 @@ export default function CarQuickInfo({ car }: Props) {
       <div className="car-quick-info-top">
         <span className="car-quick-info-year">موديل {car.year}</span>
 
-        <button type="button" className="car-quick-info-rating" onClick={scrollToReviews}>
+        {/* <button type="button" className="car-quick-info-rating" onClick={scrollToReviews}>
           <FiStar />
           <span>{car.rating}</span>
-        </button>
+        </button> */}
       </div>
 
-      <h1 className="car-quick-info-title">{car.brand} {car.name}</h1>
+      <h1 className="car-quick-info-title">
+        {car.brand} {car.name}
+      </h1>
 
       <div className="car-quick-info-facts">
         <span className="fact showroom">

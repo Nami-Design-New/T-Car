@@ -92,6 +92,34 @@ async function getCarDetails(carId: string): Promise<CarDetails> {
         date: '27 ديسمبر 2025',
         comment: 'السائق كان مرنًا والسائق ساعدني في حمل الأمتعة. سأستخدم الخدمة مرة أخرى.',
       },
+      {
+        id: '3',
+        name: 'فهد القحطاني',
+        rating: 5,
+        date: '27 ديسمبر 2025',
+        comment: 'السائق كان مرنًا والسائق ساعدني في حمل الأمتعة. سأستخدم الخدمة مرة أخرى.',
+      },
+      {
+        id: '4',
+        name: 'فهد القحطاني',
+        rating: 5,
+        date: '27 ديسمبر 2025',
+        comment: 'السائق كان مرنًا والسائق ساعدني في حمل الأمتعة. سأستخدم الخدمة مرة أخرى.',
+      },
+      {
+        id: '5',
+        name: 'فهد القحطاني',
+        rating: 5,
+        date: '27 ديسمبر 2025',
+        comment: 'السائق كان مرنًا والسائق ساعدني في حمل الأمتعة. سأستخدم الخدمة مرة أخرى.',
+      },
+      {
+        id: '6',
+        name: 'فهد القحطاني',
+        rating: 5,
+        date: '27 ديسمبر 2025',
+        comment: 'السائق كان مرنًا والسائق ساعدني في حمل الأمتعة. سأستخدم الخدمة مرة أخرى.',
+      },
     ],
   };
 }
@@ -128,7 +156,11 @@ export default async function CarDetailsPage({ params }: Props) {
                 originalPrice={car.originalPrice}
               />
 
-              <ReviewsSummaryCard rating={car.rating} reviewsCount={car.reviewsCount} />
+              <ReviewsSummaryCard
+                rating={car.rating}
+                reviewsCount={car.reviewsCount}
+                reviews={car.reviews}
+              />
             </div>
           </div>
         </div>

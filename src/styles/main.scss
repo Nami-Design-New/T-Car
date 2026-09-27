@@ -6254,6 +6254,38 @@ img {
       font-weight: 800;
       color: $ds-text-primary;
     }
+
+    // The rating row doubles as the trigger that opens the reviews modal, so it
+    // needs the button UA styles stripped and reads as a link instead.
+    &.reviews_summary_link {
+      width: 100%;
+
+      padding: 0 0 16px;
+
+      border: none;
+      border-bottom: 1px solid $ds-stroke-light;
+      border-radius: 0;
+
+      background: none;
+
+      font: inherit;
+      color: inherit;
+      text-align: start;
+
+      cursor: pointer;
+
+      .count,
+      .reviews-summary-score {
+        transition: color 0.25s;
+      }
+
+      &:hover {
+        .count,
+        .reviews-summary-score {
+          color: $ds-action-primary;
+        }
+      }
+    }
   }
 
   .reviews-summary-list {
@@ -6376,6 +6408,10 @@ img {
 
   .reviews_modal_scroll {
     overflow-y: auto;
+
+    // Flex items default to min-height:auto, which would stop the body shrinking
+    // under the modal's 85vh cap and push the overflow onto the dialog itself.
+    min-height: 0;
 
     padding: 24px;
 

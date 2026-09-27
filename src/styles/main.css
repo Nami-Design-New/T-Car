@@ -16977,6 +16977,26 @@ img {
   font-weight: 800;
   color: #1e1e1e;
 }
+.reviews-summary-card .reviews-summary-overall.reviews_summary_link {
+  width: 100%;
+  padding: 0 0 16px;
+  border: none;
+  border-bottom: 1px solid #e9e9e9;
+  border-radius: 0;
+  background: none;
+  font: inherit;
+  color: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+.reviews-summary-card .reviews-summary-overall.reviews_summary_link .count,
+.reviews-summary-card .reviews-summary-overall.reviews_summary_link .reviews-summary-score {
+  transition: color 0.25s;
+}
+.reviews-summary-card .reviews-summary-overall.reviews_summary_link:hover .count,
+.reviews-summary-card .reviews-summary-overall.reviews_summary_link:hover .reviews-summary-score {
+  color: #1f7ffa;
+}
 .reviews-summary-card .reviews-summary-list {
   display: flex;
   flex-direction: column;
@@ -17069,6 +17089,7 @@ img {
 }
 .reviews_modal .reviews_modal_scroll {
   overflow-y: auto;
+  min-height: 0;
   padding: 24px;
 }
 .reviews_modal .reviews_modal_scroll::-webkit-scrollbar {
