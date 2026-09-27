@@ -7,24 +7,117 @@
 // ==========================================================================
 // Variables
 // ==========================================================================
-$primary: #0a2540;
-$secondary: #1f7ffa;
-$accent: #1e1e1e;
-$light: #f8f9fa;
-$dark: #101820;
-$gray: #6c757d;
-$gray-light: #e9ecef;
-$white: #ffffff;
-// $font-family-base: 'IBM Plex Sans Arabic', sans-serif;
+
+// Design system primitives — source: src/assets/Variables.svg
+$ds-neutral-100: #f8f8f8;
+$ds-neutral-200: #e9e9e9;
+$ds-neutral-300: #d6d6d6;
+$ds-neutral-400: #969696;
+$ds-neutral-500: #737373;
+$ds-neutral-600: #545454;
+
+$ds-primary-50: #f3f8ff;
+$ds-primary-100: #e6f0fe;
+$ds-primary-200: #cfe3fe;
+$ds-primary-400: #5195f4;
+$ds-primary-500: #1f7ffa;
+
+$ds-secondary-50: #f0f8ee;
+$ds-secondary-100: #e2f3df;
+$ds-secondary-200: #c7e9c0;
+
+$ds-success-50: #f0fdf4;
+$ds-success-100: #dcfce7;
+$ds-success-500: #22c55e;
+$ds-success-600: #16a34a;
+$ds-success-700: #15803d;
+
+$ds-warning-50: #fffbeb;
+$ds-warning-100: #fef3c7;
+$ds-warning-500: #f59e0b;
+$ds-warning-600: #d97706;
+$ds-warning-700: #b45309;
+
+$ds-error-50: #fff1f2;
+$ds-error-100: #ffe4e6;
+$ds-error-500: #ef4444;
+$ds-error-600: #dc2626;
+$ds-error-700: #b91c1c;
+
+$ds-white: #ffffff;
+$ds-black: #1e1e1e;
+
+// Semantic color tokens
+$ds-surface-background: $ds-white;
+$ds-surface-on-background: $ds-neutral-100;
+$ds-surface-card-primary: $ds-primary-50;
+$ds-surface-disabled: $ds-neutral-400;
+
+$ds-text-primary: $ds-black;
+$ds-text-disabled: $ds-neutral-600;
+$ds-text-subtle: $ds-neutral-500;
+$ds-text-placeholder: $ds-neutral-400;
+$ds-text-option: $ds-neutral-300;
+
+$ds-action-primary: $ds-primary-500;
+$ds-action-secondary: $ds-secondary-200;
+
+$ds-status-success: $ds-success-600;
+$ds-status-error: $ds-error-600;
+$ds-status-error-background: $ds-error-50;
+$ds-status-warning: $ds-warning-600;
+
+$ds-stroke-light: $ds-neutral-200;
+$ds-stroke-heavy: $ds-neutral-300;
+
+// The booking countdown and rating stars use a warm amber that has no
+// equivalent in the neutral or primary ramps, so it stays its own token.
+$ds-gauge-amber: #e0993a;
+
+// Application semantic extensions
+// The source token sheet has no dark branded surface, but the application
+// already relies on this tone for navigation and high-contrast sections.
+$ds-surface-brand: #0a2540;
+$ds-surface-elevated: $ds-white;
+$ds-text-on-action: $ds-white;
+$ds-text-on-brand: $ds-white;
+$ds-shadow-color: $ds-black;
+
+// Spacing tokens
+$ds-space-1: 2px;
+$ds-space-2: 4px;
+$ds-space-3: 8px;
+$ds-space-4: 12px;
+$ds-space-5: 16px;
+$ds-space-6: 20px;
+$ds-space-7: 24px;
+$ds-space-8: 32px;
+$ds-space-9: 40px;
+$ds-space-10: 48px;
+$ds-space-11: 64px;
+$ds-space-12: 80px;
+
+// Border-radius tokens
+$ds-radius-none: 0;
+$ds-radius-xs: 4px;
+$ds-radius-sm: 8px;
+$ds-radius-md: 12px;
+$ds-radius-lg: 16px;
+$ds-radius-xl: 24px;
+$ds-radius-2xl: 32px;
+$ds-radius-full: 9999px;
+
+// Legacy color variables are gone. The final section migrated was the
+// daily-booking modal, and it removed the last reference to $primary,
+// $secondary, $accent, $dark, $gray, $gray-light, $light, $white, $radius-md,
+// $radius-lg, $shadow-sm, and $shadow-md. Nothing here declares them any more.
+// Note that Bootstrap is imported above and defines its own $primary with a
+// !default, so removing the local override does not change the emitted
+// Bootstrap CSS; the import has already been inlined by this point.
 
 $font-size-base: 1rem;
-$radius-md: 12px;
-$radius-lg: 20px;
 $section-padding-y: 5rem;
 $section-padding-y-sm: 3rem;
-
-$shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.06);
-$shadow-md: 0 8px 24px rgba(0, 0, 0, 0.1);
 
 $breakpoint-sm: 576px;
 $breakpoint-md: 768px;
@@ -41,8 +134,8 @@ body {
   padding: 0;
   margin: 0;
   font-family: var(--font-primary), sans-serif !important;
-  color: $dark;
-  background-color: $white;
+  color: $ds-text-primary;
+  background-color: $ds-surface-background;
   scroll-behavior: smooth;
 }
 
@@ -153,7 +246,7 @@ img {
   isolation: isolate;
 
   transition: 0.35s;
-  border-radius: $radius-md;
+  border-radius: $ds-radius-md;
   span {
     position: relative;
     z-index: 2;
@@ -188,35 +281,35 @@ img {
 
   &-primary {
     &::after {
-      background: darken($secondary, 12%);
+      background: darken($ds-action-primary, 12%);
     }
 
     &:hover span {
-      color: $white;
+      color: $ds-text-on-action;
     }
   }
 
   &-secondary {
     &::after {
-      background: darken($primary, 10%);
+      background: darken($ds-surface-brand, 10%);
     }
 
     &:hover span {
-      color: $white;
+      color: $ds-text-on-brand;
     }
   }
 
   &-outline {
     &::after {
-      background: $secondary;
+      background: $ds-action-primary;
     }
 
     &:hover {
-      border-color: $secondary;
+      border-color: $ds-action-primary;
     }
 
     &:hover span {
-      color: $white;
+      color: $ds-text-on-action;
     }
   }
 }
@@ -237,7 +330,7 @@ img {
 .loader_fullscreen {
   position: fixed;
   inset: 0;
-  background: $white;
+  background: $ds-surface-background;
 
   display: flex;
   justify-content: center;
@@ -380,10 +473,10 @@ img {
     padding: 0.45rem 1rem;
     margin-bottom: 1rem;
 
-    border-radius: 999px;
+    border-radius: $ds-radius-full;
 
-    background: rgba($secondary, 0.08);
-    color: $secondary;
+    background: $ds-surface-card-primary;
+    color: $ds-action-primary;
 
     font-size: 0.9rem;
     font-weight: 600;
@@ -392,7 +485,7 @@ img {
   &-heading {
     margin-bottom: 0.75rem;
 
-    color: $primary;
+    color: $ds-text-primary;
     font-size: clamp(2rem, 3vw, 2.8rem);
     font-weight: 700;
     line-height: 1.3;
@@ -401,7 +494,7 @@ img {
   &-subtitle {
     max-width: 650px;
 
-    color: $gray;
+    color: $ds-text-subtle;
     font-size: 1rem;
     line-height: 1.9;
   }
@@ -421,20 +514,20 @@ img {
 
     padding-inline: 14px;
 
-    border: 1px solid $gray-light;
-    border-radius: $radius-md;
+    border: 1px solid $ds-stroke-light;
+    border-radius: $ds-radius-md;
 
-    background: $white;
+    background: $ds-surface-background;
 
     font-size: 14px;
     font-weight: 600;
-    color: $primary;
+    color: $ds-text-primary;
 
     cursor: pointer;
     transition: 0.3s;
 
     &:hover {
-      border-color: $secondary;
+      border-color: $ds-action-primary;
     }
 
     span {
@@ -446,8 +539,8 @@ img {
       content: '';
       width: 7px;
       height: 7px;
-      border-right: 2px solid $primary;
-      border-bottom: 2px solid $primary;
+      border-right: 2px solid $ds-text-primary;
+      border-bottom: 2px solid $ds-text-primary;
       transform: rotate(45deg);
       flex-shrink: 0;
       margin-inline-start: 8px;
@@ -455,7 +548,7 @@ img {
   }
 
   &-icon {
-    color: $primary;
+    color: $ds-text-primary;
     font-size: 18px;
     margin-inline-end: 8px;
     flex-shrink: 0;
@@ -471,10 +564,10 @@ img {
     margin: 0;
     padding: 6px;
 
-    background: $white;
-    border: 1px solid $gray-light;
-    border-radius: $radius-md;
-    box-shadow: 0 10px 30px rgba($dark, 0.1);
+    background: $ds-surface-elevated;
+    border: 1px solid $ds-stroke-light;
+    border-radius: $ds-radius-md;
+    box-shadow: 0 10px 30px rgba($ds-shadow-color, 0.1);
 
     z-index: 50;
 
@@ -484,27 +577,27 @@ img {
       justify-content: space-between;
 
       padding: 10px 12px;
-      border-radius: 8px;
+      border-radius: $ds-radius-sm;
 
       font-size: 14px;
       font-weight: 600;
-      color: $primary;
+      color: $ds-text-primary;
 
       cursor: pointer;
       transition: 0.2s;
 
       &:hover {
-        background: rgba($secondary, 0.08);
+        background: $ds-surface-card-primary;
       }
 
       &.active {
-        color: $secondary;
-        background: rgba($secondary, 0.06);
+        color: $ds-action-primary;
+        background: $ds-surface-card-primary;
       }
 
       .check_icon {
         font-size: 14px;
-        color: $secondary;
+        color: $ds-action-primary;
       }
     }
   }
@@ -515,11 +608,11 @@ img {
   top: 0;
   z-index: 100;
 
-  background: rgba($white, 0.95);
+  background: rgba($ds-surface-background, 0.95);
   backdrop-filter: blur(12px);
 
-  border-bottom: 1px solid rgba($dark, 0.05);
-  box-shadow: 0 4px 20px rgba($dark, 0.06);
+  border-bottom: 1px solid rgba($ds-shadow-color, 0.05);
+  box-shadow: 0 4px 20px rgba($ds-shadow-color, 0.06);
 
   &-inner {
     display: flex;
@@ -563,8 +656,8 @@ img {
 
       padding: 0 2rem;
 
-      background: $white;
-      box-shadow: $shadow-md;
+      background: $ds-surface-background;
+      box-shadow: 0 8px 24px rgba($ds-shadow-color, 0.1);
 
       transition: 0.35s;
     }
@@ -591,12 +684,12 @@ img {
       a {
         position: relative;
 
-        color: $primary;
+        color: $ds-text-primary;
         font-weight: 600;
         transition: 0.3s;
 
         &:hover {
-          color: $secondary;
+          color: $ds-action-primary;
         }
       }
 
@@ -638,18 +731,18 @@ img {
     width: 42px;
     height: 42px;
 
-    border: 1px solid rgba($dark, 0.08);
-    border-radius: 10px;
+    border: 1px solid $ds-stroke-light;
+    border-radius: $ds-radius-md;
 
-    background: $white;
-    color: $primary;
+    background: $ds-surface-background;
+    color: $ds-text-primary;
 
     cursor: pointer;
     transition: 0.3s;
 
     &:hover {
-      background: $primary;
-      color: $white;
+      background: $ds-surface-brand;
+      color: $ds-text-on-brand;
     }
 
     @media (max-width: $breakpoint-lg) {
@@ -670,15 +763,15 @@ img {
     height: 44px;
     padding-inline: 10px 14px;
 
-    border: 1px solid $gray-light;
-    border-radius: $radius-md;
-    background: $white;
+    border: 1px solid $ds-stroke-light;
+    border-radius: $ds-radius-md;
+    background: $ds-surface-background;
 
     cursor: pointer;
     transition: 0.3s;
 
     &:hover {
-      border-color: $secondary;
+      border-color: $ds-action-primary;
     }
   }
 
@@ -688,14 +781,14 @@ img {
     height: 33px;
     flex-shrink: 0;
 
-    border-radius: 50%;
+    border-radius: $ds-radius-full;
     overflow: hidden;
 
     display: grid;
     place-items: center;
 
-    background: rgba($secondary, 0.1);
-    color: $secondary;
+    background: $ds-surface-card-primary;
+    color: $ds-action-primary;
     font-size: 22px;
 
     img {
@@ -706,7 +799,7 @@ img {
   &-name {
     font-size: 14px;
     font-weight: 600;
-    color: $primary;
+    color: $ds-text-primary;
 
     max-width: 90px;
     overflow: hidden;
@@ -720,7 +813,7 @@ img {
 
   &-chevron {
     font-size: 14px;
-    color: $gray;
+    color: $ds-text-subtle;
     flex-shrink: 0;
     transition: transform 0.25s;
 
@@ -739,11 +832,11 @@ img {
     margin: 0;
     padding: 6px;
 
-    background: $white;
-    border: 1px solid $gray-light;
-    border-radius: $radius-md;
+    background: $ds-surface-elevated;
+    border: 1px solid $ds-stroke-light;
+    border-radius: $ds-radius-md;
 
-    box-shadow: 0 10px 30px rgba($dark, 0.1);
+    box-shadow: 0 10px 30px rgba($ds-shadow-color, 0.1);
 
     z-index: 50;
 
@@ -758,14 +851,14 @@ img {
         padding: 10px 12px;
 
         border: none;
-        border-radius: 8px;
+        border-radius: $ds-radius-sm;
 
         background: transparent;
 
         font-size: 14px;
         font-weight: 600;
 
-        color: $primary;
+        color: $ds-text-primary;
 
         cursor: pointer;
 
@@ -779,7 +872,7 @@ img {
         }
 
         &:hover {
-          background: rgba($secondary, 0.08);
+          background: $ds-surface-card-primary;
         }
       }
     }
@@ -787,26 +880,26 @@ img {
     .user-menu-divider {
       height: 1px;
       margin: 6px 4px;
-      background: $gray-light;
+      background: $ds-stroke-light;
     }
 
     .logout_btn {
-      color: #e11d48;
+      color: $ds-status-error;
 
       .menu-icon {
         opacity: 0.9;
       }
 
       &:hover {
-        background: rgba(#e11d48, 0.08);
+        background: $ds-status-error-background;
       }
     }
   }
 }
 // Layout / Footer
 .footer {
-  background: $primary;
-  color: $white;
+  background: $ds-surface-brand;
+  color: $ds-text-on-brand;
 
   .footer_top {
     padding: 70px 0;
@@ -823,7 +916,7 @@ img {
   }
 
   p {
-    color: rgba($white, 0.75);
+    color: rgba($ds-text-on-brand, 0.75);
     line-height: 1.8;
   }
 
@@ -858,11 +951,11 @@ img {
 
       li {
         a {
-          color: rgba($white, 0.75);
+          color: rgba($ds-text-on-brand, 0.75);
           transition: 0.3s;
 
           &:hover {
-            color: $secondary;
+            color: $ds-action-primary;
             padding-inline-start: 8px;
           }
         }
@@ -880,25 +973,25 @@ img {
       align-items: center;
       gap: 12px;
 
-      color: rgba($white, 0.75);
+      color: rgba($ds-text-on-brand, 0.75);
 
       transition: 0.3s;
       a {
-        color: rgba($white, 0.75);
+        color: rgba($ds-text-on-brand, 0.75);
         transition: 0.3s;
 
         &:hover {
-          color: $secondary;
+          color: $ds-action-primary;
         }
       }
       svg {
         font-size: 18px;
-        color: $secondary;
+        color: $ds-action-primary;
         flex-shrink: 0;
       }
 
       &:hover {
-        color: $white;
+        color: $ds-text-on-brand;
       }
     }
   }
@@ -910,7 +1003,7 @@ img {
       gap: 10px;
 
       svg {
-        color: $secondary;
+        color: $ds-action-primary;
       }
     }
 
@@ -927,7 +1020,7 @@ img {
       img {
         width: 170px;
         height: auto;
-        border-radius: $radius-md;
+        border-radius: $ds-radius-md;
         transition: 0.35s;
       }
 
@@ -936,7 +1029,7 @@ img {
 
         img {
           transform: scale(1.04);
-          box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
+          box-shadow: 0 15px 35px rgba($ds-shadow-color, 0.25);
         }
       }
     }
@@ -950,13 +1043,13 @@ img {
       width: 44px;
       height: 44px;
 
-      border-radius: 50%;
+      border-radius: $ds-radius-full;
 
       display: flex;
       justify-content: center;
       align-items: center;
 
-      background: rgba($white, 0.08);
+      background: rgba($ds-text-on-brand, 0.08);
 
       transition: 0.35s;
 
@@ -965,15 +1058,15 @@ img {
       }
 
       &:hover {
-        background: $secondary;
+        background: $ds-action-primary;
         transform: translateY(-5px);
-        box-shadow: 0 10px 25px rgba($secondary, 0.35);
+        box-shadow: 0 10px 25px rgba($ds-action-primary, 0.35);
       }
     }
   }
 
   .footer_bottom {
-    border-top: 1px solid rgba($white, 0.08);
+    border-top: 1px solid rgba($ds-text-on-brand, 0.08);
     padding: 22px 0;
     display: flex;
     justify-content: space-between;
@@ -986,17 +1079,17 @@ img {
       gap: 24px;
 
       a {
-        color: rgba($white, 0.7);
+        color: rgba($ds-text-on-brand, 0.7);
         transition: 0.3s;
 
         &:hover {
-          color: $secondary;
+          color: $ds-action-primary;
         }
       }
     }
 
     .footer_copy {
-      color: rgba($white, 0.7);
+      color: rgba($ds-text-on-brand, 0.7);
       font-size: 14px;
     }
   }
@@ -1116,12 +1209,12 @@ img {
     flex-direction: column;
     align-items: center;
 
-    --nf-primary: #{$primary};
-    --nf-secondary: #{$secondary};
-    --nf-dark: #{$dark};
-    --nf-road: #{lighten($dark, 60%)};
-    --nf-road-line: #{$white};
-    --nf-pole: #{$gray};
+    --nf-primary: #{$ds-surface-brand};
+    --nf-secondary: #{$ds-action-primary};
+    --nf-dark: #{$ds-text-primary};
+    --nf-road: #{$ds-stroke-heavy};
+    --nf-road-line: #{$ds-text-on-brand};
+    --nf-pole: #{$ds-text-subtle};
 
     .not-found-illustration {
       width: min(400px, 90%);
@@ -1161,17 +1254,17 @@ img {
       padding: 0.35rem 0.9rem;
       margin-bottom: 1rem;
 
-      border-radius: 999px;
-      background: rgba($secondary, 0.1);
+      border-radius: $ds-radius-full;
+      background: $ds-surface-card-primary;
 
-      color: $secondary;
+      color: $ds-action-primary;
       font-size: 0.8rem;
       font-weight: 700;
     }
 
     h1 {
       margin-bottom: 0.75rem;
-      color: $primary;
+      color: $ds-text-primary;
       font-size: clamp(1.6rem, 3vw, 2.2rem);
       font-weight: 800;
     }
@@ -1180,7 +1273,7 @@ img {
       max-width: 430px;
       margin: 0 auto 2rem;
 
-      color: $gray;
+      color: $ds-text-subtle;
       font-size: 1rem;
       line-height: 1.8;
     }
@@ -1198,7 +1291,7 @@ img {
         justify-content: center;
         text-decoration: none;
         height: 38px;
-        border: 1px solid $gray-light;
+        border: 1px solid $ds-stroke-light;
         span {
           display: inline-flex;
           align-items: center;
@@ -1262,16 +1355,16 @@ img {
 
     padding: 26px;
 
-    background: $white;
-    border: 1px solid rgba($secondary, 0.12);
-    border-radius: 20px;
+    background: $ds-surface-elevated;
+    border: 1px solid $ds-stroke-light;
+    border-radius: $ds-radius-xl;
 
     transition: 0.3s;
 
     &:hover {
       transform: translateY(-4px);
-      box-shadow: 0 18px 40px rgba($dark, 0.08);
-      border-color: rgba($secondary, 0.25);
+      box-shadow: 0 18px 40px rgba($ds-shadow-color, 0.08);
+      border-color: rgba($ds-action-primary, 0.25);
     }
 
     &-number {
@@ -1284,11 +1377,11 @@ img {
       align-items: center;
       justify-content: center;
 
-      border-radius: 50%;
+      border-radius: $ds-radius-full;
 
-      background: rgba($secondary, 0.1);
+      background: $ds-surface-card-primary;
 
-      color: $secondary;
+      color: $ds-action-primary;
       font-size: 1rem;
       font-weight: 700;
     }
@@ -1299,7 +1392,7 @@ img {
       h3 {
         margin-bottom: 10px;
 
-        color: $primary;
+        color: $ds-text-primary;
         font-size: 1.15rem;
         font-weight: 700;
       }
@@ -1307,7 +1400,7 @@ img {
       p {
         margin: 0;
 
-        color: $gray;
+        color: $ds-text-subtle;
         line-height: 1.9;
       }
     }
@@ -1359,7 +1452,7 @@ img {
       content: '';
       position: absolute;
       inset: 0;
-      background: rgba($dark, 0.45);
+      background: rgba($ds-shadow-color, 0.45);
     }
   }
 
@@ -1371,7 +1464,7 @@ img {
 
   .hero_text {
     text-align: center;
-    color: $white;
+    color: $ds-text-on-brand;
     margin-bottom: 3rem;
 
     h1 {
@@ -1397,14 +1490,14 @@ img {
 }
 
 .rental_tabs {
-  background: $white;
-  border-radius: 24px;
+  background: $ds-surface-elevated;
+  border-radius: $ds-radius-xl;
   padding: 24px;
-  box-shadow: 0 18px 45px rgba($dark, 0.12);
+  box-shadow: 0 18px 45px rgba($ds-shadow-color, 0.12);
 
   // h3 {
   //   margin-bottom: 24px;
-  //   color: $primary;
+  //   color: $ds-text-primary;
   //   font-size: 22px;
   //   font-weight: 700;
   // }
@@ -1415,9 +1508,9 @@ img {
     gap: 18px;
 
     button {
-      border: 1px solid #ececec;
-      border-radius: 18px;
-      background: $white;
+      border: 1px solid $ds-stroke-light;
+      border-radius: $ds-radius-lg;
+      background: $ds-surface-elevated;
       padding: 20px;
       cursor: pointer;
       transition: 0.3s;
@@ -1430,24 +1523,24 @@ img {
 
       span {
         font-size: 34px;
-        color: $secondary;
+        color: $ds-action-primary;
       }
 
       h5 {
         margin: 0;
         font-size: 16px;
-        color: #444;
+        color: $ds-text-primary;
         font-weight: 700;
       }
 
       &:hover {
         transform: translateY(-6px);
-        border-color: $secondary;
-        box-shadow: 0 15px 35px rgba($secondary, 0.18);
-        background-color: $secondary;
+        border-color: $ds-action-primary;
+        box-shadow: 0 15px 35px rgba($ds-action-primary, 0.18);
+        background-color: $ds-action-primary;
         span,
         h5 {
-          color: $white;
+          color: $ds-text-on-action;
         }
         .img-card {
           filter: brightness(0) invert(1);
@@ -1519,7 +1612,7 @@ img {
   justify-content: center;
   align-items: center;
 
-  background: rgba($dark, 0.45);
+  background: rgba($ds-shadow-color, 0.45);
   backdrop-filter: blur(8px);
 
   .pickup_modal {
@@ -1527,8 +1620,8 @@ img {
 
     width: min(720px, calc(100% - 28px));
 
-    background: $white;
-    border-radius: 22px;
+    background: $ds-surface-elevated;
+    border-radius: $ds-radius-xl;
 
     padding: 24px;
 
@@ -1544,13 +1637,13 @@ img {
       h2 {
         margin: 0;
         font-size: 24px;
-        color: $primary;
+        color: $ds-text-primary;
       }
 
       p {
         margin-top: 6px;
         font-size: 14px;
-        color: #777;
+        color: $ds-text-subtle;
       }
     }
 
@@ -1562,10 +1655,10 @@ img {
       .pickup_card {
         padding: 22px 18px;
 
-        border: 1px solid #eee;
-        border-radius: 16px;
+        border: 1px solid $ds-stroke-light;
+        border-radius: $ds-radius-lg;
 
-        background: $white;
+        background: $ds-surface-elevated;
 
         display: flex;
         flex-direction: column;
@@ -1588,7 +1681,7 @@ img {
           margin-bottom: 6px;
 
           font-size: 17px;
-          color: $primary;
+          color: $ds-text-primary;
 
           transition: 0.3s;
         }
@@ -1601,22 +1694,22 @@ img {
 
           text-align: center;
 
-          color: #777;
+          color: $ds-text-subtle;
         }
 
         &:hover {
           transform: translateY(-4px);
 
-          border-color: $secondary;
+          border-color: $ds-action-primary;
 
-          box-shadow: 0 10px 24px rgba($secondary, 0.12);
+          box-shadow: 0 10px 24px rgba($ds-action-primary, 0.12);
 
           img {
             transform: scale(1.05);
           }
 
           h4 {
-            color: $secondary;
+            color: $ds-action-primary;
           }
         }
       }
@@ -1693,8 +1786,8 @@ img {
 }
 .map_modal {
   width: min(900px, calc(100% - 32px));
-  background: $white;
-  border-radius: 28px;
+  background: $ds-surface-elevated;
+  border-radius: $ds-radius-2xl;
   padding: 32px;
   position: relative;
   animation: popup 0.35s ease;
@@ -1704,7 +1797,7 @@ img {
 
     h2 {
       margin-bottom: 8px;
-      color: $primary;
+      color: $ds-text-primary;
     }
   }
   .search_box {
@@ -1717,36 +1810,36 @@ img {
       position: absolute;
       right: 18px;
       font-size: 18px;
-      color: #999;
+      color: $ds-text-placeholder;
       pointer-events: none;
     }
 
     .search_spinner {
       position: absolute;
       left: 14px;
-      color: $secondary;
+      color: $ds-action-primary;
       animation: spin 0.8s linear infinite;
     }
 
     input {
       width: 100%;
       height: 52px;
-      border-radius: 14px;
-      border: 1px solid #e2e2e2;
-      background: #fafafa;
+      border-radius: $ds-radius-md;
+      border: 1px solid $ds-stroke-light;
+      background: $ds-surface-on-background;
       padding: 0 48px 0 40px;
       font-size: 15px;
       outline: none;
       transition: 0.25s;
 
       &:focus {
-        border-color: $secondary;
-        background: $white;
-        box-shadow: 0 0 0 3px rgba($secondary, 0.1);
+        border-color: $ds-action-primary;
+        background: $ds-surface-elevated;
+        box-shadow: 0 0 0 3px rgba($ds-action-primary, 0.1);
       }
 
       &::placeholder {
-        color: #aaa;
+        color: $ds-text-placeholder;
       }
     }
 
@@ -1756,13 +1849,13 @@ img {
       background: none;
       border: none;
       cursor: pointer;
-      color: #999;
+      color: $ds-text-placeholder;
       display: flex;
       align-items: center;
       font-size: 16px;
 
       &:hover {
-        color: $primary;
+        color: $ds-text-primary;
       }
     }
 
@@ -1773,10 +1866,10 @@ img {
       left: 0;
       z-index: 20;
 
-      background: $white;
-      border-radius: 14px;
-      border: 1px solid #eee;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+      background: $ds-surface-elevated;
+      border-radius: $ds-radius-md;
+      border: 1px solid $ds-stroke-light;
+      box-shadow: 0 8px 24px rgba($ds-shadow-color, 0.1);
       max-height: 260px;
       overflow-y: auto;
 
@@ -1795,7 +1888,7 @@ img {
 
         svg {
           font-size: 16px;
-          color: $secondary;
+          color: $ds-action-primary;
           flex-shrink: 0;
         }
 
@@ -1807,7 +1900,7 @@ img {
 
         .main_text {
           font-weight: 600;
-          color: $primary;
+          color: $ds-text-primary;
           font-size: 14px;
           white-space: nowrap;
           overflow: hidden;
@@ -1816,12 +1909,12 @@ img {
 
         .secondary_text {
           font-size: 12px;
-          color: #888;
+          color: $ds-text-subtle;
         }
 
         &:hover,
         &.active {
-          background: rgba($secondary, 0.08);
+          background: $ds-surface-card-primary;
         }
       }
     }
@@ -1833,18 +1926,18 @@ img {
       left: 0;
       z-index: 20;
 
-      background: $white;
-      border-radius: 14px;
-      border: 1px solid #eee;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+      background: $ds-surface-elevated;
+      border-radius: $ds-radius-md;
+      border: 1px solid $ds-stroke-light;
+      box-shadow: 0 8px 24px rgba($ds-shadow-color, 0.1);
       padding: 16px;
       text-align: center;
-      color: #999;
+      color: $ds-text-placeholder;
       font-size: 13px;
     }
   }
   .location_error {
-    color: #e14b4b;
+    color: $ds-status-error;
     font-size: 13px;
     margin: 8px 0 0;
   }
@@ -1887,9 +1980,9 @@ img {
   }
   .map_placeholder {
     height: 420px;
-    border-radius: $radius-lg;
-    border: 2px dashed #ddd;
-    background: #fafafa;
+    border-radius: $ds-radius-xl;
+    border: 2px dashed $ds-stroke-heavy;
+    background: $ds-surface-on-background;
 
     display: flex;
     flex-direction: column;
@@ -1900,11 +1993,11 @@ img {
 
     svg {
       font-size: 70px;
-      color: $secondary;
+      color: $ds-action-primary;
     }
 
     span {
-      color: #666;
+      color: $ds-text-subtle;
       font-weight: 600;
     }
   }
@@ -1932,22 +2025,22 @@ img {
     }
 
     .current_location {
-      background: rgba($secondary, 0.08);
-      color: $secondary;
-      border: 1px solid rgba($secondary, 0.15);
+      background: $ds-surface-card-primary;
+      color: $ds-action-primary;
+      border: 1px solid rgba($ds-action-primary, 0.15);
 
       &:hover {
-        background: rgba($secondary, 0.15);
+        background: $ds-primary-100;
       }
     }
 
     .confirm_btn {
-      background: $secondary;
-      color: $white;
+      background: $ds-action-primary;
+      color: $ds-text-on-action;
       border: none;
 
       &:hover {
-        background: darken($secondary, 8%);
+        background: darken($ds-action-primary, 8%);
       }
     }
   }
@@ -1976,8 +2069,8 @@ img {
   width: min(600px, calc(100% - 32px));
   max-height: 78vh;
 
-  background: $white;
-  border-radius: $radius-lg;
+  background: $ds-surface-elevated;
+  border-radius: $ds-radius-xl;
 
   padding: 25px;
 
@@ -1992,12 +2085,12 @@ img {
     h2 {
       font-size: 22px;
       margin-bottom: 4px;
-      color: $primary;
+      color: $ds-text-primary;
     }
 
     p {
       font-size: 13px;
-      color: #777;
+      color: $ds-text-subtle;
       margin: 0;
     }
   }
@@ -2011,14 +2104,14 @@ img {
     padding-inline: 14px;
     margin-bottom: 16px;
 
-    border: 1px solid #ececec;
-    border-radius: $radius-md;
+    border: 1px solid $ds-stroke-light;
+    border-radius: $ds-radius-md;
 
     flex-shrink: 0;
 
     svg {
       font-size: 18px;
-      color: $secondary;
+      color: $ds-action-primary;
     }
 
     input {
@@ -2052,8 +2145,8 @@ img {
     }
 
     &::-webkit-scrollbar-thumb {
-      background: rgba($secondary, 0.3);
-      border-radius: $radius-lg;
+      background: rgba($ds-action-primary, 0.3);
+      border-radius: $ds-radius-full;
     }
 
     .branch_item {
@@ -2066,10 +2159,10 @@ img {
 
       padding: 12px 14px;
 
-      border: 1px solid #eee;
-      border-radius: 14px;
+      border: 1px solid $ds-stroke-light;
+      border-radius: $ds-radius-md;
 
-      background: $white;
+      background: $ds-surface-elevated;
 
       cursor: pointer;
 
@@ -2081,9 +2174,9 @@ img {
         width: 42px;
         height: 42px;
 
-        border-radius: $radius-md;
+        border-radius: $ds-radius-md;
 
-        background: rgba($secondary, 0.08);
+        background: $ds-surface-card-primary;
 
         display: flex;
         justify-content: center;
@@ -2091,7 +2184,7 @@ img {
 
         svg {
           font-size: 20px;
-          color: $secondary;
+          color: $ds-action-primary;
         }
       }
 
@@ -2102,31 +2195,31 @@ img {
         h4 {
           font-size: 15px;
           margin-bottom: 2px;
-          color: $primary;
+          color: $ds-text-primary;
         }
 
         p {
           margin: 0;
           font-size: 12px;
-          color: #888;
+          color: $ds-text-subtle;
         }
       }
 
       &:hover {
-        border-color: $secondary;
+        border-color: $ds-action-primary;
         transform: translateY(-2px);
-        box-shadow: 0 8px 20px rgba($secondary, 0.1);
+        box-shadow: 0 8px 20px rgba($ds-action-primary, 0.1);
       }
 
       &.active {
-        border-color: $secondary;
-        background: rgba($secondary, 0.05);
+        border-color: $ds-action-primary;
+        background: $ds-surface-card-primary;
 
         .icon {
-          background: $secondary;
+          background: $ds-action-primary;
 
           svg {
-            color: $white;
+            color: $ds-text-on-action;
           }
         }
       }
@@ -2138,10 +2231,10 @@ img {
     height: 56px;
 
     border: none;
-    border-radius: 14px;
+    border-radius: $ds-radius-md;
 
-    background: $secondary;
-    color: $white;
+    background: $ds-action-primary;
+    color: $ds-text-on-action;
 
     font-weight: 700;
 
@@ -2214,9 +2307,9 @@ img {
   height: 42px;
 
   border: none;
-  border-radius: 50%;
+  border-radius: $ds-radius-full;
 
-  background: #f6f6f6;
+  background: $ds-surface-on-background;
 
   display: flex;
   align-items: center;
@@ -2227,16 +2320,16 @@ img {
   transition: 0.3s;
 
   &:hover {
-    background: $secondary;
-    color: $white;
+    background: $ds-action-primary;
+    color: $ds-text-on-action;
   }
 }
 .selection_modal {
   width: min(600px, calc(100% - 32px));
   max-height: 78vh;
 
-  background: $white;
-  border-radius: $radius-lg;
+  background: $ds-surface-elevated;
+  border-radius: $ds-radius-xl;
 
   padding: 25px;
 
@@ -2257,7 +2350,7 @@ img {
 
     p {
       font-size: 13px;
-      color: #777;
+      color: $ds-text-subtle;
       margin: 0;
     }
   }
@@ -2271,14 +2364,14 @@ img {
     padding-inline: 14px;
     margin-bottom: 16px;
 
-    border: 1px solid #ececec;
-    border-radius: $radius-md;
+    border: 1px solid $ds-stroke-light;
+    border-radius: $ds-radius-md;
 
     flex-shrink: 0;
 
     svg {
       font-size: 18px;
-      color: #888;
+      color: $ds-text-subtle;
     }
 
     input {
@@ -2314,8 +2407,8 @@ img {
     }
 
     &::-webkit-scrollbar-thumb {
-      background: rgba($secondary, 0.3);
-      border-radius: $radius-lg;
+      background: rgba($ds-action-primary, 0.3);
+      border-radius: $ds-radius-full;
     }
   }
 
@@ -2329,10 +2422,10 @@ img {
 
     padding: 12px 14px;
 
-    border: 1px solid #eee;
-    border-radius: 14px;
+    border: 1px solid $ds-stroke-light;
+    border-radius: $ds-radius-md;
 
-    background: $white;
+    background: $ds-surface-elevated;
 
     cursor: pointer;
 
@@ -2344,17 +2437,17 @@ img {
       width: 42px;
       height: 42px;
 
-      border-radius: $radius-md;
+      border-radius: $ds-radius-md;
 
       display: flex;
       justify-content: center;
       align-items: center;
 
-      background: rgba($secondary, 0.08);
+      background: $ds-surface-card-primary;
 
       svg {
         font-size: 20px;
-        color: $secondary;
+        color: $ds-action-primary;
       }
     }
 
@@ -2370,25 +2463,25 @@ img {
       p {
         margin: 0;
         font-size: 12px;
-        color: #888;
+        color: $ds-text-subtle;
       }
     }
 
     &:hover {
-      border-color: $secondary;
+      border-color: $ds-action-primary;
       transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba($secondary, 0.1);
+      box-shadow: 0 8px 20px rgba($ds-action-primary, 0.1);
     }
 
     &.active {
-      border-color: $secondary;
-      background: rgba($secondary, 0.05);
+      border-color: $ds-action-primary;
+      background: $ds-surface-card-primary;
 
       .icon {
-        background: $secondary;
+        background: $ds-action-primary;
 
         svg {
-          color: $white;
+          color: $ds-text-on-action;
         }
       }
     }
@@ -2400,11 +2493,11 @@ img {
 
     border: none;
 
-    border-radius: 14px;
+    border-radius: $ds-radius-md;
 
-    background: $secondary;
+    background: $ds-action-primary;
 
-    color: $white;
+    color: $ds-text-on-action;
 
     font-weight: 700;
 
@@ -2492,10 +2585,10 @@ img {
       button {
         width: 44px;
         height: 44px;
-        border-radius: 50%;
-        border: 1px solid rgba($dark, 0.1);
-        background: $white;
-        color: $primary;
+        border-radius: $ds-radius-full;
+        border: 1px solid $ds-stroke-light;
+        background: $ds-surface-elevated;
+        color: $ds-text-primary;
 
         display: flex;
         align-items: center;
@@ -2505,11 +2598,11 @@ img {
         transition: 0.3s ease;
 
         &:hover {
-          background: $secondary;
-          border-color: $secondary;
-          color: $white;
+          background: $ds-action-primary;
+          border-color: $ds-action-primary;
+          color: $ds-text-on-action;
           transform: translateY(-2px);
-          box-shadow: 0 10px 20px rgba($secondary, 0.18);
+          box-shadow: 0 10px 20px rgba($ds-action-primary, 0.18);
         }
       }
     }
@@ -2546,7 +2639,7 @@ img {
     position: relative;
     display: block;
     overflow: hidden;
-    border-radius: $radius-md;
+    border-radius: $ds-radius-md;
     text-decoration: none;
 
     &-image {
@@ -2559,9 +2652,9 @@ img {
       inset: 0;
       background: linear-gradient(
         to top,
-        rgba($dark, 0.75) 0%,
-        rgba($dark, 0.25) 55%,
-        rgba($dark, 0) 100%
+        rgba($ds-shadow-color, 0.75) 0%,
+        rgba($ds-shadow-color, 0.25) 55%,
+        rgba($ds-shadow-color, 0) 100%
       );
     }
 
@@ -2577,12 +2670,12 @@ img {
 
       padding: 0.35rem 0.8rem;
 
-      border-radius: 999px;
+      border-radius: $ds-radius-full;
 
-      background: rgba($white, 0.15);
+      background: rgba($ds-text-on-brand, 0.15);
       backdrop-filter: blur(10px);
 
-      color: $white;
+      color: $ds-text-on-brand;
       font-size: 0.875rem;
       font-weight: 600;
     }
@@ -2601,7 +2694,7 @@ img {
 
       h3 {
         margin: 0;
-        color: $white;
+        color: $ds-text-on-brand;
         font-size: 1.35rem;
         font-weight: 700;
       }
@@ -2612,7 +2705,7 @@ img {
       align-items: center;
       gap: 0.4rem;
 
-      color: $white;
+      color: $ds-text-on-brand;
       font-size: 0.95rem;
       font-weight: 600;
 
@@ -2660,9 +2753,9 @@ img {
     align-items: center;
     justify-content: center;
 
-    background: $white;
-    border: 1px solid #eee;
-    border-radius: $radius-lg;
+    background: $ds-surface-elevated;
+    border: 1px solid $ds-stroke-light;
+    border-radius: $ds-radius-xl;
 
     transition: all 0.35s ease;
 
@@ -2682,9 +2775,9 @@ img {
     &:hover {
       transform: translateY(-6px);
 
-      border-color: $secondary;
+      border-color: $ds-action-primary;
 
-      box-shadow: 0 15px 35px rgba($secondary, 0.15);
+      box-shadow: 0 15px 35px rgba($ds-action-primary, 0.15);
 
       img {
         filter: grayscale(0);
@@ -2700,7 +2793,8 @@ img {
   position: relative;
   overflow: hidden;
   background:
-    linear-gradient(rgba($dark, 0.72), rgba($dark, 0.72)), url('../assets/images/hero2.png');
+    linear-gradient(rgba($ds-shadow-color, 0.72), rgba($ds-shadow-color, 0.72)),
+    url('../assets/images/hero2.png');
 
   background-size: cover;
   background-position: center;
@@ -2731,18 +2825,18 @@ img {
   }
 
   .why_left {
-    color: $white;
+    color: $ds-text-on-brand;
 
     .section_label {
       display: inline-block;
 
       padding: 8px 18px;
 
-      border-radius: 30px;
+      border-radius: $ds-radius-full;
 
-      background: rgba($secondary, 0.18);
+      background: rgba($ds-action-primary, 0.18);
 
-      color: $secondary;
+      color: $ds-action-primary;
 
       margin-bottom: 18px;
 
@@ -2758,7 +2852,7 @@ img {
 
       margin-bottom: 22px;
 
-      color: $white;
+      color: $ds-text-on-brand;
     }
 
     p {
@@ -2791,11 +2885,11 @@ img {
 
     padding: 28px;
 
-    border-radius: 22px;
+    border-radius: $ds-radius-xl;
 
-    background: rgba($white, 0.08);
+    background: rgba($ds-text-on-brand, 0.08);
 
-    border: 1px solid rgba($white, 0.08);
+    border: 1px solid rgba($ds-text-on-brand, 0.08);
 
     backdrop-filter: blur(12px);
 
@@ -2806,9 +2900,9 @@ img {
 
       height: 72px;
 
-      border-radius: 18px;
+      border-radius: $ds-radius-lg;
 
-      background: $secondary;
+      background: $ds-action-primary;
 
       display: flex;
 
@@ -2823,12 +2917,12 @@ img {
       svg {
         font-size: 34px;
 
-        color: $white;
+        color: $ds-text-on-action;
       }
     }
 
     h3 {
-      color: $white;
+      color: $ds-text-on-brand;
 
       margin-bottom: 10px;
 
@@ -2838,7 +2932,7 @@ img {
     }
 
     p {
-      color: rgba($white, 0.75);
+      color: rgba($ds-text-on-brand, 0.75);
 
       line-height: 1.9;
 
@@ -2850,14 +2944,14 @@ img {
     &:hover {
       transform: translateY(-10px);
 
-      background: rgba($white, 0.12);
+      background: rgba($ds-text-on-brand, 0.12);
 
-      border-color: rgba($secondary, 0.4);
+      border-color: rgba($ds-action-primary, 0.4);
 
-      box-shadow: 0 18px 40px rgba($dark, 0.25);
+      box-shadow: 0 18px 40px rgba($ds-shadow-color, 0.25);
 
       .icon {
-        box-shadow: 0 0 30px rgba($secondary, 0.55);
+        box-shadow: 0 0 30px rgba($ds-action-primary, 0.55);
       }
     }
   }
@@ -2878,11 +2972,15 @@ img {
 
     padding: 60px 70px;
 
-    border-radius: 30px;
+    border-radius: $ds-radius-2xl;
 
-    background: linear-gradient(135deg, $primary 0%, darken($secondary, 6%) 100%);
+    background: linear-gradient(
+      135deg,
+      $ds-surface-brand 0%,
+      darken($ds-action-primary, 6%) 100%
+    );
 
-    color: $white;
+    color: $ds-text-on-brand;
 
     &::before {
       content: '';
@@ -2891,8 +2989,8 @@ img {
       border-radius: inherit;
 
       background:
-        radial-gradient(circle at 90% 20%, rgba($secondary, 0.18), transparent 30%),
-        radial-gradient(circle at 20% 80%, rgba($white, 0.08), transparent 35%);
+        radial-gradient(circle at 90% 20%, rgba($ds-action-primary, 0.18), transparent 30%),
+        radial-gradient(circle at 20% 80%, rgba($ds-text-on-brand, 0.08), transparent 35%);
 
       pointer-events: none;
     }
@@ -2926,11 +3024,11 @@ img {
     .tag {
       display: inline-flex;
       padding: 8px 18px;
-      border-radius: 30px;
+      border-radius: $ds-radius-full;
 
-      background: rgba($white, 0.12);
+      background: rgba($ds-text-on-brand, 0.12);
 
-      color: $white;
+      color: $ds-text-on-brand;
 
       font-weight: 700;
 
@@ -2946,7 +3044,7 @@ img {
 
     p {
       font-size: 17px;
-      color: rgba($white, 0.85);
+      color: rgba($ds-text-on-brand, 0.85);
       line-height: 1.9;
       margin-bottom: 35px;
     }
@@ -2966,7 +3064,7 @@ img {
         display: block;
         width: 180px;
         height: auto;
-        border-radius: $radius-md;
+        border-radius: $ds-radius-md;
         transition: 0.3s;
       }
 
@@ -2974,7 +3072,7 @@ img {
         transform: translateY(-4px) scale(1.03);
 
         img {
-          box-shadow: 0 12px 30px rgba($dark, 0.25);
+          box-shadow: 0 12px 30px rgba($ds-shadow-color, 0.25);
         }
       }
     }
@@ -3014,7 +3112,7 @@ img {
 }
 ///////////////////////////FAQ//////////////////////////////////////////
 .faqs {
-  background-color: #fdfeffd3;
+  background-color: $ds-surface-on-background;
 
   .faq-grid {
     display: grid;
@@ -3030,11 +3128,11 @@ img {
   }
 
   .faq-item {
-    border-bottom: 1px solid #ececec;
+    border-bottom: 1px solid $ds-stroke-light;
 
     &.active {
       .faq-question {
-        color: $secondary;
+        color: $ds-action-primary;
       }
 
       .faq-question-icon {
@@ -3063,7 +3161,7 @@ img {
 
     font-size: 18px;
     font-weight: 500;
-    color: $primary;
+    color: $ds-text-primary;
 
     transition: 0.3s;
 
@@ -3077,9 +3175,9 @@ img {
       width: 34px;
       height: 34px;
 
-      border-radius: 4px;
+      border-radius: $ds-radius-xs;
 
-      background: $secondary;
+      background: $ds-action-primary;
 
       display: flex;
       justify-content: center;
@@ -3090,7 +3188,7 @@ img {
       transition: 0.3s;
 
       svg {
-        color: white;
+        color: $ds-text-on-action;
         font-size: 18px;
         transition: 0.3s;
       }
@@ -3110,7 +3208,7 @@ img {
     }
 
     p {
-      color: $gray;
+      color: $ds-text-subtle;
       line-height: 1.9;
       font-size: 15px;
       margin: 0;
@@ -3171,18 +3269,18 @@ img {
     margin: 0 auto 60px;
 
     span {
-      color: $secondary;
+      color: $ds-action-primary;
       font-weight: 700;
     }
 
     h2 {
       margin: 12px 0;
-      color: $primary;
+      color: $ds-text-primary;
       font-size: clamp(2rem, 4vw, 2.7rem);
     }
 
     p {
-      color: $gray;
+      color: $ds-text-subtle;
       line-height: 1.8;
     }
   }
@@ -3194,10 +3292,10 @@ img {
   }
 
   .contact_info {
-    background: $primary;
-    color: $white;
+    background: $ds-surface-brand;
+    color: $ds-text-on-brand;
     padding: 40px;
-    border-radius: 24px;
+    border-radius: $ds-radius-xl;
 
     display: flex;
     flex-direction: column;
@@ -3208,7 +3306,7 @@ img {
     }
 
     p {
-      color: rgba($white, 0.75);
+      color: rgba($ds-text-on-brand, 0.75);
       line-height: 1.8;
       margin-bottom: 35px;
     }
@@ -3228,15 +3326,15 @@ img {
         width: 46px;
         height: 46px;
         padding: 12px;
-        border-radius: 50%;
-        background: rgba($white, 0.08);
-        color: $secondary;
+        border-radius: $ds-radius-full;
+        background: rgba($ds-text-on-brand, 0.08);
+        color: $ds-action-primary;
       }
 
       span {
         display: block;
         font-size: 0.8rem;
-        color: rgba($white, 0.65);
+        color: rgba($ds-text-on-brand, 0.65);
       }
 
       strong {
@@ -3258,30 +3356,30 @@ img {
         justify-content: center;
         align-items: center;
 
-        border-radius: 50%;
+        border-radius: $ds-radius-full;
 
-        background: rgba($white, 0.08);
+        background: rgba($ds-text-on-brand, 0.08);
 
         transition: 0.3s;
 
         &:hover {
-          background: $secondary;
+          background: $ds-action-primary;
           transform: translateY(-5px);
         }
 
         svg {
-          color: $white;
+          color: $ds-text-on-brand;
         }
       }
     }
   }
 
   .contact_form {
-    background: $white;
+    background: $ds-surface-elevated;
     padding: 40px;
-    border-radius: 24px;
-    box-shadow: 0 20px 50px rgba($dark, 0.05);
-    border: 1px solid $gray-light;
+    border-radius: $ds-radius-xl;
+    box-shadow: 0 20px 50px rgba($ds-shadow-color, 0.05);
+    border: 1px solid $ds-stroke-light;
     .row {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
@@ -3297,7 +3395,7 @@ img {
       label {
         font-size: 0.9rem;
         font-weight: 600;
-        color: $primary;
+        color: $ds-text-primary;
       }
 
       .react-tel-input {
@@ -3344,9 +3442,13 @@ img {
     position: relative;
     overflow: hidden;
 
-    background: linear-gradient(135deg, $secondary, darken($secondary, 8%));
+    background: linear-gradient(
+      135deg,
+      $ds-action-primary,
+      darken($ds-action-primary, 8%)
+    );
 
-    border-radius: 28px;
+    border-radius: $ds-radius-2xl;
     padding: 60px 30px;
     text-align: center;
 
@@ -3382,9 +3484,9 @@ img {
     pointer-events: none;
 
     background-image:
-      radial-gradient(circle at 20% 20%, #fff 2px, transparent 2px),
-      radial-gradient(circle at 80% 40%, #fff 2px, transparent 2px),
-      radial-gradient(circle at 40% 80%, #fff 2px, transparent 2px);
+      radial-gradient(circle at 20% 20%, $ds-text-on-action 2px, transparent 2px),
+      radial-gradient(circle at 80% 40%, $ds-text-on-action 2px, transparent 2px),
+      radial-gradient(circle at 40% 80%, $ds-text-on-action 2px, transparent 2px);
 
     background-size: 80px 80px;
   }
@@ -3397,14 +3499,14 @@ img {
     margin: auto;
 
     h3 {
-      color: $white;
+      color: $ds-text-on-action;
       font-size: 34px;
       font-weight: 700;
       margin-bottom: 14px;
     }
 
     p {
-      color: rgba($white, 0.9);
+      color: rgba($ds-text-on-action, 0.9);
       font-size: 17px;
       line-height: 1.8;
       margin-bottom: 30px;
@@ -3416,12 +3518,12 @@ img {
     align-items: center;
     justify-content: center;
 
-    background: $white;
-    color: $secondary;
+    background: $ds-surface-elevated;
+    color: $ds-action-primary;
 
     padding: 15px 36px;
 
-    border-radius: 14px;
+    border-radius: $ds-radius-md;
     text-decoration: none;
 
     font-weight: 700;
@@ -3429,7 +3531,7 @@ img {
 
     &:hover {
       transform: translateY(-3px);
-      box-shadow: 0 12px 30px rgba($black, 0.15);
+      box-shadow: 0 12px 30px rgba($ds-shadow-color, 0.15);
     }
   }
 
@@ -3451,7 +3553,7 @@ img {
 .city-hero {
   position: relative;
   height: 450px;
-  border-radius: 0 0 32px 32px;
+  border-radius: 0 0 $ds-radius-2xl $ds-radius-2xl;
   overflow: hidden;
 
   &-image {
@@ -3463,9 +3565,9 @@ img {
     inset: 0;
     background: linear-gradient(
       to left,
-      rgba($dark, 0.15) 0%,
-      rgba($dark, 0.65) 55%,
-      rgba($dark, 0.85) 100%
+      rgba($ds-shadow-color, 0.15) 0%,
+      rgba($ds-shadow-color, 0.65) 55%,
+      rgba($ds-shadow-color, 0.85) 100%
     );
   }
 
@@ -3482,7 +3584,7 @@ img {
       text-align: center;
     }
     h1 {
-      color: $white;
+      color: $ds-text-on-brand;
       font-size: 3rem;
       font-weight: 800;
       margin-bottom: 12px;
@@ -3492,7 +3594,7 @@ img {
     }
 
     p {
-      color: rgba($white, 0.85);
+      color: rgba($ds-text-on-brand, 0.85);
       line-height: 1.8;
     }
   }
@@ -3506,15 +3608,15 @@ img {
   margin-top: -45px;
   margin-bottom: 3rem;
 
-  background: rgba($white, 0.96);
+  background: rgba($ds-surface-elevated, 0.96);
   backdrop-filter: blur(20px);
 
-  border: 1px solid rgba($dark, 0.06);
-  border-radius: 22px;
+  border: 1px solid $ds-stroke-light;
+  border-radius: $ds-radius-xl;
 
   box-shadow:
-    0 12px 40px rgba($dark, 0.08),
-    0 2px 10px rgba($dark, 0.04);
+    0 12px 40px rgba($ds-shadow-color, 0.08),
+    0 2px 10px rgba($ds-shadow-color, 0.04);
 
   position: relative;
   z-index: 10;
@@ -3541,15 +3643,15 @@ img {
       width: 52px;
       height: 52px;
 
-      border-radius: 16px;
+      border-radius: $ds-radius-lg;
 
-      background: rgba($secondary, 0.08);
+      background: $ds-surface-card-primary;
 
       display: flex;
       justify-content: center;
       align-items: center;
 
-      color: $secondary;
+      color: $ds-action-primary;
 
       font-size: 22px;
 
@@ -3560,8 +3662,8 @@ img {
 
     &:hover {
       .field-icon {
-        background: $secondary;
-        color: $white;
+        background: $ds-action-primary;
+        color: $ds-text-on-action;
         transform: scale(1.05);
       }
     }
@@ -3571,7 +3673,7 @@ img {
     width: 1px;
     height: 55px;
 
-    background: #ececec;
+    background: $ds-stroke-light;
 
     @media (max-width: $breakpoint-md) {
       width: 100%;
@@ -3584,11 +3686,11 @@ img {
     height: 64px;
 
     border: none;
-    border-radius: 18px;
+    border-radius: $ds-radius-lg;
 
-    background: linear-gradient(135deg, $secondary, lighten($secondary, 8%));
+    background: linear-gradient(135deg, $ds-action-primary, lighten($ds-action-primary, 8%));
 
-    color: $white;
+    color: $ds-text-on-action;
 
     display: flex;
     justify-content: center;
@@ -3607,7 +3709,7 @@ img {
     &:hover {
       transform: translateY(-3px);
 
-      box-shadow: 0 15px 30px rgba($secondary, 0.28);
+      box-shadow: 0 15px 30px rgba($ds-action-primary, 0.28);
     }
 
     &:active {
@@ -3626,16 +3728,16 @@ img {
 .date-pill-divider {
   width: 1px;
   height: 32px;
-  background: rgba($dark, 0.08);
+  background: $ds-stroke-light;
 }
 
 .date-search-btn {
   width: 48px;
   height: 48px;
-  border-radius: 50%;
+  border-radius: $ds-radius-full;
   border: none;
-  background: $secondary;
-  color: $white;
+  background: $ds-action-primary;
+  color: $ds-text-on-action;
   display: grid;
   place-items: center;
   cursor: pointer;
@@ -3666,14 +3768,14 @@ img {
 
   &-label {
     font-size: 0.7rem;
-    color: $gray;
+    color: $ds-text-subtle;
     font-weight: 600;
   }
 
   &-value {
     font-size: 0.9rem;
     font-weight: 700;
-    color: $primary;
+    color: $ds-text-primary;
   }
 
   &-popover {
@@ -3682,9 +3784,9 @@ img {
     inset-inline-start: 0;
     width: 320px;
 
-    background: $white;
-    border-radius: 16px;
-    box-shadow: $shadow-md;
+    background: $ds-surface-elevated;
+    border-radius: $ds-radius-lg;
+    box-shadow: 0 8px 24px rgba($ds-shadow-color, 0.1);
     padding: 16px;
     z-index: 50;
   }
@@ -3697,24 +3799,24 @@ img {
 
     span {
       font-weight: 700;
-      color: $primary;
+      color: $ds-text-primary;
       font-size: 0.9rem;
     }
 
     button {
       width: 28px;
       height: 28px;
-      border-radius: 8px;
+      border-radius: $ds-radius-sm;
       border: none;
-      background: rgba($dark, 0.04);
-      color: $primary;
+      background: $ds-surface-on-background;
+      color: $ds-text-primary;
       cursor: pointer;
       display: grid;
       place-items: center;
 
       &:hover {
-        background: rgba($secondary, 0.1);
-        color: $secondary;
+        background: $ds-surface-card-primary;
+        color: $ds-action-primary;
       }
     }
   }
@@ -3727,7 +3829,7 @@ img {
     span {
       text-align: center;
       font-size: 0.7rem;
-      color: $gray;
+      color: $ds-text-subtle;
       font-weight: 600;
     }
   }
@@ -3744,29 +3846,29 @@ img {
     button {
       aspect-ratio: 1;
       border: none;
-      border-radius: 8px;
+      border-radius: $ds-radius-sm;
       background: transparent;
       font-size: 0.8rem;
-      color: $primary;
+      color: $ds-text-primary;
       cursor: pointer;
       transition: 0.15s;
 
       &:hover:not(:disabled) {
-        background: rgba($secondary, 0.08);
+        background: $ds-surface-card-primary;
       }
 
       &.today {
         font-weight: 700;
-        color: $secondary;
+        color: $ds-action-primary;
       }
 
       &.selected {
-        background: $secondary;
-        color: $white;
+        background: $ds-action-primary;
+        color: $ds-text-on-action;
       }
 
       &:disabled {
-        color: rgba($dark, 0.2);
+        color: $ds-text-placeholder;
         cursor: not-allowed;
       }
     }
@@ -3775,7 +3877,7 @@ img {
   &-time-section {
     margin-top: 14px;
     padding-top: 14px;
-    border-top: 1px solid rgba($dark, 0.06);
+    border-top: 1px solid $ds-stroke-light;
   }
 
   &-time-label {
@@ -3784,7 +3886,7 @@ img {
     gap: 6px;
     font-size: 0.8rem;
     font-weight: 600;
-    color: $gray;
+    color: $ds-text-subtle;
     margin-bottom: 8px;
   }
 
@@ -3802,18 +3904,18 @@ img {
     button {
       flex-shrink: 0;
       padding: 6px 12px;
-      border-radius: 999px;
-      border: 1px solid rgba($dark, 0.08);
-      background: $white;
+      border-radius: $ds-radius-full;
+      border: 1px solid $ds-stroke-light;
+      background: $ds-surface-elevated;
       font-size: 0.78rem;
-      color: $primary;
+      color: $ds-text-primary;
       cursor: pointer;
       white-space: nowrap;
 
       &.selected {
-        background: $secondary;
-        border-color: $secondary;
-        color: $white;
+        background: $ds-action-primary;
+        border-color: $ds-action-primary;
+        color: $ds-text-on-action;
       }
     }
   }
@@ -3823,15 +3925,15 @@ img {
     height: 42px;
     margin-top: 14px;
     border: none;
-    border-radius: 10px;
-    background: $secondary;
-    color: $white;
+    border-radius: $ds-radius-md;
+    background: $ds-action-primary;
+    color: $ds-text-on-action;
     font-weight: 700;
     cursor: pointer;
 
     &:disabled {
-      background: rgba($dark, 0.1);
-      color: rgba($dark, 0.3);
+      background: $ds-surface-on-background;
+      color: $ds-text-placeholder;
       cursor: not-allowed;
     }
   }
@@ -3847,12 +3949,12 @@ img {
     align-items: center;
     gap: 6px;
     padding: 8px 14px;
-    border: 1px solid rgba($dark, 0.1);
-    border-radius: $radius-md;
-    background: $white;
+    border: 1px solid $ds-stroke-light;
+    border-radius: $ds-radius-md;
+    background: $ds-surface-elevated;
     font-weight: 600;
     font-size: 0.9rem;
-    color: $primary;
+    color: $ds-text-primary;
     cursor: pointer;
 
     @media (min-width: $breakpoint-lg) {
@@ -3861,7 +3963,7 @@ img {
   }
 
   &-count {
-    color: $gray;
+    color: $ds-text-subtle;
     font-size: 0.9rem;
     margin-inline-end: auto;
   }
@@ -3871,13 +3973,13 @@ img {
 
     select {
       appearance: none;
-      border: 1px solid rgba($dark, 0.1);
-      border-radius: $radius-md;
+      border: 1px solid $ds-stroke-light;
+      border-radius: $ds-radius-md;
       padding: 8px 34px 8px 14px;
       font-size: 0.9rem;
       font-weight: 600;
-      color: $primary;
-      background: $white;
+      color: $ds-text-primary;
+      background: $ds-surface-elevated;
       cursor: pointer;
     }
 
@@ -3887,7 +3989,7 @@ img {
       top: 50%;
       transform: translateY(-50%);
       pointer-events: none;
-      color: $gray;
+      color: $ds-text-subtle;
     }
   }
 }
@@ -3906,25 +4008,25 @@ img {
 .city-cars-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 20px;
+  gap: $ds-space-6;
 }
 
 .car-card {
   min-width: 0;
   height: 100%;
   overflow: hidden;
-  border: 1px solid #edf1f6;
-  border-radius: 16px;
-  background: $white;
-  box-shadow: 0 7px 24px rgba($primary, 0.055);
+  border: 1px solid $ds-stroke-light;
+  border-radius: $ds-radius-lg;
+  background: $ds-surface-background;
+  box-shadow: 0 7px 24px rgba($ds-black, 0.055);
   transition:
     border-color 0.25s ease,
     box-shadow 0.25s ease,
     transform 0.25s ease;
 
   &:hover {
-    border-color: rgba($secondary, 0.25);
-    box-shadow: 0 14px 34px rgba($primary, 0.1);
+    border-color: rgba($ds-action-primary, 0.25);
+    box-shadow: 0 14px 34px rgba($ds-black, 0.1);
     transform: translateY(-4px);
 
     .car-card__media img {
@@ -3933,7 +4035,7 @@ img {
   }
 
   &:focus-within {
-    outline: 3px solid rgba($secondary, 0.18);
+    outline: 3px solid rgba($ds-action-primary, 0.18);
     outline-offset: 3px;
   }
 
@@ -3948,14 +4050,14 @@ img {
     position: relative;
     height: 210px;
     overflow: hidden;
-    background: #f4f7fa;
+    background: $ds-surface-on-background;
 
     &::after {
       content: '';
       position: absolute;
       inset: auto 0 0;
       height: 45%;
-      background: linear-gradient(to top, rgba(#081d31, 0.3), transparent);
+      background: linear-gradient(to top, rgba($ds-black, 0.3), transparent);
       pointer-events: none;
     }
 
@@ -3968,24 +4070,24 @@ img {
   &__pickup {
     position: absolute;
     z-index: 2;
-    top: 12px;
-    inset-inline-start: 12px;
+    top: $ds-space-4;
+    inset-inline-start: $ds-space-4;
     display: inline-flex;
     align-items: center;
-    gap: 6px;
+    gap: $ds-space-2;
     min-height: 30px;
-    padding: 5px 9px;
-    border: 1px solid rgba($white, 0.7);
-    border-radius: 9px;
-    background: rgba($white, 0.92);
-    box-shadow: 0 4px 12px rgba($primary, 0.1);
-    color: $primary;
+    padding: $ds-space-2 $ds-space-3;
+    border: 1px solid rgba($ds-white, 0.7);
+    border-radius: $ds-radius-sm;
+    background: rgba($ds-surface-background, 0.92);
+    box-shadow: 0 4px 12px rgba($ds-black, 0.1);
+    color: $ds-text-primary;
     font-size: 11px;
     font-weight: 600;
     backdrop-filter: blur(8px);
 
     svg {
-      color: $secondary;
+      color: $ds-action-primary;
       font-size: 14px;
     }
   }
@@ -3993,17 +4095,18 @@ img {
   &__offer {
     position: absolute;
     z-index: 2;
-    inset-inline: 12px;
-    bottom: 12px;
+    inset-inline: $ds-space-4;
+    bottom: $ds-space-4;
+
     display: flex;
     align-items: stretch;
     justify-content: space-between;
-    min-height: 48px;
+    min-height: $ds-space-10;
     overflow: hidden;
-    border: 1px solid rgba($white, 0.7);
-    border-radius: 12px;
-    background: rgba($white, 0.94);
-    box-shadow: 0 8px 22px rgba($primary, 0.14);
+    border: 1px dashed $ds-status-success;
+    border-radius: $ds-radius-md;
+    background: rgba($ds-surface-background, 0.94);
+    box-shadow: 0 8px 22px rgba($ds-black, 0.14);
     backdrop-filter: blur(10px);
   }
 
@@ -4011,12 +4114,12 @@ img {
     display: flex;
     min-width: 0;
     align-items: center;
-    gap: 8px;
-    padding: 7px 10px;
+    gap: $ds-space-3;
+    padding: $ds-space-3 $ds-space-4;
 
     > svg {
       flex: 0 0 auto;
-      color: #0da36a;
+      color: $ds-status-success;
       font-size: 22px;
     }
 
@@ -4032,14 +4135,14 @@ img {
 
     small {
       margin-bottom: 1px;
-      color: $gray;
+      color: $ds-text-subtle;
       font-size: 9px;
       line-height: 1.3;
     }
 
     strong {
       overflow: hidden;
-      color: $primary;
+      color: $ds-text-primary;
       font-size: 11px;
       font-weight: 700;
       line-height: 1.35;
@@ -4054,28 +4157,21 @@ img {
     min-width: 68px;
     flex: 0 0 auto;
     place-content: center;
-    padding: 6px 12px;
-    background: #0da36a;
-    color: $white;
+    padding: $ds-space-2 $ds-space-4;
+    background: $ds-status-success;
+    color: $ds-white;
     text-align: center;
 
-    &::before,
     &::after {
       content: '';
       position: absolute;
-      inset-inline-start: -4px;
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: rgba($white, 0.94);
-    }
-
-    &::before {
-      top: -4px;
-    }
-
-    &::after {
-      bottom: -4px;
+      top: 50%;
+      left: 0;
+      width: $ds-space-4;
+      height: $ds-space-4;
+      border-radius: $ds-radius-full;
+      background: rgba($ds-surface-background, 0.94);
+      transform: translate(-50%, -50%);
     }
 
     strong,
@@ -4100,12 +4196,12 @@ img {
     display: flex;
     flex: 1;
     flex-direction: column;
-    padding: 15px 16px 16px;
+    padding: $ds-space-5;
   }
 
   &__title {
-    margin: 0 0 12px;
-    color: $accent;
+    margin: 0 0 $ds-space-4;
+    color: $ds-text-primary;
     font-size: 16px;
     font-weight: 700;
     line-height: 1.45;
@@ -4115,16 +4211,16 @@ img {
     display: flex;
     min-width: 0;
     align-items: center;
-    gap: 9px;
-    margin-bottom: 15px;
+    gap: $ds-space-3;
+    margin-bottom: $ds-space-5;
   }
 
   &__year {
     flex: 0 0 auto;
-    padding: 4px 7px;
-    border-radius: 6px;
-    background: rgba($secondary, 0.1);
-    color: $secondary;
+    padding: $ds-space-2 $ds-space-3;
+    border-radius: $ds-radius-sm;
+    background: $ds-surface-card-primary;
+    color: $ds-action-primary;
     font-size: 11px;
     font-weight: 600;
     line-height: 1;
@@ -4135,17 +4231,17 @@ img {
     min-width: 0;
     flex: 1;
     align-items: center;
-    gap: 6px;
-    color: #596573;
+    gap: $ds-space-2;
+    color: $ds-text-subtle;
     font-size: 11px;
     font-weight: 500;
 
     svg {
       flex: 0 0 auto;
-      padding: 3px;
-      border-radius: 5px;
-      background: $secondary;
-      color: $white;
+      padding: $ds-space-1;
+      border-radius: $ds-radius-xs;
+      background: $ds-action-primary;
+      color: $ds-white;
       font-size: 18px;
     }
 
@@ -4160,23 +4256,23 @@ img {
     display: flex;
     align-items: flex-end;
     justify-content: space-between;
-    gap: 12px;
+    gap: $ds-space-4;
     margin-top: auto;
-    padding-top: 13px;
-    border-top: 1px solid #eef1f4;
+    padding-top: $ds-space-4;
+    border-top: 1px solid $ds-stroke-light;
   }
 
   &__rating {
     display: inline-flex;
     flex: 0 0 auto;
     align-items: center;
-    gap: 5px;
-    color: $accent;
+    gap: $ds-space-2;
+    color: $ds-text-primary;
     font-size: 12px;
     font-weight: 600;
 
     svg {
-      color: #ee8611;
+      color: $ds-status-warning;
       font-size: 15px;
     }
   }
@@ -4185,16 +4281,15 @@ img {
     display: flex;
     min-width: 0;
     align-items: center;
-    gap: 12px;
-    direction: rtl;
+    gap: $ds-space-4;
     white-space: nowrap;
 
     del {
       display: inline-flex;
       align-items: center;
-      gap: 4px;
-      color: #9a9a9a;
-      font-size: 16px;
+      gap: $ds-space-2;
+      color: $ds-text-placeholder;
+      font-size: 14px;
       font-weight: 500;
       line-height: 1;
       text-decoration-color: currentColor;
@@ -4205,19 +4300,18 @@ img {
   &__current-price {
     display: inline-flex;
     align-items: center;
-    gap: 5px;
+    gap: $ds-space-2;
 
     strong {
-      color: $secondary;
-      font-size: 24px;
+      color: $ds-action-primary;
+      font-size: 18px;
       font-weight: 700;
-      line-height: 1;
       white-space: nowrap;
     }
 
     small {
-      color: #737373;
-      font-size: 15px;
+      color: $ds-text-subtle;
+      font-size: 14px;
       font-weight: 700;
       white-space: nowrap;
     }
@@ -4230,14 +4324,14 @@ img {
   }
 
   @media (max-width: $breakpoint-sm) {
-    border-radius: 14px;
+    border-radius: $ds-radius-lg;
 
     &__media {
       height: 184px;
     }
 
     &__content {
-      padding: 13px 14px 15px;
+      padding: $ds-space-4 $ds-space-5 $ds-space-5;
     }
 
     &__title {
@@ -4270,11 +4364,11 @@ img {
 }
 
 .car-booking-card {
-  background: $white;
-  border: 1px solid #eee;
-  border-radius: $radius-lg;
+  background: $ds-surface-elevated;
+  border: 1px solid $ds-stroke-light;
+  border-radius: $ds-radius-xl;
   padding: 24px;
-  box-shadow: $shadow-sm;
+  box-shadow: 0 2px 8px rgba($ds-shadow-color, 0.06);
 
   &-price {
     margin-bottom: 18px;
@@ -4283,7 +4377,7 @@ img {
   &-old-price {
     display: block;
     font-size: 0.9rem;
-    color: #aaa;
+    color: $ds-text-placeholder;
     text-decoration: line-through;
     margin-bottom: 4px;
   }
@@ -4300,7 +4394,7 @@ img {
       gap: 6px;
       font-size: 2rem;
       font-weight: 800;
-      color: $primary;
+      color: $ds-text-primary;
       line-height: 1;
     }
 
@@ -4311,7 +4405,7 @@ img {
     }
 
     small {
-      color: $gray;
+      color: $ds-text-subtle;
       font-size: 0.9rem;
     }
   }
@@ -4320,9 +4414,9 @@ img {
     width: 100%;
     height: 52px;
     border: none;
-    border-radius: 14px;
-    background: $secondary;
-    color: $white;
+    border-radius: $ds-radius-md;
+    background: $ds-action-primary;
+    color: $ds-text-on-action;
     font-weight: 700;
     font-size: $font-size-base;
     cursor: pointer;
@@ -4330,14 +4424,14 @@ img {
     margin-bottom: 14px;
 
     &:hover {
-      background: darken($secondary, 6%);
+      background: darken($ds-action-primary, 6%);
     }
   }
 
   &-note {
     text-align: center;
     font-size: 0.8rem;
-    color: $gray;
+    color: $ds-text-subtle;
     margin: 0;
   }
 }
@@ -4346,9 +4440,9 @@ img {
   &-main {
     position: relative;
     height: 380px;
-    border-radius: $radius-md;
+    border-radius: $ds-radius-md;
     overflow: hidden;
-    background: #f4f4f4;
+    background: $ds-surface-on-background;
 
     @media (max-width: $breakpoint-md) {
       height: 260px;
@@ -4365,10 +4459,10 @@ img {
     transform: translateY(-50%);
     width: 40px;
     height: 40px;
-    border-radius: 50%;
+    border-radius: $ds-radius-full;
     border: none;
-    background: rgba($white, 0.5);
-    color: $primary;
+    background: rgba($ds-surface-elevated, 0.5);
+    color: $ds-text-primary;
     display: grid;
     place-items: center;
     cursor: pointer;
@@ -4382,8 +4476,8 @@ img {
     }
 
     &:hover {
-      background: $white;
-      box-shadow: $shadow-sm;
+      background: $ds-surface-elevated;
+      box-shadow: 0 2px 8px rgba($ds-shadow-color, 0.06);
     }
   }
 
@@ -4391,12 +4485,12 @@ img {
     position: absolute;
     bottom: 14px;
     inset-inline-end: 14px;
-    background: rgba($dark, 0.55);
-    color: $white;
+    background: rgba($ds-shadow-color, 0.55);
+    color: $ds-text-on-brand;
     font-size: 12px;
     font-weight: 600;
     padding: 4px 10px;
-    border-radius: 999px;
+    border-radius: $ds-radius-full;
   }
 
   &-thumbs {
@@ -4416,14 +4510,14 @@ img {
     flex-shrink: 0;
     width: 80px;
     height: 60px;
-    border-radius: 10px;
+    border-radius: $ds-radius-md;
     overflow: hidden;
     border: 2px solid transparent;
     cursor: pointer;
     padding: 0;
 
     &.active {
-      border-color: $secondary;
+      border-color: $ds-action-primary;
     }
   }
 }
@@ -4444,11 +4538,11 @@ img {
 
     padding: 6px 14px;
 
-    background: #f8f9fb;
-    border: 1px solid #eee;
-    border-radius: 30px;
+    background: $ds-surface-on-background;
+    border: 1px solid $ds-stroke-light;
+    border-radius: $ds-radius-full;
 
-    color: $gray;
+    color: $ds-text-subtle;
     font-size: 14px;
     font-weight: 600;
   }
@@ -4458,7 +4552,7 @@ img {
 
     font-size: 2rem;
     font-weight: 800;
-    color: $primary;
+    color: $ds-text-primary;
     line-height: 1.3;
   }
 
@@ -4469,11 +4563,11 @@ img {
 
     padding: 6px 14px;
 
-    border-radius: 30px;
+    border-radius: $ds-radius-full;
 
-    background: rgba(#ffb800, 0.12);
+    background: $ds-warning-50;
 
-    color: #ffb800;
+    color: $ds-status-warning;
 
     font-weight: 700;
     font-size: 15px;
@@ -4497,31 +4591,31 @@ img {
 
       padding: 10px 16px;
 
-      background: #f8f9fb;
-      border: 1px solid #eee;
-      border-radius: 30px;
+      background: $ds-surface-on-background;
+      border: 1px solid $ds-stroke-light;
+      border-radius: $ds-radius-full;
 
-      color: $gray;
+      color: $ds-text-subtle;
       font-size: 14px;
 
       svg {
-        color: $secondary;
+        color: $ds-action-primary;
         font-size: 17px;
       }
 
       &.showroom {
-        color: $primary;
+        color: $ds-text-primary;
         font-weight: 600;
       }
 
       &.pickup {
-        background: mix($secondary, $white, 15%);
+        background: $ds-surface-card-primary;
         border-color: transparent;
-        color: darken($secondary, 12%);
+        color: $ds-action-primary;
         font-weight: 600;
 
         svg {
-          color: darken($secondary, 12%);
+          color: $ds-action-primary;
         }
       }
     }
@@ -4535,16 +4629,16 @@ img {
 
   &-banner,
   &-branch {
-    border-radius: $radius-lg;
+    border-radius: $ds-radius-xl;
   }
 
   &-banner {
     padding: 18px 22px;
-    background: rgba($secondary, 0.09);
+    background: $ds-surface-card-primary;
 
     p {
       margin: 9px 0 0;
-      color: $primary;
+      color: $ds-text-primary;
       font-size: 13px;
       line-height: 1.7;
     }
@@ -4555,7 +4649,7 @@ img {
     display: flex;
     align-items: center;
     gap: 7px;
-    color: $secondary;
+    color: $ds-action-primary;
   }
 
   &-heading {
@@ -4573,9 +4667,9 @@ img {
     gap: 24px;
     min-height: 128px;
     padding: 18px 22px;
-    border: 1px solid #f0f0f0;
-    background: $white;
-    box-shadow: $shadow-sm;
+    border: 1px solid $ds-stroke-light;
+    background: $ds-surface-elevated;
+    box-shadow: 0 2px 8px rgba($ds-shadow-color, 0.06);
   }
 
   &-branch-main {
@@ -4583,14 +4677,14 @@ img {
 
     h3 {
       margin: 9px 0 5px;
-      color: $primary;
+      color: $ds-text-primary;
       font-size: 16px;
       font-weight: 700;
     }
 
     p {
       margin: 0;
-      color: $accent;
+      color: $ds-text-primary;
       font-size: 13px;
       line-height: 1.7;
     }
@@ -4619,7 +4713,7 @@ img {
       padding: 0;
       border: 0;
       background: transparent;
-      color: $accent;
+      color: $ds-text-primary;
       cursor: pointer;
       font-size: 13px;
       font-weight: 700;
@@ -4627,12 +4721,12 @@ img {
       text-underline-offset: 3px;
 
       &:hover {
-        color: $secondary;
+        color: $ds-action-primary;
       }
     }
 
     span {
-      color: $gray;
+      color: $ds-text-subtle;
       font-size: 12px;
     }
   }
@@ -4643,7 +4737,7 @@ img {
     &-banner,
     &-branch {
       padding: 16px;
-      border-radius: $radius-md;
+      border-radius: $ds-radius-md;
     }
 
     &-branch {
@@ -4660,9 +4754,9 @@ img {
   position: relative;
   width: min(390px, 100%);
   padding: 22px 16px 18px;
-  border-radius: 24px;
-  background: $white;
-  box-shadow: $shadow-md;
+  border-radius: $ds-radius-xl;
+  background: $ds-surface-elevated;
+  box-shadow: 0 8px 24px rgba($ds-shadow-color, 0.1);
   animation: popup 0.3s ease;
 }
 
@@ -4672,8 +4766,8 @@ img {
   left: 50%;
   width: 54px;
   height: 5px;
-  border-radius: 999px;
-  background: #929292;
+  border-radius: $ds-radius-full;
+  background: $ds-surface-disabled;
   transform: translateX(-50%);
 }
 
@@ -4686,7 +4780,7 @@ img {
 
   h2 {
     margin: 0;
-    color: $accent;
+    color: $ds-text-primary;
     font-size: 16px;
     font-weight: 600;
   }
@@ -4698,18 +4792,18 @@ img {
   width: 40px;
   height: 40px;
   padding: 0;
-  border: 1px solid #e3e3e3;
-  border-radius: 10px;
-  background: #fafafa;
-  color: $accent;
+  border: 1px solid $ds-stroke-light;
+  border-radius: $ds-radius-md;
+  background: $ds-surface-on-background;
+  color: $ds-text-primary;
   cursor: pointer;
   font-size: 22px;
   transition: $transition-base;
 
   &:hover {
-    border-color: rgba($secondary, 0.35);
-    background: rgba($secondary, 0.08);
-    color: $secondary;
+    border-color: rgba($ds-action-primary, 0.35);
+    background: $ds-surface-card-primary;
+    color: $ds-action-primary;
   }
 }
 
@@ -4725,8 +4819,8 @@ img {
   gap: 10px;
   min-height: 68px;
   padding: 10px 12px;
-  border-radius: 11px;
-  background: rgba($secondary, 0.07);
+  border-radius: $ds-radius-md;
+  background: $ds-surface-card-primary;
 }
 
 .branches-info-icon {
@@ -4734,8 +4828,8 @@ img {
   place-items: center;
   width: 38px;
   height: 38px;
-  border-radius: 9px;
-  background: $white;
+  border-radius: $ds-radius-sm;
+  background: $ds-surface-elevated;
 
   img {
     width: 24px;
@@ -4748,7 +4842,7 @@ img {
 
   h3 {
     margin: 0 0 4px;
-    color: $accent;
+    color: $ds-text-primary;
     font-size: 13px;
     font-weight: 600;
   }
@@ -4756,7 +4850,7 @@ img {
   p {
     overflow: hidden;
     margin: 0;
-    color: $accent;
+    color: $ds-text-primary;
     font-size: 10px;
     line-height: 1.5;
     text-overflow: ellipsis;
@@ -4765,7 +4859,7 @@ img {
 }
 
 .branches-info-distance {
-  color: $gray;
+  color: $ds-text-subtle;
   font-size: 9px;
   white-space: nowrap;
 }
@@ -4780,7 +4874,7 @@ img {
     width: 100%;
     max-height: 85vh;
     overflow-y: auto;
-    border-radius: 24px 24px 0 0;
+    border-radius: $ds-radius-xl $ds-radius-xl 0 0;
     padding-bottom: max(18px, env(safe-area-inset-bottom));
   }
 }
@@ -4789,9 +4883,10 @@ img {
 .payment_method_modal {
   width: min(380px, calc(100% - 32px));
   padding: 10px 12px 14px;
-  border: 1px solid $secondary;
-  border-radius: 18px 18px 14px 14px;
-  box-shadow: 0 14px 40px rgba($dark, 0.16);
+  border: 1px solid $ds-action-primary;
+  border-radius: $ds-radius-lg $ds-radius-lg $ds-radius-md $ds-radius-md;
+  background: $ds-surface-elevated;
+  box-shadow: 0 14px 40px rgba($ds-shadow-color, 0.16);
   animation: popup 0.35s ease;
 
   .payment_drag_handle {
@@ -4799,14 +4894,14 @@ img {
     width: 58px;
     height: 5px;
     margin: 0 auto 8px;
-    border-radius: $radius-lg;
-    background: #8d8d8d;
+    border-radius: $ds-radius-full;
+    background: $ds-surface-disabled;
   }
 
   .payment_modal_header {
     h3 {
       margin: 0;
-      color: $primary;
+      color: $ds-text-primary;
       font-size: 14px;
       font-weight: 700;
     }
@@ -4815,31 +4910,31 @@ img {
       width: 36px;
       height: 36px;
       place-items: center;
-      border: 1px solid #e4e4e4;
-      border-radius: 8px;
-      color: #555;
+      border: 1px solid $ds-stroke-light;
+      border-radius: $ds-radius-sm;
+      color: $ds-text-disabled;
     }
   }
 
   .payment_modal_option {
     min-height: 58px;
     padding: 0 12px;
-    border: 1px solid #e6e6e6;
-    border-radius: 8px;
-    background: #f8f8f8;
+    border: 1px solid $ds-stroke-light;
+    border-radius: $ds-radius-sm;
+    background: $ds-surface-on-background;
     cursor: pointer;
     transition:
       border-color 0.2s,
       background 0.2s;
 
     &.selected {
-      border-color: rgba($secondary, 0.5);
-      background: rgba($secondary, 0.1);
+      border-color: rgba($ds-action-primary, 0.5);
+      background: $ds-surface-card-primary;
     }
   }
 
   .payment_option_title {
-    color: $primary;
+    color: $ds-text-primary;
     font-size: 12px;
     font-weight: 700;
   }
@@ -4850,17 +4945,17 @@ img {
   }
 
   .payment_option_info strong {
-    color: $primary;
+    color: $ds-text-primary;
     font-size: 12px;
   }
 
   .points_info {
     small {
-      color: #555;
+      color: $ds-text-disabled;
       font-size: 9px;
 
       strong {
-        color: #e53935;
+        color: $ds-status-error;
         font-weight: 600;
       }
     }
@@ -4876,14 +4971,15 @@ img {
   .payment_confirm_btn {
     height: 46px;
     border: 0;
-    border-radius: 8px;
-    background: $secondary;
+    border-radius: $ds-radius-sm;
+    background: $ds-action-primary;
+    color: $ds-text-on-action;
     font-size: 13px;
     font-weight: 600;
 
     &:hover,
     &:focus {
-      background: darken($secondary, 6%);
+      background: darken($ds-action-primary, 6%);
     }
   }
 }
@@ -4891,7 +4987,8 @@ img {
 .insufficient_balance_modal {
   width: min(430px, calc(100% - 32px));
   padding: 20px 18px 26px;
-  border-radius: 28px;
+  border-radius: $ds-radius-2xl;
+  background: $ds-surface-elevated;
   overflow: hidden;
 }
 
@@ -4900,12 +4997,12 @@ img {
   width: 86px;
   height: 8px;
   margin: 0 auto 18px;
-  border-radius: 999px;
-  background: #999;
+  border-radius: $ds-radius-full;
+  background: $ds-surface-disabled;
 }
 
 .insufficient_balance_header h3 {
-  color: #171717;
+  color: $ds-text-primary;
   font-size: 24px;
   font-weight: 700;
 }
@@ -4914,9 +5011,9 @@ img {
   width: 48px;
   height: 48px;
   place-items: center;
-  border: 1px solid #e4e4e4;
-  border-radius: 13px;
-  color: #171717;
+  border: 1px solid $ds-stroke-light;
+  border-radius: $ds-radius-md;
+  color: $ds-text-primary;
   font-size: 27px;
 }
 
@@ -4934,14 +5031,14 @@ img {
 
 .insufficient_balance_content h2 {
   margin: 0 0 8px;
-  color: #171717;
+  color: $ds-text-primary;
   font-size: 25px;
   font-weight: 700;
 }
 
 .insufficient_balance_content p {
   margin: 0 auto 18px;
-  color: #252525;
+  color: $ds-text-primary;
   font-size: 15px;
   line-height: 1.7;
 }
@@ -4949,23 +5046,24 @@ img {
 .insufficient_balance_topup_btn {
   height: 58px;
   border: 0;
-  border-radius: 14px;
-  background: $secondary;
-  color: #fff;
+  border-radius: $ds-radius-md;
+  background: $ds-action-primary;
+  color: $ds-text-on-action;
   font-size: 17px;
 }
 
 .insufficient_balance_topup_btn:hover,
 .insufficient_balance_topup_btn:focus {
-  background: darken($secondary, 5%);
-  color: #fff;
+  background: darken($ds-action-primary, 5%);
+  color: $ds-text-on-action;
 }
 
 .wallet_topup_modal {
   width: min(380px, calc(100% - 32px));
   padding: 14px 12px 20px;
-  border-radius: 22px;
-  box-shadow: 0 14px 40px rgba($dark, 0.16);
+  border-radius: $ds-radius-xl;
+  background: $ds-surface-elevated;
+  box-shadow: 0 14px 40px rgba($ds-shadow-color, 0.16);
 }
 
 .wallet_topup_drag_handle {
@@ -4973,8 +5071,8 @@ img {
   width: 52px;
   height: 6px;
   margin: 0 auto 10px;
-  border-radius: 999px;
-  background: #999;
+  border-radius: $ds-radius-full;
+  background: $ds-surface-disabled;
 }
 
 .wallet_topup_header {
@@ -4982,7 +5080,7 @@ img {
 }
 
 .wallet_topup_header h3 {
-  color: #171717;
+  color: $ds-text-primary;
   font-size: 15px;
   font-weight: 700;
 }
@@ -4991,9 +5089,9 @@ img {
   width: 34px;
   height: 34px;
   place-items: center;
-  border: 1px solid #e5e5e5;
-  border-radius: 9px;
-  color: #333;
+  border: 1px solid $ds-stroke-light;
+  border-radius: $ds-radius-sm;
+  color: $ds-text-primary;
   font-size: 18px;
 }
 
@@ -5002,9 +5100,9 @@ img {
   align-items: center;
   height: 46px;
   padding: 0 10px;
-  border: 1px solid #e4e4e4;
-  border-radius: 9px;
-  color: #777;
+  border: 1px solid $ds-stroke-light;
+  border-radius: $ds-radius-sm;
+  color: $ds-text-subtle;
 }
 
 .wallet_topup_input_group span {
@@ -5018,19 +5116,19 @@ img {
   border: 0;
   outline: 0;
   background: transparent;
-  color: #222;
+  color: $ds-text-primary;
   font-size: 14px;
   text-align: left;
 }
 
 .wallet_topup_input_group input::placeholder {
-  color: #aaa;
+  color: $ds-text-placeholder;
 }
 
 .wallet_topup_hint {
   display: block;
   margin: 5px 4px 12px;
-  color: #999;
+  color: $ds-text-placeholder;
   font-size: 9px;
   text-align: right;
 }
@@ -5038,16 +5136,16 @@ img {
 .wallet_topup_submit {
   height: 44px;
   border: 0;
-  border-radius: 9px;
-  background: $secondary;
-  color: #fff;
+  border-radius: $ds-radius-sm;
+  background: $ds-action-primary;
+  color: $ds-text-on-action;
   font-size: 13px;
 }
 
 .wallet_topup_submit:hover,
 .wallet_topup_submit:focus {
-  background: darken($secondary, 5%);
-  color: #fff;
+  background: darken($ds-action-primary, 5%);
+  color: $ds-text-on-action;
 }
 
 .wallet_result_modal {
@@ -5058,8 +5156,8 @@ img {
   flex-direction: column;
   align-items: center;
   justify-content: space-between;
-  border-radius: 24px;
-  background: #fff;
+  border-radius: $ds-radius-xl;
+  background: $ds-surface-elevated;
 }
 
 .wallet_result_drag_handle {
@@ -5067,8 +5165,8 @@ img {
   width: 68px;
   height: 7px;
   margin-bottom: 4px;
-  border-radius: 999px;
-  background: #999;
+  border-radius: $ds-radius-full;
+  background: $ds-surface-disabled;
 }
 
 .wallet_result_icon {
@@ -5077,7 +5175,7 @@ img {
   width: 94px;
   height: 94px;
   place-items: center;
-  border-radius: 50%;
+  border-radius: $ds-radius-full;
 }
 
 .wallet_result_animation {
@@ -5087,7 +5185,7 @@ img {
 }
 .delete_account_modal {
   padding: 24px 20px 20px;
-  border-radius: 20px;
+  border-radius: $ds-radius-xl;
   width: min(100% - 32px, 440px);
   text-align: center;
 
@@ -5095,8 +5193,8 @@ img {
     display: block;
     width: 28px;
     height: 4px;
-    border-radius: 10px;
-    background: #999;
+    border-radius: $ds-radius-sm;
+    background: $ds-surface-disabled;
     margin: 0 auto 18px;
   }
 
@@ -5109,7 +5207,7 @@ img {
       margin: 0 0 10px;
       font-size: 16px;
       font-weight: 700;
-      color: #111;
+      color: $ds-text-primary;
     }
 
     p {
@@ -5117,7 +5215,7 @@ img {
       max-width: 390px;
       font-size: 13px;
       line-height: 1.8;
-      color: #777;
+      color: $ds-text-subtle;
     }
   }
 
@@ -5129,7 +5227,7 @@ img {
     button {
       flex: 1;
       height: 42px;
-      border-radius: 8px;
+      border-radius: $ds-radius-sm;
       font-size: 13px;
       font-weight: 600;
       cursor: pointer;
@@ -5137,22 +5235,22 @@ img {
     }
 
     .delete_account_confirm {
-      border: 1px solid #e52b2b;
-      background: #e52b2b;
-      color: #fff;
+      border: 1px solid $ds-status-error;
+      background: $ds-status-error;
+      color: $ds-text-on-action;
 
       &:hover {
-        background: #d92323;
+        background: darken($ds-status-error, 5%);
       }
     }
 
     .delete_account_cancel {
-      border: 1px solid $primary;
-      background: #fff;
-      color: $primary;
+      border: 1px solid $ds-action-primary;
+      background: $ds-surface-elevated;
+      color: $ds-action-primary;
 
       &:hover {
-        background: rgba($primary, 0.05);
+        background: $ds-surface-card-primary;
       }
     }
   }
@@ -5176,8 +5274,8 @@ img {
   z-index: 1;
   width: 88px;
   height: 13px;
-  border-radius: 999px;
-  background: #fff;
+  border-radius: $ds-radius-full;
+  background: $ds-text-on-action;
   transform: translate(-50%, -50%) rotate(45deg);
 }
 
@@ -5186,15 +5284,15 @@ img {
 }
 
 .wallet_result_icon_success {
-  background: #2dcc70;
+  background: $ds-status-success;
 }
 
 .wallet_result_icon_success span {
   position: absolute;
   width: 10px;
   height: 10px;
-  border-radius: 50%;
-  background: #fff;
+  border-radius: $ds-radius-full;
+  background: $ds-text-on-action;
 }
 
 .wallet_result_icon_success span:first-child {
@@ -5206,15 +5304,15 @@ img {
 }
 
 .wallet_result_icon_failed {
-  background: #ff0505;
+  background: $ds-status-error;
 }
 
 .wallet_result_icon_failed span {
   position: absolute;
   width: 72px;
   height: 11px;
-  border-radius: 999px;
-  background: #fff;
+  border-radius: $ds-radius-full;
+  background: $ds-text-on-action;
   transform: rotate(45deg);
 }
 
@@ -5224,7 +5322,7 @@ img {
 
 .wallet_result_modal h2 {
   margin: 0;
-  color: #171717;
+  color: $ds-text-primary;
   font-size: 17px;
   font-weight: 700;
 }
@@ -5236,8 +5334,8 @@ img {
   flex-direction: column;
   align-items: center;
   justify-content: space-between;
-  border-radius: 24px;
-  background: #fff;
+  border-radius: $ds-radius-xl;
+  background: $ds-surface-elevated;
 }
 
 .wallet_result_drag_handle {
@@ -5245,8 +5343,8 @@ img {
   width: 68px;
   height: 7px;
   margin-bottom: 4px;
-  border-radius: 999px;
-  background: #999;
+  border-radius: $ds-radius-full;
+  background: $ds-surface-disabled;
 }
 
 .wallet_result_icon {
@@ -5255,7 +5353,7 @@ img {
   width: 94px;
   height: 94px;
   place-items: center;
-  border-radius: 50%;
+  border-radius: $ds-radius-full;
 }
 
 .wallet_result_animation {
@@ -5283,8 +5381,8 @@ img {
   z-index: 1;
   width: 88px;
   height: 13px;
-  border-radius: 999px;
-  background: #fff;
+  border-radius: $ds-radius-full;
+  background: $ds-text-on-action;
   transform: translate(-50%, -50%) rotate(45deg);
 }
 
@@ -5293,15 +5391,15 @@ img {
 }
 
 .wallet_result_icon_success {
-  background: #2dcc70;
+  background: $ds-status-success;
 }
 
 .wallet_result_icon_success span {
   position: absolute;
   width: 10px;
   height: 10px;
-  border-radius: 50%;
-  background: #fff;
+  border-radius: $ds-radius-full;
+  background: $ds-text-on-action;
 }
 
 .wallet_result_icon_success span:first-child {
@@ -5313,15 +5411,15 @@ img {
 }
 
 .wallet_result_icon_failed {
-  background: #ff0505;
+  background: $ds-status-error;
 }
 
 .wallet_result_icon_failed span {
   position: absolute;
   width: 72px;
   height: 11px;
-  border-radius: 999px;
-  background: #fff;
+  border-radius: $ds-radius-full;
+  background: $ds-text-on-action;
   transform: rotate(45deg);
 }
 
@@ -5331,7 +5429,7 @@ img {
 
 .wallet_result_modal h2 {
   margin: 0;
-  color: #171717;
+  color: $ds-text-primary;
   font-size: 17px;
   font-weight: 700;
 }
@@ -5344,8 +5442,8 @@ img {
   flex-direction: column;
   align-items: center;
   justify-content: space-between;
-  border-radius: 24px;
-  background: #fff;
+  border-radius: $ds-radius-xl;
+  background: $ds-surface-elevated;
 }
 
 .wallet_result_drag_handle {
@@ -5353,8 +5451,8 @@ img {
   width: 68px;
   height: 7px;
   margin-bottom: 4px;
-  border-radius: 999px;
-  background: #999;
+  border-radius: $ds-radius-full;
+  background: $ds-surface-disabled;
 }
 
 .wallet_result_icon {
@@ -5363,7 +5461,7 @@ img {
   width: 94px;
   height: 94px;
   place-items: center;
-  border-radius: 50%;
+  border-radius: $ds-radius-full;
 }
 
 .wallet_result_animation {
@@ -5378,7 +5476,7 @@ img {
 
 .delete_account_modal {
   padding: 24px 20px 20px;
-  border-radius: 20px;
+  border-radius: $ds-radius-xl;
   width: min(100% - 32px, 440px);
   min-height: auto;
   text-align: center;
@@ -5387,8 +5485,8 @@ img {
     display: block;
     width: 28px;
     height: 4px;
-    border-radius: 10px;
-    background: #999;
+    border-radius: $ds-radius-sm;
+    background: $ds-surface-disabled;
     margin: 0 auto 18px;
   }
 
@@ -5401,7 +5499,7 @@ img {
       margin: 0 0 10px;
       font-size: 16px;
       font-weight: 700;
-      color: #111;
+      color: $ds-text-primary;
     }
 
     p {
@@ -5409,7 +5507,7 @@ img {
       max-width: 390px;
       font-size: 13px;
       line-height: 1.8;
-      color: #777;
+      color: $ds-text-subtle;
     }
   }
 
@@ -5422,7 +5520,7 @@ img {
     button {
       flex: 1;
       height: 42px;
-      border-radius: 8px;
+      border-radius: $ds-radius-sm;
       font-size: 13px;
       font-weight: 600;
       cursor: pointer;
@@ -5430,22 +5528,22 @@ img {
     }
 
     .delete_account_confirm {
-      border: 1px solid #e52b2b;
-      background: #e52b2b;
-      color: #fff;
+      border: 1px solid $ds-status-error;
+      background: $ds-status-error;
+      color: $ds-text-on-action;
 
       &:hover {
-        background: #d92323;
+        background: darken($ds-status-error, 5%);
       }
     }
 
     .delete_account_cancel {
-      border: 1px solid $primary;
-      background: #fff;
-      color: $primary;
+      border: 1px solid $ds-action-primary;
+      background: $ds-surface-elevated;
+      color: $ds-action-primary;
 
       &:hover {
-        background: rgba($primary, 0.05);
+        background: $ds-surface-card-primary;
       }
     }
   }
@@ -5470,8 +5568,8 @@ img {
   z-index: 1;
   width: 88px;
   height: 13px;
-  border-radius: 999px;
-  background: #fff;
+  border-radius: $ds-radius-full;
+  background: $ds-text-on-action;
   transform: translate(-50%, -50%) rotate(45deg);
 }
 
@@ -5484,15 +5582,15 @@ img {
 /* ================================================= */
 
 .wallet_result_icon_success {
-  background: #2dcc70;
+  background: $ds-status-success;
 }
 
 .wallet_result_icon_success span {
   position: absolute;
   width: 10px;
   height: 10px;
-  border-radius: 50%;
-  background: #fff;
+  border-radius: $ds-radius-full;
+  background: $ds-text-on-action;
 }
 
 .wallet_result_icon_success span:first-child {
@@ -5504,15 +5602,15 @@ img {
 }
 
 .wallet_result_icon_failed {
-  background: #ff0505;
+  background: $ds-status-error;
 }
 
 .wallet_result_icon_failed span {
   position: absolute;
   width: 72px;
   height: 11px;
-  border-radius: 999px;
-  background: #fff;
+  border-radius: $ds-radius-full;
+  background: $ds-text-on-action;
   transform: rotate(45deg);
 }
 
@@ -5522,7 +5620,7 @@ img {
 
 .wallet_result_modal h2 {
   margin: 0;
-  color: #171717;
+  color: $ds-text-primary;
   font-size: 17px;
   font-weight: 700;
 }
@@ -5552,12 +5650,12 @@ img {
 .details-section {
   margin-top: 32px;
   padding-top: 24px;
-  border-top: 1px solid #eee;
+  border-top: 1px solid $ds-stroke-light;
 
   h3 {
     font-size: 1.15rem;
     font-weight: 700;
-    color: $primary;
+    color: $ds-text-primary;
     margin-bottom: 18px;
   }
 
@@ -5574,8 +5672,8 @@ img {
 
       padding: 14px 16px;
 
-      border: 1px solid #eee;
-      border-radius: 14px;
+      border: 1px solid $ds-stroke-light;
+      border-radius: $ds-radius-md;
 
       cursor: pointer;
       transition: 0.25s;
@@ -5583,7 +5681,7 @@ img {
       input {
         width: 18px;
         height: 18px;
-        accent-color: $secondary;
+        accent-color: $ds-action-primary;
         flex-shrink: 0;
       }
 
@@ -5596,39 +5694,39 @@ img {
       }
 
       &-title {
-        color: $primary;
+        color: $ds-text-primary;
         font-size: 0.92rem;
         font-weight: 700;
       }
 
       &-subtitle {
-        color: $gray;
+        color: $ds-text-subtle;
         font-size: 0.8rem;
       }
 
       &-price {
         white-space: nowrap;
 
-        color: $primary;
+        color: $ds-text-primary;
         font-size: $font-size-base;
         font-weight: 800;
 
         small {
           margin-inline-start: 3px;
 
-          color: $gray;
+          color: $ds-text-subtle;
           font-size: 0.75rem;
           font-weight: 500;
         }
       }
 
       &:hover {
-        border-color: rgba($secondary, 0.4);
+        border-color: rgba($ds-action-primary, 0.4);
       }
 
       &.selected {
-        border-color: $secondary;
-        background: rgba($secondary, 0.05);
+        border-color: $ds-action-primary;
+        background: $ds-surface-card-primary;
       }
     }
   }
@@ -5642,12 +5740,12 @@ img {
     button {
       padding: 8px 16px;
 
-      border: 1px solid #eee;
-      border-radius: 999px;
+      border: 1px solid $ds-stroke-light;
+      border-radius: $ds-radius-full;
 
-      background: $white;
+      background: $ds-surface-elevated;
 
-      color: $gray;
+      color: $ds-text-subtle;
       font-size: 0.85rem;
       font-weight: 600;
 
@@ -5655,14 +5753,14 @@ img {
       transition: 0.25s;
 
       &:hover {
-        border-color: $secondary;
-        color: $secondary;
+        border-color: $ds-action-primary;
+        color: $ds-action-primary;
       }
 
       &.active {
-        background: $secondary;
-        border-color: $secondary;
-        color: $white;
+        background: $ds-action-primary;
+        border-color: $ds-action-primary;
+        color: $ds-text-on-action;
       }
     }
   }
@@ -5682,7 +5780,7 @@ img {
 
       padding-inline-start: 18px;
 
-      color: $gray;
+      color: $ds-text-subtle;
       font-size: 0.85rem;
       line-height: 1.8;
 
@@ -5696,8 +5794,8 @@ img {
         width: 6px;
         height: 6px;
 
-        border-radius: 50%;
-        background: $secondary;
+        border-radius: $ds-radius-full;
+        background: $ds-action-primary;
       }
     }
   }
@@ -5708,8 +5806,8 @@ img {
   }
 
   .warranty-item {
-    border: 1px solid #eee;
-    border-radius: 14px;
+    border: 1px solid $ds-stroke-light;
+    border-radius: $ds-radius-md;
     overflow: hidden;
 
     &-header {
@@ -5718,7 +5816,7 @@ img {
       align-items: center;
       gap: 12px;
       padding: 14px 16px;
-      background: $white;
+      background: $ds-surface-elevated;
       border: none;
       cursor: pointer;
     }
@@ -5726,9 +5824,9 @@ img {
     .warranty-icon {
       width: 26px;
       height: 26px;
-      border-radius: 50%;
-      background: $secondary;
-      color: $white;
+      border-radius: $ds-radius-full;
+      background: $ds-action-primary;
+      color: $ds-text-on-action;
       display: grid;
       place-items: center;
       flex-shrink: 0;
@@ -5739,12 +5837,12 @@ img {
       flex: 1;
       text-align: start;
       font-weight: 600;
-      color: $primary;
+      color: $ds-text-primary;
       font-size: 0.92rem;
     }
 
     .warranty-chevron {
-      color: $gray;
+      color: $ds-text-subtle;
       transition: 0.25s;
 
       &.open {
@@ -5756,7 +5854,7 @@ img {
       padding: 0 16px 16px 52px;
       margin: 0;
       font-size: 0.85rem;
-      color: $gray;
+      color: $ds-text-subtle;
       line-height: 1.7;
     }
   }
@@ -5773,41 +5871,41 @@ img {
     align-items: center;
     gap: 8px;
     padding: 20px 12px;
-    border: 1px solid #eee;
-    border-radius: 16px;
-    background: $white;
+    border: 1px solid $ds-stroke-light;
+    border-radius: $ds-radius-lg;
+    background: $ds-surface-elevated;
     cursor: pointer;
     transition: 0.2s;
 
     &-icon {
       font-size: 22px;
-      color: $secondary;
+      color: $ds-action-primary;
     }
 
     &-title {
       font-size: 0.85rem;
       font-weight: 600;
-      color: $primary;
+      color: $ds-text-primary;
     }
 
     &-price {
       font-size: 0.8rem;
       font-weight: 700;
-      color: $secondary;
+      color: $ds-action-primary;
     }
 
     &.selected {
-      border-color: $secondary;
-      background: rgba($secondary, 0.05);
+      border-color: $ds-action-primary;
+      background: $ds-surface-card-primary;
     }
   }
 }
 .booking-footer {
   position: sticky;
   bottom: 0;
-  background: $white;
-  border-top: 1px solid #eee;
-  box-shadow: 0 -6px 20px rgba($dark, 0.06);
+  background: $ds-surface-elevated;
+  border-top: 1px solid $ds-stroke-light;
+  box-shadow: 0 -6px 20px rgba($ds-shadow-color, 0.06);
   padding: 14px 0;
   z-index: 40;
 
@@ -5820,12 +5918,12 @@ img {
   &-price {
     font-size: 1.4rem;
     font-weight: 800;
-    color: $primary;
+    color: $ds-text-primary;
 
     small {
       font-size: 0.85rem;
       font-weight: 500;
-      color: $gray;
+      color: $ds-text-subtle;
       margin-inline-start: 4px;
     }
   }
@@ -5834,15 +5932,15 @@ img {
     height: 50px;
     padding: 0 32px;
     border: none;
-    border-radius: 14px;
-    background: $secondary;
-    color: $white;
+    border-radius: $ds-radius-md;
+    background: $ds-action-primary;
+    color: $ds-text-on-action;
     font-weight: 700;
     cursor: pointer;
     transition: 0.25s;
 
     &:hover {
-      background: darken($secondary, 6%);
+      background: darken($ds-action-primary, 6%);
     }
   }
 }
@@ -5853,8 +5951,8 @@ img {
   max-height: 90vh;
   overflow-y: auto;
 
-  background: $white;
-  border-radius: 22px;
+  background: $ds-surface-elevated;
+  border-radius: $ds-radius-xl;
   padding: 24px;
 
   animation: popup 0.35s ease;
@@ -5864,8 +5962,8 @@ img {
   }
 
   &::-webkit-scrollbar-thumb {
-    background: rgba($secondary, 0.3);
-    border-radius: $radius-lg;
+    background: rgba($ds-action-primary, 0.3);
+    border-radius: $ds-radius-full;
   }
 
   .booking_modal_calendar {
@@ -5880,7 +5978,7 @@ img {
       span {
         font-size: $font-size-base;
         font-weight: 700;
-        color: $primary;
+        color: $ds-text-primary;
       }
 
       button {
@@ -5891,17 +5989,17 @@ img {
         place-items: center;
 
         border: none;
-        border-radius: 8px;
+        border-radius: $ds-radius-sm;
 
-        background: rgba($dark, 0.04);
-        color: $primary;
+        background: rgba($ds-shadow-color, 0.04);
+        color: $ds-text-primary;
 
         cursor: pointer;
         transition: 0.25s;
 
         &:hover {
-          background: rgba($secondary, 0.1);
-          color: $secondary;
+          background: rgba($ds-action-primary, 0.1);
+          color: $ds-action-primary;
         }
       }
     }
@@ -5915,7 +6013,7 @@ img {
         text-align: center;
         font-size: 0.72rem;
         font-weight: 600;
-        color: $gray;
+        color: $ds-text-subtle;
       }
     }
 
@@ -5931,15 +6029,15 @@ img {
         height: 40px;
 
         &.in-range {
-          background: rgba($secondary, 0.08);
+          background: rgba($ds-action-primary, 0.08);
         }
 
         &.range-start {
-          background: linear-gradient(to right, rgba($secondary, 0.08) 50%, transparent 50%);
+          background: linear-gradient(to right, rgba($ds-action-primary, 0.08) 50%, transparent 50%);
         }
 
         &.range-end {
-          background: linear-gradient(to left, rgba($secondary, 0.08) 50%, transparent 50%);
+          background: linear-gradient(to left, rgba($ds-action-primary, 0.08) 50%, transparent 50%);
         }
 
         &.range-start.range-end {
@@ -5951,26 +6049,26 @@ img {
           height: 34px;
 
           border: none;
-          border-radius: 50%;
+          border-radius: $ds-radius-full;
 
           background: transparent;
-          color: $primary;
+          color: $ds-text-primary;
 
           cursor: pointer;
           transition: 0.2s;
 
           &:hover:not(:disabled) {
-            background: rgba($secondary, 0.08);
+            background: $ds-surface-card-primary;
           }
 
           &.selected {
-            background: $secondary;
-            color: $white;
+            background: $ds-action-primary;
+            color: $ds-text-on-action;
             font-weight: 700;
           }
 
           &:disabled {
-            color: rgba($dark, 0.25);
+            color: $ds-text-placeholder;
             cursor: not-allowed;
           }
         }
@@ -5983,11 +6081,11 @@ img {
 
       text-align: center;
 
-      border-radius: 10px;
+      border-radius: $ds-radius-sm;
 
-      background: rgba($secondary, 0.06);
+      background: $ds-surface-card-primary;
 
-      color: $secondary;
+      color: $ds-action-primary;
       font-size: 0.82rem;
       font-weight: 600;
     }
@@ -6000,7 +6098,7 @@ img {
       display: block;
       margin-bottom: 8px;
 
-      color: $gray;
+      color: $ds-text-subtle;
       font-size: 0.82rem;
       font-weight: 600;
     }
@@ -6013,17 +6111,17 @@ img {
       height: 48px;
       padding-inline: 14px;
 
-      border: 1px solid #eee;
-      border-radius: $radius-md;
+      border: 1px solid $ds-stroke-light;
+      border-radius: $ds-radius-md;
 
       transition: 0.25s;
 
       &:focus-within {
-        border-color: $secondary;
+        border-color: $ds-action-primary;
       }
 
       svg {
-        color: $secondary;
+        color: $ds-action-primary;
         flex-shrink: 0;
       }
 
@@ -6034,7 +6132,7 @@ img {
         outline: none;
         background: transparent;
 
-        color: $primary;
+        color: $ds-text-primary;
         font-size: 0.9rem;
         cursor: pointer;
       }
@@ -6045,8 +6143,8 @@ img {
 
       padding: 12px 14px;
 
-      border: 1px solid #eee;
-      border-radius: $radius-md;
+      border: 1px solid $ds-stroke-light;
+      border-radius: $ds-radius-md;
 
       resize: none;
       outline: none;
@@ -6057,7 +6155,7 @@ img {
       transition: 0.25s;
 
       &:focus {
-        border-color: $secondary;
+        border-color: $ds-action-primary;
       }
     }
 
@@ -6070,7 +6168,7 @@ img {
 
         label {
           margin-bottom: 0;
-          color: $primary;
+          color: $ds-text-primary;
           font-weight: 700;
         }
 
@@ -6081,7 +6179,7 @@ img {
           padding: 0;
           border: 0;
           background: transparent;
-          color: $secondary;
+          color: $ds-action-primary;
           cursor: pointer;
           font-size: 0.75rem;
           text-decoration: underline;
@@ -6093,30 +6191,30 @@ img {
         width: 100%;
         height: 48px;
         padding: 0 14px;
-        border: 1px solid #eee;
-        border-radius: $radius-md;
+        border: 1px solid $ds-stroke-light;
+        border-radius: $ds-radius-md;
         outline: none;
-        color: $primary;
+        color: $ds-text-primary;
         font-family: inherit;
         font-size: 0.9rem;
         transition: 0.25s;
 
         &:focus {
-          border-color: $secondary;
+          border-color: $ds-action-primary;
         }
 
         &::placeholder {
-          color: #aaa;
+          color: $ds-text-placeholder;
         }
       }
 
       p {
         margin: 6px 0 0;
-        color: $gray;
+        color: $ds-text-subtle;
         font-size: 0.7rem;
 
         strong {
-          color: $secondary;
+          color: $ds-action-primary;
           font-weight: 600;
         }
       }
@@ -6129,7 +6227,7 @@ img {
     gap: 14px;
 
     padding-top: 18px;
-    border-top: 1px solid #eee;
+    border-top: 1px solid $ds-stroke-light;
 
     .confirm_booking_btn {
       flex: 1;
@@ -6137,10 +6235,10 @@ img {
       height: 50px;
 
       border: none;
-      border-radius: 14px;
+      border-radius: $ds-radius-md;
 
-      background: $secondary;
-      color: $white;
+      background: $ds-action-primary;
+      color: $ds-text-on-action;
 
       font-weight: 700;
       cursor: pointer;
@@ -6149,12 +6247,12 @@ img {
 
       &:hover:not(:disabled) {
         transform: translateY(-2px);
-        box-shadow: 0 10px 25px rgba($secondary, 0.3);
+        box-shadow: 0 10px 25px rgba($ds-action-primary, 0.3);
       }
 
       &:disabled {
-        background: #ddd;
-        color: #999;
+        background: $ds-surface-on-background;
+        color: $ds-text-placeholder;
         cursor: not-allowed;
       }
     }
@@ -6166,14 +6264,14 @@ img {
       span {
         display: block;
 
-        color: $gray;
+        color: $ds-text-subtle;
         font-size: 0.75rem;
       }
 
       h3 {
         margin: 0;
 
-        color: $primary;
+        color: $ds-text-primary;
         font-size: 1.15rem;
         font-weight: 800;
       }
@@ -6184,10 +6282,10 @@ img {
   margin-top: 20px;
   padding: 20px;
 
-  background: $white;
-  border: 1px solid #eee;
-  border-radius: $radius-lg;
-  box-shadow: $shadow-sm;
+  background: $ds-surface-elevated;
+  border: 1px solid $ds-stroke-light;
+  border-radius: $ds-radius-xl;
+  box-shadow: 0 2px 8px rgba($ds-shadow-color, 0.06);
 
   .reviews-summary-header {
     margin-bottom: 14px;
@@ -6197,7 +6295,7 @@ img {
 
       font-size: 1.05rem;
       font-weight: 700;
-      color: $primary;
+      color: $ds-text-primary;
     }
   }
 
@@ -6209,7 +6307,7 @@ img {
     margin-bottom: 16px;
     padding-bottom: 16px;
 
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid $ds-stroke-light;
 
     .reviews-summary-label {
       display: flex;
@@ -6220,7 +6318,7 @@ img {
       .label-text {
         font-size: 0.95rem;
         font-weight: 700;
-        color: $primary;
+        color: $ds-text-primary;
       }
 
       .stars {
@@ -6229,17 +6327,17 @@ img {
 
         svg {
           font-size: 13px;
-          color: #ddd;
+          color: $ds-stroke-heavy;
 
           &.filled {
-            color: #ffb800;
+            color: $ds-status-warning;
           }
         }
       }
 
       .count {
         font-size: 0.82rem;
-        color: $gray;
+        color: $ds-text-subtle;
       }
     }
 
@@ -6248,7 +6346,7 @@ img {
 
       font-size: 1.6rem;
       font-weight: 800;
-      color: $primary;
+      color: $ds-text-primary;
     }
   }
 
@@ -6261,7 +6359,7 @@ img {
 
     .review-item {
       padding-bottom: 16px;
-      border-bottom: 1px solid #f2f2f2;
+      border-bottom: 1px solid $ds-stroke-light;
 
       &:last-child {
         padding-bottom: 0;
@@ -6279,12 +6377,12 @@ img {
       &-name {
         font-size: 0.9rem;
         font-weight: 700;
-        color: $primary;
+        color: $ds-text-primary;
       }
 
       &-date {
         font-size: 0.78rem;
-        color: $gray;
+        color: $ds-text-subtle;
       }
 
       &-stars {
@@ -6295,10 +6393,10 @@ img {
 
         svg {
           font-size: 13px;
-          color: #ddd;
+          color: $ds-stroke-heavy;
 
           &.filled {
-            color: #ffb800;
+            color: $ds-status-warning;
           }
         }
       }
@@ -6306,7 +6404,7 @@ img {
       &-comment {
         margin: 0;
 
-        color: #555;
+        color: $ds-text-subtle;
         font-size: 0.85rem;
         line-height: 1.7;
       }
@@ -6317,11 +6415,11 @@ img {
     width: 100%;
     height: 44px;
 
-    border: 1px solid $secondary;
-    border-radius: $radius-md;
+    border: 1px solid $ds-action-primary;
+    border-radius: $ds-radius-md;
 
     background: transparent;
-    color: $secondary;
+    color: $ds-action-primary;
 
     font-size: 0.88rem;
     font-weight: 700;
@@ -6330,7 +6428,7 @@ img {
     transition: 0.25s;
 
     &:hover {
-      background: rgba($secondary, 0.06);
+      background: $ds-surface-card-primary;
     }
   }
 }
@@ -6342,10 +6440,10 @@ img {
   padding: 6px 12px;
 
   border: none;
-  border-radius: 999px;
+  border-radius: $ds-radius-full;
 
-  background: rgba(#ffb800, 0.1);
-  color: #ffb800;
+  background: $ds-warning-50;
+  color: $ds-status-warning;
 
   font-weight: 700;
 
@@ -6353,7 +6451,7 @@ img {
   transition: 0.25s;
 
   &:hover {
-    background: rgba(#ffb800, 0.18);
+    background: darken($ds-warning-50, 4%);
   }
 }
 .reviews_modal {
@@ -6365,8 +6463,8 @@ img {
   display: flex;
   flex-direction: column;
 
-  background: $white;
-  border-radius: 22px;
+  background: $ds-surface-elevated;
+  border-radius: $ds-radius-xl;
 
   animation: popup 0.35s ease;
 
@@ -6380,8 +6478,8 @@ img {
     }
 
     &::-webkit-scrollbar-thumb {
-      background: rgba($secondary, 0.3);
-      border-radius: $radius-lg;
+      background: rgba($ds-action-primary, 0.3);
+      border-radius: $ds-radius-full;
     }
 
     .reviews_modal_title {
@@ -6389,7 +6487,7 @@ img {
 
       font-size: 1.3rem;
       font-weight: 800;
-      color: $primary;
+      color: $ds-text-primary;
     }
 
     .reviews-summary-overall {
@@ -6400,7 +6498,7 @@ img {
       margin-bottom: 18px;
       padding-bottom: 18px;
 
-      border-bottom: 1px solid #eee;
+      border-bottom: 1px solid $ds-stroke-light;
 
       .reviews-summary-label {
         display: flex;
@@ -6410,7 +6508,7 @@ img {
 
         .label-text {
           font-weight: 700;
-          color: $primary;
+          color: $ds-text-primary;
         }
 
         .stars {
@@ -6418,16 +6516,16 @@ img {
           gap: 2px;
 
           svg {
-            color: #ddd;
+            color: $ds-stroke-heavy;
 
             &.filled {
-              color: #ffb800;
+              color: $ds-status-warning;
             }
           }
         }
 
         .count {
-          color: $gray;
+          color: $ds-text-subtle;
           font-size: 0.82rem;
         }
       }
@@ -6435,7 +6533,7 @@ img {
       .reviews-summary-score {
         font-size: 1.6rem;
         font-weight: 800;
-        color: $primary;
+        color: $ds-text-primary;
       }
     }
 
@@ -6446,7 +6544,7 @@ img {
 
       .review-item {
         padding-bottom: 18px;
-        border-bottom: 1px solid #eee;
+        border-bottom: 1px solid $ds-stroke-light;
 
         &:last-child {
           padding-bottom: 0;
@@ -6464,12 +6562,12 @@ img {
         &-name {
           font-size: 0.9rem;
           font-weight: 700;
-          color: $primary;
+          color: $ds-text-primary;
         }
 
         &-date {
           font-size: 0.78rem;
-          color: $gray;
+          color: $ds-text-subtle;
         }
 
         &-stars {
@@ -6479,10 +6577,10 @@ img {
           margin-bottom: 8px;
 
           svg {
-            color: #ddd;
+            color: $ds-stroke-heavy;
 
             &.filled {
-              color: #ffb800;
+              color: $ds-status-warning;
             }
           }
         }
@@ -6490,7 +6588,7 @@ img {
         &-comment {
           margin: 0;
 
-          color: #555;
+          color: $ds-text-subtle;
           line-height: 1.8;
         }
       }
@@ -6505,8 +6603,8 @@ img {
   display: flex;
   flex-direction: column;
 
-  background: $white;
-  border-radius: 22px;
+  background: $ds-surface-elevated;
+  border-radius: $ds-radius-xl;
 
   animation: popup 0.35s ease;
 }
@@ -6520,8 +6618,8 @@ img {
     width: 4px;
   }
   &::-webkit-scrollbar-thumb {
-    background: rgba($secondary, 0.3);
-    border-radius: $radius-lg;
+    background: rgba($ds-action-primary, 0.3);
+    border-radius: $ds-radius-full;
   }
 }
 .confirm_car_summary {
@@ -6530,15 +6628,15 @@ img {
   gap: 12px;
   padding-bottom: 16px;
   margin-bottom: 16px;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid $ds-stroke-light;
 
   &_image {
     position: relative;
     width: 60px;
     height: 60px;
-    border-radius: $radius-md;
+    border-radius: $ds-radius-md;
     overflow: hidden;
-    background: #f4f4f4;
+    background: $ds-surface-on-background;
     flex-shrink: 0;
 
     img {
@@ -6554,7 +6652,7 @@ img {
       margin: 0 0 4px;
       font-size: 0.95rem;
       font-weight: 700;
-      color: $primary;
+      color: $ds-text-primary;
     }
 
     .showroom {
@@ -6562,10 +6660,10 @@ img {
       align-items: center;
       gap: 4px;
       font-size: 0.78rem;
-      color: $gray;
+      color: $ds-text-subtle;
 
       svg {
-        color: #ffb800;
+        color: $ds-status-warning;
         font-size: 12px;
       }
     }
@@ -6578,14 +6676,14 @@ img {
     .old {
       display: block;
       font-size: 0.72rem;
-      color: #aaa;
+      color: $ds-text-placeholder;
       text-decoration: line-through;
     }
 
     .current {
       font-size: 0.85rem;
       font-weight: 700;
-      color: $secondary;
+      color: $ds-action-primary;
     }
   }
 }
@@ -6595,7 +6693,7 @@ img {
   gap: 12px;
   padding-bottom: 16px;
   margin-bottom: 16px;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid $ds-stroke-light;
 
   .confirm_date_row {
     display: flex;
@@ -6604,13 +6702,13 @@ img {
 
     .label {
       font-size: 0.8rem;
-      color: $gray;
+      color: $ds-text-subtle;
     }
 
     .value {
       font-size: 0.85rem;
       font-weight: 600;
-      color: $primary;
+      color: $ds-text-primary;
     }
   }
 }
@@ -6621,7 +6719,7 @@ img {
     margin: 0 0 12px;
     font-size: 0.95rem;
     font-weight: 700;
-    color: $primary;
+    color: $ds-text-primary;
   }
 }
 .price_breakdown {
@@ -6632,10 +6730,10 @@ img {
   .price_item {
     padding: 14px 16px;
 
-    border: 1px solid #eee;
-    border-radius: 14px;
+    border: 1px solid $ds-stroke-light;
+    border-radius: $ds-radius-md;
 
-    background: #fafafa;
+    background: $ds-surface-on-background;
 
     display: flex;
     flex-direction: column;
@@ -6644,18 +6742,18 @@ img {
     transition: 0.25s;
 
     &:hover {
-      border-color: rgba($secondary, 0.25);
+      border-color: rgba($ds-action-primary, 0.25);
     }
 
     span {
       font-size: 0.75rem;
-      color: $gray;
+      color: $ds-text-subtle;
     }
 
     strong {
       font-size: $font-size-base;
       font-weight: 700;
-      color: $primary;
+      color: $ds-text-primary;
     }
   }
 
@@ -6670,22 +6768,22 @@ img {
 
     padding: 18px;
 
-    border-radius: 16px;
+    border-radius: $ds-radius-lg;
 
-    background: rgba($secondary, 0.08);
-    border: 1px solid rgba($secondary, 0.18);
+    background: $ds-surface-card-primary;
+    border: 1px solid rgba($ds-action-primary, 0.18);
 
     span {
       font-size: 0.9rem;
       font-weight: 600;
-      color: $secondary;
+      color: $ds-action-primary;
     }
 
     h3 {
       margin: 0;
       font-size: 1.3rem;
       font-weight: 800;
-      color: $secondary;
+      color: $ds-action-primary;
     }
   }
 
@@ -6705,8 +6803,8 @@ img {
 
     padding: 14px 16px;
 
-    border: 1px solid #eee;
-    border-radius: 14px;
+    border: 1px solid $ds-stroke-light;
+    border-radius: $ds-radius-md;
 
     cursor: pointer;
 
@@ -6727,24 +6825,24 @@ img {
     span {
       font-size: 0.9rem;
       font-weight: 600;
-      color: $primary;
+      color: $ds-text-primary;
     }
 
     &:hover {
-      border-color: rgba($secondary, 0.35);
-      background: rgba($secondary, 0.02);
+      border-color: rgba($ds-action-primary, 0.35);
+      background: $ds-surface-card-primary;
     }
 
     &.selected {
-      border-color: $secondary;
-      background: rgba($secondary, 0.05);
+      border-color: $ds-action-primary;
+      background: $ds-surface-card-primary;
 
       .payment_icon {
         transform: scale(1.08);
       }
 
       span {
-        color: $secondary;
+        color: $ds-action-primary;
       }
     }
   }
@@ -6754,8 +6852,8 @@ img {
   align-items: center;
   gap: 10px;
   padding: 14px 16px;
-  border: 1px solid #eee;
-  border-radius: 14px;
+  border: 1px solid $ds-stroke-light;
+  border-radius: $ds-radius-md;
   cursor: pointer;
   transition: 0.2s;
 
@@ -6765,63 +6863,63 @@ img {
 
   .icon {
     font-size: 18px;
-    color: $gray;
+    color: $ds-text-subtle;
     flex-shrink: 0;
   }
 
   span:last-child {
     font-size: 0.88rem;
     font-weight: 600;
-    color: $primary;
+    color: $ds-text-primary;
   }
 
   &:hover {
-    border-color: rgba($secondary, 0.4);
+    border-color: rgba($ds-action-primary, 0.4);
   }
 
   &.selected {
-    border-color: $secondary;
-    background: rgba($secondary, 0.05);
+    border-color: $ds-action-primary;
+    background: $ds-surface-card-primary;
 
     .icon {
-      color: $secondary;
+      color: $ds-action-primary;
     }
   }
 }
 .confirm_modal_footer {
   padding: 18px 24px;
-  border-top: 1px solid #eee;
+  border-top: 1px solid $ds-stroke-light;
 
   display: flex;
   flex-direction: column;
   gap: 10px;
-  border-radius: 24px;
+  border-radius: $ds-radius-xl;
   .back_link_btn {
     background: none;
     border: none;
-    color: $gray;
+    color: $ds-text-subtle;
     font-size: 0.82rem;
     font-weight: 600;
     cursor: pointer;
     text-align: center;
 
     &:hover {
-      color: $secondary;
+      color: $ds-action-primary;
     }
   }
 
   .pay_btn {
     height: 52px;
     border: none;
-    border-radius: 14px;
-    background: $secondary;
-    color: $white;
+    border-radius: $ds-radius-md;
+    background: $ds-action-primary;
+    color: $ds-text-on-action;
     font-weight: 700;
     cursor: pointer;
     transition: 0.25s;
 
     &:hover {
-      background: darken($secondary, 6%);
+      background: darken($ds-action-primary, 6%);
     }
   }
 }
@@ -6830,32 +6928,32 @@ img {
 .confirm_booking_modal {
   .confirm_modal_scroll {
     padding: 24px 10px;
-    background: #f3f8fc;
-    border-radius: 24px;
+    background: $ds-surface-card-primary;
+    border-radius: $ds-radius-xl;
   }
 
   .confirm_car_summary {
     margin-bottom: 12px;
     padding: 10px;
-    border: 1px solid #edf0f3;
-    border-radius: 12px;
-    background: $white;
+    border: 1px solid $ds-stroke-light;
+    border-radius: $ds-radius-md;
+    background: $ds-surface-elevated;
   }
 
   .confirm_dates,
   .confirm_section {
     margin-bottom: 12px;
     padding: 14px 12px;
-    border: 1px solid #edf0f3;
-    border-radius: 12px;
-    background: $white;
+    border: 1px solid $ds-stroke-light;
+    border-radius: $ds-radius-md;
+    background: $ds-surface-elevated;
   }
 
   .confirm_dates {
     position: relative;
     gap: 0;
     padding-inline-end: 18px;
-    border-bottom: 1px solid #edf0f3;
+    border-bottom: 1px solid $ds-stroke-light;
 
     &::before {
       position: absolute;
@@ -6864,13 +6962,13 @@ img {
       bottom: 18px;
       width: 2px;
       content: '';
-      // border-right: 2px dotted $secondary;
+      // border-right: 2px dotted $ds-action-primary;
     }
 
     .confirm_date_row {
       min-height: 42px;
       padding: 6px 0;
-      border-bottom: 1px dotted #e2e2e2;
+      border-bottom: 1px dotted $ds-stroke-light;
       gap: 12px;
 
       &:last-child {
@@ -6879,13 +6977,13 @@ img {
 
       .label {
         flex: 0 0 auto;
-        color: #888;
+        color: $ds-text-subtle;
         font-size: 13px;
       }
 
       .value {
         overflow: hidden;
-        color: $primary;
+        color: $ds-text-primary;
         font-size: 14px;
         font-weight: 500;
         text-overflow: ellipsis;
@@ -6900,7 +6998,7 @@ img {
     h3 {
       margin-bottom: 10px;
       padding-bottom: 8px;
-      border-bottom: 1px solid #edf0f3;
+      border-bottom: 1px solid $ds-stroke-light;
       font-size: 16px;
     }
   }
@@ -6918,17 +7016,17 @@ img {
       min-height: 32px;
       padding: 4px 0;
       border: 0;
-      border-bottom: 1px dotted #e2e2e2;
-      border-radius: 0;
+      border-bottom: 1px dotted $ds-stroke-light;
+      border-radius: $ds-radius-none;
       background: transparent;
 
       span {
-        color: #888;
+        color: $ds-text-subtle;
         font-size: 13px;
       }
 
       strong {
-        color: $primary;
+        color: $ds-text-primary;
         font-size: 14px;
       }
     }
@@ -6938,11 +7036,11 @@ img {
       margin-top: 4px;
       padding: 4px 0;
       border: 0;
-      border-radius: 0;
+      border-radius: $ds-radius-none;
       background: transparent;
 
       span {
-        color: #888;
+        color: $ds-text-subtle;
         font-size: 14px;
       }
 
@@ -6950,7 +7048,7 @@ img {
         margin: 0;
         padding: 0;
         border: 0;
-        color: $secondary;
+        color: $ds-action-primary;
         font-size: 18px;
       }
     }
@@ -6962,7 +7060,7 @@ img {
     ul {
       margin: 0 0 12px;
       padding-inline-start: 18px;
-      color: $primary;
+      color: $ds-text-primary;
       font-size: 13px;
       line-height: 1.7;
     }
@@ -6971,7 +7069,7 @@ img {
       display: flex;
       align-items: center;
       gap: 8px;
-      color: $primary;
+      color: $ds-text-primary;
       font-size: 13px;
       line-height: 1.5;
 
@@ -6979,15 +7077,15 @@ img {
         width: 15px;
         height: 15px;
         flex: 0 0 auto;
-        accent-color: $secondary;
+        accent-color: $ds-action-primary;
       }
     }
   }
 
   .confirm_modal_footer {
     padding: 10px;
-    border-top: 1px solid #edf0f3;
-    background: $white;
+    border-top: 1px solid $ds-stroke-light;
+    background: $ds-surface-elevated;
 
     .back_link_btn {
       font-size: 11px;
@@ -6995,7 +7093,7 @@ img {
 
     .pay_btn {
       height: 42px;
-      border-radius: 8px;
+      border-radius: $ds-radius-sm;
       font-size: 13px;
     }
   }
@@ -7004,27 +7102,27 @@ img {
 ///////////////////////////auth//////////////////////////////////
 
 // ============ Shared placeholders & mixins ============
-@mixin focus-ring($color: $secondary, $opacity: 0.12) {
+@mixin focus-ring($color: $ds-action-primary, $opacity: 0.12) {
   border-color: $color;
   box-shadow: 0 0 0 3px rgba($color, $opacity);
 }
 
 %auth_heading {
   text-align: center;
-  color: $primary;
+  color: $ds-text-primary;
   margin-bottom: 8px;
 }
 
 %auth_subtext {
   text-align: center;
-  color: #777;
+  color: $ds-text-subtle;
   margin-bottom: 4px;
 }
 
 %auth_input {
   height: 52px;
-  border: 1px solid #e8e8e8;
-  border-radius: 14px;
+  border: 1px solid $ds-stroke-light;
+  border-radius: $ds-radius-md;
   padding-inline: 16px;
   outline: none;
   transition: 0.3s;
@@ -7038,9 +7136,9 @@ img {
   width: 100%;
   height: 54px;
   border: none;
-  border-radius: 14px;
-  background: $secondary;
-  color: $white;
+  border-radius: $ds-radius-md;
+  background: $ds-action-primary;
+  color: $ds-text-on-action;
   font-weight: 600;
   cursor: pointer;
   transition:
@@ -7053,7 +7151,7 @@ img {
   }
 
   &:focus-visible {
-    outline: 3px solid rgba($secondary, 0.2);
+    outline: 3px solid rgba($ds-action-primary, 0.2);
     outline-offset: 3px;
   }
 
@@ -7069,7 +7167,7 @@ img {
 .auth_modal_wrapper {
   .modal-content {
     border: none;
-    border-radius: 24px;
+    border-radius: $ds-radius-xl;
     overflow: hidden;
   }
 
@@ -7105,11 +7203,11 @@ img {
   align-items: center;
   justify-content: center;
 
-  border: 1px solid #ececec;
-  border-radius: $radius-md;
+  border: 1px solid $ds-stroke-light;
+  border-radius: $ds-radius-md;
 
-  background: $white;
-  color: $primary;
+  background: $ds-surface-elevated;
+  color: $ds-text-primary;
 
   cursor: pointer;
 
@@ -7121,10 +7219,10 @@ img {
   }
 
   &:hover {
-    background: rgba($secondary, 0.08);
-    border-color: $secondary;
-    color: $secondary;
-    box-shadow: 0 8px 20px rgba($secondary, 0.12);
+    background: $ds-surface-card-primary;
+    border-color: $ds-action-primary;
+    color: $ds-action-primary;
+    box-shadow: 0 8px 20px rgba($ds-action-primary, 0.12);
 
     svg {
       transform: translateX(-2px);
@@ -7149,11 +7247,11 @@ img {
 
     height: 56px !important;
 
-    border: 1px solid #e8e8e8 !important;
+    border: 1px solid $ds-stroke-light !important;
     border-right: none !important;
-    border-radius: 14px 0 0 14px !important;
+    border-radius: $ds-radius-md 0 0 $ds-radius-md !important;
 
-    background: #fafafa !important;
+    background: $ds-surface-on-background !important;
   }
 
   .phone_input {
@@ -7165,14 +7263,14 @@ img {
     direction: ltr !important;
     text-align: left !important;
 
-    border: 1px solid #e8e8e8 !important;
-    border-radius: 14px !important;
+    border: 1px solid $ds-stroke-light !important;
+    border-radius: $ds-radius-md !important;
   }
 }
 // ============ Login form ============
 .auth_modal {
   padding: 40px;
-  border-radius: 24px;
+  border-radius: $ds-radius-xl;
 
   .login_form {
     display: flex;
@@ -7227,9 +7325,9 @@ img {
         width: 30px;
         height: 30px;
 
-        border: 1px solid rgba($white, 0.2);
-        border-radius: 10px;
-        background: rgba($white, 0.12);
+        border: 1px solid rgba($ds-text-on-brand, 0.2);
+        border-radius: $ds-radius-sm;
+        background: rgba($ds-text-on-brand, 0.12);
 
         img {
           width: 18px;
@@ -7241,17 +7339,17 @@ img {
         opacity: 1;
         transform: translateY(-2px);
         box-shadow:
-          0 14px 30px rgba($secondary, 0.26),
-          inset 0 1px 0 rgba($white, 0.2);
+          0 14px 30px rgba($ds-action-primary, 0.26),
+          inset 0 1px 0 rgba($ds-text-on-brand, 0.2);
       }
 
       &:focus-visible {
-        outline-color: rgba($secondary, 0.3);
+        outline-color: rgba($ds-action-primary, 0.3);
       }
 
       &:active {
         transform: translateY(0) scale(0.985);
-        box-shadow: 0 6px 16px rgba($secondary, 0.2);
+        box-shadow: 0 6px 16px rgba($ds-action-primary, 0.2);
       }
     }
 
@@ -7262,7 +7360,7 @@ img {
       button {
         border: none;
         background: transparent;
-        color: $secondary;
+        color: $ds-action-primary;
         font-weight: 600;
         cursor: pointer;
         margin-inline-start: 6px;
@@ -7280,7 +7378,7 @@ img {
 
   &.phone_modal {
     width: min(460px, calc(100% - 32px));
-    background: $white;
+    background: $ds-surface-elevated;
     position: relative;
   }
 
@@ -7296,7 +7394,7 @@ img {
     h3 {
       margin: 0;
 
-      color: $primary;
+      color: $ds-text-primary;
       font-size: 20px;
       font-weight: 700;
       text-align: center;
@@ -7316,10 +7414,10 @@ img {
       padding: 0;
 
       border: none;
-      border-radius: 50%;
+      border-radius: $ds-radius-full;
 
       background: transparent;
-      color: #555;
+      color: $ds-text-subtle;
 
       font-size: 20px;
 
@@ -7330,8 +7428,8 @@ img {
         color 0.2s ease;
 
       &:hover {
-        background: #f5f5f5;
-        color: $primary;
+        background: $ds-surface-on-background;
+        color: $ds-text-primary;
       }
     }
   }
@@ -7344,7 +7442,7 @@ img {
 
       margin-bottom: 10px;
 
-      color: #222;
+      color: $ds-text-primary;
 
       font-size: 14px;
       font-weight: 600;
@@ -7401,11 +7499,11 @@ img {
 
     position: relative;
 
-    background: $white;
+    background: $ds-surface-elevated;
 
     padding: 32px 40px 40px;
 
-    border-radius: 24px;
+    border-radius: $ds-radius-xl;
   }
 
   .verify_modal_header {
@@ -7427,11 +7525,11 @@ img {
       padding: 0;
 
       border: none;
-      border-radius: 50%;
+      border-radius: $ds-radius-full;
 
       background: transparent;
 
-      color: #555;
+      color: $ds-text-subtle;
 
       font-size: 20px;
 
@@ -7442,8 +7540,8 @@ img {
         color 0.2s ease;
 
       &:hover {
-        background: #f5f5f5;
-        color: $primary;
+        background: $ds-surface-on-background;
+        color: $ds-text-primary;
       }
     }
   }
@@ -7461,7 +7559,7 @@ img {
       border: none;
       background: transparent;
 
-      color: $secondary;
+      color: $ds-action-primary;
 
       font-size: 13px;
       font-weight: 600;
@@ -7554,11 +7652,11 @@ img {
     margin: 8px 0 26px;
     padding: 7px 12px;
 
-    border: 1px solid rgba($secondary, 0.12);
-    border-radius: 999px;
-    background: rgba($secondary, 0.07);
+    border: 1px solid rgba($ds-action-primary, 0.12);
+    border-radius: $ds-radius-full;
+    background: $ds-surface-card-primary;
 
-    color: $secondary;
+    color: $ds-action-primary;
     font-size: 0.9rem;
     font-weight: 600;
     letter-spacing: 0.025em;
@@ -7580,23 +7678,23 @@ img {
 
       padding-inline: 0;
 
-      border-color: #dce5ef;
-      background: #f8fbff;
+      border-color: $ds-stroke-light;
+      background: $ds-surface-card-primary;
 
-      color: $primary;
+      color: $ds-text-primary;
       text-align: center;
       font-size: 22px;
       font-weight: 700;
       font-variant-numeric: tabular-nums;
-      caret-color: $secondary;
+      caret-color: $ds-action-primary;
 
       &.is-filled {
-        border-color: rgba($secondary, 0.45);
-        background: rgba($secondary, 0.05);
+        border-color: rgba($ds-action-primary, 0.45);
+        background: $ds-surface-card-primary;
       }
 
       &:focus {
-        background: $white;
+        background: $ds-surface-elevated;
         @include focus-ring($opacity: 0.15);
       }
     }
@@ -7614,7 +7712,7 @@ img {
   .timer {
     margin: 0;
 
-    color: #7a8490;
+    color: $ds-text-subtle;
     font-size: 14px;
     line-height: 1.6;
   }
@@ -7623,11 +7721,11 @@ img {
     min-height: 40px;
     padding-inline: 14px;
 
-    background: rgba($secondary, 0.07);
+    background: $ds-surface-card-primary;
     border: none;
-    border-radius: 10px;
+    border-radius: $ds-radius-sm;
 
-    color: $secondary;
+    color: $ds-action-primary;
     font-size: 14px;
     font-weight: 600;
 
@@ -7638,11 +7736,11 @@ img {
       transform 0.2s ease;
 
     &:hover {
-      background: rgba($secondary, 0.13);
+      background: darken($ds-surface-card-primary, 3%);
     }
 
     &:focus-visible {
-      outline: 3px solid rgba($secondary, 0.18);
+      outline: 3px solid rgba($ds-action-primary, 0.18);
       outline-offset: 2px;
     }
 
@@ -7697,11 +7795,11 @@ html[dir='rtl'] .otp_form {
     input {
       width: 18px;
       height: 18px;
-      accent-color: $secondary;
+      accent-color: $ds-action-primary;
     }
 
     span {
-      color: #666;
+      color: $ds-text-subtle;
       font-size: 14px;
     }
   }
@@ -7736,9 +7834,9 @@ html[dir='rtl'] .otp_form {
     margin-bottom: 20px;
     padding: 18px;
 
-    border: 1px solid rgba($secondary, 0.08);
-    border-radius: 18px;
-    background: rgba($secondary, 0.045);
+    border: 1px solid rgba($ds-action-primary, 0.08);
+    border-radius: $ds-radius-lg;
+    background: $ds-surface-card-primary;
 
     .form_field {
       display: grid;
@@ -7747,7 +7845,7 @@ html[dir='rtl'] .otp_form {
       text-align: start;
 
       > span {
-        color: $primary;
+        color: $ds-text-primary;
         font-size: 14px;
         font-weight: 700;
         line-height: 1.5;
@@ -7757,24 +7855,24 @@ html[dir='rtl'] .otp_form {
         width: 100%;
         height: 56px;
 
-        border-color: #dce5ef;
-        background: $white;
-        box-shadow: 0 1px 2px rgba($primary, 0.03);
+        border-color: $ds-stroke-light;
+        background: $ds-surface-elevated;
+        box-shadow: 0 1px 2px rgba($ds-shadow-color, 0.03);
 
-        color: $primary;
+        color: $ds-text-primary;
         font-size: 15px;
 
         &::placeholder {
-          color: #939aa4;
+          color: $ds-text-placeholder;
           opacity: 1;
         }
 
         &:hover {
-          border-color: rgba($secondary, 0.35);
+          border-color: rgba($ds-action-primary, 0.35);
         }
 
         &:focus {
-          background: $white;
+          background: $ds-surface-elevated;
           @include focus-ring($opacity: 0.12);
         }
       }
@@ -7789,11 +7887,11 @@ html[dir='rtl'] .otp_form {
       }
 
       .date_input {
-        color: #7a8490;
+        color: $ds-text-subtle;
         font-variant-numeric: tabular-nums;
 
         &:valid {
-          color: $primary;
+          color: $ds-text-primary;
         }
 
         &::-webkit-calendar-picker-indicator {
@@ -7858,9 +7956,9 @@ html[dir='rtl'] .auth_register_form {
 .success_modal {
   width: min(420px, calc(100% - 30px));
 
-  background: $white;
+  background: $ds-surface-elevated;
 
-  border-radius: 24px;
+  border-radius: $ds-radius-xl;
 
   padding: 36px 28px;
 
@@ -7889,7 +7987,7 @@ html[dir='rtl'] .auth_register_form {
   h2 {
     margin: 0 0 10px;
 
-    color: $primary;
+    color: $ds-text-primary;
 
     font-size: 1.45rem;
     font-weight: 800;
@@ -7903,7 +8001,7 @@ html[dir='rtl'] .auth_register_form {
   p {
     margin: 0 0 28px;
 
-    color: $gray;
+    color: $ds-text-subtle;
 
     font-size: 0.92rem;
     line-height: 1.9;
@@ -7922,9 +8020,9 @@ html[dir='rtl'] .auth_register_form {
     justify-content: center;
     align-items: center;
     border: none;
-    border-radius: 14px;
-    background: $secondary;
-    color: $white;
+    border-radius: $ds-radius-md;
+    background: $ds-action-primary;
+    color: $ds-text-on-action;
     font-size: 0.95rem;
     font-weight: 700;
 
@@ -7935,7 +8033,7 @@ html[dir='rtl'] .auth_register_form {
     &:hover {
       transform: translateY(-2px);
 
-      box-shadow: 0 12px 25px rgba($secondary, 0.28);
+      box-shadow: 0 12px 25px rgba($ds-action-primary, 0.28);
     }
 
     &:active {
@@ -7945,7 +8043,7 @@ html[dir='rtl'] .auth_register_form {
 
   @media (max-width: 576px) {
     padding: 28px 20px;
-    border-radius: $radius-lg;
+    border-radius: $ds-radius-xl;
   }
 }
 //////////////////////////Account page////////////////////////////
@@ -7964,9 +8062,9 @@ html[dir='rtl'] .auth_register_form {
 }
 
 .account-sidebar {
-  background: $white;
-  border: 1px solid #eee;
-  border-radius: 18px;
+  background: $ds-surface-elevated;
+  border: 1px solid $ds-stroke-light;
+  border-radius: $ds-radius-lg;
   padding: 10px;
 
   display: flex;
@@ -7993,10 +8091,10 @@ html[dir='rtl'] .auth_register_form {
 
     padding: 12px 14px;
     border: none;
-    border-radius: $radius-md;
+    border-radius: $ds-radius-md;
     background: transparent;
 
-    color: $gray;
+    color: $ds-text-subtle;
     font-size: 0.9rem;
     font-weight: 600;
 
@@ -8010,12 +8108,12 @@ html[dir='rtl'] .auth_register_form {
     }
 
     &:hover {
-      background: rgba($secondary, 0.06);
+      background: $ds-surface-card-primary;
     }
 
     &.active {
-      background: $secondary;
-      color: $white;
+      background: $ds-action-primary;
+      color: $ds-text-on-action;
     }
   }
 }
@@ -8031,22 +8129,22 @@ html[dir='rtl'] .auth_register_form {
     display: block;
     font-size: 0.85rem;
     font-weight: 600;
-    color: $gray;
+    color: $ds-text-subtle;
     margin-bottom: 8px;
   }
 
   > input {
     width: 100%;
     height: 52px;
-    border: 1px solid #eee;
-    border-radius: $radius-md;
+    border: 1px solid $ds-stroke-light;
+    border-radius: $ds-radius-md;
     padding-inline: 16px;
     outline: none;
     font-size: 0.9rem;
     transition: 0.25s;
 
     &:focus {
-      border-color: $secondary;
+      border-color: $ds-action-primary;
     }
   }
 
@@ -8058,22 +8156,22 @@ html[dir='rtl'] .auth_register_form {
       top: 50%;
       inset-inline-end: 14px;
       transform: translateY(-50%);
-      color: $secondary;
+      color: $ds-action-primary;
       pointer-events: none;
     }
 
     input {
       width: 100%;
       height: 52px;
-      border: 1px solid #eee;
-      border-radius: $radius-md;
+      border: 1px solid $ds-stroke-light;
+      border-radius: $ds-radius-md;
       padding-inline-end: 44px;
       padding-inline-start: 16px;
       outline: none;
       font-size: 0.9rem;
 
       &:focus {
-        border-color: $secondary;
+        border-color: $ds-action-primary;
       }
     }
   }
@@ -8083,23 +8181,23 @@ html[dir='rtl'] .auth_register_form {
   width: 100%;
   height: 50px;
   border: none;
-  border-radius: $radius-md;
-  background: $secondary;
-  color: $white;
+  border-radius: $ds-radius-md;
+  background: $ds-action-primary;
+  color: $ds-text-on-action;
   font-weight: 700;
   cursor: pointer;
   transition: 0.25s;
   margin-top: 6px;
 
   &:hover {
-    background: darken($secondary, 6%);
+    background: darken($ds-action-primary, 6%);
   }
 }
 // ============ Wallet ============
 .account-panel {
-  background: $white;
-  border: 1px solid #eee;
-  border-radius: $radius-lg;
+  background: $ds-surface-elevated;
+  border: 1px solid $ds-stroke-light;
+  border-radius: $ds-radius-xl;
   padding: 24px;
   // ============ wallet ============
   .wallet_balance_card {
@@ -8108,9 +8206,9 @@ html[dir='rtl'] .auth_register_form {
 
     text-align: center;
 
-    border-radius: 18px;
+    border-radius: $ds-radius-lg;
 
-    background: linear-gradient(135deg, rgba($secondary, 0.08), rgba($secondary, 0.03));
+    background: linear-gradient(135deg, rgba($ds-action-primary, 0.08), rgba($ds-action-primary, 0.03));
 
     .wallet_balance_label {
       display: flex;
@@ -8121,7 +8219,7 @@ html[dir='rtl'] .auth_register_form {
       margin-bottom: 12px;
 
       span {
-        color: $gray;
+        color: $ds-text-subtle;
         font-size: 0.9rem;
         font-weight: 600;
       }
@@ -8144,7 +8242,7 @@ html[dir='rtl'] .auth_register_form {
       h2 {
         margin: 0;
 
-        color: $primary;
+        color: $ds-text-primary;
         font-size: 2.2rem;
         font-weight: 800;
         line-height: 1;
@@ -8163,17 +8261,17 @@ html[dir='rtl'] .auth_register_form {
       height: 48px;
 
       border: none;
-      border-radius: $radius-md;
+      border-radius: $ds-radius-md;
 
-      background: $secondary;
-      color: $white;
+      background: $ds-action-primary;
+      color: $ds-text-on-action;
 
       font-weight: 700;
       cursor: pointer;
       transition: 0.3s;
 
       &:hover {
-        background: darken($secondary, 6%);
+        background: darken($ds-action-primary, 6%);
       }
     }
   }
@@ -8182,7 +8280,7 @@ html[dir='rtl'] .auth_register_form {
     &_title {
       margin-bottom: 14px;
 
-      color: $primary;
+      color: $ds-text-primary;
       font-size: $font-size-base;
       font-weight: 700;
     }
@@ -8200,24 +8298,24 @@ html[dir='rtl'] .auth_register_form {
 
       padding: 14px 16px;
 
-      border-radius: 14px;
+      border-radius: $ds-radius-md;
       border-inline-start: 3px solid transparent;
 
-      background: #f8f9fb;
+      background: $ds-surface-on-background;
 
       &.topup {
-        // border-inline-start-color: #18b56b;
-        background: linear-gradient(135deg, rgba(31, 127, 250, 0.08), rgba(31, 127, 250, 0.03));
+        // border-inline-start-color: $ds-status-success;
+        background: linear-gradient(135deg, rgba($ds-action-primary, 0.08), rgba($ds-action-primary, 0.03));
       }
 
       &.refund {
-        // border-inline-start-color: $secondary;
-        background: #f8f9fb;
+        // border-inline-start-color: $ds-action-primary;
+        background: $ds-surface-on-background;
       }
 
       &.payment {
-        // border-inline-start-color: #e11d48;
-        background: rgba(#e11d48, 0.08);
+        // border-inline-start-color: $ds-status-error;
+        background: rgba($ds-status-error, 0.08);
       }
 
       &_body {
@@ -8227,23 +8325,23 @@ html[dir='rtl'] .auth_register_form {
       }
 
       &_title {
-        color: $primary;
+        color: $ds-text-primary;
         font-size: 0.88rem;
         font-weight: 700;
       }
 
       &_meta {
-        color: $gray;
+        color: $ds-text-subtle;
         font-size: 0.75rem;
       }
 
       &_amount {
-        color: #18b56b;
+        color: $ds-status-success;
         font-size: 0.95rem;
         font-weight: 800;
 
         &.negative {
-          color: #e11d48;
+          color: $ds-status-error;
         }
       }
     }
@@ -8260,7 +8358,7 @@ html[dir='rtl'] .auth_register_form {
       h3 {
         margin: 0;
 
-        color: $primary;
+        color: $ds-text-primary;
         font-size: 1.05rem;
         font-weight: 700;
       }
@@ -8269,7 +8367,7 @@ html[dir='rtl'] .auth_register_form {
         border: none;
         background: transparent;
 
-        color: $secondary;
+        color: $ds-action-primary;
         font-size: 0.82rem;
         font-weight: 600;
 
@@ -8294,7 +8392,7 @@ html[dir='rtl'] .auth_register_form {
 
       padding: 14px 4px;
 
-      border-bottom: 1px solid #f2f2f2;
+      border-bottom: 1px solid $ds-stroke-light;
 
       &:last-child {
         border-bottom: none;
@@ -8302,7 +8400,7 @@ html[dir='rtl'] .auth_register_form {
 
       &.read {
         .notification_dot {
-          background: #ddd;
+          background: $ds-stroke-heavy;
         }
       }
 
@@ -8313,22 +8411,22 @@ html[dir='rtl'] .auth_register_form {
         margin-top: 6px;
 
         flex-shrink: 0;
-        border-radius: 50%;
+        border-radius: $ds-radius-full;
 
-        background: $secondary;
+        background: $ds-action-primary;
       }
 
       .notification_body {
         p {
           margin: 0 0 4px;
 
-          color: $primary;
+          color: $ds-text-primary;
           font-size: 0.88rem;
           line-height: 1.6;
         }
 
         .notification_time {
-          color: $gray;
+          color: $ds-text-subtle;
           font-size: 0.75rem;
         }
       }
@@ -8342,12 +8440,12 @@ html[dir='rtl'] .auth_register_form {
   h1 {
     font-size: clamp(1.5rem, 3vw, 2rem);
     font-weight: 800;
-    color: $primary;
+    color: $ds-text-primary;
     margin-bottom: 6px;
   }
 
   p {
-    color: $gray;
+    color: $ds-text-subtle;
     margin: 0;
   }
 }
@@ -8360,11 +8458,11 @@ html[dir='rtl'] .auth_register_form {
 
   padding: 6px;
 
-  background: $white;
-  border: 1px solid $gray-light;
-  border-radius: 18px;
+  background: $ds-surface-elevated;
+  border: 1px solid $ds-stroke-light;
+  border-radius: $ds-radius-lg;
 
-  box-shadow: $shadow-sm;
+  box-shadow: 0 2px 8px rgba($ds-shadow-color, 0.06);
   margin-bottom: 16px;
   button {
     flex: 1;
@@ -8377,7 +8475,7 @@ html[dir='rtl'] .auth_register_form {
     gap: 10px;
 
     border: none;
-    border-radius: 14px;
+    border-radius: $ds-radius-md;
     background: transparent;
 
     cursor: pointer;
@@ -8385,7 +8483,7 @@ html[dir='rtl'] .auth_register_form {
     font-size: 0.95rem;
     font-weight: 700;
 
-    color: $primary;
+    color: $ds-text-primary;
 
     transition: 0.25s ease;
 
@@ -8397,29 +8495,29 @@ html[dir='rtl'] .auth_register_form {
       align-items: center;
       justify-content: center;
 
-      border-radius: 50%;
+      border-radius: $ds-radius-full;
 
-      background: rgba($dark, 0.06);
+      background: $ds-surface-on-background;
 
       font-size: 0.78rem;
       font-weight: 700;
 
-      color: $gray;
+      color: $ds-text-subtle;
 
       transition: inherit;
     }
 
     &:hover:not(.active) {
-      background: rgba($secondary, 0.05);
+      background: $ds-surface-card-primary;
     }
 
     &.active {
-      background: $secondary;
-      color: $white;
+      background: $ds-action-primary;
+      color: $ds-text-on-action;
 
       .count {
-        background: rgba($white, 0.18);
-        color: $white;
+        background: rgba($ds-text-on-action, 0.18);
+        color: $ds-text-on-action;
       }
     }
   }
@@ -8448,24 +8546,24 @@ html[dir='rtl'] .auth_register_form {
 
 .booking-card {
   display: block;
-  background: $white;
-  border: 1px solid #eee;
-  border-radius: 18px;
+  background: $ds-surface-elevated;
+  border: 1px solid $ds-stroke-light;
+  border-radius: $ds-radius-lg;
   overflow: hidden;
   text-decoration: none;
   color: inherit;
   transition: 0.3s;
 
   &:hover {
-    border-color: rgba($secondary, 0.3);
-    box-shadow: $shadow-md;
+    border-color: rgba($ds-action-primary, 0.3);
+    box-shadow: 0 8px 24px rgba($ds-shadow-color, 0.1);
     transform: translateY(-4px);
   }
 
   &-image {
     position: relative;
     height: 170px;
-    background: #f8f9fb;
+    background: $ds-surface-on-background;
   }
 
   &-status {
@@ -8475,34 +8573,34 @@ html[dir='rtl'] .auth_register_form {
     z-index: 2;
 
     padding: 5px 12px;
-    border-radius: 999px;
+    border-radius: $ds-radius-full;
 
     font-size: 0.72rem;
     font-weight: 700;
 
     &.current {
-      background: $secondary;
-      color: $white;
+      background: $ds-action-primary;
+      color: $ds-text-on-action;
     }
 
     &.upcoming {
-      background: #f5a623;
-      color: $white;
+      background: $ds-status-warning;
+      color: $ds-text-on-action;
     }
 
     &.late {
-      background: #ff4d4f;
-      color: $white;
+      background: $ds-status-error;
+      color: $ds-text-on-action;
     }
 
     &.completed {
-      background: #18b56b;
-      color: $white;
+      background: $ds-status-success;
+      color: $ds-text-on-action;
     }
 
     &.cancelled {
-      background: #ff4d4f;
-      color: $white;
+      background: $ds-status-error;
+      color: $ds-text-on-action;
     }
   }
 
@@ -8520,7 +8618,7 @@ html[dir='rtl'] .auth_register_form {
       margin: 0;
       font-size: 1.05rem;
       font-weight: 700;
-      color: $primary;
+      color: $ds-text-primary;
     }
   }
 
@@ -8532,13 +8630,13 @@ html[dir='rtl'] .auth_register_form {
 
     font-size: 0.82rem;
     font-weight: 700;
-    color: #ffb800;
+    color: $ds-gauge-amber;
   }
 
   &-year {
     display: block;
     font-size: 0.8rem;
-    color: $gray;
+    color: $ds-text-subtle;
     margin-bottom: 14px;
   }
 
@@ -8547,7 +8645,7 @@ html[dir='rtl'] .auth_register_form {
     flex-direction: column;
     gap: 8px;
     padding-top: 12px;
-    border-top: 1px solid #f2f2f2;
+    border-top: 1px solid $ds-stroke-light;
 
     span {
       display: flex;
@@ -8555,10 +8653,10 @@ html[dir='rtl'] .auth_register_form {
       gap: 6px;
 
       font-size: 0.8rem;
-      color: $gray;
+      color: $ds-text-subtle;
 
       svg {
-        color: $secondary;
+        color: $ds-action-primary;
         flex-shrink: 0;
       }
     }
@@ -8575,10 +8673,10 @@ html[dir='rtl'] .auth_register_form {
 
   padding: 4rem 2rem;
 
-  border: 1px solid rgba($secondary, 0.08);
-  border-radius: 20px;
+  border: 1px solid rgba($ds-action-primary, 0.08);
+  border-radius: $ds-radius-xl;
 
-  background: linear-gradient(180deg, rgba($secondary, 0.05), $white);
+  background: linear-gradient(180deg, rgba($ds-action-primary, 0.05), $ds-surface-elevated);
 
   &-animation {
     width: 240px;
@@ -8590,7 +8688,7 @@ html[dir='rtl'] .auth_register_form {
   h3 {
     margin-bottom: 0.75rem;
 
-    color: $primary;
+    color: $ds-text-primary;
 
     font-size: 1.4rem;
     font-weight: 700;
@@ -8601,7 +8699,7 @@ html[dir='rtl'] .auth_register_form {
 
     margin-bottom: 2rem;
 
-    color: $gray;
+    color: $ds-text-subtle;
     line-height: 1.8;
   }
 
@@ -8630,11 +8728,8 @@ html[dir='rtl'] .auth_register_form {
   }
 }
 ///////////////////////////////////////////////////////
-$gauge-bg: #1c2333;
-$gauge-amber: #e0993a;
-
 .booking-details-page {
-  background: #f5f4f0;
+  background: $ds-surface-on-background;
   padding-block: 32px 64px;
 }
 
@@ -8662,15 +8757,15 @@ $gauge-amber: #e0993a;
     display: grid;
     place-items: center;
 
-    border: 1px solid $gray-light;
-    border-radius: 10px;
-    color: $primary;
+    border: 1px solid $ds-stroke-light;
+    border-radius: $ds-radius-sm;
+    color: $ds-text-primary;
     transition: 0.2s;
 
     &:hover {
-      background-color: $secondary;
-      border-color: $secondary;
-      color: $white;
+      background-color: $ds-action-primary;
+      border-color: $ds-action-primary;
+      color: $ds-text-on-action;
     }
   }
 
@@ -8684,46 +8779,46 @@ $gauge-amber: #e0993a;
       margin: 0;
       font-size: 1rem;
       font-weight: 700;
-      color: $primary;
+      color: $ds-text-primary;
     }
 
     .reference {
       font-size: 0.82rem;
-      color: $gray;
+      color: $ds-text-subtle;
     }
   }
 
   // Booking Status
   .status {
     padding: 6px 12px;
-    border-radius: 20px;
+    border-radius: $ds-radius-xl;
     font-size: 0.8rem;
     font-weight: 600;
     white-space: nowrap;
 
     &.current {
-      background-color: #e8f7ee;
-      color: #16834b;
+      background-color: $ds-success-50;
+      color: $ds-status-success;
     }
 
     &.upcoming {
-      background-color: #eaf2ff;
-      color: #2563eb;
+      background-color: $ds-primary-100;
+      color: $ds-action-primary;
     }
 
     &.late {
-      background-color: #fff3e6;
-      color: #d97706;
+      background-color: $ds-warning-50;
+      color: $ds-status-warning;
     }
 
     &.completed {
-      background-color: #f0f0f0;
-      color: #666;
+      background-color: $ds-surface-on-background;
+      color: $ds-text-subtle;
     }
 
     &.cancelled {
-      background-color: #fdecec;
-      color: #dc2626;
+      background-color: $ds-status-error-background;
+      color: $ds-status-error;
     }
   }
 }
@@ -8741,15 +8836,15 @@ $gauge-amber: #e0993a;
     display: grid;
     place-items: center;
 
-    border: 1px solid $gray-light;
-    border-radius: 10px;
-    color: $primary;
+    border: 1px solid $ds-stroke-light;
+    border-radius: $ds-radius-sm;
+    color: $ds-text-primary;
     transition: 0.2s;
 
     &:hover {
-      background-color: $secondary;
-      border-color: $secondary;
-      color: $white;
+      background-color: $ds-action-primary;
+      border-color: $ds-action-primary;
+      color: $ds-text-on-action;
     }
   }
 
@@ -8764,12 +8859,12 @@ $gauge-amber: #e0993a;
       margin: 0;
       font-size: 1rem;
       font-weight: 700;
-      color: $primary;
+      color: $ds-text-primary;
     }
 
     .reference {
       font-size: 0.82rem;
-      color: $gray;
+      color: $ds-text-subtle;
     }
   }
 
@@ -8784,11 +8879,11 @@ $gauge-amber: #e0993a;
       display: grid;
       place-items: center;
 
-      border: 1px solid $gray-light;
-      border-radius: 10px;
+      border: 1px solid $ds-stroke-light;
+      border-radius: $ds-radius-sm;
 
-      background: $white;
-      color: $primary;
+      background: $ds-surface-elevated;
+      color: $ds-text-primary;
       cursor: pointer;
 
       transition: 0.2s;
@@ -8798,9 +8893,9 @@ $gauge-amber: #e0993a;
       }
 
       &:hover {
-        background: $secondary;
-        border-color: $secondary;
-        color: $white;
+        background: $ds-action-primary;
+        border-color: $ds-action-primary;
+        color: $ds-text-on-action;
       }
     }
 
@@ -8812,11 +8907,11 @@ $gauge-amber: #e0993a;
       min-width: 150px;
       padding: 6px;
 
-      background: $white;
-      border: 1px solid #eee;
-      border-radius: 10px;
+      background: $ds-surface-elevated;
+      border: 1px solid $ds-stroke-light;
+      border-radius: $ds-radius-sm;
 
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 8px 25px rgba($ds-shadow-color, 0.1);
 
       z-index: 20;
 
@@ -8830,10 +8925,10 @@ $gauge-amber: #e0993a;
         padding: 9px 10px;
 
         border: 0;
-        border-radius: 7px;
+        border-radius: $ds-radius-xs;
 
         background: transparent;
-        color: $primary;
+        color: $ds-text-primary;
 
         font-family: inherit;
         font-size: 0.78rem;
@@ -8849,14 +8944,14 @@ $gauge-amber: #e0993a;
         }
 
         &:hover {
-          background: #f7f7f7;
+          background: $ds-surface-on-background;
         }
 
         &.danger {
-          color: #e53935;
+          color: $ds-status-error;
 
           &:hover {
-            background: rgba(#e53935, 0.06);
+            background: rgba($ds-status-error, 0.06);
           }
         }
       }
@@ -8870,9 +8965,9 @@ $gauge-amber: #e0993a;
   grid-template-columns: 340px 1fr;
   gap: 0;
 
-  background: $white;
-  border: 1px solid #eee;
-  border-radius: 20px;
+  background: $ds-surface-elevated;
+  border: 1px solid $ds-stroke-light;
+  border-radius: $ds-radius-xl;
   overflow: hidden;
 
   @media (max-width: 860px) {
@@ -8882,7 +8977,7 @@ $gauge-amber: #e0993a;
   &-image {
     position: relative;
     min-height: 300px;
-    background: #eef0f4;
+    background: $ds-surface-on-background;
 
     img {
       object-fit: cover;
@@ -8911,7 +9006,7 @@ $gauge-amber: #e0993a;
       gap: 6px;
 
       font-size: 0.85rem;
-      color: $gray;
+      color: $ds-text-subtle;
 
       svg {
         flex-shrink: 0;
@@ -8924,7 +9019,7 @@ $gauge-amber: #e0993a;
 
     font-size: 1.6rem;
     font-weight: 800;
-    color: $primary;
+    color: $ds-text-primary;
   }
 
   .booking-status {
@@ -8936,7 +9031,7 @@ $gauge-amber: #e0993a;
 
     padding: 5px 10px;
 
-    border-radius: 8px;
+    border-radius: $ds-radius-sm;
 
     font-size: 0.72rem;
     font-weight: 600;
@@ -8951,28 +9046,28 @@ $gauge-amber: #e0993a;
     }
 
     &.current {
-      background: rgba(#18b56b, 0.1);
-      color: #18b56b;
+      background: rgba($ds-status-success, 0.1);
+      color: $ds-status-success;
     }
 
     &.upcoming {
-      background: rgba(#2563eb, 0.1);
-      color: #2563eb;
+      background: rgba($ds-action-primary, 0.1);
+      color: $ds-action-primary;
     }
 
     &.late {
-      background: rgba(#d97706, 0.1);
-      color: #d97706;
+      background: rgba($ds-status-warning, 0.1);
+      color: $ds-status-warning;
     }
 
     &.completed {
-      background: rgba(#18b56b, 0.1);
-      color: #16834b;
+      background: rgba($ds-status-success, 0.1);
+      color: $ds-status-success;
     }
 
     &.cancelled {
-      background: rgba(#dc2626, 0.08);
-      color: #dc2626;
+      background: rgba($ds-status-error, 0.08);
+      color: $ds-status-error;
     }
   }
 
@@ -8985,18 +9080,18 @@ $gauge-amber: #e0993a;
 
     .old {
       font-size: 0.9rem;
-      color: #aaa;
+      color: $ds-text-placeholder;
       text-decoration: line-through;
     }
 
     .current {
       font-variant-numeric: tabular-nums;
       font-weight: 800;
-      color: $secondary;
+      color: $ds-action-primary;
       font-size: 1.3rem;
 
       small {
-        color: $gray;
+        color: $ds-text-subtle;
         font-weight: 500;
         font-size: 0.8rem;
       }
@@ -9025,9 +9120,9 @@ $gauge-amber: #e0993a;
 
 // ── Dates: side-by-side, not stacked rows ──────────────────────────────────
 .booking-dates-info {
-  background: $white;
-  border: 1px solid #eee;
-  border-radius: 18px;
+  background: $ds-surface-elevated;
+  border: 1px solid $ds-stroke-light;
+  border-radius: $ds-radius-lg;
   padding: 24px;
 
   display: flex;
@@ -9041,7 +9136,7 @@ $gauge-amber: #e0993a;
 
     &:not(:last-child) {
       padding-bottom: 20px;
-      border-bottom: 1px solid #eee;
+      border-bottom: 1px solid $ds-stroke-light;
     }
 
     h3 {
@@ -9049,7 +9144,7 @@ $gauge-amber: #e0993a;
 
       font-size: 0.9rem;
       font-weight: 800;
-      color: $primary;
+      color: $ds-text-primary;
     }
   }
 
@@ -9066,9 +9161,9 @@ $gauge-amber: #e0993a;
       display: grid;
       place-items: center;
 
-      border-radius: 10px;
-      background: rgba($secondary, 0.08);
-      color: $secondary;
+      border-radius: $ds-radius-sm;
+      background: $ds-surface-card-primary;
+      color: $ds-action-primary;
 
       svg {
         font-size: 16px;
@@ -9083,14 +9178,14 @@ $gauge-amber: #e0993a;
 
     .label {
       font-size: 0.75rem;
-      color: $gray;
+      color: $ds-text-subtle;
     }
 
     .value {
       font-size: 0.88rem;
       font-weight: 700;
       line-height: 1.6;
-      color: $primary;
+      color: $ds-text-primary;
     }
   }
 
@@ -9100,15 +9195,15 @@ $gauge-amber: #e0993a;
     gap: 10px;
 
     padding: 12px 14px;
-    border-radius: 12px;
-    background: rgba($secondary, 0.05);
+    border-radius: $ds-radius-md;
+    background: $ds-surface-card-primary;
 
     font-size: 0.82rem;
-    color: $primary;
+    color: $ds-text-primary;
     line-height: 1.7;
 
     > svg {
-      color: $secondary;
+      color: $ds-action-primary;
       flex-shrink: 0;
       margin-top: 3px;
     }
@@ -9121,7 +9216,7 @@ $gauge-amber: #e0993a;
 
     .label {
       font-size: 0.75rem;
-      color: $gray;
+      color: $ds-text-subtle;
       font-weight: 500;
     }
   }
@@ -9140,7 +9235,7 @@ $gauge-amber: #e0993a;
       top: 18px;
       right: 8px;
       bottom: 18px;
-      border-right: 2px dotted $secondary;
+      border-right: 2px dotted $ds-action-primary;
       content: '';
     }
 
@@ -9152,7 +9247,7 @@ $gauge-amber: #e0993a;
     .info-row {
       min-height: 58px;
       padding: 8px 0 8px 10px;
-      border-bottom: 1px dotted #e2e2e2;
+      border-bottom: 1px dotted $ds-stroke-light;
       gap: 0;
 
       &:last-child {
@@ -9166,12 +9261,12 @@ $gauge-amber: #e0993a;
       }
 
       .label {
-        color: #888;
+        color: $ds-text-subtle;
         font-size: 0.7rem;
       }
 
       .value {
-        color: $primary;
+        color: $ds-text-primary;
         font-size: 0.82rem;
         font-weight: 500;
       }
@@ -9180,9 +9275,9 @@ $gauge-amber: #e0993a;
 }
 // ── Countdown: instrument-panel gauge, the signature element ──────────────
 .booking-countdown {
-  background: $white;
-  border: 1px solid #eee;
-  border-radius: 16px;
+  background: $ds-surface-elevated;
+  border: 1px solid $ds-stroke-light;
+  border-radius: $ds-radius-lg;
 
   padding: 16px;
 
@@ -9196,7 +9291,7 @@ $gauge-amber: #e0993a;
 
     font-size: 0.9rem;
     font-weight: 700;
-    color: $primary;
+    color: $ds-text-primary;
   }
 
   .countdown-units {
@@ -9218,14 +9313,14 @@ $gauge-amber: #e0993a;
     align-items: center;
     justify-content: center;
 
-    background: linear-gradient(to bottom, #f3f3f3, #fafafa);
+    background: linear-gradient(to bottom, $ds-surface-on-background, $ds-surface-elevated);
 
-    border: 1px solid #e4e4e4;
-    border-radius: 7px;
+    border: 1px solid $ds-stroke-light;
+    border-radius: $ds-radius-xs;
 
     box-shadow:
-      0 1px 2px rgba(0, 0, 0, 0.04),
-      inset 0 -1px 0 rgba(0, 0, 0, 0.03);
+      0 1px 2px rgba($ds-shadow-color, 0.04),
+      inset 0 -1px 0 rgba($ds-shadow-color, 0.03);
 
     .number {
       font-variant-numeric: tabular-nums;
@@ -9234,7 +9329,7 @@ $gauge-amber: #e0993a;
       line-height: 1;
 
       font-weight: 800;
-      color: #222;
+      color: $ds-text-primary;
     }
 
     .label {
@@ -9243,7 +9338,7 @@ $gauge-amber: #e0993a;
       font-size: 0.65rem;
       font-weight: 600;
 
-      color: #555;
+      color: $ds-text-subtle;
     }
   }
 
@@ -9251,7 +9346,7 @@ $gauge-amber: #e0993a;
     font-size: 1.4rem;
     font-weight: 700;
 
-    color: #777;
+    color: $ds-text-subtle;
 
     margin-top: -4px;
   }
@@ -9266,7 +9361,7 @@ $gauge-amber: #e0993a;
 
       font-size: 0.85rem;
       font-weight: 700;
-      color: $gray;
+      color: $ds-text-subtle;
     }
   }
 
@@ -9297,9 +9392,9 @@ $gauge-amber: #e0993a;
   position: sticky;
   top: 24px;
 
-  background: $white;
-  border: 1px solid #eee;
-  border-radius: 18px;
+  background: $ds-surface-elevated;
+  border: 1px solid $ds-stroke-light;
+  border-radius: $ds-radius-lg;
   padding: 24px;
 
   display: flex;
@@ -9314,7 +9409,7 @@ $gauge-amber: #e0993a;
     margin: 0;
     font-size: 1rem;
     font-weight: 700;
-    color: $primary;
+    color: $ds-text-primary;
   }
 
   .price-row {
@@ -9325,17 +9420,17 @@ $gauge-amber: #e0993a;
 
     .label {
       font-size: 0.85rem;
-      color: $gray;
+      color: $ds-text-subtle;
     }
 
     .value {
       font-variant-numeric: tabular-nums;
       font-size: 0.9rem;
       font-weight: 600;
-      color: $primary;
+      color: $ds-text-primary;
 
       small {
-        color: $gray;
+        color: $ds-text-subtle;
         font-weight: 500;
         margin-inline-start: 4px;
       }
@@ -9344,16 +9439,16 @@ $gauge-amber: #e0993a;
     &.total {
       margin-top: 4px;
       padding-top: 16px;
-      border-top: 1px dashed #eee;
+      border-top: 1px dashed $ds-stroke-light;
 
       .label {
         font-weight: 700;
-        color: $primary;
+        color: $ds-text-primary;
       }
       .value {
         font-size: 1.25rem;
         font-weight: 800;
-        color: $secondary;
+        color: $ds-action-primary;
       }
     }
   }
@@ -9372,7 +9467,7 @@ $gauge-amber: #e0993a;
       gap: 8px;
 
       height: 44px;
-      border-radius: 12px;
+      border-radius: $ds-radius-md;
       font-size: 0.85rem;
       font-weight: 700;
       border: none;
@@ -9381,11 +9476,11 @@ $gauge-amber: #e0993a;
     }
 
     .primary-action {
-      background: $secondary;
-      color: $white;
+      background: $ds-action-primary;
+      color: $ds-text-on-action;
 
       &:hover {
-        background: $primary;
+        background: darken($ds-action-primary, 6%);
       }
     }
   }
@@ -9397,7 +9492,7 @@ $gauge-amber: #e0993a;
   inset: 0;
   z-index: 100;
 
-  background: rgba($dark, 0.45);
+  background: rgba($ds-shadow-color, 0.45);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -9409,8 +9504,8 @@ $gauge-amber: #e0993a;
   width: 100%;
   max-width: 420px;
 
-  background: $white;
-  border-radius: 18px;
+  background: $ds-surface-elevated;
+  border-radius: $ds-radius-lg;
   padding: 28px;
 
   display: flex;
@@ -9421,13 +9516,13 @@ $gauge-amber: #e0993a;
     margin: 0;
     font-size: 1.05rem;
     font-weight: 700;
-    color: $primary;
+    color: $ds-text-primary;
   }
 
   &-subtitle {
     margin: -10px 0 0;
     font-size: 0.85rem;
-    color: $gray;
+    color: $ds-text-subtle;
   }
 
   // &-close {
@@ -9438,16 +9533,16 @@ $gauge-amber: #e0993a;
   //   width: 32px;
   //   height: 32px;
   //   border: none;
-  //   border-radius: 10px;
-  //   background: rgba($dark, .04);
-  //   color: $gray;
+  //   border-radius: $ds-radius-sm;
+  //   background: rgba($ds-shadow-color, 0.04);
+  //   color: $ds-text-subtle;
 
   //   display: grid;
   //   place-items: center;
   //   cursor: pointer;
   //   transition: .2s;
 
-  //   &:hover { background: rgba($dark, .08); color: $primary; }
+  //   &:hover { background: rgba($ds-shadow-color, 0.08); color: $ds-text-primary; }
   // }
 
   &-stars {
@@ -9459,7 +9554,7 @@ $gauge-amber: #e0993a;
       height: 40px;
       border: none;
       background: transparent;
-      color: #ddd;
+      color: $ds-stroke-heavy;
       font-size: 1.4rem;
       cursor: pointer;
       transition: 0.15s;
@@ -9467,7 +9562,7 @@ $gauge-amber: #e0993a;
       place-items: center;
 
       &.filled {
-        color: $gauge-amber;
+        color: $ds-gauge-amber;
       }
     }
   }
@@ -9476,43 +9571,43 @@ $gauge-amber: #e0993a;
     width: 100%;
     resize: none;
 
-    border: 1px solid #eee;
-    border-radius: 12px;
+    border: 1px solid $ds-stroke-light;
+    border-radius: $ds-radius-md;
     padding: 12px 14px;
 
     font-size: 0.88rem;
     font-family: inherit;
-    color: $primary;
+    color: $ds-text-primary;
 
     &:focus {
       outline: none;
-      border-color: $secondary;
+      border-color: $ds-action-primary;
     }
 
     &::placeholder {
-      color: #bbb;
+      color: $ds-text-placeholder;
     }
   }
 
   &-submit {
     height: 46px;
     border: none;
-    border-radius: 12px;
+    border-radius: $ds-radius-md;
 
-    background: $primary;
-    color: $white;
+    background: $ds-action-primary;
+    color: $ds-text-on-action;
     font-size: 0.9rem;
     font-weight: 700;
     cursor: pointer;
     transition: 0.2s;
 
     &:hover:not(:disabled) {
-      background: $secondary;
+      background: darken($ds-action-primary, 6%);
     }
 
     &:disabled {
-      background: rgba($dark, 0.1);
-      color: $gray;
+      background: $ds-surface-on-background;
+      color: $ds-text-placeholder;
       cursor: not-allowed;
     }
   }
@@ -9532,7 +9627,7 @@ $gauge-amber: #e0993a;
     transform: translateY(-50%);
     z-index: 1;
 
-    color: #7f8a98;
+    color: $ds-text-subtle;
     font-size: 19px;
     pointer-events: none;
   }
@@ -9542,12 +9637,12 @@ $gauge-amber: #e0993a;
     height: 52px;
     padding-inline: 44px 14px;
 
-    border: 1px solid #dce5ef;
-    border-radius: 14px;
-    background: #f8fafc;
+    border: 1px solid $ds-stroke-light;
+    border-radius: $ds-radius-md;
+    background: $ds-surface-on-background;
     outline: none;
 
-    color: $primary;
+    color: $ds-text-primary;
     font-size: 14px;
     transition:
       border-color 0.2s ease,
@@ -9555,23 +9650,23 @@ $gauge-amber: #e0993a;
       box-shadow 0.2s ease;
 
     &::placeholder {
-      color: #98a1ad;
+      color: $ds-text-placeholder;
     }
 
     &:focus {
-      border-color: $secondary;
-      background: $white;
-      box-shadow: 0 0 0 3px rgba($secondary, 0.1);
+      border-color: $ds-action-primary;
+      background: $ds-surface-elevated;
+      box-shadow: 0 0 0 3px rgba($ds-action-primary, 0.1);
     }
   }
 }
 
 .filters_panel {
-  background: $white;
-  border-radius: 22px;
+  background: $ds-surface-elevated;
+  border-radius: $ds-radius-xl;
   padding: 24px;
-  border: 1px solid rgba($dark, 0.06);
-  box-shadow: 0 4px 20px rgba($dark, 0.05);
+  border: 1px solid rgba($ds-shadow-color, 0.06);
+  box-shadow: 0 4px 20px rgba($ds-shadow-color, 0.05);
 
   position: sticky;
   top: 100px;
@@ -9584,11 +9679,11 @@ $gauge-amber: #e0993a;
     align-items: center;
     padding-bottom: 18px;
     margin-bottom: 24px;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid $ds-stroke-light;
 
     h3 {
       margin: 0;
-      color: $primary;
+      color: $ds-text-primary;
       font-size: 18px;
       font-weight: 700;
     }
@@ -9597,7 +9692,7 @@ $gauge-amber: #e0993a;
   .filter_group {
     margin-bottom: 28px;
     padding-bottom: 28px;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid $ds-stroke-light;
 
     &:last-child {
       margin-bottom: 0;
@@ -9617,25 +9712,25 @@ $gauge-amber: #e0993a;
       align-items: center;
       gap: 8px;
       margin: 0;
-      color: $primary;
+      color: $ds-text-primary;
       font-size: 15px;
       font-weight: 700;
 
       svg {
-        color: $secondary;
+        color: $ds-action-primary;
       }
     }
 
     .view_all {
       border: 0;
       background: transparent;
-      color: $secondary;
+      color: $ds-action-primary;
       cursor: pointer;
       font-size: 13px;
       font-weight: 600;
 
       &:disabled {
-        color: #a7adb5;
+        color: $ds-text-placeholder;
         cursor: default;
       }
     }
@@ -9646,20 +9741,20 @@ $gauge-amber: #e0993a;
       margin-bottom: 12px;
 
       h4 {
-        color: #20252c;
+        color: $ds-text-primary;
         font-size: 15px;
         font-weight: 800;
       }
 
       .view_all {
-        color: #333a43;
+        color: $ds-text-primary;
         font-size: 12px;
         font-weight: 500;
         text-decoration: underline;
         text-underline-offset: 2px;
 
         &:disabled {
-          color: #a7adb5;
+          color: $ds-text-placeholder;
           text-decoration: none;
         }
       }
@@ -9683,10 +9778,10 @@ $gauge-amber: #e0993a;
     gap: 7px;
 
     border: 1px solid transparent;
-    border-radius: 12px;
-    background: #f5f5f6;
+    border-radius: $ds-radius-md;
+    background: $ds-surface-on-background;
 
-    color: #343a42;
+    color: $ds-text-primary;
     cursor: pointer;
 
     transition:
@@ -9718,8 +9813,8 @@ $gauge-amber: #e0993a;
       width: 26px;
       height: 26px;
 
-      border-radius: 50%;
-      background: $white;
+      border-radius: $ds-radius-full;
+      background: $ds-surface-elevated;
 
       img {
         width: 22px;
@@ -9729,7 +9824,7 @@ $gauge-amber: #e0993a;
     }
 
     .car_type_icon {
-      color: #7c8289;
+      color: $ds-text-subtle;
       font-size: 27px;
       line-height: 1;
     }
@@ -9742,10 +9837,10 @@ $gauge-amber: #e0993a;
       place-items: center;
       flex: 0 0 auto;
 
-      border-radius: 50%;
-      background: $white;
+      border-radius: $ds-radius-full;
+      background: $ds-surface-elevated;
 
-      color: $primary;
+      color: $ds-text-primary;
 
       svg {
         font-size: 15px;
@@ -9754,29 +9849,29 @@ $gauge-amber: #e0993a;
     }
 
     &:hover {
-      border-color: rgba($secondary, 0.25);
-      background: rgba($secondary, 0.07);
+      border-color: rgba($ds-action-primary, 0.25);
+      background: $ds-surface-card-primary;
       transform: translateY(-1px);
     }
 
     &:focus-visible {
-      outline: 3px solid rgba($secondary, 0.16);
+      outline: 3px solid rgba($ds-action-primary, 0.16);
       outline-offset: 2px;
     }
 
     &.is-selected {
-      border-color: $secondary;
-      background: $secondary;
-      box-shadow: 0 7px 16px rgba($secondary, 0.18);
+      border-color: $ds-action-primary;
+      background: $ds-action-primary;
+      box-shadow: 0 7px 16px rgba($ds-action-primary, 0.18);
 
-      color: $white;
+      color: $ds-text-on-action;
 
       .car_type_icon {
-        color: $white;
+        color: $ds-text-on-action;
       }
 
       &:hover {
-        background: darken($secondary, 4%);
+        background: darken($ds-action-primary, 4%);
         transform: translateY(-1px);
       }
     }
@@ -9798,7 +9893,7 @@ $gauge-amber: #e0993a;
     margin-top: 4px;
     padding-top: 18px;
 
-    border-top: 1px solid #e9edf2;
+    border-top: 1px solid $ds-stroke-light;
   }
 
   .filter_action_btn {
@@ -9807,7 +9902,7 @@ $gauge-amber: #e0993a;
     height: 50px;
     padding-inline: 14px;
 
-    border-radius: 12px;
+    border-radius: $ds-radius-md;
 
     cursor: pointer;
     font-size: 14px;
@@ -9821,7 +9916,7 @@ $gauge-amber: #e0993a;
       transform 0.2s ease;
 
     &:focus-visible {
-      outline: 3px solid rgba($secondary, 0.16);
+      outline: 3px solid rgba($ds-action-primary, 0.16);
       outline-offset: 2px;
     }
 
@@ -9831,31 +9926,31 @@ $gauge-amber: #e0993a;
   }
 
   .filter_clear_all_btn {
-    border: 1px solid #8e949c;
-    background: $white;
-    color: #767d86;
+    border: 1px solid $ds-stroke-heavy;
+    background: $ds-surface-elevated;
+    color: $ds-text-subtle;
 
     &:hover:not(:disabled) {
-      border-color: $secondary;
-      color: $secondary;
+      border-color: $ds-action-primary;
+      color: $ds-action-primary;
     }
 
     &:disabled {
-      border-color: #d9dde2;
-      color: #adb3bb;
+      border-color: $ds-stroke-light;
+      color: $ds-text-placeholder;
       cursor: not-allowed;
     }
   }
 
   .filter_apply_btn {
-    border: 1px solid $secondary;
-    background: $secondary;
-    color: $white;
+    border: 1px solid $ds-action-primary;
+    background: $ds-action-primary;
+    color: $ds-text-on-action;
 
     &:hover {
-      border-color: darken($secondary, 6%);
-      background: darken($secondary, 6%);
-      box-shadow: 0 9px 20px rgba($secondary, 0.22);
+      border-color: darken($ds-action-primary, 6%);
+      background: darken($ds-action-primary, 6%);
+      box-shadow: 0 9px 20px rgba($ds-action-primary, 0.22);
     }
   }
 
@@ -9864,12 +9959,12 @@ $gauge-amber: #e0993a;
     align-items: center;
     gap: 8px;
     margin: 0 0 18px;
-    color: $primary;
+    color: $ds-text-primary;
     font-size: 15px;
     font-weight: 700;
 
     svg {
-      color: $secondary;
+      color: $ds-action-primary;
     }
   }
 
@@ -9885,13 +9980,13 @@ $gauge-amber: #e0993a;
     input {
       width: 18px;
       height: 18px;
-      accent-color: $secondary;
+      accent-color: $ds-action-primary;
       cursor: pointer;
     }
 
     span {
       flex: 1;
-      color: #555;
+      color: $ds-text-subtle;
       font-size: 14px;
       font-weight: 500;
       margin-inline-end: 10px;
@@ -9909,12 +10004,12 @@ $gauge-amber: #e0993a;
       width: 18px;
       height: 18px;
       flex-shrink: 0;
-      accent-color: $secondary;
+      accent-color: $ds-action-primary;
       cursor: pointer;
     }
 
     span {
-      color: #555;
+      color: $ds-text-subtle;
       font-size: 14px;
       font-weight: 500;
     }
@@ -9934,13 +10029,13 @@ $gauge-amber: #e0993a;
     }
 
     .service_title {
-      color: $primary;
+      color: $ds-text-primary;
       font-size: 14px;
       font-weight: 600;
     }
 
     .service_desc {
-      color: #999;
+      color: $ds-text-placeholder;
       font-size: 12px;
       font-weight: 400;
     }
@@ -9954,7 +10049,7 @@ $gauge-amber: #e0993a;
     margin-top: 8px;
     border: 0;
     background: transparent;
-    color: $secondary;
+    color: $ds-action-primary;
     font-size: 13px;
     font-weight: 600;
     cursor: pointer;
@@ -9981,8 +10076,8 @@ $gauge-amber: #e0993a;
       left: 0;
       right: 0;
       height: 4px;
-      border-radius: 4px;
-      background: #e5e5e5;
+      border-radius: $ds-radius-xs;
+      background: $ds-stroke-light;
       transform: translateY(-50%);
       overflow: hidden;
 
@@ -9990,7 +10085,7 @@ $gauge-amber: #e0993a;
         position: absolute;
         top: 0;
         bottom: 0;
-        background: $secondary;
+        background: $ds-action-primary;
       }
     }
 
@@ -10013,22 +10108,22 @@ $gauge-amber: #e0993a;
         appearance: none;
         width: 20px;
         height: 20px;
-        border-radius: 50%;
-        background: $white;
-        border: 3px solid $secondary;
+        border-radius: $ds-radius-full;
+        background: $ds-surface-elevated;
+        border: 3px solid $ds-action-primary;
         cursor: pointer;
-        box-shadow: 0 2px 6px rgba($dark, 0.2);
+        box-shadow: 0 2px 6px rgba($ds-shadow-color, 0.2);
       }
 
       &::-moz-range-thumb {
         pointer-events: auto;
         width: 20px;
         height: 20px;
-        border-radius: 50%;
-        background: $white;
-        border: 3px solid $secondary;
+        border-radius: $ds-radius-full;
+        background: $ds-surface-elevated;
+        border: 3px solid $ds-action-primary;
         cursor: pointer;
-        box-shadow: 0 2px 6px rgba($dark, 0.2);
+        box-shadow: 0 2px 6px rgba($ds-shadow-color, 0.2);
       }
 
       &::-webkit-slider-runnable-track {
@@ -10046,13 +10141,13 @@ $gauge-amber: #e0993a;
       display: flex;
       align-items: center;
       gap: 10px;
-      border: 1px solid #eee;
-      border-radius: 12px;
+      border: 1px solid $ds-stroke-light;
+      border-radius: $ds-radius-md;
       padding: 10px 12px;
-      background: #fafafa;
+      background: $ds-surface-on-background;
 
       svg {
-        color: $secondary;
+        color: $ds-action-primary;
         font-size: 18px;
         flex-shrink: 0;
       }
@@ -10064,7 +10159,7 @@ $gauge-amber: #e0993a;
       }
 
       .price_label {
-        color: #999;
+        color: $ds-text-placeholder;
         font-size: 11px;
         font-weight: 500;
       }
@@ -10075,7 +10170,7 @@ $gauge-amber: #e0993a;
         background: transparent;
         outline: none;
         padding: 0;
-        color: $primary;
+        color: $ds-text-primary;
         font-size: 14px;
         font-weight: 700;
 
@@ -10102,9 +10197,9 @@ $gauge-amber: #e0993a;
     display: flex;
     align-items: center;
     gap: 10px;
-    border: 1px solid #eee;
-    border-radius: 12px;
-    background: #fafafa;
+    border: 1px solid $ds-stroke-light;
+    border-radius: $ds-radius-md;
+    background: $ds-surface-on-background;
     cursor: pointer;
     padding: 8px 12px;
     width: 100%;
@@ -10115,12 +10210,12 @@ $gauge-amber: #e0993a;
       position: relative;
       width: 32px;
       height: 32px;
-      border-radius: 50%;
+      border-radius: $ds-radius-full;
       display: flex;
       align-items: center;
       justify-content: center;
-      background: $white;
-      border: 1px solid #eee;
+      background: $ds-surface-elevated;
+      border: 1px solid $ds-stroke-light;
       overflow: hidden;
       flex-shrink: 0;
       transition: 0.2s;
@@ -10133,7 +10228,7 @@ $gauge-amber: #e0993a;
     }
 
     .brand_name {
-      color: #555;
+      color: $ds-text-subtle;
       font-size: 13px;
       font-weight: 500;
       white-space: nowrap;
@@ -10142,19 +10237,19 @@ $gauge-amber: #e0993a;
     }
 
     &:hover {
-      border-color: rgba($secondary, 0.3);
+      border-color: rgba($ds-action-primary, 0.3);
     }
 
     &.active {
-      background: $secondary;
-      border-color: $secondary;
+      background: $ds-action-primary;
+      border-color: $ds-action-primary;
 
       .brand_logo {
-        background: $white;
+        background: $ds-surface-elevated;
       }
 
       .brand_name {
-        color: $white;
+        color: $ds-text-on-action;
         font-weight: 700;
       }
     }
@@ -10177,16 +10272,16 @@ $gauge-amber: #e0993a;
   justify-content: center;
 
   border: 0;
-  border-radius: 14px;
-  background: $secondary;
-  color: $white;
+  border-radius: $ds-radius-md;
+  background: $ds-action-primary;
+  color: $ds-text-on-action;
 
   font-size: 20px;
   cursor: pointer;
   transition: 0.25s;
 
   &:hover {
-    background: darken($secondary, 6%);
+    background: darken($ds-action-primary, 6%);
   }
 
   .filters_toggle_dot {
@@ -10196,10 +10291,10 @@ $gauge-amber: #e0993a;
 
     width: 9px;
     height: 9px;
-    border-radius: 50%;
+    border-radius: $ds-radius-full;
 
-    background: #ef4444;
-    border: 2px solid $white;
+    background: $ds-status-error;
+    border: 2px solid $ds-surface-elevated;
   }
 }
 
@@ -10211,12 +10306,12 @@ $gauge-amber: #e0993a;
   border: 0;
   background: transparent;
 
-  color: $gray;
+  color: $ds-text-subtle;
   font-size: 22px;
   cursor: pointer;
 
   &:hover {
-    color: $primary;
+    color: $ds-text-primary;
   }
 }
 
@@ -10251,7 +10346,7 @@ $gauge-amber: #e0993a;
     inset: 0;
     z-index: 1000;
 
-    background: rgba($dark, 0.45);
+    background: rgba($ds-shadow-color, 0.45);
     backdrop-filter: blur(4px);
   }
 
@@ -10267,7 +10362,7 @@ $gauge-amber: #e0993a;
     height: 85vh;
     max-height: 85vh;
 
-    border-radius: 22px 22px 0 0;
+    border-radius: $ds-radius-xl $ds-radius-xl 0 0;
 
     overflow-y: auto;
 
@@ -10285,8 +10380,8 @@ $gauge-amber: #e0993a;
       margin: 0 -24px -24px;
       padding: 16px 24px max(16px, env(safe-area-inset-bottom));
 
-      background: rgba($white, 0.98);
-      box-shadow: 0 -10px 26px rgba($dark, 0.07);
+      background: rgba($ds-surface-elevated, 0.98);
+      box-shadow: 0 -10px 26px rgba($ds-shadow-color, 0.07);
     }
   }
 }
@@ -10300,10 +10395,10 @@ $gauge-amber: #e0993a;
 .form_label {
   font-size: 14px;
   font-weight: 600;
-  color: $primary;
+  color: $ds-text-primary;
 
   span {
-    color: #ef4444;
+    color: $ds-status-error;
     margin-inline-start: 4px;
   }
 }
@@ -10312,17 +10407,17 @@ $gauge-amber: #e0993a;
 .form_textarea,
 .form_select {
   width: 100%;
-  border: 1px solid #dcdcdc;
-  border-radius: 12px;
+  border: 1px solid $ds-stroke-light;
+  border-radius: $ds-radius-md;
   padding: 14px 16px;
-  background: #fff;
+  background: $ds-surface-elevated;
   transition: 0.25s;
   font-size: 15px;
 
   &:focus {
     outline: none;
-    border-color: $secondary;
-    box-shadow: 0 0 0 3px rgba($secondary, 0.12);
+    border-color: $ds-action-primary;
+    box-shadow: 0 0 0 3px rgba($ds-action-primary, 0.12);
   }
 }
 
@@ -10337,7 +10432,7 @@ $gauge-amber: #e0993a;
   padding-inline-start: 45px;
 }
 .form_error {
-  color: #ef4444;
+  color: $ds-status-error;
   font-size: 13px;
 }
 .upload_field {
@@ -10351,31 +10446,31 @@ $gauge-amber: #e0993a;
     margin-bottom: 10px;
 
     span {
-      color: #ef4444;
+      color: $ds-status-error;
     }
   }
 
   input[type='file'] {
     width: 100%;
     padding: 14px;
-    border: 1px dashed #d6d6d6;
-    border-radius: 14px;
-    background: #fafafa;
+    border: 1px dashed $ds-stroke-heavy;
+    border-radius: $ds-radius-md;
+    background: $ds-surface-on-background;
     cursor: pointer;
     transition: 0.25s;
 
     &:hover {
-      border-color: $primary;
-      background: rgba($primary, 0.03);
+      border-color: $ds-action-primary;
+      background: $ds-surface-card-primary;
     }
 
     &::file-selector-button {
       margin-inline-end: 12px;
       border: none;
-      background: $primary;
-      color: #fff;
+      background: $ds-action-primary;
+      color: $ds-text-on-action;
       padding: 10px 16px;
-      border-radius: 10px;
+      border-radius: $ds-radius-sm;
       cursor: pointer;
       font-weight: 600;
     }
@@ -10384,7 +10479,7 @@ $gauge-amber: #e0993a;
   small {
     display: block;
     margin-top: 8px;
-    color: $gray;
+    color: $ds-text-subtle;
     font-size: 0.85rem;
   }
 }
@@ -10394,20 +10489,20 @@ $gauge-amber: #e0993a;
     margin-bottom: 40px;
 
     h2 {
-      color: $primary;
+      color: $ds-text-primary;
       font-size: 32px;
       font-weight: 700;
       margin-bottom: 10px;
     }
 
     p {
-      color: $gray;
+      color: $ds-text-subtle;
       max-width: 650px;
       margin: auto;
       line-height: 1.8;
     }
     span {
-      color: $secondary;
+      color: $ds-action-primary;
       font-weight: 700;
     }
   }
@@ -10454,7 +10549,7 @@ $gauge-amber: #e0993a;
   align-items: center;
   justify-content: center;
   padding: 20px;
-  background: rgba($dark, 0.55);
+  background: rgba($ds-shadow-color, 0.55);
   backdrop-filter: blur(6px);
 }
 
@@ -10462,10 +10557,10 @@ $gauge-amber: #e0993a;
   width: min(390px, 100%);
   max-height: calc(100dvh - 40px);
   overflow-y: auto;
-  border-radius: 24px;
-  background: $white;
-  box-shadow: 0 18px 50px rgba($primary, 0.2);
-  color: $primary;
+  border-radius: $ds-radius-xl;
+  background: $ds-surface-elevated;
+  box-shadow: 0 18px 50px rgba($ds-shadow-color, 0.2);
+  color: $ds-text-primary;
   scrollbar-width: thin;
 }
 
@@ -10479,7 +10574,7 @@ $gauge-amber: #e0993a;
   min-height: 54px;
   padding: 9px 16px;
   border-bottom: 0;
-  background: #edf5ff;
+  background: $ds-surface-card-primary;
 
   h2 {
     margin: 0;
@@ -10493,10 +10588,10 @@ $gauge-amber: #e0993a;
     width: 36px;
     height: 36px;
     padding: 0;
-    border: 1px solid #e6e8eb;
-    border-radius: 10px;
-    background: $white;
-    color: $primary;
+    border: 1px solid $ds-stroke-light;
+    border-radius: $ds-radius-sm;
+    background: $ds-surface-elevated;
+    color: $ds-text-primary;
     cursor: pointer;
     font-size: 20px;
   }
@@ -10504,7 +10599,7 @@ $gauge-amber: #e0993a;
 
 .booking_daily_calendar {
   padding: 10px 16px 14px;
-  background: #edf5ff;
+  background: $ds-surface-card-primary;
 }
 
 .booking_daily_calendar_header {
@@ -10526,7 +10621,7 @@ $gauge-amber: #e0993a;
     padding: 0;
     border: 0;
     background: transparent;
-    color: $primary;
+    color: $ds-text-primary;
     cursor: pointer;
     font-size: 18px;
   }
@@ -10543,7 +10638,7 @@ $gauge-amber: #e0993a;
   margin-bottom: 4px;
 
   span {
-    color: $gray;
+    color: $ds-text-subtle;
     font-size: 8px;
     text-align: center;
   }
@@ -10565,42 +10660,42 @@ $gauge-amber: #e0993a;
     border: 0;
     border-radius: 0;
     background: transparent;
-    color: $primary;
+    color: $ds-text-primary;
     cursor: pointer;
     font-size: 12px;
     font-weight: 600;
 
     &:disabled {
-      color: #c6cbd1;
+      color: $ds-text-option;
       cursor: not-allowed;
     }
 
     &.selected {
-      border-radius: 7px;
-      background: $secondary;
-      color: $white;
+      border-radius: $ds-radius-xs;
+      background: $ds-action-primary;
+      color: $ds-text-on-action;
     }
   }
 
   &.in_range {
-    background: rgba($secondary, 0.11);
+    background: rgba($ds-action-primary, 0.11);
   }
 
   &.range_start {
-    background: linear-gradient(to left, transparent 50%, rgba($secondary, 0.11) 50%);
+    background: linear-gradient(to left, transparent 50%, rgba($ds-action-primary, 0.11) 50%);
   }
 
   &.range_end {
-    background: linear-gradient(to right, transparent 50%, rgba($secondary, 0.11) 50%);
+    background: linear-gradient(to right, transparent 50%, rgba($ds-action-primary, 0.11) 50%);
   }
 }
 
 .booking_daily_range_summary {
   margin-top: 10px;
   padding: 9px;
-  border-radius: 9px;
-  background: rgba($secondary, 0.15);
-  color: $primary;
+  border-radius: $ds-radius-sm;
+  background: rgba($ds-action-primary, 0.15);
+  color: $ds-text-primary;
   font-size: 10px;
   text-align: center;
 }
@@ -10616,7 +10711,7 @@ $gauge-amber: #e0993a;
   label {
     display: block;
     margin-bottom: 5px;
-    color: $accent;
+    color: $ds-text-primary;
     font-size: 11px;
     font-weight: 700;
   }
@@ -10630,19 +10725,19 @@ $gauge-amber: #e0993a;
   input,
   textarea {
     width: 100%;
-    border: 1px solid #e8eaed;
-    border-radius: 10px;
+    border: 1px solid $ds-stroke-light;
+    border-radius: $ds-radius-sm;
     outline: none;
-    color: $primary;
+    color: $ds-text-primary;
     font-size: 10px;
     transition: border-color 0.2s;
 
     &:focus {
-      border-color: $secondary;
+      border-color: $ds-action-primary;
     }
 
     &::placeholder {
-      color: #b6bbc2;
+      color: $ds-text-placeholder;
     }
   }
 
@@ -10659,11 +10754,11 @@ $gauge-amber: #e0993a;
 
   > p {
     margin: 4px 0 0;
-    color: $gray;
+    color: $ds-text-subtle;
     font-size: 8px;
 
     strong {
-      color: $secondary;
+      color: $ds-action-primary;
       font-weight: 500;
     }
   }
@@ -10675,11 +10770,11 @@ $gauge-amber: #e0993a;
   direction: ltr;
   height: 40px;
   padding: 0 10px;
-  border: 1px solid #e8eaed;
-  border-radius: 10px;
+  border: 1px solid $ds-stroke-light;
+  border-radius: $ds-radius-sm;
 
   svg {
-    color: #98a0a8;
+    color: $ds-text-placeholder;
   }
 
   select {
@@ -10688,7 +10783,7 @@ $gauge-amber: #e0993a;
     border: 0;
     outline: 0;
     background: transparent;
-    color: $gray;
+    color: $ds-text-subtle;
     font-size: 11px;
     text-align: right;
   }
@@ -10706,7 +10801,7 @@ $gauge-amber: #e0993a;
     padding: 0;
     border: 0;
     background: transparent;
-    color: $secondary;
+    color: $ds-action-primary;
     cursor: pointer;
     font-size: 10px;
     text-decoration: underline;
@@ -10728,9 +10823,9 @@ $gauge-amber: #e0993a;
   min-height: 62px;
   padding: 9px 10px;
   border: 0;
-  border-radius: 10px;
-  background: #f7f9fc;
-  color: $accent;
+  border-radius: $ds-radius-sm;
+  background: $ds-surface-on-background;
+  color: $ds-text-primary;
   cursor: pointer;
   text-align: start;
 }
@@ -10740,8 +10835,8 @@ $gauge-amber: #e0993a;
   place-items: center;
   width: 36px;
   height: 36px;
-  border-radius: 9px;
-  background: $white;
+  border-radius: $ds-radius-sm;
+  background: $ds-surface-elevated;
 
   img {
     width: 24px;
@@ -10771,7 +10866,7 @@ $gauge-amber: #e0993a;
 }
 
 .booking_daily_address_distance {
-  color: $gray;
+  color: $ds-text-subtle;
   font-size: 9px;
   white-space: nowrap;
 }
@@ -10781,7 +10876,7 @@ $gauge-amber: #e0993a;
   max-height: calc(100dvh - 32px);
   overflow: hidden;
   padding: 0;
-  border-radius: 22px;
+  border-radius: $ds-radius-xl;
 
   .close_btn {
     top: 12px;
@@ -10789,9 +10884,9 @@ $gauge-amber: #e0993a;
     z-index: 5;
     width: 38px;
     height: 38px;
-    border: 1px solid #e6e8eb;
-    border-radius: 10px;
-    background: $white;
+    border: 1px solid $ds-stroke-light;
+    border-radius: $ds-radius-sm;
+    background: $ds-surface-elevated;
     font-size: 20px;
   }
 
@@ -10813,8 +10908,8 @@ $gauge-amber: #e0993a;
 
     input {
       height: 42px;
-      border-radius: 10px;
-      background: rgba($white, 0.96);
+      border-radius: $ds-radius-sm;
+      background: rgba($ds-surface-elevated, 0.96);
       font-size: 11px;
     }
   }
@@ -10838,10 +10933,10 @@ $gauge-amber: #e0993a;
   height: 38px;
   padding: 0;
   border: 0;
-  border-radius: 10px;
-  background: $white;
-  box-shadow: $shadow-sm;
-  color: $primary;
+  border-radius: $ds-radius-sm;
+  background: $ds-surface-elevated;
+  box-shadow: 0 2px 8px rgba($ds-shadow-color, 0.06);
+  color: $ds-text-primary;
   cursor: pointer;
 }
 
@@ -10852,22 +10947,22 @@ $gauge-amber: #e0993a;
   gap: 12px;
   margin-top: -18px;
   padding: 22px 12px 16px;
-  border-radius: 20px 20px 0 0;
-  background: $white;
+  border-radius: $ds-radius-xl $ds-radius-xl 0 0;
+  background: $ds-surface-elevated;
 
   p {
     display: flex;
     align-items: flex-start;
     gap: 6px;
     margin: 0;
-    color: $accent;
+    color: $ds-text-primary;
     font-size: 11px;
     font-weight: 600;
     line-height: 1.6;
 
     svg {
       flex-shrink: 0;
-      color: $secondary;
+      color: $ds-action-primary;
       font-size: 19px;
     }
   }
@@ -10876,19 +10971,19 @@ $gauge-amber: #e0993a;
     width: 100%;
     height: 44px;
     border: 0;
-    border-radius: 9px;
-    background: $secondary;
-    color: $white;
+    border-radius: $ds-radius-sm;
+    background: $ds-action-primary;
+    color: $ds-text-on-action;
     font-weight: 600;
   }
 
   small {
-    color: $gray;
+    color: $ds-text-subtle;
     font-size: 9px;
     text-align: center;
 
     strong {
-      color: $secondary;
+      color: $ds-action-primary;
     }
   }
 }
@@ -10902,23 +10997,23 @@ $gauge-amber: #e0993a;
   align-items: center;
   gap: 12px;
   padding: 10px 16px max(10px, env(safe-area-inset-bottom));
-  border-top: 1px solid #eceef0;
-  background: rgba($white, 0.97);
+  border-top: 1px solid $ds-stroke-light;
+  background: rgba($ds-surface-elevated, 0.97);
 }
 
 .booking_daily_confirm {
   flex: 1;
   height: 44px;
   border: 0;
-  border-radius: 9px;
-  background: $secondary;
-  color: $white;
+  border-radius: $ds-radius-sm;
+  background: $ds-action-primary;
+  color: $ds-text-on-action;
   cursor: pointer;
   font-size: 13px;
   font-weight: 600;
 
   &:hover:not(:disabled) {
-    background: darken($secondary, 6%);
+    background: darken($ds-action-primary, 6%);
   }
 
   &:disabled {
@@ -10935,16 +11030,16 @@ $gauge-amber: #e0993a;
   span {
     display: block;
     margin-bottom: 2px;
-    color: $primary;
+    color: $ds-text-primary;
     font-size: 10px;
   }
 
   strong {
-    color: $secondary;
+    color: $ds-action-primary;
     font-size: 21px;
 
     small {
-      color: $gray;
+      color: $ds-text-subtle;
       font-size: 9px;
       font-weight: 500;
     }
@@ -10960,7 +11055,7 @@ $gauge-amber: #e0993a;
   .booking_daily_modal {
     width: min(390px, 100%);
     max-height: calc(100dvh - 32px);
-    border-radius: 20px;
+    border-radius: $ds-radius-xl;
   }
 }
 //////
@@ -10969,9 +11064,9 @@ $gauge-amber: #e0993a;
 .extend_modal {
   width: min(420px, calc(100% - 32px));
 
-  background: $white;
+  background: $ds-surface-elevated;
 
-  border-radius: 20px;
+  border-radius: $ds-radius-xl;
 
   padding: 20px;
 
@@ -10980,7 +11075,7 @@ $gauge-amber: #e0993a;
   .modal_header {
     h2 {
       font-size: 22px;
-      color: $primary;
+      color: $ds-text-primary;
       padding: 10px 0;
     }
   }
@@ -10988,9 +11083,9 @@ $gauge-amber: #e0993a;
   .duration_picker {
     margin: 0 0 18px;
 
-    background: #e7f1ff;
+    background: $ds-surface-card-primary;
 
-    border-radius: 10px;
+    border-radius: $ds-radius-sm;
 
     padding: 16px 14px 12px;
 
@@ -10999,7 +11094,7 @@ $gauge-amber: #e0993a;
     .label {
       margin: 0 0 8px;
 
-      color: #333;
+      color: $ds-text-primary;
 
       font-size: 14px;
 
@@ -11035,11 +11130,11 @@ $gauge-amber: #e0993a;
 
         border: none;
 
-        border-radius: 7px;
+        border-radius: $ds-radius-xs;
 
-        background: $white;
+        background: $ds-surface-elevated;
 
-        color: #222;
+        color: $ds-text-primary;
 
         font-size: 21px;
 
@@ -11061,7 +11156,7 @@ $gauge-amber: #e0993a;
 
         justify-content: center;
 
-        color: #222;
+        color: $ds-text-primary;
 
         font-size: 30px;
 
@@ -11076,7 +11171,7 @@ $gauge-amber: #e0993a;
     .note {
       margin: 9px 0 0;
 
-      color: #333;
+      color: $ds-text-primary;
 
       font-size: 11px;
 
@@ -11092,7 +11187,7 @@ $gauge-amber: #e0993a;
     .details_title {
       margin: 0 0 8px;
 
-      color: #222;
+      color: $ds-text-primary;
 
       font-size: 14px;
 
@@ -11114,14 +11209,14 @@ $gauge-amber: #e0993a;
 
       padding: 0 10px;
 
-      border-bottom: 1px dashed #e5e5e5;
+      border-bottom: 1px dashed $ds-stroke-light;
 
       &:last-child {
         border-bottom: none;
       }
 
       .label {
-        color: #777;
+        color: $ds-text-subtle;
 
         font-size: 14px;
 
@@ -11131,7 +11226,7 @@ $gauge-amber: #e0993a;
       }
 
       .calculation {
-        color: #777;
+        color: $ds-text-subtle;
 
         font-size: 14px;
 
@@ -11143,7 +11238,7 @@ $gauge-amber: #e0993a;
       }
 
       strong {
-        color: #222;
+        color: $ds-text-primary;
 
         font-size: 14px;
 
@@ -11157,7 +11252,7 @@ $gauge-amber: #e0993a;
       &.late_fee {
         .calculation,
         strong {
-          color: #e53935;
+          color: $ds-status-error;
         }
       }
     }
@@ -11170,13 +11265,13 @@ $gauge-amber: #e0993a;
       border-bottom: none;
 
       .label {
-        color: #777;
+        color: $ds-text-subtle;
 
         font-size: 14px;
       }
 
       strong {
-        color: $secondary;
+        color: $ds-action-primary;
 
         font-size: 18px;
 
@@ -11192,11 +11287,11 @@ $gauge-amber: #e0993a;
 
     border: none;
 
-    border-radius: 10px;
+    border-radius: $ds-radius-sm;
 
-    background: $secondary;
+    background: $ds-action-primary;
 
-    color: $white;
+    color: $ds-text-on-action;
 
     font-size: 14px;
 
@@ -11246,9 +11341,9 @@ $gauge-amber: #e0993a;
 
   padding: 40px 24px 24px;
 
-  background: $white;
-  border-radius: 20px;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+  background: $ds-surface-elevated;
+  border-radius: $ds-radius-xl;
+  box-shadow: 0 20px 50px rgba($ds-shadow-color, 0.15);
 
   max-height: 92vh;
 
@@ -11257,7 +11352,7 @@ $gauge-amber: #e0993a;
 
     h2 {
       font-size: 22px;
-      color: $primary;
+      color: $ds-text-primary;
       padding: 10px 0;
     }
   }
@@ -11286,7 +11381,7 @@ $gauge-amber: #e0993a;
 
     h3 {
       margin: 0;
-      color: #222;
+      color: $ds-text-primary;
       font-size: 15px;
       font-weight: 700;
       line-height: 1.6;
@@ -11299,14 +11394,14 @@ $gauge-amber: #e0993a;
 
     padding: 11px 16px;
 
-    background: #fff0f2;
-    border-radius: 10px;
+    background: $ds-status-error-background;
+    border-radius: $ds-radius-sm;
 
     text-align: center;
 
     p {
       margin: 0;
-      color: #555;
+      color: $ds-text-subtle;
       font-size: 11.5px;
       font-weight: 400;
       line-height: 1.7;
@@ -11319,7 +11414,7 @@ $gauge-amber: #e0993a;
 
     .cancel_booking_modal_details_title {
       margin: 0 0 6px;
-      color: #222;
+      color: $ds-text-primary;
       font-size: 15px;
       font-weight: 700;
       text-align: right;
@@ -11338,21 +11433,21 @@ $gauge-amber: #e0993a;
 
       padding: 0 4px;
 
-      border-bottom: 1px dashed #e5e5e5;
+      border-bottom: 1px dashed $ds-stroke-light;
 
       &:last-child {
         border-bottom: none;
       }
 
       span {
-        color: #777;
+        color: $ds-text-subtle;
         font-size: 13px;
         font-weight: 400;
         min-width: 0;
       }
 
       strong {
-        color: #222;
+        color: $ds-text-primary;
         font-size: 13px;
         font-weight: 500;
         min-width: 0;
@@ -11362,7 +11457,7 @@ $gauge-amber: #e0993a;
       &.cancel_booking_modal_row--danger {
         span,
         strong {
-          color: #e53935;
+          color: $ds-status-error;
         }
       }
 
@@ -11378,8 +11473,8 @@ $gauge-amber: #e0993a;
 
     padding: 12px;
 
-    background: #e5f0ff;
-    border-radius: 10px;
+    background: $ds-surface-card-primary;
+    border-radius: $ds-radius-sm;
 
     display: flex;
     flex-direction: column;
@@ -11389,13 +11484,13 @@ $gauge-amber: #e0993a;
 
     span {
       margin-bottom: 3px;
-      color: #666;
+      color: $ds-text-subtle;
       font-size: 11px;
       font-weight: 400;
     }
 
     strong {
-      color: #222;
+      color: $ds-text-primary;
       font-size: 20px;
       font-weight: 700;
     }
@@ -11411,7 +11506,7 @@ $gauge-amber: #e0993a;
 
     button {
       height: 46px;
-      border-radius: 10px;
+      border-radius: $ds-radius-sm;
       font-size: 13px;
       font-weight: 600;
       cursor: pointer;
@@ -11433,8 +11528,8 @@ $gauge-amber: #e0993a;
       min-width: 0;
       order: 1;
 
-      background: $secondary;
-      color: $white;
+      background: $ds-action-primary;
+      color: $ds-text-on-action;
     }
 
     .cancel_booking_modal_back_btn {
@@ -11442,9 +11537,9 @@ $gauge-amber: #e0993a;
       flex-shrink: 0;
       order: 2;
 
-      border: 1px solid #aaa;
-      background: $white;
-      color: #555;
+      border: 1px solid $ds-stroke-heavy;
+      background: $ds-surface-elevated;
+      color: $ds-text-subtle;
     }
   }
 
@@ -11466,24 +11561,24 @@ $gauge-amber: #e0993a;
     .profile_action_field {
       width: 100%;
 
-      border-radius: 9px;
+      border-radius: $ds-radius-sm;
 
-      background: $white;
+      background: $ds-surface-elevated;
 
       transition: background 0.2s ease;
 
       &.warning {
-        background: #fff1f2;
+        background: $ds-status-error-background;
 
         .profile_action_title {
-          color: #222;
+          color: $ds-text-primary;
         }
 
         .profile_action_value {
-          color: #777;
+          color: $ds-text-subtle;
 
           svg {
-            color: #e53935;
+            color: $ds-status-error;
           }
         }
       }
@@ -11521,7 +11616,7 @@ $gauge-amber: #e0993a;
         }
 
         .profile_action_title {
-          color: #222;
+          color: $ds-text-primary;
 
           font-size: 13px;
           font-weight: 600;
@@ -11537,7 +11632,7 @@ $gauge-amber: #e0993a;
 
           gap: 6px;
 
-          color: #777;
+          color: $ds-text-subtle;
 
           font-size: 11px;
           font-weight: 400;
@@ -11547,7 +11642,7 @@ $gauge-amber: #e0993a;
           svg {
             flex-shrink: 0;
 
-            color: #36b37e;
+            color: $ds-status-success;
 
             font-size: 14px;
           }
@@ -11559,10 +11654,10 @@ $gauge-amber: #e0993a;
           }
 
           &.verified {
-            color: #777;
+            color: $ds-text-subtle;
 
             svg {
-              color: #36b37e;
+              color: $ds-status-success;
             }
           }
         }
@@ -11570,7 +11665,7 @@ $gauge-amber: #e0993a;
         .arrow {
           flex-shrink: 0;
 
-          color: #888;
+          color: $ds-text-subtle;
 
           font-size: 18px;
         }
@@ -11596,7 +11691,7 @@ $gauge-amber: #e0993a;
 
       background: transparent;
 
-      color: #e53935;
+      color: $ds-status-error;
 
       font-size: 14px;
       font-weight: 600;
@@ -11623,11 +11718,11 @@ $gauge-amber: #e0993a;
 
       border: none;
 
-      border-radius: 8px;
+      border-radius: $ds-radius-sm;
 
-      background: $secondary;
+      background: $ds-action-primary;
 
-      color: $white;
+      color: $ds-text-on-action;
 
       font-size: 13px;
       font-weight: 600;
@@ -11722,8 +11817,8 @@ $gauge-amber: #e0993a;
 .license_modal {
   width: min(100% - 32px, 420px);
 
-  background: $white;
-  border-radius: 16px;
+  background: $ds-surface-elevated;
+  border-radius: $ds-radius-lg;
 
   .modal_body {
     padding: 16px 14px 12px;
@@ -11745,12 +11840,12 @@ $gauge-amber: #e0993a;
 
     gap: 7px;
 
-    border: 1px dashed #ddd;
-    border-radius: 8px;
+    border: 1px dashed $ds-stroke-heavy;
+    border-radius: $ds-radius-sm;
 
-    background: #fff;
+    background: $ds-surface-elevated;
 
-    color: #aaa;
+    color: $ds-text-placeholder;
 
     cursor: pointer;
 
@@ -11771,19 +11866,19 @@ $gauge-amber: #e0993a;
     }
 
     small {
-      color: #aaa;
+      color: $ds-text-placeholder;
       font-size: 10px;
     }
 
     &:hover {
-      border-color: $secondary;
-      background: #fafafa;
+      border-color: $ds-action-primary;
+      background: $ds-surface-on-background;
     }
 
     &.has_file {
-      border-color: $secondary;
+      border-color: $ds-action-primary;
 
-      color: $secondary;
+      color: $ds-action-primary;
 
       .file_name {
         max-width: 90%;
@@ -11792,7 +11887,7 @@ $gauge-amber: #e0993a;
         text-overflow: ellipsis;
         white-space: nowrap;
 
-        color: #444;
+        color: $ds-text-primary;
       }
     }
   }
