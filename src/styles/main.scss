@@ -6800,19 +6800,6 @@ img {
   flex-direction: column;
   gap: 10px;
   border-radius: $ds-radius-xl;
-  .back_link_btn {
-    background: none;
-    border: none;
-    color: $ds-text-subtle;
-    font-size: 0.82rem;
-    font-weight: 600;
-    cursor: pointer;
-    text-align: center;
-
-    &:hover {
-      color: $ds-action-primary;
-    }
-  }
 
   .pay_btn {
     height: 52px;
@@ -6832,6 +6819,31 @@ img {
 
 // Booking confirmation sheet
 .confirm_booking_modal {
+  .confirm_modal_header {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: $ds-space-3;
+    padding: 14px 10px 6px;
+
+    h2 {
+      margin: 0;
+      color: $ds-text-primary;
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .back_btn {
+      display: block;
+      inset-inline-start: 10px;
+      inset-inline-end: auto;
+      width: 34px;
+      height: 34px;
+      font-size: 18px;
+      position: static;
+    }
+  }
+
   .confirm_modal_scroll {
     padding: 24px 10px;
     background: $ds-surface-card-primary;
@@ -6992,10 +7004,6 @@ img {
     padding: 10px;
     border-top: 1px solid $ds-stroke-light;
     background: $ds-surface-elevated;
-
-    .back_link_btn {
-      font-size: 11px;
-    }
 
     .pay_btn {
       height: 42px;

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { FiX, FiStar } from 'react-icons/fi';
+import { FiX, FiStar, FiArrowLeft } from 'react-icons/fi';
 import { formatCurrency } from '@utils/index';
 import type { BookingDetails } from '@app-types/car';
 import type { StaticImageData } from 'next/image';
@@ -72,6 +72,13 @@ export default function BookingConfirmModal({
         <button className="close_btn" onClick={onClose} aria-label="إغلاق">
           <FiX />
         </button>
+
+        <div className="confirm_modal_header">
+          <button type="button" className="back_btn" onClick={onBack} aria-label="رجوع">
+            <FiArrowLeft className="mirror-in-rtl" />
+          </button>
+          <h2>تأكيد الحجز</h2>
+        </div>
 
         <div className="confirm_modal_scroll">
           <div className="confirm_car_summary">
@@ -187,10 +194,6 @@ export default function BookingConfirmModal({
         </div>
 
         <div className="confirm_modal_footer">
-          <button type="button" className="back_link_btn" onClick={onBack}>
-            رجوع لتعديل التاريخ
-          </button>
-
           <button type="button" className="pay_btn" onClick={onContinue}>
             متابعة للدفع
           </button>
