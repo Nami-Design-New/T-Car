@@ -2,7 +2,7 @@ import Footer from '@components/layout/Footer';
 import Header from '@components/layout/Header';
 import type { Metadata } from 'next';
 import { NextIntlClientProvider } from 'next-intl';
-import { getDirection } from '@utils/index';
+import { getDirection } from '@/shared/config/languages';
 import '../../styles/main.css';
 import localFont from 'next/font/local'
 

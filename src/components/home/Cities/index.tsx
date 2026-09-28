@@ -11,7 +11,7 @@ import {
 import SectionTitle from '@components/common/SectionTitle';
 import type {City} from '@app-types/car';
 import { useCarouselRail } from '@hooks/useCarouselRail';
-import { getDirection } from '@/utils';
+import { getDirection } from '@/shared/config/languages';
 
 import c1 from '@assets/images/c1.jpg';
 import c2 from '@assets/images/c2.jpg';

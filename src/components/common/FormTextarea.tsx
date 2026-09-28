@@ -1,7 +1,7 @@
 'use client';
 
 import { TextareaHTMLAttributes } from 'react';
-import { classNames } from '@/utils';
+import { cn } from '@/shared/lib/cn';
 
 interface FormTextareaProps
   extends TextareaHTMLAttributes<HTMLTextAreaElement> {
@@ -27,7 +27,7 @@ export default function FormTextarea({
 
       <textarea
         id={id}
-        className={classNames('form_textarea', className)}
+        className={cn('form_textarea', className)}
         {...props}
       />
 

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { formatCurrency } from '@utils/index';
+import { formatCurrency } from '@/shared/lib/format';
 import type { InsuranceOption } from '@app-types/car';
 
 interface Props {

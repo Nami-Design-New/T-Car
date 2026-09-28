@@ -1,5 +1,5 @@
 import { ButtonHTMLAttributes, ReactNode } from 'react';
-import { classNames } from '@utils/index';
+import { cn } from '@/shared/lib/cn';
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   children: ReactNode;
@@ -15,7 +15,7 @@ export default function Button({
 }: ButtonProps) {
   return (
     <button
-      className={classNames(
+      className={cn(
         'btn',
         `btn-${variant}`,
         `btn-${size}`,

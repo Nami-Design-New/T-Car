@@ -4,7 +4,7 @@ import {useState, useRef, useEffect} from 'react';
 import {useLocale} from 'next-intl';
 import {usePathname} from 'next/navigation';
 import {FiGlobe, FiCheck} from 'react-icons/fi';
-import {SUPPORTED_LANGUAGES} from '@constants/index';
+import { SUPPORTED_LANGUAGES } from '@/shared/config/languages';
 
 export default function LanguageSwitcher() {
   const locale = useLocale();

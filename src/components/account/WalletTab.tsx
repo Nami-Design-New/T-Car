@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import Lottie from 'lottie-react';
 import { FiLock } from 'react-icons/fi';
-import { formatAmount, formatTransactionDate } from '@utils/index';
+import { formatAmount, formatTransactionDate } from '@/shared/lib/format';
 import type { WalletSummary, WalletTransaction } from '@app-types/car';
 import Loader from '@components/common/Loader';
 

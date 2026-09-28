@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { FiFileText, FiUserPlus } from 'react-icons/fi';
-import { formatCurrency } from '@utils/index';
+import { formatCurrency } from '@/shared/lib/format';
 import type { AddonService } from '@app-types/car';
 
 const ICONS = { external: FiFileText, driver: FiUserPlus };

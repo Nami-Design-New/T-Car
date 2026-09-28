@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import { formatCurrency } from '@utils/index';
+import { formatCurrency } from '@/shared/lib/format';
 import type { StaticImageData } from 'next/image';
 
 interface Props {

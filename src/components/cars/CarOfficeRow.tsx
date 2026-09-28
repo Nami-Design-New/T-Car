@@ -11,7 +11,7 @@ import 'swiper/css';
 
 import CarCard from '@components/cars/CarCard';
 import type { CarListing, Office } from '@app-types/car';
-import { classNames } from '@utils/index';
+import { cn } from '@/shared/lib/cn';
 
 interface CarOfficeRowProps {
   office: Office;
@@ -59,7 +59,7 @@ export default function CarOfficeRow({ office, cars, className }: CarOfficeRowPr
   );
 
   return (
-    <section className={classNames('office-row', className)} aria-labelledby={titleId}>
+    <section className={cn('office-row', className)} aria-labelledby={titleId}>
       <header className="office-row__header">{title}</header>
 
       <Swiper

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { formatCurrency } from '@utils/index';
+import { formatCurrency } from '@/shared/lib/format';
 
 import BookingConfirmModal from '../modals/BookingConfirmModal';
 import SuccessModal from '../common/SuccessModal';

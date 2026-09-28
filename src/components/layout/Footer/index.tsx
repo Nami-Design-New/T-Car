@@ -17,7 +17,7 @@ import logo from '@assets/images/fav.svg';
 import appStore from '../../../assets/images/Apple Store.webp';
 import googlePlay from '../../../assets/images/Play Sotre.webp';
 
-import { NAV_LINKS } from '@constants/index';
+import { NAV_LINKS } from '@/shared/config/site';
 
 export default function Footer() {
   const t = useTranslations();

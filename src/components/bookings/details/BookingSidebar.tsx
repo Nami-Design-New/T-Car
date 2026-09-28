@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { FiStar } from 'react-icons/fi';
-import { formatCurrency } from '@utils/index';
+import { formatCurrency } from '@/shared/lib/format';
 import BookingReviewModal from '@components/modals/Bookingreviewmodal';
 
 interface Props {

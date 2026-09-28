@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { FiChevronRight, FiChevronLeft, FiClock } from 'react-icons/fi';
-import { formatCurrency } from '@utils/index';
+import { formatCurrency } from '@/shared/lib/format';
 import type { BookingDetails } from '@app-types/car';
 
 interface Props {

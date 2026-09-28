@@ -4,7 +4,7 @@ import { Link } from '@/i18n/navigation';
 import type { CarListing } from '@app-types/car';
 import giftImage from '@assets/images/gift.svg';
 import RiyalIcon from '@assets/ryal.svg';
-import { classNames } from '@utils/index';
+import { cn } from '@/shared/lib/cn';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import { FaStar } from 'react-icons/fa6';
@@ -36,7 +36,7 @@ export default function CarCard({
     : null;
 
   return (
-    <article className={classNames('car-card', className)}>
+    <article className={cn('car-card', className)}>
       <Link
         href={detailsHref}
         className="car-card__link"

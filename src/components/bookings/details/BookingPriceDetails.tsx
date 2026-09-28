@@ -1,4 +1,4 @@
-import { formatCurrency } from '@utils/index';
+import { formatCurrency } from '@/shared/lib/format';
 
 interface Props {
   pricePerDay: number;

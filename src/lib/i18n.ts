@@ -6,7 +6,7 @@
 
 // import en from '@locales/en.json';
 // import ar from '@locales/ar.json';
-// import { DEFAULT_LANGUAGE } from '@constants/index';
+// import { DEFAULT_LANGUAGE } from '@/shared/config/site';
 
 // if (!i18n.isInitialized) {
 //   i18n

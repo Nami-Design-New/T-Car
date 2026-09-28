@@ -1,7 +1,7 @@
 'use client';
 
 import { InputHTMLAttributes } from 'react';
-import { classNames } from '@/utils';
+import { cn } from '@/shared/lib/cn';
 
 interface FormInputProps extends InputHTMLAttributes<HTMLInputElement> {
   label: string;
@@ -26,7 +26,7 @@ export default function FormInput({
 
       <input
         id={id}
-        className={classNames('form_input', className)}
+        className={cn('form_input', className)}
         {...props}
       />
 

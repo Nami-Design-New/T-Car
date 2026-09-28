@@ -4,7 +4,7 @@ import { FormEvent, useEffect, useState } from 'react';
 import Image from 'next/image';
 import { createPortal } from 'react-dom';
 import { FiX } from 'react-icons/fi';
-import { formatAmount } from '@utils/index';
+import { formatAmount } from '@/shared/lib/format';
 import sarIcon from '@assets/icons/sar.svg';
 
 interface Props {
