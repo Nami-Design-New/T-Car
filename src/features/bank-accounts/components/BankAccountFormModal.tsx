@@ -5,8 +5,7 @@ import Image from 'next/image';
 import { createPortal } from 'react-dom';
 import { FiX } from 'react-icons/fi';
 import { PiBank } from 'react-icons/pi';
-import type { Bank, BankAccount, BankAccountPayload } from '@app-types/car';
-import { normalizeIban } from '@services/bankAccounts.service';
+import { normalizeIban, type Bank, type BankAccount, type BankAccountPayload } from '../model';
 import arrowDownIcon from '@assets/icons/arrow-down.svg';
 
 interface Props {

@@ -1,10 +1,10 @@
 'use client';
 
 import { useCallback, useState } from 'react';
-import type { BankAccount, BankAccountPayload } from '@app-types/car';
-import { useBankAccounts } from '@hooks/useBankAccounts';
-import BankAccountsTab from '@components/account/BankAccountsTab';
-import BankAccountFormModal from '@components/modals/BankAccountFormModal';
+import type { BankAccount, BankAccountPayload } from '../model';
+import { useBankAccounts } from '../hooks/useBankAccounts';
+import BankAccountsTab from './BankAccountsTab';
+import BankAccountFormModal from './BankAccountFormModal';
 import SuccessModal from '@components/common/SuccessModal';
 import FailedModal from '@components/common/FailedModal';
 

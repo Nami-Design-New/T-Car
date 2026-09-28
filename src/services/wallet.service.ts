@@ -1,6 +1,7 @@
-import type { BankAccount, WalletSummary, WalletTransaction } from '@app-types/car';
+import type { BankAccount } from '@/features/bank-accounts/model';
+import type { WalletSummary, WalletTransaction } from '@app-types/car';
 import { MOCK_WALLET_SUMMARY, MOCK_WALLET_TRANSACTIONS } from './mocks/wallet';
-import { bankAccountsService } from '@services/bankAccounts.service';
+import { bankAccountsApi } from '@/services/bankAccounts.api';
 import { AppError } from '@/shared/lib/errors';
 
 export interface WalletData {
@@ -51,7 +52,7 @@ export const walletService = {
 
   /** Same accounts the user manages from the bank accounts tab. */
   getBankAccounts(): Promise<BankAccount[]> {
-    return bankAccountsService.getBankAccounts();
+    return bankAccountsApi.getBankAccounts();
   },
 
   async topUp(amount: number): Promise<void> {
@@ -67,7 +68,7 @@ export const walletService = {
   },
 
   async withdraw({ bankAccountId, amount }: WithdrawParams): Promise<void> {
-    const accounts = await bankAccountsService.getBankAccounts();
+    const accounts = await bankAccountsApi.getBankAccounts();
     await delay();
     if (!accounts.some((account) => account.id === bankAccountId)) {
       throw new AppError('not_found', 'bankAccounts.notFound');

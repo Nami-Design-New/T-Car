@@ -36,7 +36,8 @@
           "warn",
           {
             "patterns": [
-              "@/features/*",
+              "@/features/*/*",
+              "!@/features/*/model",
               "@/app/*",
               "@/shared/ui/*",
               "@/shared/hooks/*"

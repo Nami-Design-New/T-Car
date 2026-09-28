@@ -1,23 +1,51 @@
-import type { Bank, BankAccount, BankAccountPayload } from '@app-types/car';
-import { MOCK_BANKS, MOCK_BANK_ACCOUNTS } from './mocks/wallet';
+import {
+  maskIban,
+  normalizeIban,
+  type Bank,
+  type BankAccount,
+  type BankAccountPayload,
+} from '@/features/bank-accounts/model';
 import { AppError } from '@/shared/lib/errors';
+import type { BankAccountsApi } from '../bankAccounts.api';
+import sedadBankLogo from '@assets/images/banks/sedad-bank.png';
 
-// The bank account endpoints are not available yet, so the service works on an
-// in-memory copy of the mock data. Swap each method body for an `api` call
-// (see cars.api.ts) once the backend is ready; callers stay unchanged.
+export const MOCK_BANKS: Bank[] = [
+  { id: 'sedad', name: 'بنك السداد', logo: sedadBankLogo },
+  { id: 'alahli', name: 'البنك الأهلي' },
+  { id: 'alrajhi', name: 'مصرف الراجحي' },
+  { id: 'riyad', name: 'بنك الرياض' },
+];
+
+export const MOCK_BANK_ACCOUNTS: BankAccount[] = [
+  {
+    id: '1',
+    bankId: 'sedad',
+    bankName: 'بنك السداد',
+    logo: sedadBankLogo,
+    iban: 'SA0380000000608010456789',
+    maskedNumber: '45 67 89',
+  },
+  {
+    id: '2',
+    bankId: 'alrajhi',
+    bankName: 'مصرف الراجحي',
+    iban: 'SA4420000001234567123456',
+    maskedNumber: '12 34 56',
+  },
+  {
+    id: '3',
+    bankId: 'riyad',
+    bankName: 'بنك الرياض',
+    iban: 'SA1515000000000000987654',
+    maskedNumber: '98 76 54',
+  },
+];
+
+// In-memory state, so this mock must only run in the browser: on the server it
+// would be shared between every user of the process.
 let accounts: BankAccount[] = [...MOCK_BANK_ACCOUNTS];
 
 const delay = (ms = 600) => new Promise((resolve) => setTimeout(resolve, ms));
-
-/** Upper-cases the IBAN and drops any spaces the user typed. */
-export const normalizeIban = (iban: string) => iban.replace(/\s+/g, '').toUpperCase();
-
-/** Last six IBAN characters in pairs, e.g. "…456789" → "45 67 89". */
-export const maskIban = (iban: string) =>
-  normalizeIban(iban)
-    .slice(-6)
-    .match(/.{1,2}/g)
-    ?.join(' ') ?? '';
 
 function toAccount(id: string, { bankId, iban }: BankAccountPayload): BankAccount {
   const bank = MOCK_BANKS.find((item) => item.id === bankId);
@@ -44,23 +72,23 @@ function toAccount(id: string, { bankId, iban }: BankAccountPayload): BankAccoun
   };
 }
 
-export const bankAccountsService = {
-  async getBanks(): Promise<Bank[]> {
+export const bankAccountsMock: BankAccountsApi = {
+  async getBanks() {
     await delay(300);
     return [...MOCK_BANKS];
   },
 
-  async getBankAccounts(): Promise<BankAccount[]> {
+  async getBankAccounts() {
     await delay(300);
     return [...accounts];
   },
 
-  async addBankAccount(payload: BankAccountPayload): Promise<void> {
+  async addBankAccount(payload) {
     await delay();
     accounts = [...accounts, toAccount(`${Date.now()}`, payload)];
   },
 
-  async updateBankAccount(id: string, payload: BankAccountPayload): Promise<void> {
+  async updateBankAccount(id, payload) {
     await delay();
     if (!accounts.some((account) => account.id === id)) {
       throw new AppError('not_found', 'bankAccounts.notFound');
@@ -69,7 +97,7 @@ export const bankAccountsService = {
     accounts = accounts.map((account) => (account.id === id ? toAccount(id, payload) : account));
   },
 
-  async deleteBankAccount(id: string): Promise<void> {
+  async deleteBankAccount(id) {
     await delay();
     if (!accounts.some((account) => account.id === id)) {
       throw new AppError('not_found', 'bankAccounts.notFound');

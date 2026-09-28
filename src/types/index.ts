@@ -49,7 +49,6 @@ export type {
   WalletTransaction,
   WalletTransactionType,
   WalletSummary,
-  BankAccount,
   AppNotification,
 } from './car';
 

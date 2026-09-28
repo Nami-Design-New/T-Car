@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useState } from 'react';
-import type { BankAccount } from '@app-types/car';
+import type { BankAccount } from '@/features/bank-accounts';
 import { useWallet } from '@hooks/useWallet';
 import { MIN_TOP_UP, MIN_WITHDRAW } from '@/features/wallet/model';
 import WalletTab from '@components/account/WalletTab';

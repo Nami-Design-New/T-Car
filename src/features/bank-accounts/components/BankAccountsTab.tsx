@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import Lottie from 'lottie-react';
 import { PiBank } from 'react-icons/pi';
-import type { BankAccount } from '@app-types/car';
+import type { BankAccount } from '../model';
 import Loader from '@/shared/ui/Loader';
 
 import deleteIcon from '@assets/icons/bank-delete.svg';

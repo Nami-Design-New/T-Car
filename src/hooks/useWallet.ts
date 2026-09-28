@@ -1,7 +1,8 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import type { BankAccount, WalletSummary, WalletTransaction } from '@app-types/car';
+import type { BankAccount } from '@/features/bank-accounts';
+import type { WalletSummary, WalletTransaction } from '@app-types/car';
 import { walletService, type WithdrawParams } from '@services/wallet.service';
 
 const EMPTY_SUMMARY: WalletSummary = { total: 0, withdrawable: 0, nonWithdrawable: 0 };

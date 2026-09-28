@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { createPortal } from 'react-dom';
 import { FiX } from 'react-icons/fi';
 import { PiBank } from 'react-icons/pi';
-import type { BankAccount } from '@app-types/car';
+import type { BankAccount } from '@/features/bank-accounts';
 
 interface Props {
   open: boolean;

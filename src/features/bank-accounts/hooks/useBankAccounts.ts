@@ -1,8 +1,8 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import type { Bank, BankAccount, BankAccountPayload } from '@app-types/car';
-import { bankAccountsService } from '@services/bankAccounts.service';
+import { bankAccountsApi } from '@/services/bankAccounts.api';
+import type { Bank, BankAccount, BankAccountPayload } from '../model';
 
 /**
  * The user's bank accounts and the banks they can pick from, plus the add,
@@ -16,13 +16,13 @@ export function useBankAccounts() {
   const [submitting, setSubmitting] = useState(false);
 
   const refresh = useCallback(async () => {
-    setAccounts(await bankAccountsService.getBankAccounts());
+    setAccounts(await bankAccountsApi.getBankAccounts());
   }, []);
 
   useEffect(() => {
     let active = true;
 
-    Promise.all([bankAccountsService.getBankAccounts(), bankAccountsService.getBanks()])
+    Promise.all([bankAccountsApi.getBankAccounts(), bankAccountsApi.getBanks()])
       .then(([accountList, bankList]) => {
         if (!active) return;
         setAccounts(accountList);
@@ -54,18 +54,18 @@ export function useBankAccounts() {
   );
 
   const add = useCallback(
-    (payload: BankAccountPayload) => run(() => bankAccountsService.addBankAccount(payload)),
+    (payload: BankAccountPayload) => run(() => bankAccountsApi.addBankAccount(payload)),
     [run]
   );
 
   const update = useCallback(
     (id: string, payload: BankAccountPayload) =>
-      run(() => bankAccountsService.updateBankAccount(id, payload)),
+      run(() => bankAccountsApi.updateBankAccount(id, payload)),
     [run]
   );
 
   const remove = useCallback(
-    (id: string) => run(() => bankAccountsService.deleteBankAccount(id)),
+    (id: string) => run(() => bankAccountsApi.deleteBankAccount(id)),
     [run]
   );
 
