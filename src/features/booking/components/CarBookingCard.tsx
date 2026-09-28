@@ -3,15 +3,15 @@
 import { useState } from 'react';
 import { formatCurrency } from '@/shared/lib/format';
 
-import BookingConfirmModal from '../modals/BookingConfirmModal';
-import SuccessModal from '../common/SuccessModal';
+import BookingConfirmModal from './BookingConfirmModal';
+import SuccessModal from '@/components/common/SuccessModal';
 import Image from 'next/image';
 import RiyalIcon from '@/assets/icons/sar.svg';
-import type { BookingDetails, PaymentMethod } from '@app-types/car';
+import type { BookingDetails, PaymentMethod } from '../model';
 
 import type { StaticImageData } from 'next/image';
-import BookingDailyModal from '../modals/BookingDailyModal';
-import PaymentMethodModal from '../modals/PaymentMethodModal';
+import BookingDailyModal from './BookingDailyModal';
+import PaymentMethodModal from './PaymentMethodModal';
 
 type Step = 'closed' | 'dates' | 'confirm' | 'payment' | 'success';
 

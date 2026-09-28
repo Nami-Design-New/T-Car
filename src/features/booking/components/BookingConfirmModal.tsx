@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { FiX, FiStar, FiArrowLeft } from 'react-icons/fi';
 import { formatCurrency } from '@/shared/lib/format';
-import type { BookingDetails } from '@app-types/car';
+import type { BookingDetails } from '../model';
 import type { StaticImageData } from 'next/image';
 import Image from 'next/image';
 

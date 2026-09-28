@@ -3,7 +3,7 @@ import CarQuickInfo from '@components/car-details/CarQuickInfo';
 import WarrantiesList from '@components/car-details/WarrantiesList';
 import AddonsGrid from '@components/car-details/AddonsGrid';
 import InsuranceOptions from '@components/car-details/InsuranceOptions';
-import CarBookingCard from '@components/car-details/CarBookingCard';
+import { CarBookingCard } from '@/features/booking';
 import ReviewsSummaryCard from '@components/car-details/ReviewsSummaryCard';
 import StationAndAirportInfo from '@components/car-details/StationAndAirportInfo';
 import type { CarDetails } from '@app-types/car';

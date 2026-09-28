@@ -93,24 +93,6 @@ export interface CarDetails extends CarListing {
   reviews: Review[];
 }
 
-// Booking flow
-export type PaymentMethod = 'wallet' | 'visa' | 'tabby' | 'tamara';
-
-export interface BookingDetails {
-  startDate: Date;
-  endDate: Date;
-  time: string;
-  days: number;
-  pricePerDay: number;
-  subtotal: number;
-  vat: number;
-  total: number;
-  notes: string;
-  pickupAddress?: string;
-  dropoffAddress?: string;
-  pickupLocation?: LocationData | null;
-  dropoffLocation?: LocationData | null;
-}
 
 
 // City

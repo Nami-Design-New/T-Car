@@ -1,5 +1,5 @@
 import type { StaticImageData } from 'next/image';
-import type { BookingDetails } from '@app-types/car';
+import type { BookingDetails } from '@/features/booking';
 
 export type BookingStatus = 'current' | 'upcoming' | 'late' | 'completed' | 'cancelled';
 

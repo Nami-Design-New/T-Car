@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { FiChevronRight, FiChevronLeft, FiClock } from 'react-icons/fi';
 import { formatCurrency } from '@/shared/lib/format';
-import type { BookingDetails } from '@app-types/car';
+import type { BookingDetails } from '@/features/booking';
 
 interface Props {
   open: boolean;

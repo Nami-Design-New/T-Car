@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import Image, { type StaticImageData } from 'next/image';
 import { createPortal } from 'react-dom';
 import { FiX } from 'react-icons/fi';
-import type { PaymentMethod } from '@app-types/car';
+import type { PaymentMethod } from '../model';
 import walletIcon from '@assets/icons/Wallet.svg';
 import cardIcon from '@assets/card.svg';
 import tabyIcon from '@assets/taby.svg';

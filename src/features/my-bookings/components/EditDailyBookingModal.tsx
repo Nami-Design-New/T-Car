@@ -1,8 +1,7 @@
 'use client';
 
-import BookingDailyModal from '@/components/modals/BookingDailyModal';
+import { BookingDailyModal, type BookingDetails } from '@/features/booking';
 
-import type { BookingDetails } from '@app-types/car';
 
 interface Props {
   open: boolean;

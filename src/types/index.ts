@@ -12,10 +12,6 @@ export type {
   InsuranceOption,
   CarDetails,
 
-  // Booking flow
-  PaymentMethod,
-  BookingDetails,
-
   // City
   City,
   CityDetails,
