@@ -360,13 +360,15 @@ export default function BookingDailyModal({ open, onClose, pricePerDay, onConfir
 
       </div>
 
-      <MapLocationModal
-        open={mapField !== null}
-        onClose={() => setMapField(null)}
-        onConfirm={handleLocationConfirm}
-        title={mapField === 'dropoff' ? 'حدد موقع التسليم' : 'حدد موقع الاستلام'}
-        initialLocation={mapField === 'dropoff' ? dropoffLocation : pickupLocation}
-      />
+      {mapField !== null && (
+        <MapLocationModal
+          open
+          onClose={() => setMapField(null)}
+          onConfirm={handleLocationConfirm}
+          title={mapField === 'dropoff' ? 'حدد موقع التسليم' : 'حدد موقع الاستلام'}
+          initialLocation={mapField === 'dropoff' ? dropoffLocation : pickupLocation}
+        />
+      )}
     </div>
   );
 

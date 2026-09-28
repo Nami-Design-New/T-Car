@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter } from '@/i18n/navigation';
 
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, EffectFade } from 'swiper/modules';
@@ -22,7 +22,7 @@ import AirportModal from './AirportModal';
 import StationModal from './StationModal';
 import CountryModal from './CountryModal';
 
-import { useTranslations } from 'next-intl';;
+import { useTranslations } from 'next-intl';
 import type { RentalType, PickupType, Branch, Airport, Station, LocationData, Country } from '../model';
 
 const slides = [hero1.src, hero2.src, hero3.src];
@@ -67,6 +67,11 @@ export default function Hero() {
     if (!rentalType) return;
 
     const searchParams = new URLSearchParams({ type: rentalType });
+
+    // Earlier steps of the flow: before, these were logged and then dropped.
+    if (selectedAirport) searchParams.set('airportId', String(selectedAirport.id));
+    if (selectedStation) searchParams.set('stationId', String(selectedStation.id));
+    if (selectedCountry) searchParams.set('countryId', String(selectedCountry.id));
 
     Object.entries(params).forEach(([key, value]) => {
       searchParams.set(key, String(value));
@@ -145,10 +150,6 @@ export default function Hero() {
     setShowAirportModal(false);
 
     setShowMapModal(true);
-
-    console.log(airport);
-
-    // DateTimeModal
   };
 
   // ===========================
@@ -161,10 +162,6 @@ export default function Hero() {
     setShowStationModal(false);
 
     setShowMapModal(true);
-
-    console.log(station);
-
-    // DateTimeModal
   };
 
   // ===========================
@@ -178,8 +175,6 @@ export default function Hero() {
 
     // after choosing country, show pickup type modal
     setShowPickupModal(true);
-
-    console.log(country);
   };
 
   // ===========================
@@ -266,11 +261,13 @@ export default function Hero() {
 
       {/* Map */}
 
-      <MapLocationModal
-        open={showMapModal}
-        onClose={() => setShowMapModal(false)}
-        onConfirm={handleLocationConfirm}
-      />
+      {showMapModal && (
+        <MapLocationModal
+          open
+          onClose={() => setShowMapModal(false)}
+          onConfirm={handleLocationConfirm}
+        />
+      )}
 
 
       {/* Branch */}

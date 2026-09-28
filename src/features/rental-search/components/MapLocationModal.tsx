@@ -24,6 +24,9 @@ const defaultCenter = {
   lng: 46.6753,
 };
 
+/** First locale the Maps script was requested with; see the note in the component. */
+let pinnedMapsLanguage: string | undefined;
+
 export default function MapLocationModal({
   open,
   onClose,
@@ -44,11 +47,14 @@ export default function MapLocationModal({
   // throws ("must not be called again with different options") if it is later
   // called with a different `language`. Pinning the locale that was active on
   // first mount keeps the loader params stable, so switching language can
-  // never retrigger the script or crash the render.
+  // never retrigger the script or crash the render. The pin lives at module
+  // level because callers mount this dialog only while it is open, so it
+  // remounts on every open.
   // Trade-off: the map keeps the language it first loaded with until the page
   // is reloaded. That is a limit of the Maps API, not something we can fix
   // here -- the script exposes no way to change its language after load.
-  const [mapsLanguage] = useState(locale);
+  pinnedMapsLanguage ??= locale;
+  const mapsLanguage = pinnedMapsLanguage;
 
   const searchTimeout = useRef<number | null>(null);
   const mapRef = useRef<google.maps.Map | null>(null);
