@@ -10,7 +10,7 @@ import UserMenu from '@components/layout/UserMenu';
 import { NAV_LINKS, SITE_NAME } from '@/shared/config/site';
 import Image from 'next/image';
 import logo from '@assets/images/logo.png';
-import AuthModal from '@/components/auth/AuthModal';
+import { AuthModal } from '@/features/auth';
 
 export default function Header() {
   const t = useTranslations();

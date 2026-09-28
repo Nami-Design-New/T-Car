@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { useTranslations } from 'next-intl';;
+import { useTranslations } from 'next-intl';
 import { FiArrowLeft } from 'react-icons/fi';
 
 type Props = {

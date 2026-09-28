@@ -6,7 +6,7 @@ import { useState } from 'react';
 import LoginForm from './LoginForm';
 import OtpForm from './OtpForm';
 import RegisterForm from './RegisterForm';
-import SuccessModal from '../common/SuccessModal';
+import SuccessModal from '@/components/common/SuccessModal';
 
 type Props = {
   show: boolean;
