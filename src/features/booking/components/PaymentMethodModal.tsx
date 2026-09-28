@@ -15,6 +15,9 @@ interface Props {
   open: boolean;
   onClose: () => void;
   onConfirm: (method: PaymentMethod) => void;
+  loading?: boolean;
+  /** Already translated; the dialog stays open and shows it after a failed submit. */
+  error?: string;
 }
 
 interface PaymentOption {
@@ -57,7 +60,13 @@ const OPTIONS: PaymentOption[] = [
   },
 ];
 
-export default function PaymentMethodModal({ open, onClose, onConfirm }: Props) {
+export default function PaymentMethodModal({
+  open,
+  onClose,
+  onConfirm,
+  loading = false,
+  error,
+}: Props) {
   const [method, setMethod] = useState<PaymentMethod>('wallet');
   const [usePoints, setUsePoints] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -170,12 +179,19 @@ export default function PaymentMethodModal({ open, onClose, onConfirm }: Props) 
           </label>
         </div>
 
+        {error && (
+          <p className="text-danger small mt-3 mb-0" role="alert">
+            {error}
+          </p>
+        )}
+
         <button
           type="button"
           className="payment_confirm_btn btn btn-primary w-100 mt-3"
           onClick={() => onConfirm(method)}
+          disabled={loading}
         >
-          تأكيد
+          {loading ? 'جاري تأكيد الحجز...' : 'تأكيد'}
         </button>
       </div>
     </div>,

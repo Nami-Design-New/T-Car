@@ -1,3 +1,4 @@
+import type { CreateBookingRequest } from '@/features/booking/model';
 import type {
   BookingDetailsView,
   BookingEditRequest,
@@ -15,6 +16,7 @@ export interface BookingsApi {
   requestBookingEdit(id: string, request: BookingEditRequest): Promise<void>;
   cancelBooking(id: string): Promise<void>;
   submitReview(id: string, input: BookingReviewInput): Promise<void>;
+  createBooking(request: CreateBookingRequest): Promise<void>;
 }
 
 // The booking endpoints are not available yet, so the mock is the only

@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 import { formatCurrency } from '@/shared/lib/format';
+import { useErrorMessage } from '@/shared/hooks/useErrorMessage';
+import type { AppError } from '@/shared/lib/errors';
 
 import BookingConfirmModal from './BookingConfirmModal';
 import SuccessModal from '@/components/common/SuccessModal';
@@ -12,8 +14,15 @@ import type { BookingDetails, PaymentMethod } from '../model';
 import type { StaticImageData } from 'next/image';
 import BookingDailyModal from './BookingDailyModal';
 import PaymentMethodModal from './PaymentMethodModal';
+import { useCreateBooking } from '../hooks/useCreateBooking';
 
-type Step = 'closed' | 'dates' | 'confirm' | 'payment' | 'success';
+/** One sheet at a time. A failed booking keeps the payment sheet open with the error. */
+type Flow =
+  | { step: 'closed' }
+  | { step: 'dates' }
+  | { step: 'confirm' }
+  | { step: 'payment'; error?: AppError }
+  | { step: 'success' };
 
 interface Props {
   carId: string;
@@ -36,7 +45,11 @@ export default function CarBookingCard({
   pricePerDay,
   originalPrice,
 }: Props) {
-  const [step, setStep] = useState<Step>('closed');
+  const [flow, setFlow] = useState<Flow>({ step: 'closed' });
+  const { step } = flow;
+  const setStep = (next: 'closed' | 'dates' | 'confirm' | 'payment') => setFlow({ step: next });
+  const { submitting, createBooking } = useCreateBooking(carId);
+  const errorMessage = useErrorMessage();
 
   const [booking, setBooking] = useState<BookingDetails | null>(null);
 
@@ -45,10 +58,11 @@ export default function CarBookingCard({
     setStep('confirm');
   };
 
-  const handlePay = (method: PaymentMethod) => {
-    console.log(carId, booking, method);
+  const handlePay = async (method: PaymentMethod) => {
+    if (!booking || submitting) return;
 
-    setStep('success');
+    const result = await createBooking(booking, method);
+    setFlow(result.ok ? { step: 'success' } : { step: 'payment', error: result.error });
   };
 
   return (
@@ -99,8 +113,12 @@ export default function CarBookingCard({
 
       <PaymentMethodModal
         open={step === 'payment'}
-        onClose={() => setStep('closed')}
+        onClose={() => {
+          if (!submitting) setStep('closed');
+        }}
         onConfirm={handlePay}
+        loading={submitting}
+        error={flow.step === 'payment' && flow.error ? errorMessage(flow.error) : undefined}
       />
 
       <SuccessModal
@@ -108,7 +126,7 @@ export default function CarBookingCard({
         title="تم تأكيد الحجز بنجاح!"
         description="جاري تحويلك إلى صفحة حجوزاتي..."
         buttonText="الانتقال الآن"
-        redirectTo="/account"
+        redirectTo="/account?tab=bookings"
         autoRedirect
       />
     </aside>

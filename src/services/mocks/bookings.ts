@@ -157,4 +157,18 @@ export const bookingsMock: BookingsApi = {
       });
     }
   },
+
+  async createBooking({ details }) {
+    await delay(800);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    if (details.startDate < today) {
+      throw new AppError('validation', 'booking.startInPast', undefined, {
+        startDate: 'booking.startInPast',
+      });
+    }
+    // Mock only: the car is booked again after this many days, so the
+    // "no longer available" failure can be exercised.
+    if (details.days > MOCK_MAX_RENTAL_DAYS) throw new AppError('conflict', 'booking.carUnavailable');
+  },
 };

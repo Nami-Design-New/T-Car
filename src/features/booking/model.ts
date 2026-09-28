@@ -18,3 +18,9 @@ export interface BookingDetails {
   pickupLocation?: LocationData | null;
   dropoffLocation?: LocationData | null;
 }
+
+export interface CreateBookingRequest {
+  carId: string;
+  details: BookingDetails;
+  paymentMethod: PaymentMethod;
+}
