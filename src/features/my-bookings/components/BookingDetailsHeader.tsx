@@ -10,15 +10,12 @@ import {
   FiX,
 } from 'react-icons/fi';
 
-import type {
-  BookingStatus,
-  BookingDetails,
-} from '@app-types/car';
-
-import ExtendDurationModal from '@/components/modals/ExtendDurationModal';
-import EditDailyBookingModal from '@/components/modals/EditDailyBookingModal';
+import type { BookingDetails } from '@app-types/car';
 import SuccessModal from '@/components/common/SuccessModal';
-import CancelBookingModal from '@/components/modals/CancelBookingModal';
+import { isActiveBooking, type BookingStatus } from '../model';
+import ExtendDurationModal from './ExtendDurationModal';
+import EditDailyBookingModal from './EditDailyBookingModal';
+import CancelBookingModal from './CancelBookingModal';
 
 interface Props {
   reference: string;
@@ -37,10 +34,7 @@ export default function BookingDetailsHeader({
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showCancelModal, setShowCancelModal] = useState(false);
 
-  const isActive =
-    status === 'current' ||
-    status === 'upcoming' ||
-    status === 'late';
+  const isActive = isActiveBooking(status);
 
 
   const bookingDetails: BookingDetails = {

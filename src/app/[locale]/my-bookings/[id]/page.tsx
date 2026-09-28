@@ -1,10 +1,4 @@
-import BookingDetailsHeader from '@components/bookings/details/BookingDetailsHeader';
-import BookingHero from '@components/bookings/details/BookingHero';
-import BookingDatesInfo from '@components/bookings/details/BookingDatesInfo';
-import BookingCountdown from '@components/bookings/details/BookingCountdown';
-import BookingSidebar from '@components/bookings/details/BookingSidebar';
-
-import type { BookingDetailsView } from '@app-types/car';
+import { BookingDetailsScreen, type BookingDetailsView } from '@/features/my-bookings';
 
 import car1 from '@assets/images/car1.jpg';
 
@@ -48,60 +42,5 @@ export default async function BookingDetailsPage({ params }: Props) {
 
   const booking = await getBookingDetails(id);
 
-  return (
-    <section className="section booking-details-page">
-      <div className="container-tcar">
-        <div className="booking-details-container">
-          <BookingDetailsHeader
-            reference={booking.reference}
-            statusLabel={booking.statusLabel}
-            status={booking.status}
-          />
-
-          <BookingHero
-            carName={booking.carName}
-            carBrand={booking.carBrand}
-            carImage={booking.carImage}
-            showroom={booking.showroom}
-            pricePerDay={booking.pricePerDay}
-            originalPrice={booking.originalPrice}
-            status={booking.status}
-            statusLabel={booking.statusLabel}
-            pickupDateTime={booking.pickupDateTime}
-            dropoffDateTime={booking.dropoffDateTime}
-          />
-
-          <div className="booking-grid">
-            <div className="booking-main">
-              <BookingDatesInfo
-                pickupLocation={booking.pickupLocation}
-                dropoffLocation={booking.dropoffLocation}
-                pickupDateTime={booking.pickupDateTime}
-                dropoffDateTime={booking.dropoffDateTime}
-                warrantyNote={booking.warrantyNote}
-              />
-
-              {(booking.status === 'current' || booking.status === 'late') && (
-                <BookingCountdown
-                  pickupDateTime={booking.pickupDateTime}
-                  targetDateTime={booking.dropoffDateTime}
-                />
-              )}
-            </div>
-
-            <BookingSidebar
-              reference={booking.reference}
-              pricePerDay={booking.pricePerDay}
-              days={booking.days}
-              subtotal={booking.subtotal}
-              vatRate={booking.vatRate}
-              vat={booking.vat}
-              pointsUsed={booking.pointsUsed}
-              total={booking.total}
-            />
-          </div>
-        </div>
-      </div>
-    </section>
-  );
+  return <BookingDetailsScreen booking={booking} />;
 }

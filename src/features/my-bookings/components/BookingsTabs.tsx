@@ -1,6 +1,6 @@
 'use client';
 
-import type { BookingTab } from '@app-types/car';
+import type { BookingTab } from '../model';
 
 interface Props {
   active: BookingTab;

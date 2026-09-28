@@ -2,7 +2,7 @@ import Image from 'next/image';
 import { FiMapPin } from 'react-icons/fi';
 import { formatCurrency } from '@/shared/lib/format';
 import type { StaticImageData } from 'next/image';
-import type { BookingStatus } from '@app-types/car';
+import type { BookingStatus } from '../model';
 
 interface Props {
   carName: string;

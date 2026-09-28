@@ -15,8 +15,6 @@ export type {
   // Booking flow
   PaymentMethod,
   BookingDetails,
-  BookingStatus,
-  UserBooking,
 
   // City
   City,

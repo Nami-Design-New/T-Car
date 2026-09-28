@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import { Link } from '@/i18n/navigation';
 import { FiStar, FiHome, FiCalendar } from 'react-icons/fi';
-import type { UserBooking } from '@app-types/car';
+import type { UserBooking } from '../model';
 
 interface Props {
   booking: UserBooking;

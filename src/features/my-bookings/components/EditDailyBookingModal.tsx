@@ -1,6 +1,6 @@
 'use client';
 
-import BookingDailyModal from './BookingDailyModal';
+import BookingDailyModal from '@/components/modals/BookingDailyModal';
 
 import type { BookingDetails } from '@app-types/car';
 

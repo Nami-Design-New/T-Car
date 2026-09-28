@@ -6,8 +6,8 @@ import ProfileTab from '@components/account/ProfileTab';
 import { WalletSection } from '@/features/wallet';
 import { BankAccountsSection } from '@/features/bank-accounts';
 import NotificationsTab from '@components/account/NotificationsTab';
-import BookingsTab from '@components/account/BookingsTab';
-import type { UserProfile, UserBooking } from '@app-types/car';
+import { BookingsTab, type UserBooking } from '@/features/my-bookings';
+import type { UserProfile } from '@app-types/car';
 
 import car1 from '@assets/images/car1.jpg';
 
