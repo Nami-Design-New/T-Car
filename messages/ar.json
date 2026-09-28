@@ -197,6 +197,12 @@
     },
     "contact": {
       "phoneRequired": "أدخل رقم جوال صحيحًا."
+    },
+    "auth": {
+      "invalidPhone": "أدخل رقم جوال صحيحًا.",
+      "invalidCode": "رمز التحقق غير صحيح. حاول مرة أخرى.",
+      "nameRequired": "الاسم الكامل مطلوب.",
+      "registrationRequired": "هذا الرقم غير مسجل. أكمل إنشاء الحساب."
     }
   }
 }

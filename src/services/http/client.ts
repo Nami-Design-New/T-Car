@@ -100,14 +100,9 @@ export function createHttpClient({ baseUrl, getToken, onUnauthorized }: HttpClie
 
 export type HttpClient = ReturnType<typeof createHttpClient>;
 
-const TOKEN_KEY = 'tcar_token';
-
-// Browser client. The localStorage token stays until the cookie session from
-// docs/02-server-client-boundary.md replaces it; then this uses the server client.
-export const http = createHttpClient({
-  baseUrl: env.publicApiUrl,
-  getToken: () => (typeof window === 'undefined' ? null : window.localStorage.getItem(TOKEN_KEY)),
-  onUnauthorized: () => {
-    if (typeof window !== 'undefined') window.localStorage.removeItem(TOKEN_KEY);
-  },
-});
+/**
+ * Anonymous client for public endpoints. The browser holds no backend token
+ * (it lives in the NextAuth session cookie), so calls that need the customer
+ * go through the server: services/http/server.ts.
+ */
+export const http = createHttpClient({ baseUrl: env.publicApiUrl });

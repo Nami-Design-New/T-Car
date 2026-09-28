@@ -197,6 +197,12 @@
     },
     "contact": {
       "phoneRequired": "Enter a valid phone number."
+    },
+    "auth": {
+      "invalidPhone": "Enter a valid phone number.",
+      "invalidCode": "The verification code is incorrect. Try again.",
+      "nameRequired": "Full name is required.",
+      "registrationRequired": "This number has no account yet. Finish creating your account."
     }
   }
 }
