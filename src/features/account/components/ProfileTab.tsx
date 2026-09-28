@@ -9,11 +9,11 @@ import {
   FiTrash2,
 } from 'react-icons/fi';
 
-import type { UserProfile } from '@app-types/car';
+import type { UserProfile } from '../model';
 
-import EditPhoneModal from '@components/modals/Editphonemodal';
-import VerifyPhoneModal from '@components/modals/Verifyphonemodal';
-import LicenseModal from '../modals/LicenseModal';
+import EditPhoneModal from './EditPhoneModal';
+import VerifyPhoneModal from './VerifyPhoneModal';
+import LicenseModal from './LicenseModal';
 import FailedModal from '@components/common/FailedModal';
 
 interface Props {

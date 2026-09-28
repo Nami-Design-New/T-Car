@@ -1,4 +1,4 @@
-import type { AppNotification } from '@app-types/car';
+import type { AppNotification } from '../model';
 
 interface Props {
   notifications: AppNotification[];

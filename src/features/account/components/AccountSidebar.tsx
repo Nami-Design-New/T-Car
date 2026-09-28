@@ -4,7 +4,7 @@ import type { IconType } from 'react-icons';
 import { FiUser, FiCreditCard, FiBell, FiCalendar } from 'react-icons/fi';
 import { PiBank } from 'react-icons/pi';
 
-import type { AccountTab } from './tabs';
+import type { AccountTab } from '../model';
 
 export type { AccountTab };
 

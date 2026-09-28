@@ -1,13 +1,12 @@
 'use client';
 
 import { useState, type ReactNode } from 'react';
-import AccountSidebar from '@components/account/AccountSidebar';
-import type { AccountTab } from '@components/account/tabs';
-import ProfileTab from '@components/account/ProfileTab';
+import AccountSidebar from './AccountSidebar';
+import type { AccountTab, UserProfile } from '../model';
+import ProfileTab from './ProfileTab';
 import { WalletSection } from '@/features/wallet';
 import { BankAccountsSection } from '@/features/bank-accounts';
-import NotificationsTab from '@components/account/NotificationsTab';
-import type { UserProfile } from '@app-types/car';
+import { NotificationsTab } from '@/features/notifications';
 
 const MOCK_PROFILE: UserProfile = {
   fullName: 'أحمد عبدالله القحطاني',

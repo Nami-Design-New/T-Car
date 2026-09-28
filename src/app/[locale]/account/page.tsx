@@ -1,5 +1,4 @@
-import AccountScreen from '@components/account/AccountScreen';
-import { isAccountTab } from '@components/account/tabs';
+import { AccountScreen, isAccountTab } from '@/features/account';
 import { BookingsTab } from '@/features/my-bookings';
 import { getMyBookings } from '@/features/my-bookings/queries';
 
