@@ -10,7 +10,7 @@ import {
 
 import SectionTitle from '@components/common/SectionTitle';
 import type {City} from '@app-types/car';
-import { useCarouselRail } from '@hooks/useCarouselRail';
+import { useCarouselRail } from '@/shared/hooks/useCarouselRail';
 import { getDirection } from '@/shared/config/languages';
 
 import c1 from '@assets/images/c1.jpg';

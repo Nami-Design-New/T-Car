@@ -8,7 +8,7 @@ import FilterPanel from '@/components/filters/FilterPanel';
 import PriceRangeSlider from '@/components/filters/PriceRangeSlider';
 import CheckboxGroup from '@/components/filters/CheckboxGroup';
 import BrandGrid from '@/components/filters/BrandGrid';
-import { useToggleList } from '@/hooks/useToggleList';
+import { useToggleList } from '@/shared/hooks/useToggleList';
 
 const COMPANIES = ['معرض النخبة', 'معرض النخبة', 'معرض النخبة', 'معرض النخبة', 'معرض النخبة'];
 const TYPES = ['اقتصادية', 'سيدان', 'SUV', 'فاخرة'];

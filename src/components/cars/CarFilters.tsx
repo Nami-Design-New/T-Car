@@ -9,7 +9,7 @@ import Image from 'next/image';
 import FilterPanel from '@/components/filters/FilterPanel';
 import PriceRangeSlider from '@/components/filters/PriceRangeSlider';
 import CheckboxGroup from '@/components/filters/CheckboxGroup';
-import { useToggleList } from '@/hooks/useToggleList';
+import { useToggleList } from '@/shared/hooks/useToggleList';
 
 const COMPANIES = ['معرض النخبة', 'معرض النخبة', 'معرض النخبة', 'معرض النخبة', 'معرض النخبة'];
 

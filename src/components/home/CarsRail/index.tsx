@@ -6,7 +6,7 @@ import { FiChevronRight } from 'react-icons/fi';
 import CarCard from '@components/cars/CarCard';
 import SectionTitle from '@components/common/SectionTitle';
 import type { CarListing } from '@app-types/car';
-import { useCarouselRail } from '@hooks/useCarouselRail';
+import { useCarouselRail } from '@/shared/hooks/useCarouselRail';
 import { Link } from '@/i18n/navigation';
 import { getDirection } from '@/shared/config/languages';
 
