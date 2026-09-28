@@ -1,4 +1,6 @@
 import type { CarListing } from '@/features/cars/model';
+import type { CarsApi } from '../cars.api';
+import { MOCK_OFFICES } from './offices';
 import carImage from '@assets/images/car1.jpg';
 
 export const MOCK_CARS: CarListing[] = [
@@ -233,10 +235,13 @@ export function getCarListingById(id: string): CarListing | undefined {
   return MOCK_CARS.find((car) => car.id === id);
 }
 
-export function getOfferCars(): CarListing[] {
-  return MOCK_CARS.filter((car) => car.originalPrice);
-}
+// Read-only, so it is safe to run on the server.
+export const carsMock: CarsApi = {
+  async listCars() {
+    return [...MOCK_CARS];
+  },
 
-export function getHandpickedCars(): CarListing[] {
-  return MOCK_CARS.filter((car) => !car.originalPrice).sort((a, b) => b.rating - a.rating);
-}
+  async listOffices() {
+    return [...MOCK_OFFICES];
+  },
+};

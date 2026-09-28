@@ -1,7 +1,6 @@
 import CityHero from '@components/cities/CityHero';
-import { CarCard, CityFilters, SortBar, type CarListing } from '@/features/cars';
+import { CarCard, CityFilters, SortBar, getCarsForCity } from '@/features/cars';
 import type { CityDetails } from '@app-types/car';
-import { MOCK_CARS } from '@/services/mocks/cars';
 import cityHeroImage from '@assets/images/c1.jpg';
 
 interface Props {
@@ -18,9 +17,6 @@ async function getCityDetails(slug: string): Promise<CityDetails> {
   };
 }
 
-async function getCarsForCity(slug: string): Promise<CarListing[]> {
-  return MOCK_CARS;
-}
 export default async function CityDetailsPage({ params }: Props) {
   const { slug } = await params;
   const city = await getCityDetails(slug);

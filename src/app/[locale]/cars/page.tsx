@@ -1,18 +1,11 @@
-import { CarFilters, CarOfficeRow, groupCarsByOffice, type CarListing } from '@/features/cars';
-import { MOCK_CARS } from '@/services/mocks/cars';
-import { MOCK_OFFICES } from '@/services/mocks/offices';
+import { CarFilters, CarOfficeRow, getOfficeCarGroups } from '@/features/cars';
 import { Link } from '@/i18n/navigation';
 import { getTranslations } from 'next-intl/server';
 import { FiArrowLeft } from 'react-icons/fi';
 
-async function getCars(): Promise<CarListing[]> {
-  return MOCK_CARS;
-}
-
 export default async function CarsPage() {
   const t = await getTranslations();
-  const cars = await getCars();
-  const officeGroups = groupCarsByOffice(MOCK_OFFICES, cars);
+  const officeGroups = await getOfficeCarGroups();
 
   return (
     <section className="section city-listings car-page">

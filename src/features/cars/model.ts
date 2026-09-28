@@ -66,3 +66,15 @@ export function groupCarsByOffice(offices: Office[], cars: CarListing[]): Office
     }))
     .filter((group) => group.cars.length > 0);
 }
+
+/** Cars with a discount, for the home page offers rail. */
+export function selectOfferCars(cars: CarListing[]): CarListing[] {
+  return cars.filter((car) => discountPercent(car) !== null);
+}
+
+/** Full-price cars, best rated first, for the "selected for you" rail. */
+export function selectHandpickedCars(cars: CarListing[]): CarListing[] {
+  return cars
+    .filter((car) => discountPercent(car) === null)
+    .sort((a, b) => b.rating - a.rating);
+}

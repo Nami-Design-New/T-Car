@@ -1,17 +1,20 @@
 import Hero from '@components/home/Hero';
 import PopularCities from '@/components/home/Cities';
-import { CarsRail } from '@/features/cars';
+import { CarsRail, getHandpickedCars, getOfferCars } from '@/features/cars';
 import WhyChooseUs from '@/components/home/Why';
 import Partners from '@/components/home/Partners';
 import DownloadApp from '@/components/home/Download';
 import FAQ from '@components/home/FAQ';
 import Contact from '@/components/home/contact';
 import CTA from '@/components/home/CTA/CTA';
-import { getHandpickedCars, getOfferCars } from '@/services/mocks/cars';
-import { useTranslations } from 'next-intl';
+import { getTranslations } from 'next-intl/server';
 
-export default function HomePage() {
-  const t = useTranslations('carSections');
+export default async function HomePage() {
+  const [t, offerCars, handpickedCars] = await Promise.all([
+    getTranslations('carSections'),
+    getOfferCars(),
+    getHandpickedCars(),
+  ]);
 
   return (
     <>
@@ -21,13 +24,13 @@ export default function HomePage() {
         id="offers"
         title={t('offers')}
         subtitle={t('offersSubtitle')}
-        cars={getOfferCars()}
+        cars={offerCars}
       />
       <CarsRail
         id="selected-for-you"
         title={t('selectedForYou')}
         subtitle={t('selectedForYouSubtitle')}
-        cars={getHandpickedCars()}
+        cars={handpickedCars}
       />
       <Partners />
       <WhyChooseUs />
