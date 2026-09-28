@@ -1,126 +1,19 @@
-'use client';
+import AccountScreen from '@components/account/AccountScreen';
+import { isAccountTab } from '@components/account/tabs';
+import { BookingsTab, getMyBookings } from '@/features/my-bookings';
 
-import { useState } from 'react';
-import AccountSidebar, { AccountTab } from '@components/account/AccountSidebar';
-import ProfileTab from '@components/account/ProfileTab';
-import { WalletSection } from '@/features/wallet';
-import { BankAccountsSection } from '@/features/bank-accounts';
-import NotificationsTab from '@components/account/NotificationsTab';
-import { BookingsTab, type UserBooking } from '@/features/my-bookings';
-import type { UserProfile } from '@app-types/car';
+interface Props {
+  searchParams: Promise<{ tab?: string | string[] }>;
+}
 
-import car1 from '@assets/images/car1.jpg';
-
-const MOCK_PROFILE: UserProfile = {
-  fullName: 'أحمد عبدالله القحطاني',
-  email: 'ahmed@domain.com',
-  birthDate: '1993-03-15',
-  phone: '+966 45 67 89',
-};
-
-const MOCK_NOTIFICATIONS = [
-  { id: '1', title: 'قدم إليك العميل عرض جديد اذهب بسرعة للطلب', time: 'الآن', read: false },
-  { id: '2', title: 'لقد استعدت إمكانية استخدام حسابك', time: 'الآن', read: false },
-  { id: '3', title: 'يمكنك الآن الوصول إلى جميع المزايا، أحمد', time: 'قبل أسبوعين', read: true },
-  { id: '4', title: 'تهانينا! تم تفعيل حسابك بنجاح، أحمد', time: 'قبل 3 أسابيع', read: true },
-];
-
-const MOCK_BOOKINGS: UserBooking[] = [
-  {
-    id: '1',
-    carName: 'ماليبو',
-    carBrand: 'شيفروليه',
-    carImage: car1,
-    year: 2022,
-    rating: 4.4,
-    showroom: 'معرض القدس',
-    status: 'current',
-    statusLabel: 'حالي',
-    dateLabel: '30 يونيو 2026، 11:46 م',
-  },
-  {
-    id: '2',
-    carName: 'ألتيما',
-    carBrand: 'نيسان',
-    carImage: car1,
-    year: 2022,
-    rating: 4.5,
-    showroom: 'معرض الخليج',
-    status: 'upcoming',
-    statusLabel: 'قادم',
-    dateLabel: '18 يوليو 2026، 01:15 م',
-  },
-  {
-    id: '3',
-    carName: 'أكورد',
-    carBrand: 'هوندا',
-    carImage: car1,
-    year: 2023,
-    rating: 4.6,
-    showroom: 'معرض العروبة',
-    status: 'late',
-    statusLabel: 'متأخر عن التسليم',
-    dateLabel: '30 يونيو 2026، 11:46 م',
-  },
-  {
-    id: '4',
-    carName: 'مازدا 6',
-    carBrand: 'مازدا',
-    carImage: car1,
-    year: 2024,
-    rating: 4.8,
-    showroom: 'معرض النخبة',
-    status: 'completed',
-    statusLabel: 'مكتمل',
-    dateLabel: '8 أبريل 2026، 12:00 م',
-  },
-  {
-    id: '5',
-    carName: 'إمبالا',
-    carBrand: 'شيفروليه',
-    carImage: car1,
-    year: 2021,
-    rating: 4.2,
-    showroom: 'معرض القدس',
-    status: 'cancelled',
-    statusLabel: 'ملغي',
-    dateLabel: '22 مارس 2026، 07:45 م',
-  },
-];
-
-export default function AccountPage() {
-  const [activeTab, setActiveTab] = useState<AccountTab>('profile');
+export default async function AccountPage({ searchParams }: Props) {
+  const { tab } = await searchParams;
+  const bookings = await getMyBookings();
 
   return (
-    <section className="section account-page">
-      <div className="container-tcar">
-        <h1 className="account-page-title">حسابي</h1>
-
-        <div className="account-grid">
-          <AccountSidebar active={activeTab} onChange={setActiveTab} />
-
-          <div className="account-content">
-            {activeTab === 'profile' && (
-              <ProfileTab
-                profile={MOCK_PROFILE}
-                onSave={(profile) => {
-                  console.log(profile);
-                }}
-              />
-            )}
-
-            {activeTab === 'bookings' && <BookingsTab bookings={MOCK_BOOKINGS} />}
-
-            {activeTab === 'wallet' && <WalletSection />}
-
-            {activeTab === 'bank-accounts' && <BankAccountsSection />}
-
-            {activeTab === 'notifications' && (
-              <NotificationsTab notifications={MOCK_NOTIFICATIONS} />
-            )}
-          </div>
-        </div>
-      </div>
-    </section>
+    <AccountScreen
+      initialTab={isAccountTab(tab) ? tab : undefined}
+      bookings={<BookingsTab bookings={bookings} />}
+    />
   );
 }

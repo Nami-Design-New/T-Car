@@ -4,7 +4,9 @@ import type { IconType } from 'react-icons';
 import { FiUser, FiCreditCard, FiBell, FiCalendar } from 'react-icons/fi';
 import { PiBank } from 'react-icons/pi';
 
-export type AccountTab = 'profile' | 'bookings' | 'wallet' | 'bank-accounts' | 'notifications';
+import type { AccountTab } from './tabs';
+
+export type { AccountTab };
 
 interface Props {
   active: AccountTab;
