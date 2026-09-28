@@ -4,7 +4,7 @@ import { useLocale, useTranslations } from 'next-intl';
 import { FiChevronRight } from 'react-icons/fi';
 
 import CarCard from '@components/cars/CarCard';
-import SectionTitle from '@components/common/SectionTitle';
+import SectionTitle from '@/shared/ui/SectionTitle';
 import type { CarListing } from '@app-types/car';
 import { useCarouselRail } from '@/shared/hooks/useCarouselRail';
 import { Link } from '@/i18n/navigation';

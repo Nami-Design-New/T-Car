@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { FiX } from 'react-icons/fi';
 
-import PhoneField from '@/components/common/PhoneField';
+import PhoneField from '@/shared/ui/PhoneField';
 
 interface Props {
   open: boolean;

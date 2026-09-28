@@ -3,10 +3,10 @@
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';;
 
-import Button from '@/components/common/Button';
-import FormInput from '@/components/common/FormInput';
-import FormTextarea from '@/components/common/FormTextarea';
-import PhoneField from '@/components/common/PhoneField';
+import Button from '@/shared/ui/Button';
+import FormInput from '@/shared/ui/FormInput';
+import FormTextarea from '@/shared/ui/FormTextarea';
+import PhoneField from '@/shared/ui/PhoneField';
 
 export default function ContactForm() {
   const t = useTranslations();

@@ -8,7 +8,7 @@ import { Autoplay } from 'swiper/modules';
 
 import 'swiper/css';
 
-import SectionTitle from '@components/common/SectionTitle';
+import SectionTitle from '@/shared/ui/SectionTitle';
 
 import b1 from '@assets/images/b1.webp';
 import b2 from '@assets/images/b2.webp';

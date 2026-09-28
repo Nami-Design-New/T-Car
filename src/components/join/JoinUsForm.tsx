@@ -1,9 +1,9 @@
 'use client';
 
-import FormInput from '@/components/common/FormInput';
-import FormTextarea from '@/components/common/FormTextarea';
-import Button from '@/components/common/Button';
-import FormSelect from '../common/FormSelect';
+import FormInput from '@/shared/ui/FormInput';
+import FormTextarea from '@/shared/ui/FormTextarea';
+import Button from '@/shared/ui/Button';
+import FormSelect from '@/shared/ui/FormSelect';
 
 export default function JoinusForm() {
   return (

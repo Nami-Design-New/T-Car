@@ -8,7 +8,7 @@ import {
   FiMapPin
 } from 'react-icons/fi';
 
-import SectionTitle from '@components/common/SectionTitle';
+import SectionTitle from '@/shared/ui/SectionTitle';
 import type {City} from '@app-types/car';
 import { useCarouselRail } from '@/shared/hooks/useCarouselRail';
 import { getDirection } from '@/shared/config/languages';

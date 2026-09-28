@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import type { CityDetails } from '@app-types/car';
-import DateTimePicker from '@components/common/DateTimePicker';
+import DateTimePicker from '@/shared/ui/DateTimePicker';
 import { FiCalendar, FiSearch } from 'react-icons/fi';
 interface Props {
   city: CityDetails;

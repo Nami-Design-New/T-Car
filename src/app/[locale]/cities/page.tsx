@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import SectionTitle from '@components/common/SectionTitle';
+import SectionTitle from '@/shared/ui/SectionTitle';
 import PopularCities from '@components/home/Cities';
 
 export const metadata: Metadata = {

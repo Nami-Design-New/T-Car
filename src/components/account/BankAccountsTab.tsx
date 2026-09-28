@@ -4,7 +4,7 @@ import Image from 'next/image';
 import Lottie from 'lottie-react';
 import { PiBank } from 'react-icons/pi';
 import type { BankAccount } from '@app-types/car';
-import Loader from '@components/common/Loader';
+import Loader from '@/shared/ui/Loader';
 
 import deleteIcon from '@assets/icons/bank-delete.svg';
 import editIcon from '@assets/icons/bank-edit.svg';

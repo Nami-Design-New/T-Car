@@ -1,4 +1,4 @@
-import Button from '@/components/common/Button';
+import Button from '@/shared/ui/Button';
 import { Link } from '@/i18n/navigation';
 
 export default function CTA() {

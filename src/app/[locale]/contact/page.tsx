@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import SectionTitle from '@components/common/SectionTitle';
+import SectionTitle from '@/shared/ui/SectionTitle';
 
 export const metadata: Metadata = {
   title: 'Contact Us',

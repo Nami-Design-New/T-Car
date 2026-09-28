@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';;
-import PhoneField from '@/components/common/PhoneField';
+import PhoneField from '@/shared/ui/PhoneField';
 import logo from '@assets/images/fav.svg';
 import whatsappIcon from '@assets/icons/whatsapp-icon.svg';
 

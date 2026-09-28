@@ -1,7 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';;
-import SectionTitle from '@/components/common/SectionTitle';
+import SectionTitle from '@/shared/ui/SectionTitle';
 
 const sections = [
   {
