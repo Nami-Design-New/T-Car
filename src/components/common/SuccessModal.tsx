@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { useRouter } from 'next/navigation';
+import { useRouter } from '@/i18n/navigation';
 import Lottie from 'lottie-react';
 
 import successAnimation from '@assets/images/successful_login.json';
