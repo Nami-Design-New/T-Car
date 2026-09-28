@@ -26,7 +26,9 @@ interface Props {
 function AuthPrompt({ onOpen }: { onOpen: (next?: string) => void }) {
   const searchParams = useSearchParams();
   const auth = searchParams.get('auth');
-  const next = searchParams.get('next') ?? undefined;
+  const rawNext = searchParams.get('next');
+  // Same-site paths only, so the link cannot send the user to another site.
+  const next = rawNext && /^\/(?!\/)/.test(rawNext) ? rawNext : undefined;
 
   useEffect(() => {
     if (auth === 'login') onOpen(next);
