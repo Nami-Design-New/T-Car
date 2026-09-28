@@ -6,54 +6,19 @@ import { FiChevronDown } from 'react-icons/fi';
 import SectionTitle from '@/shared/ui/SectionTitle';
 import type { FAQItem } from '../model';
 
-const FAQS: FAQItem[] = [
-  {
-    id: '1',
-    question: 'ما هي المستندات المطلوبة لاستئجار سيارة؟',
-    answer:
-      'يلزم تقديم رخصة قيادة سارية، وهوية وطنية أو إقامة، بالإضافة إلى وسيلة دفع باسم المستأجر.',
-  },
-  {
-    id: '2',
-    question: 'هل يمكنني إلغاء الحجز؟',
-    answer:
-      'يمكنك الإلغاء مجانًا قبل موعد الاستلام بـ 24 ساعة.',
-  },
-  {
-    id: '3',
-    question: 'هل يشمل السعر التأمين؟',
-    answer:
-      'يشمل التأمين الأساسي مع إمكانية إضافة تأمين شامل.',
-  },
-  {
-    id: '4',
-    question: 'هل يمكن استلام السيارة من فرع وإعادتها لفرع آخر؟',
-    answer:
-      'نعم حسب توفر الخدمة داخل المدينة.',
-  },
-  {
-    id: '5',
-    question: 'ما هي وسائل الدفع؟',
-    answer:
-      'بطاقات مدى، فيزا، ماستر كارد، والمحفظة الإلكترونية.',
-  },
-  {
-    id: '6',
-    question: 'هل يمكن تمديد مدة الإيجار؟',
-    answer:
-      'يمكن تمديد الإيجار إذا كانت السيارة متاحة.',
-  },
-  
-];
 
-export default function FAQ() {
+interface Props {
+  faqs: FAQItem[];
+}
+
+export default function FAQ({ faqs }: Props) {
   const t = useTranslations();
 
 
   const [openId, setOpenId] = useState<string | null>('1');
 
-  const left = FAQS.slice(0, Math.ceil(FAQS.length / 2));
-  const right = FAQS.slice(Math.ceil(FAQS.length / 2));
+  const left = faqs.slice(0, Math.ceil(faqs.length / 2));
+  const right = faqs.slice(Math.ceil(faqs.length / 2));
 
   const renderColumn = (items: FAQItem[]) =>
     items.map((item) => {

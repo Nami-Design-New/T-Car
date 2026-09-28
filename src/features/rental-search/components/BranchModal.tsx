@@ -8,37 +8,12 @@ import type { Branch } from '../model';
 interface Props {
   open: boolean;
   onClose: () => void;
+  branches: Branch[];
   onSelect: (branch: Branch) => void;
 }
 
-const branches: Branch[] = [
-  {
-    id: 1,
-    city: 'الرياض',
-    branch: 'فرع العليا',
-    address: 'طريق الملك فهد',
-  },
-  {
-    id: 2,
-    city: 'جدة',
-    branch: 'فرع الروضة',
-    address: 'شارع الأمير سلطان',
-  },
-  {
-    id: 3,
-    city: 'الدمام',
-    branch: 'فرع الفيصلية',
-    address: 'شارع الخليج',
-  },
-  {
-    id: 4,
-    city: 'المدينة',
-    branch: 'فرع العزيزية',
-    address: 'طريق الملك عبدالله',
-  },
-];
 
-export default function BranchModal({ open, onClose, onSelect }: Props) {
+export default function BranchModal({ open, branches, onClose, onSelect }: Props) {
   const [search, setSearch] = useState('');
   const [selected, setSelected] = useState<Branch | null>(null);
 

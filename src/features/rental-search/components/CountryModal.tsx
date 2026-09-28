@@ -4,29 +4,18 @@ import { useState } from 'react';
 import Image from 'next/image';
 import { FiSearch, FiX } from 'react-icons/fi';
 
-import flag1 from '@/assets/images/flages/flag1.png';
-import flag2 from '@/assets/images/flages/flag2.png';
-import flag3 from '@/assets/images/flages/flag3.png';
-import flag4 from '@/assets/images/flages/flag4.png';
-import flag5 from '@/assets/images/flages/flag5.png';
 
 import type { Country } from '../model';
 
 interface Props {
   open: boolean;
   onClose: () => void;
+  countries: Country[];
   onSelect: (country: Country) => void;
 }
 
-const countries: Country[] = [
-  { id: 1, name: 'مصر', flag: flag1 },
-  { id: 2, name: 'لبنان', flag: flag2 },
-  { id: 3, name: 'المملكة العربية السعودية', flag: flag3 },
-  { id: 4, name: 'الامارات', flag: flag4 },
-  { id: 5, name: ' البحرين', flag: flag5 },
-];
 
-export default function CountryModal({ open, onClose, onSelect }: Props) {
+export default function CountryModal({ open, countries, onClose, onSelect }: Props) {
   const [search, setSearch] = useState('');
   const [selected, setSelected] = useState<Country | null>(null);
 

@@ -11,40 +11,14 @@ import type { Station } from '../model';
 interface Props {
   open: boolean;
   onClose: () => void;
+  stations: Station[];
   onSelect: (station: Station) => void;
 }
 
 
 
-const stations: Station[] = [
-  {
-    id: 1,
-    city: 'الرياض',
-    station: 'محطة قطار الرياض',
-  },
-  {
-    id: 2,
-    city: 'جدة',
-    station: 'محطة قطار جدة',
-  },
-  {
-    id: 3,
-    city: 'المدينة',
-    station: 'محطة قطار المدينة',
-  },
-  {
-    id: 4,
-    city: 'مكة',
-    station: 'محطة قطار مكة',
-  },
-  {
-    id: 5,
-    city: 'الدمام',
-    station: 'محطة قطار الدمام',
-  },
-];
 
-export default function StationModal({ open, onClose, onSelect }: Props) {
+export default function StationModal({ open, stations, onClose, onSelect }: Props) {
   const [search, setSearch] = useState('');
 
   const [selected, setSelected] = useState<Station | null>(null);

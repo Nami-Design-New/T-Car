@@ -37,3 +37,11 @@ export interface Country {
   name: string;
   flag: string | StaticImageData;
 }
+
+/** The choices the search dialogs offer, loaded once for the hero. */
+export interface RentalSearchOptions {
+  branches: Branch[];
+  airports: Airport[];
+  stations: Station[];
+  countries: Country[];
+}

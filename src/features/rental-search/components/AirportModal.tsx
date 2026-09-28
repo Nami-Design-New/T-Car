@@ -14,44 +14,14 @@ import type { Airport } from '../model';
 interface Props {
   open: boolean;
   onClose: () => void;
+  airports: Airport[];
   onSelect: (airport: Airport) => void;
 }
 
-const airports: Airport[] = [
-  {
-    id: 1,
-    city: 'الرياض',
-    airport: 'مطار الملك خالد الدولي',
-    code: 'RUH',
-  },
-  {
-    id: 2,
-    city: 'جدة',
-    airport: 'مطار الملك عبدالعزيز الدولي',
-    code: 'JED',
-  },
-  {
-    id: 3,
-    city: 'الدمام',
-    airport: 'مطار الملك فهد الدولي',
-    code: 'DMM',
-  },
-  {
-    id: 4,
-    city: 'المدينة',
-    airport: 'مطار الأمير محمد بن عبدالعزيز',
-    code: 'MED',
-  },
-  {
-    id: 5,
-    city: 'أبها',
-    airport: 'مطار أبها الدولي',
-    code: 'AHB',
-  },
-];
 
 export default function AirportModal({
   open,
+  airports,
   onClose,
   onSelect,
 }: Props) {

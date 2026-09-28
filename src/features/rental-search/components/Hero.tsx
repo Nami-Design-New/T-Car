@@ -23,11 +23,24 @@ import StationModal from './StationModal';
 import CountryModal from './CountryModal';
 
 import { useTranslations } from 'next-intl';
-import type { RentalType, PickupType, Branch, Airport, Station, LocationData, Country } from '../model';
+import type {
+  RentalType,
+  PickupType,
+  Branch,
+  Airport,
+  Station,
+  LocationData,
+  Country,
+  RentalSearchOptions,
+} from '../model';
+
+interface Props {
+  options: RentalSearchOptions;
+}
 
 const slides = [hero1.src, hero2.src, hero3.src];
 
-export default function Hero() {
+export default function Hero({ options }: Props) {
   const t = useTranslations();
 
   const router = useRouter();
@@ -233,6 +246,7 @@ export default function Hero() {
 
       <CountryModal
         open={showCountryModal}
+        countries={options.countries}
         onClose={() => setShowCountryModal(false)}
         onSelect={handleCountryConfirm}
       />
@@ -247,6 +261,7 @@ export default function Hero() {
 
       <AirportModal
         open={showAirportModal}
+        airports={options.airports}
         onClose={() => setShowAirportModal(false)}
         onSelect={handleAirportConfirm}
       />
@@ -255,6 +270,7 @@ export default function Hero() {
 
       <StationModal
         open={showStationModal}
+        stations={options.stations}
         onClose={() => setShowStationModal(false)}
         onSelect={handleStationConfirm}
       />
@@ -274,6 +290,7 @@ export default function Hero() {
 
       <BranchModal
         open={showBranchModal}
+        branches={options.branches}
         onClose={() => setShowBranchModal(false)}
         onSelect={handleBranchConfirm}
       />
