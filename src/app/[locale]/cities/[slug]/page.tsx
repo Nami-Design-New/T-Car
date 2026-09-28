@@ -1,6 +1,8 @@
 import { notFound } from 'next/navigation';
-import { CarCard, CityFilters, SortBar, getCarsForCity } from '@/features/cars';
-import { CityHero, getCityDetails } from '@/features/cities';
+import { CarCard, CityFilters, SortBar } from '@/features/cars';
+import { getCarsForCity } from '@/features/cars/queries';
+import { CityHero } from '@/features/cities';
+import { getCityDetails } from '@/features/cities/queries';
 
 interface Props {
   params: Promise<{ slug: string }>;

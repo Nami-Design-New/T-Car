@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import SectionTitle from '@/shared/ui/SectionTitle';
-import { PopularCities, getCities } from '@/features/cities';
+import { PopularCities } from '@/features/cities';
+import { getCities } from '@/features/cities/queries';
 
 export const metadata: Metadata = {
   title: 'المدن',

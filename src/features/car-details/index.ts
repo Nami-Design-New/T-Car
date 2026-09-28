@@ -1,5 +1,4 @@
 export { default as CarDetailsView } from './components/CarDetailsView';
-export { getCarDetails } from './queries';
 export type {
   AddonService,
   CarDetails,

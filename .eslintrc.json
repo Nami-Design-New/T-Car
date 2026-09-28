@@ -19,7 +19,7 @@
       "rules": {
         "no-restricted-imports": [
           "warn",
-          { "patterns": ["@/services/*", "@/features/*/*"] }
+          { "patterns": ["@/services/*", "@/features/*/*", "!@/features/*/queries"] }
         ]
       }
     },

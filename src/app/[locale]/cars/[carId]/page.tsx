@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation';
-import { CarDetailsView, getCarDetails } from '@/features/car-details';
+import { CarDetailsView } from '@/features/car-details';
+import { getCarDetails } from '@/features/car-details/queries';
 
 interface Props {
   params: Promise<{ carId: string }>;

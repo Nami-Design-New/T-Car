@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation';
-import { BookingDetailsScreen, getBookingDetails } from '@/features/my-bookings';
+import { BookingDetailsScreen } from '@/features/my-bookings';
+import { getBookingDetails } from '@/features/my-bookings/queries';
 
 interface Props {
   params: Promise<{ id: string }>;

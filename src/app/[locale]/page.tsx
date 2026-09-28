@@ -1,6 +1,8 @@
 import { Hero } from '@/features/rental-search';
-import { CarsRail, getHandpickedCars, getOfferCars } from '@/features/cars';
-import { PopularCities, getCities } from '@/features/cities';
+import { CarsRail } from '@/features/cars';
+import { getHandpickedCars, getOfferCars } from '@/features/cars/queries';
+import { PopularCities } from '@/features/cities';
+import { getCities } from '@/features/cities/queries';
 import { CTA, Contact, DownloadApp, FAQ, Partners, WhyChooseUs } from '@/features/home';
 import { getTranslations } from 'next-intl/server';
 

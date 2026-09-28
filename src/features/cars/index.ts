@@ -5,7 +5,6 @@ export { default as CityFilters } from './components/CityFilters';
 export { default as SortBar } from './components/SortBar';
 export { default as CarsRail } from './components/CarsRail';
 export { discountPercent, groupCarsByOffice } from './model';
-export { getCarsForCity, getHandpickedCars, getOfferCars, getOfficeCarGroups } from './queries';
 export type {
   Car,
   CarListing,

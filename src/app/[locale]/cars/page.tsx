@@ -1,4 +1,5 @@
-import { CarFilters, CarOfficeRow, getOfficeCarGroups } from '@/features/cars';
+import { CarFilters, CarOfficeRow } from '@/features/cars';
+import { getOfficeCarGroups } from '@/features/cars/queries';
 import { Link } from '@/i18n/navigation';
 import { getTranslations } from 'next-intl/server';
 import { FiArrowLeft } from 'react-icons/fi';

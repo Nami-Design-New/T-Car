@@ -1,6 +1,7 @@
 import AccountScreen from '@components/account/AccountScreen';
 import { isAccountTab } from '@components/account/tabs';
-import { BookingsTab, getMyBookings } from '@/features/my-bookings';
+import { BookingsTab } from '@/features/my-bookings';
+import { getMyBookings } from '@/features/my-bookings/queries';
 
 interface Props {
   searchParams: Promise<{ tab?: string | string[] }>;
