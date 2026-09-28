@@ -1,10 +1,4 @@
 export type {
-  // Core / Car
-  Car,
-  SearchCarsParams,
-  CarFilters,
-  CarListing,
-
   // City
   City,
   CityDetails,

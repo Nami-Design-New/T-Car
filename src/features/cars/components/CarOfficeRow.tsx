@@ -9,8 +9,8 @@ import type { Swiper as SwiperInstance } from 'swiper';
 
 import 'swiper/css';
 
-import CarCard from '@components/cars/CarCard';
-import type { CarListing, Office } from '@app-types/car';
+import CarCard from './CarCard';
+import type { CarListing, Office } from '../model';
 import { cn } from '@/shared/lib/cn';
 
 interface CarOfficeRowProps {

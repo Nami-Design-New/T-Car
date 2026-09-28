@@ -1,8 +1,6 @@
 import CityHero from '@components/cities/CityHero';
-import SortBar from '@components/cities/SortBar';
-import CityFilters from '@components/cities/CityFilters';
-import CarCard from '@components/cars/CarCard';
-import type { CityDetails, CarListing } from '@app-types/car';
+import { CarCard, CityFilters, SortBar, type CarListing } from '@/features/cars';
+import type { CityDetails } from '@app-types/car';
 import { MOCK_CARS } from '@/services/mocks/cars';
 import cityHeroImage from '@assets/images/c1.jpg';
 

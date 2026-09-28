@@ -1,4 +1,4 @@
-import type { Car, SearchCarsParams } from '@/types/car';
+import type { Car, SearchCarsParams } from '@/features/cars/model';
 import { http } from './http/client';
 
 export const carsApi = {

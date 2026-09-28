@@ -1,4 +1,4 @@
-import type { CarListing, Office, OfficeCarGroup } from '@app-types/car';
+import type { Office } from '@/features/cars/model';
 import b1 from '@assets/images/b1.webp';
 import b2 from '@assets/images/b2.webp';
 import b3 from '@assets/images/b3.webp';
@@ -19,14 +19,3 @@ export const MOCK_OFFICES: Office[] = [
   { id: 'al-mutawassit', slug: 'al-mutawassit', name: 'المتوسط', showroom: 'معرض المتوسط', logo: b8 },
 ];
 
-/**
- * Buckets cars into office rows using `Office.showroom` as the join key, so the
- * offices list stays the single source of truth for both the row title and the
- * cars shown under it. Offices with no cars are dropped.
- */
-export function groupCarsByOffice(cars: CarListing[]): OfficeCarGroup[] {
-  return MOCK_OFFICES.map((office) => ({
-    office,
-    cars: cars.filter((car) => car.showroom === office.showroom),
-  })).filter((group) => group.cars.length > 0);
-}

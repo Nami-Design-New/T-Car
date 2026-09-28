@@ -4,10 +4,10 @@ import { useState } from 'react';
 import { FiTruck, FiGrid, FiShield } from 'react-icons/fi';
 import nissanLogo from '@/assets/icons/nissan.svg';
 
-import FilterPanel from '@/components/filters/FilterPanel';
-import PriceRangeSlider from '@/components/filters/PriceRangeSlider';
-import CheckboxGroup from '@/components/filters/CheckboxGroup';
-import BrandGrid from '@/components/filters/BrandGrid';
+import FilterPanel from './filters/FilterPanel';
+import PriceRangeSlider from './filters/PriceRangeSlider';
+import CheckboxGroup from './filters/CheckboxGroup';
+import BrandGrid from './filters/BrandGrid';
 import { useToggleList } from '@/shared/hooks/useToggleList';
 
 const COMPANIES = ['معرض النخبة', 'معرض النخبة', 'معرض النخبة', 'معرض النخبة', 'معرض النخبة'];

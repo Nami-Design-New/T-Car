@@ -1,6 +1,6 @@
 import Hero from '@components/home/Hero';
 import PopularCities from '@/components/home/Cities';
-import CarsRail from '@/components/home/CarsRail';
+import { CarsRail } from '@/features/cars';
 import WhyChooseUs from '@/components/home/Why';
 import Partners from '@/components/home/Partners';
 import DownloadApp from '@/components/home/Download';

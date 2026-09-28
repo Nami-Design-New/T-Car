@@ -1,4 +1,4 @@
-import type { CarListing } from '@app-types/car';
+import type { CarListing } from '@/features/cars/model';
 import carImage from '@assets/images/car1.jpg';
 
 export const MOCK_CARS: CarListing[] = [

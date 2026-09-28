@@ -1,5 +1,5 @@
 import type { CarDetails } from '@/features/car-details/model';
-import type { CarListing } from '@app-types/car';
+import type { CarListing } from '@/features/cars/model';
 import { AppError } from '@/shared/lib/errors';
 import type { CarDetailsApi } from '../carDetails.api';
 import { getCarListingById } from './cars';

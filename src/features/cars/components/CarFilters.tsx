@@ -6,9 +6,9 @@ import { TbCar, TbCar4Wd, TbCaravan, TbCarOffRoad, TbCarSuv, TbTruck } from 'rea
 import nissanLogo from '@/assets/icons/nissan.svg';
 import Image from 'next/image';
 
-import FilterPanel from '@/components/filters/FilterPanel';
-import PriceRangeSlider from '@/components/filters/PriceRangeSlider';
-import CheckboxGroup from '@/components/filters/CheckboxGroup';
+import FilterPanel from './filters/FilterPanel';
+import PriceRangeSlider from './filters/PriceRangeSlider';
+import CheckboxGroup from './filters/CheckboxGroup';
 import { useToggleList } from '@/shared/hooks/useToggleList';
 
 const COMPANIES = ['معرض النخبة', 'معرض النخبة', 'معرض النخبة', 'معرض النخبة', 'معرض النخبة'];

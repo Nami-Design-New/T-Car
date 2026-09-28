@@ -1,5 +1,5 @@
 import type { StaticImageData } from 'next/image';
-import type { CarListing } from '@app-types/car';
+import type { CarListing } from '@/features/cars';
 
 export interface Review {
   id: string;

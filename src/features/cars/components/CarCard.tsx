@@ -1,7 +1,7 @@
 'use client';
 
 import { Link } from '@/i18n/navigation';
-import type { CarListing } from '@app-types/car';
+import { discountPercent as getDiscountPercent, type CarListing } from '../model';
 import giftImage from '@assets/images/gift.svg';
 import RiyalIcon from '@assets/ryal.svg';
 import { cn } from '@/shared/lib/cn';
@@ -31,9 +31,7 @@ export default function CarCard({
 }: CarCardProps) {
   const t = useTranslations('carCard');
   const detailsHref = `/cars/${car.id}` as const;
-  const discountPercent = car.originalPrice
-    ? Math.max(1, Math.round((1 - car.pricePerDay / car.originalPrice) * 100))
-    : null;
+  const discountPercent = getDiscountPercent(car);
 
   return (
     <article className={cn('car-card', className)}>

@@ -6,7 +6,7 @@ import { FiExternalLink, FiHome, FiX } from 'react-icons/fi';
 import { LuPlane } from 'react-icons/lu';
 import { MdTrain } from 'react-icons/md';
 import branchIcon from '@assets/icons/branch-car.svg';
-import type { PickupPoint } from '@app-types/car';
+import type { PickupPoint } from '@/features/cars';
 import type { CarPickupInfo } from '../model';
 
 interface Props {
