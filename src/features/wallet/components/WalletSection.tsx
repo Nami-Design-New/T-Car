@@ -2,6 +2,8 @@
 
 import { useCallback, useState } from 'react';
 import type { BankAccount } from '@/features/bank-accounts';
+import type { AppError } from '@/shared/lib/errors';
+import { useErrorMessage } from '@/shared/hooks/useErrorMessage';
 import { useWallet } from '../hooks/useWallet';
 import { MIN_TOP_UP, MIN_WITHDRAW } from '../model';
 import WalletTab from './WalletTab';
@@ -18,7 +20,7 @@ type WalletFlow =
   | { step: 'topup-amount' }
   | { step: 'withdraw-bank' }
   | { step: 'withdraw-amount'; account: BankAccount }
-  | { step: 'result'; kind: ResultKind; ok: boolean };
+  | { step: 'result'; kind: ResultKind; error?: AppError }; // no error means success
 
 const RESULT_TITLES: Record<ResultKind, { success: string; failure: string }> = {
   topup: { success: 'تمت الشحن بنجاح', failure: 'فشل في عملية الشحن' },
@@ -26,20 +28,21 @@ const RESULT_TITLES: Record<ResultKind, { success: string; failure: string }> = 
 };
 
 export default function WalletSection() {
-  const { summary, transactions, bankAccounts, loading, submitting, topUp, withdraw } =
+  const { summary, transactions, bankAccounts, loading, error, reload, submitting, topUp, withdraw } =
     useWallet();
+  const errorMessage = useErrorMessage();
   const [flow, setFlow] = useState<WalletFlow>({ step: 'idle' });
 
   const close = useCallback(() => setFlow({ step: 'idle' }), []);
 
   const handleTopUp = async (amount: number) => {
-    const ok = await topUp(amount);
-    setFlow({ step: 'result', kind: 'topup', ok });
+    const result = await topUp(amount);
+    setFlow({ step: 'result', kind: 'topup', error: result.ok ? undefined : result.error });
   };
 
   const handleWithdraw = async (account: BankAccount, amount: number) => {
-    const ok = await withdraw({ bankAccountId: account.id, amount });
-    setFlow({ step: 'result', kind: 'withdraw', ok });
+    const result = await withdraw({ bankAccountId: account.id, amount });
+    setFlow({ step: 'result', kind: 'withdraw', error: result.ok ? undefined : result.error });
   };
 
   return (
@@ -48,6 +51,8 @@ export default function WalletSection() {
         summary={summary}
         transactions={transactions}
         loading={loading}
+        error={error ? errorMessage(error) : undefined}
+        onRetry={reload}
         onTopUp={() => setFlow({ step: 'topup-amount' })}
         onWithdraw={() => setFlow({ step: 'withdraw-bank' })}
       />
@@ -82,7 +87,7 @@ export default function WalletSection() {
         }}
       />
 
-      {flow.step === 'result' && flow.ok && (
+      {flow.step === 'result' && !flow.error && (
         <SuccessModal
           open
           appearButton={false}
@@ -93,8 +98,9 @@ export default function WalletSection() {
       )}
 
       <FailedModal
-        open={flow.step === 'result' && !flow.ok}
+        open={flow.step === 'result' && Boolean(flow.error)}
         title={flow.step === 'result' ? RESULT_TITLES[flow.kind].failure : undefined}
+        description={flow.step === 'result' && flow.error ? errorMessage(flow.error) : undefined}
         onDone={close}
       />
     </>

@@ -13,6 +13,9 @@ import emptyAnimation from '@assets/images/non_data.json';
 interface Props {
   accounts: BankAccount[];
   loading?: boolean;
+  /** Already translated; set when the accounts failed to load. */
+  error?: string;
+  onRetry?: () => void;
   onAdd: () => void;
   onEdit: (account: BankAccount) => void;
   onDelete: (account: BankAccount) => void;
@@ -21,6 +24,8 @@ interface Props {
 export default function BankAccountsTab({
   accounts,
   loading = false,
+  error,
+  onRetry,
   onAdd,
   onEdit,
   onDelete,
@@ -29,6 +34,22 @@ export default function BankAccountsTab({
     return (
       <div className="account-panel">
         <Loader fullScreen={false} />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="account-panel bank_accounts_panel">
+        <h3 className="bank_accounts_title">الحسابات البنكية</h3>
+        <div className="bank_accounts_empty" role="alert">
+          <p>{error}</p>
+          {onRetry && (
+            <button type="button" className="wallet_topup_submit btn mt-3" onClick={onRetry}>
+              إعادة المحاولة
+            </button>
+          )}
+        </div>
       </div>
     );
   }

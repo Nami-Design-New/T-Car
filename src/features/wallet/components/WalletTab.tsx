@@ -17,6 +17,9 @@ interface Props {
   summary: WalletSummary;
   transactions: WalletTransaction[];
   loading?: boolean;
+  /** Already translated; set when the wallet failed to load. */
+  error?: string;
+  onRetry?: () => void;
   onTopUp: () => void;
   onWithdraw: () => void;
 }
@@ -41,6 +44,8 @@ export default function WalletTab({
   summary,
   transactions,
   loading = false,
+  error,
+  onRetry,
   onTopUp,
   onWithdraw,
 }: Props) {
@@ -48,6 +53,21 @@ export default function WalletTab({
     return (
       <div className="account-panel">
         <Loader fullScreen={false} />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="account-panel">
+        <div className="wallet_history_empty" role="alert">
+          <p>{error}</p>
+          {onRetry && (
+            <button type="button" className="wallet_topup_submit btn mt-3" onClick={onRetry}>
+              إعادة المحاولة
+            </button>
+          )}
+        </div>
       </div>
     );
   }
