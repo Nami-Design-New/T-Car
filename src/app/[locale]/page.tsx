@@ -1,12 +1,7 @@
 import Hero from '@components/home/Hero';
 import { CarsRail, getHandpickedCars, getOfferCars } from '@/features/cars';
 import { PopularCities, getCities } from '@/features/cities';
-import WhyChooseUs from '@/components/home/Why';
-import Partners from '@/components/home/Partners';
-import DownloadApp from '@/components/home/Download';
-import FAQ from '@components/home/FAQ';
-import Contact from '@/components/home/contact';
-import CTA from '@/components/home/CTA/CTA';
+import { CTA, Contact, DownloadApp, FAQ, Partners, WhyChooseUs } from '@/features/home';
 import { getTranslations } from 'next-intl/server';
 
 export default async function HomePage() {

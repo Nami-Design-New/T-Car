@@ -2,9 +2,9 @@
 
 import Image from 'next/image';
 
-import phone from '../../../assets/images/app-phone.png';
-import appStore from '../../../assets/images/Apple Store.webp';
-import playStore from '../../../assets/images/Play Sotre.webp';
+import phone from '@/assets/images/app-phone.png';
+import appStore from '@/assets/images/Apple Store.webp';
+import playStore from '@/assets/images/Play Sotre.webp';
 
 export default function DownloadApp() {
   return (

@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useTranslations } from 'next-intl';;
 import { FiChevronDown } from 'react-icons/fi';
 import SectionTitle from '@/shared/ui/SectionTitle';
-import type { FAQItem } from '@app-types/index';
+import type { FAQItem } from '../model';
 
 const FAQS: FAQItem[] = [
   {

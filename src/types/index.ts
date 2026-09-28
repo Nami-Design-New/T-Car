@@ -26,16 +26,3 @@ export type {
   AppNotification,
 } from './car';
 
-// Home page (FAQ / Services)
-export interface FAQItem {
-  id: string;
-  question: string;
-  answer: string;
-}
-
-export interface ServiceItem {
-  id: string;
-  icon: string;
-  title: string;
-  description: string;
-}
