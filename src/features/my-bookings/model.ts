@@ -1,4 +1,5 @@
 import type { StaticImageData } from 'next/image';
+import type { BookingDetails } from '@app-types/car';
 
 export type BookingStatus = 'current' | 'upcoming' | 'late' | 'completed' | 'cancelled';
 
@@ -39,7 +40,18 @@ export interface BookingDetailsView {
   vatRate: number;
   vat: number;
   total: number;
+  /** Share of the total kept as a fee when the customer cancels. */
+  cancellationPercent: number;
   bannerTimestamp?: string;
+}
+
+/** What the edit request form submits; the same shape the booking form uses. */
+export type BookingEditRequest = BookingDetails;
+
+export interface BookingReviewInput {
+  /** 1 to 5 */
+  rating: number;
+  review: string;
 }
 
 const ACTIVE_STATUSES: readonly BookingStatus[] = ['current', 'upcoming', 'late'];
@@ -49,6 +61,29 @@ export const isActiveBooking = (status: BookingStatus) => ACTIVE_STATUSES.includ
 
 /** The car is out with the customer, so the return countdown applies. */
 export const isRentalRunning = (status: BookingStatus) => status === 'current' || status === 'late';
+
+export function cancellationFee(amount: number, percent: number): number {
+  return Math.round((amount * percent) / 100);
+}
+
+/** Pre-fills the edit request form from the booking. */
+export function toEditRequest(booking: BookingDetailsView): BookingEditRequest {
+  return {
+    startDate: new Date(booking.pickupDateTime),
+    endDate: new Date(booking.dropoffDateTime),
+    time: booking.pickupDateTime.slice(11, 16),
+    notes: '',
+    days: booking.days,
+    pricePerDay: booking.pricePerDay,
+    subtotal: booking.subtotal,
+    vat: booking.vat,
+    total: booking.total,
+    pickupAddress: booking.pickupLocation,
+    dropoffAddress: booking.dropoffLocation,
+    pickupLocation: null,
+    dropoffLocation: null,
+  };
+}
 
 export function splitBookings(bookings: UserBooking[]) {
   return {

@@ -11,18 +11,23 @@ interface Props {
   onClose: () => void;
   onConfirm: () => void;
 
-  bookingAmount?: number;
-  cancellationPercent?: number;
-  cancellationFee?: number;
+  bookingAmount: number;
+  cancellationPercent: number;
+  cancellationFee: number;
+  loading?: boolean;
+  /** Already translated; the dialog stays open and shows it after a failed submit. */
+  error?: string;
 }
 
 export default function CancelBookingModal({
   open,
   onClose,
   onConfirm,
-  bookingAmount = 2500,
-  cancellationPercent = 25,
-  cancellationFee = 1000,
+  bookingAmount,
+  cancellationPercent,
+  cancellationFee,
+  loading = false,
+  error,
 }: Props) {
   useEffect(() => {
     if (!open) return;
@@ -101,9 +106,20 @@ export default function CancelBookingModal({
           <strong>{refundedAmount} ر.س</strong>
         </div>
 
+        {error && (
+          <p className="text-danger small mb-2" role="alert">
+            {error}
+          </p>
+        )}
+
         <div className="cancel_booking_modal_actions">
-          <button type="button" className="cancel_booking_modal_confirm_btn" onClick={onConfirm}>
-            تأكيد الإلغاء
+          <button
+            type="button"
+            className="cancel_booking_modal_confirm_btn"
+            onClick={onConfirm}
+            disabled={loading}
+          >
+            {loading ? 'جاري الإلغاء...' : 'تأكيد الإلغاء'}
           </button>
 
           <button type="button" className="cancel_booking_modal_back_btn" onClick={onClose}>

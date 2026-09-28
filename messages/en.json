@@ -176,7 +176,12 @@
       "ibanRequired": "IBAN is required."
     },
     "bookings": {
-      "notFound": "Booking not found."
+      "notFound": "Booking not found.",
+      "notActive": "This booking is no longer active.",
+      "extendLimit": "A booking cannot be extended beyond 30 days.",
+      "invalidDates": "The return date must be after the pickup date.",
+      "cancelNotAllowed": "An overdue booking cannot be cancelled. Return the car first.",
+      "ratingRequired": "Choose a rating from 1 to 5."
     }
   }
 }

@@ -3,10 +3,11 @@
 import { useState } from 'react';
 import { FiStar } from 'react-icons/fi';
 import { formatCurrency } from '@/shared/lib/format';
+import { useBookingActions } from '../hooks/useBookingActions';
 import BookingReviewModal from './BookingReviewModal';
 
 interface Props {
-  reference: string;
+  bookingId: string;
   pricePerDay: number;
   days: number;
   subtotal: number;
@@ -16,7 +17,7 @@ interface Props {
   total: number;
 }
 export default function BookingSidebar({
-  reference,
+  bookingId,
   pricePerDay,
   days,
   subtotal,
@@ -26,6 +27,7 @@ export default function BookingSidebar({
   total,
 }: Props) {
   const [showReview, setShowReview] = useState(false);
+  const { submitting, review } = useBookingActions(bookingId);
 
   return (
     <aside className="booking-sidebar">
@@ -70,7 +72,11 @@ export default function BookingSidebar({
       </div>
 
       {showReview && (
-        <BookingReviewModal reference={reference} onClose={() => setShowReview(false)} />
+        <BookingReviewModal
+          submitting={submitting}
+          onSubmit={review}
+          onClose={() => setShowReview(false)}
+        />
       )}
     </aside>
   );

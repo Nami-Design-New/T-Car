@@ -1,4 +1,8 @@
-import type { BookingDetailsView, UserBooking } from '@/features/my-bookings/model';
+import {
+  isActiveBooking,
+  type BookingDetailsView,
+  type UserBooking,
+} from '@/features/my-bookings/model';
 import { AppError } from '@/shared/lib/errors';
 import type { BookingsApi } from '../bookings.api';
 import car1 from '@assets/images/car1.jpg';
@@ -85,11 +89,28 @@ const MOCK_DETAILS_BASE: Omit<
   vatRate: 5,
   vat: 600,
   total: 2400,
+  cancellationPercent: 25,
 };
+
+/** Mock only: extensions past this many days fail, so the failure state can be exercised. */
+const MOCK_MAX_RENTAL_DAYS = 30;
 
 const delay = (ms = 300) => new Promise((resolve) => setTimeout(resolve, ms));
 
-// Read-only, so it is safe to run on the server.
+function findBooking(id: string): UserBooking {
+  const booking = MOCK_BOOKINGS.find((item) => item.id === id);
+  if (!booking) throw new AppError('not_found', 'bookings.notFound');
+  return booking;
+}
+
+function findActiveBooking(id: string): UserBooking {
+  const booking = findBooking(id);
+  if (!isActiveBooking(booking.status)) throw new AppError('conflict', 'bookings.notActive');
+  return booking;
+}
+
+// Read-only (writes validate and resolve without changing anything), so it is
+// safe to run on the server.
 export const bookingsMock: BookingsApi = {
   async getBookings() {
     await delay();
@@ -98,10 +119,42 @@ export const bookingsMock: BookingsApi = {
 
   async getBookingDetails(id) {
     await delay();
-    const booking = MOCK_BOOKINGS.find((item) => item.id === id);
-    if (!booking) throw new AppError('not_found', 'bookings.notFound');
+    const booking = findBooking(id);
 
     const { carName, carBrand, carImage, showroom, status, statusLabel } = booking;
     return { ...MOCK_DETAILS_BASE, id, carName, carBrand, carImage, showroom, status, statusLabel };
+  },
+
+  async extendBooking(id, days) {
+    await delay(600);
+    findActiveBooking(id);
+    if (days > MOCK_MAX_RENTAL_DAYS) throw new AppError('conflict', 'bookings.extendLimit');
+  },
+
+  async requestBookingEdit(id, request) {
+    await delay(600);
+    findActiveBooking(id);
+    if (request.endDate <= request.startDate) {
+      throw new AppError('validation', 'bookings.invalidDates', undefined, {
+        endDate: 'bookings.invalidDates',
+      });
+    }
+  },
+
+  async cancelBooking(id) {
+    await delay(600);
+    const booking = findActiveBooking(id);
+    // The car is already overdue with the customer, so it has to be returned first.
+    if (booking.status === 'late') throw new AppError('conflict', 'bookings.cancelNotAllowed');
+  },
+
+  async submitReview(id, { rating }) {
+    await delay(600);
+    findBooking(id);
+    if (!Number.isInteger(rating) || rating < 1 || rating > 5) {
+      throw new AppError('validation', 'bookings.ratingRequired', undefined, {
+        rating: 'bookings.ratingRequired',
+      });
+    }
   },
 };

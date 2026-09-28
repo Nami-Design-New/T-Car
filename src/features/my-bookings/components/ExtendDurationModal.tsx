@@ -9,6 +9,9 @@ interface Props {
   onConfirm: (newDays: number) => void;
   currentDays?: number;
   pricePerDay?: number;
+  loading?: boolean;
+  /** Already translated; the dialog stays open and shows it after a failed submit. */
+  error?: string;
 }
 
 export default function ExtendDurationModal({
@@ -17,6 +20,8 @@ export default function ExtendDurationModal({
   onConfirm,
   currentDays = 1,
   pricePerDay = 500,
+  loading = false,
+  error,
 }: Props) {
   const [days, setDays] = useState(currentDays);
 
@@ -178,13 +183,20 @@ export default function ExtendDurationModal({
 
         </div>
 
+        {error && (
+          <p className="text-danger small mb-2" role="alert">
+            {error}
+          </p>
+        )}
+
         {/* Confirm */}
         <button
           type="button"
           className="confirm_btn"
           onClick={() => onConfirm(days)}
+          disabled={loading}
         >
-          تأكيد
+          {loading ? 'جاري التمديد...' : 'تأكيد'}
         </button>
 
       </div>

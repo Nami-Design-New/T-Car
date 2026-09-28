@@ -14,11 +14,7 @@ export default function BookingDetailsScreen({ booking }: Props) {
     <section className="section booking-details-page">
       <div className="container-tcar">
         <div className="booking-details-container">
-          <BookingDetailsHeader
-            reference={booking.reference}
-            statusLabel={booking.statusLabel}
-            status={booking.status}
-          />
+          <BookingDetailsHeader booking={booking} />
 
           <BookingHero
             carName={booking.carName}
@@ -52,7 +48,7 @@ export default function BookingDetailsScreen({ booking }: Props) {
             </div>
 
             <BookingSidebar
-              reference={booking.reference}
+              bookingId={booking.id}
               pricePerDay={booking.pricePerDay}
               days={booking.days}
               subtotal={booking.subtotal}

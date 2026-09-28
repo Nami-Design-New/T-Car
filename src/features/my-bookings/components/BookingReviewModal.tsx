@@ -2,32 +2,32 @@
 
 import { useState } from 'react';
 import { FiStar, FiX } from 'react-icons/fi';
+import { useErrorMessage } from '@/shared/hooks/useErrorMessage';
+import type { AppError } from '@/shared/lib/errors';
+import type { Result } from '@/shared/lib/result';
+import type { BookingReviewInput } from '../model';
 
 interface Props {
-  reference: string;
+  submitting?: boolean;
+  onSubmit: (input: BookingReviewInput) => Promise<Result<void>>;
   onClose: () => void;
 }
 
-export default function BookingReviewModal({ reference, onClose }: Props) {
+export default function BookingReviewModal({ submitting = false, onSubmit, onClose }: Props) {
   const [rating, setRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
   const [review, setReview] = useState('');
-  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<AppError | null>(null);
+  const errorMessage = useErrorMessage();
 
   async function handleSubmit() {
     if (!rating || submitting) return;
 
-    setSubmitting(true);
-    try {
-      await fetch(`/api/bookings/${reference}/review`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ rating, review }),
-      });
-      onClose();
-    } finally {
-      setSubmitting(false);
-    }
+    setError(null);
+    const result = await onSubmit({ rating, review });
+    // On failure the dialog stays open and keeps what the user typed.
+    if (result.ok) onClose();
+    else setError(result.error);
   }
 
   return (
@@ -62,6 +62,12 @@ export default function BookingReviewModal({ reference, onClose }: Props) {
           onChange={(e) => setReview(e.target.value)}
           rows={4}
         />
+
+        {error && (
+          <p className="text-danger small mb-2" role="alert">
+            {errorMessage(error)}
+          </p>
+        )}
 
         <button
           className="review-modal-submit"
