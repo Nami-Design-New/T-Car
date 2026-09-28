@@ -3,7 +3,7 @@
 import { useCallback, useState } from 'react';
 import type { BankAccount } from '@app-types/car';
 import { useWallet } from '@hooks/useWallet';
-import { MIN_TOP_UP, MIN_WITHDRAW } from '@/data/wallet';
+import { MIN_TOP_UP, MIN_WITHDRAW } from '@/features/wallet/model';
 import WalletTab from '@components/account/WalletTab';
 import WalletAmountModal from '@components/modals/WalletAmountModal';
 import BankSelectModal from '@components/modals/BankSelectModal';

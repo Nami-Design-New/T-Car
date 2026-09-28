@@ -1,9 +1,6 @@
 import type { Bank, BankAccount, WalletSummary, WalletTransaction } from '@app-types/car';
 import sedadBankLogo from '@assets/images/banks/sedad-bank.png';
 
-export const MIN_TOP_UP = 10;
-export const MIN_WITHDRAW = 10;
-
 export const MOCK_WALLET_SUMMARY: WalletSummary = {
   total: 2500,
   withdrawable: 1500,

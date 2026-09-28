@@ -1,8 +1,8 @@
 import CarFilters from '@components/cars/CarFilters';
 import CarOfficeRow from '@components/cars/CarOfficeRow';
 import type { CarListing } from '@app-types/car';
-import { MOCK_CARS } from '@/data/cars';
-import { groupCarsByOffice } from '@/data/offices';
+import { MOCK_CARS } from '@/services/mocks/cars';
+import { groupCarsByOffice } from '@/services/mocks/offices';
 import { Link } from '@/i18n/navigation';
 import { getTranslations } from 'next-intl/server';
 import { FiArrowLeft } from 'react-icons/fi';

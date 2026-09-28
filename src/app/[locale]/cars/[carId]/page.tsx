@@ -7,7 +7,7 @@ import CarBookingCard from '@components/car-details/CarBookingCard';
 import ReviewsSummaryCard from '@components/car-details/ReviewsSummaryCard';
 import StationAndAirportInfo from '@components/car-details/StationAndAirportInfo';
 import type { CarDetails } from '@app-types/car';
-import { MOCK_CARS, getCarListingById } from '@/data/cars';
+import { MOCK_CARS, getCarListingById } from '@/services/mocks/cars';
 
 import car1 from '@assets/images/car1.jpg';
 

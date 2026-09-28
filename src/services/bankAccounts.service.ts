@@ -1,5 +1,5 @@
 import type { Bank, BankAccount, BankAccountPayload } from '@app-types/car';
-import { MOCK_BANKS, MOCK_BANK_ACCOUNTS } from '@/data/wallet';
+import { MOCK_BANKS, MOCK_BANK_ACCOUNTS } from './mocks/wallet';
 import { AppError } from '@/shared/lib/errors';
 
 // The bank account endpoints are not available yet, so the service works on an

@@ -1,5 +1,5 @@
 import type { BankAccount, WalletSummary, WalletTransaction } from '@app-types/car';
-import { MOCK_WALLET_SUMMARY, MOCK_WALLET_TRANSACTIONS } from '@/data/wallet';
+import { MOCK_WALLET_SUMMARY, MOCK_WALLET_TRANSACTIONS } from './mocks/wallet';
 import { bankAccountsService } from '@services/bankAccounts.service';
 import { AppError } from '@/shared/lib/errors';
 

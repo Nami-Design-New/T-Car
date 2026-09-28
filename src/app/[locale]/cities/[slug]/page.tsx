@@ -3,7 +3,7 @@ import SortBar from '@components/cities/SortBar';
 import CityFilters from '@components/cities/CityFilters';
 import CarCard from '@components/cars/CarCard';
 import type { CityDetails, CarListing } from '@app-types/car';
-import { MOCK_CARS } from '@/data/cars';
+import { MOCK_CARS } from '@/services/mocks/cars';
 import cityHeroImage from '@assets/images/c1.jpg';
 
 interface Props {
