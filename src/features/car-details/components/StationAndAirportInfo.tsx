@@ -7,26 +7,20 @@ import { LuPlane } from 'react-icons/lu';
 import { MdTrain } from 'react-icons/md';
 import branchIcon from '@assets/icons/branch-car.svg';
 import type { PickupPoint } from '@app-types/car';
+import type { CarPickupInfo } from '../model';
 
 interface Props {
   showroom: string;
-  address?: string;
-  distanceKm?: number;
+  pickup: CarPickupInfo;
   type?: PickupPoint;
 }
 
-const branches = [
-  { id: 1, name: 'فرع جدة', address: 'جدة، شارع الملك عبدالله بن عبدالعزيز', distanceKm: 2.9 },
-  { id: 2, name: 'فرع جدة', address: 'جدة، شارع الملك عبدالله بن عبدالعزيز', distanceKm: 2.9 },
-  { id: 3, name: 'فرع جدة', address: 'جدة، شارع الملك عبدالله بن عبدالعزيز', distanceKm: 2.9 },
-];
-
 export default function StationAndAirportInfo({
   showroom,
-  address = 'جدة، شارع الملك عبدالله بن عبدالعزيز',
-  distanceKm = 2.9,
+  pickup,
   type = 'airport',
 }: Props) {
+  const { address, distanceKm, branches } = pickup;
   const [showBranches, setShowBranches] = useState(false);
 
   const isAirport = type === 'airport';

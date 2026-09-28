@@ -182,6 +182,9 @@
       "invalidDates": "The return date must be after the pickup date.",
       "cancelNotAllowed": "An overdue booking cannot be cancelled. Return the car first.",
       "ratingRequired": "Choose a rating from 1 to 5."
+    },
+    "cars": {
+      "notFound": "This car is not available or does not exist."
     }
   }
 }

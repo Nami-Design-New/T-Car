@@ -1,2 +1,11 @@
 export { default as CarDetailsView } from './components/CarDetailsView';
-export type { AddonService, CarDetails, CarWarranty, InsuranceOption, Review } from './model';
+export { getCarDetails } from './queries';
+export type {
+  AddonService,
+  CarDetails,
+  CarPickupInfo,
+  CarWarranty,
+  InsuranceOption,
+  PickupBranch,
+  Review,
+} from './model';

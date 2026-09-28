@@ -22,7 +22,11 @@ export default function CarDetailsView({ car }: Props) {
               <CarGallery image={car.images[0]} alt={`${car.brand} ${car.name}`} />
               <CarQuickInfo car={car} />
               {car.pickupPoint && (
-                <StationAndAirportInfo showroom={car.showroom} type={car.pickupPoint} />
+                <StationAndAirportInfo
+                  showroom={car.showroom}
+                  pickup={car.pickupInfo}
+                  type={car.pickupPoint}
+                />
               )}
               <WarrantiesList warranties={car.warranties} />
               <AddonsGrid addons={car.addons} />
