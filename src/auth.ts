@@ -33,7 +33,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       credentials: {
         phone: {},
         code: {},
-        // Present only when a new customer finishes registration.
+        /** 'register' when a new customer finishes registration; sign-in otherwise. */
+        intent: {},
         fullName: {},
         email: {},
         birthDate: {},
@@ -41,19 +42,19 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       async authorize(credentials) {
         const phone = text(credentials.phone);
         const code = text(credentials.code);
-        const fullName = text(credentials.fullName);
 
         let grant: AuthGrant;
         try {
-          grant = fullName
-            ? await authApi.register({
-                phone,
-                code,
-                fullName,
-                email: text(credentials.email),
-                birthDate: text(credentials.birthDate),
-              })
-            : await authApi.verifyOtp(phone, code);
+          grant =
+            credentials.intent === 'register'
+              ? await authApi.register({
+                  phone,
+                  code,
+                  fullName: text(credentials.fullName),
+                  email: text(credentials.email),
+                  birthDate: text(credentials.birthDate),
+                })
+              : await authApi.verifyOtp(phone, code);
         } catch (error) {
           const appError = toAppError(error);
           // Expected outcomes (wrong code, new customer) are not reported;
@@ -72,7 +73,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     jwt({ token, user }) {
       if (user) {
         token.accessToken = user.accessToken;
-        token.user = { id: user.id!, name: user.name ?? '', phone: user.phone, email: user.email ?? undefined };
+        token.user = {
+          id: user.id!,
+          name: user.name ?? '',
+          phone: user.phone,
+          email: user.email ?? undefined,
+        };
       }
       return token;
     },

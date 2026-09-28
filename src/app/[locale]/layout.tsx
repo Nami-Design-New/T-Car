@@ -1,5 +1,6 @@
 import Footer from '@components/layout/Footer';
 import Header from '@components/layout/Header';
+import { auth } from '@/auth';
 import type { Metadata } from 'next';
 import { NextIntlClientProvider } from 'next-intl';
 import { getDirection } from '@/shared/config/languages';
@@ -95,13 +96,13 @@ export default async function RootLayout({
   children: React.ReactNode;
   params: Promise<{ locale: string }>;
 }) {
-  const { locale } = await params;
+  const [{ locale }, session] = await Promise.all([params, auth()]);
 
   return (
     <html lang={locale} dir={getDirection(locale)} className={expo.variable}>
       <body>
          <NextIntlClientProvider>
-            <Header />
+            <Header user={session?.user ?? null} />
                <main>{children}</main>
             <Footer />
          </NextIntlClientProvider>

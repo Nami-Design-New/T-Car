@@ -57,7 +57,7 @@ export async function verifyOtpAction(
 /** Creates the account for a verified phone and signs it in. */
 export async function registerAction(input: RegistrationInput): Promise<ActionResult<void>> {
   try {
-    await signIn('otp', { ...input, redirect: false });
+    await signIn('otp', { ...input, intent: 'register', redirect: false });
     return toActionResult(ok(undefined));
   } catch (error) {
     return toActionResult(fail(signInError(error)));

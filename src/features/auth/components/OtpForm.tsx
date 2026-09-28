@@ -9,12 +9,22 @@ type Props = {
   onBack: () => void;
   onVerify: (code: string) => void;
   onResend?: () => void;
+  loading?: boolean;
+  /** Already translated; the entered code stays so the user can correct it. */
+  error?: string;
 };
 
 const OTP_LENGTH = 4;
 const OTP_RESEND_SECONDS = 60;
 
-export default function OtpForm({ phone, onBack, onVerify, onResend }: Props) {
+export default function OtpForm({
+  phone,
+  onBack,
+  onVerify,
+  onResend,
+  loading = false,
+  error,
+}: Props) {
   const t = useTranslations();
 
   const [otp, setOtp] = useState<string[]>(Array(OTP_LENGTH).fill(''));
@@ -137,10 +147,16 @@ export default function OtpForm({ phone, onBack, onVerify, onResend }: Props) {
         )}
       </div>
 
+      {error && (
+        <p className="text-danger small mt-2 mb-0" role="alert">
+          {error}
+        </p>
+      )}
+
       <button
         type="button"
         className="auth_btn"
-        disabled={!isComplete}
+        disabled={!isComplete || loading}
         onClick={() => onVerify(code)}
       >
         {t('auth.otp.verify')}

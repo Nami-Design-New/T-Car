@@ -4,12 +4,22 @@ import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { FiArrowLeft } from 'react-icons/fi';
 
+/** The profile fields; the verified phone and code are added by the dialog. */
+export interface RegisterValues {
+  fullName: string;
+  email: string;
+  birthDate: string;
+}
+
 type Props = {
   onBack: () => void;
-  onSuccess: () => void;
+  onSubmit: (values: RegisterValues) => void;
+  loading?: boolean;
+  /** Already translated; the form keeps its values so the user can fix them. */
+  error?: string;
 };
 
-export default function RegisterForm({ onBack, onSuccess }: Props) {
+export default function RegisterForm({ onBack, onSubmit, loading = false, error }: Props) {
   const t = useTranslations();
 
   const [form, setForm] = useState({
@@ -30,7 +40,8 @@ export default function RegisterForm({ onBack, onSuccess }: Props) {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    onSuccess();
+    if (loading) return;
+    onSubmit({ fullName: form.name, email: form.email, birthDate: form.birthDate });
   };
 
   return (
@@ -101,7 +112,13 @@ export default function RegisterForm({ onBack, onSuccess }: Props) {
         <span>{t('auth.register.agreeToTerms')}</span>
       </label>
 
-      <button type="submit" className="auth_btn">
+      {error && (
+        <p className="text-danger small mt-2 mb-0" role="alert">
+          {error}
+        </p>
+      )}
+
+      <button type="submit" className="auth_btn" disabled={loading}>
         {t('auth.register.submit')}
       </button>
     </form>

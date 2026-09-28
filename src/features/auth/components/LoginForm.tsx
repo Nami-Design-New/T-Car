@@ -8,11 +8,14 @@ import logo from '@assets/images/fav.svg';
 import whatsappIcon from '@assets/icons/whatsapp-icon.svg';
 
 type Props = {
-  onNext: () => void;
-  onRegister: () => void;
+  /** Sends the code to this phone. */
+  onNext: (phone: string) => void;
+  loading?: boolean;
+  /** Already translated. */
+  error?: string;
 };
 
-export default function LoginForm({ onNext, onRegister }: Props) {
+export default function LoginForm({ onNext, loading = false, error }: Props) {
   const t = useTranslations();
 
   const [phone, setPhone] = useState('+966');
@@ -35,7 +38,18 @@ export default function LoginForm({ onNext, onRegister }: Props) {
         />
       </div>
 
-      <button type="button" className="auth_btn auth_btn--whatsapp" onClick={onNext}>
+      {error && (
+        <p className="text-danger small mt-2 mb-0" role="alert">
+          {error}
+        </p>
+      )}
+
+      <button
+        type="button"
+        className="auth_btn auth_btn--whatsapp"
+        onClick={() => onNext(phone)}
+        disabled={loading}
+      >
         <span className="auth_btn_label">{t('auth.login.sendViaWhatsApp')}</span>
         <span className="auth_btn_icon" aria-hidden="true">
           <Image src={whatsappIcon} alt="" width={18} height={18} />
@@ -44,7 +58,7 @@ export default function LoginForm({ onNext, onRegister }: Props) {
 
       <div className="bottom_text">
         {t('auth.login.noAccount')}
-        <button type="button" onClick={onRegister}>
+        <button type="button" onClick={() => onNext(phone)} disabled={loading}>
           {t('auth.login.createAccount')}
         </button>
       </div>

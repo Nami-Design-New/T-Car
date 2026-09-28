@@ -1,8 +1,9 @@
 'use client';
 
-import { useState } from 'react';
-import { Link } from '@/i18n/navigation';
-import { useTranslations } from 'next-intl';;
+import { Suspense, useCallback, useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
+import { Link, useRouter } from '@/i18n/navigation';
+import { useTranslations } from 'next-intl';
 import { FiMenu, FiX } from 'react-icons/fi';
 import Button from '@/shared/ui/Button';
 import LanguageSwitcher from '@/components/layout/LanguageSwitcher/LanguageSwitcher';
@@ -10,18 +11,47 @@ import UserMenu from '@components/layout/UserMenu';
 import { NAV_LINKS, SITE_NAME } from '@/shared/config/site';
 import Image from 'next/image';
 import logo from '@assets/images/logo.png';
-import { AuthModal } from '@/features/auth';
+import { AuthModal, signOutAction, type AuthUser } from '@/features/auth';
 
-export default function Header() {
+interface Props {
+  /** From the server session; null when signed out. */
+  user: AuthUser | null;
+}
+
+/**
+ * Opens the sign-in dialog for links like /?auth=login&next=/account (the
+ * middleware sends signed-out visitors of protected pages there). Separate so
+ * useSearchParams sits inside its own Suspense boundary.
+ */
+function AuthPrompt({ onOpen }: { onOpen: (next?: string) => void }) {
+  const searchParams = useSearchParams();
+  const auth = searchParams.get('auth');
+  const next = searchParams.get('next') ?? undefined;
+
+  useEffect(() => {
+    if (auth === 'login') onOpen(next);
+  }, [auth, next, onOpen]);
+
+  return null;
+}
+
+export default function Header({ user }: Props) {
   const t = useTranslations();
+  const router = useRouter();
 
   const [isOpen, setIsOpen] = useState(false);
   const [showAuth, setShowAuth] = useState(false);
+  const [authNext, setAuthNext] = useState<string | undefined>();
 
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const openAuth = useCallback((next?: string) => {
+    setAuthNext(next);
+    setShowAuth(true);
+  }, []);
 
-  const handleLogout = () => {
-    setIsLoggedIn(false);
+  const handleLogout = async () => {
+    await signOutAction();
+    // Re-render with no session; protected pages redirect through the middleware.
+    router.refresh();
   };
 
   return (
@@ -45,18 +75,13 @@ export default function Header() {
           <div className="header-nav-actions">
             <LanguageSwitcher />
 
-            {/* {isLoggedIn ? (
-              <UserMenu userName="أحمد محمد" onLogout={handleLogout} />
+            {user ? (
+              <UserMenu onLogout={handleLogout} />
             ) : (
-              <Button size="sm" onClick={() => setShowAuth(true)}>
+              <Button size="sm" onClick={() => openAuth()}>
                 {t('nav.login')}
               </Button>
-            )} */}
-            <UserMenu onLogout={handleLogout} />
-
-            <Button size="sm" onClick={() => setShowAuth(true)}>
-              {t('nav.login')}
-            </Button>
+            )}
           </div>
         </nav>
 
@@ -68,7 +93,13 @@ export default function Header() {
           {isOpen ? <FiX /> : <FiMenu />}
         </button>
 
-        <AuthModal show={showAuth} onHide={() => setShowAuth(false)} />
+        <AuthModal show={showAuth} onHide={() => setShowAuth(false)} next={authNext} />
+
+        {!user && (
+          <Suspense fallback={null}>
+            <AuthPrompt onOpen={openAuth} />
+          </Suspense>
+        )}
       </div>
     </header>
   );
