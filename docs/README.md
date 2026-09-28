@@ -188,7 +188,7 @@ merged or pushed yet.
 | 0. Bug fixes and dead code | Partly done | 6 of the 10 bugs above fixed. Deleted: `bookings/BookingsTab`, `BookingCarSummary`, `BookingPriceDetails`, `RateBookingButton`, `CityCarCard`, `CitiesGrid`. Still open: font path, `{{name}}` messages, sitemap, metadata icons, `lib/i18n.ts` and `layout/I18nProvider.tsx`. **Waiting on product:** `BookingModal`, `BookingMonthlyModal`, `InsufficientBalanceModal` (unused, kept). Not started: `typecheck` script, React 19 |
 | 1. Foundations | Partly done | Done: `features/`, `shared/{ui,lib,hooks,config}`, `services/http`, the import rules (as warnings), `AppError` / `Result` / `reportError`, the `errors` messages. Not started: Radix `shared/ui` set, `error.tsx`, `global-error.tsx`, non-blocking `loading.tsx` |
 | 2. Routing | Not started | Account sections are still tabs (`?tab=` works as a stopgap); filters and sort are not in the URL; `/cars` still ignores the hero's search parameters |
-| 3. Server-first data and auth | Mostly done | Pages read through `features/*/queries.ts` for cars, cities, car details, bookings, home, and rental search. Auth is NextAuth v5 with the token in its `httpOnly` session cookie and a middleware guard ([doc 2](02-server-client-boundary.md#23-auth-across-the-boundary)). Wallet, bank accounts, and bookings actions still run as client hooks (see below) |
+| 3. Server-first data and auth | Mostly done | Pages read through `features/*/queries.ts` for cars, cities, car details, bookings, home, rental search, account profile, and notifications. Auth is NextAuth v5 with the token in its `httpOnly` session cookie and a middleware guard ([doc 2](02-server-client-boundary.md#23-auth-across-the-boundary)). Wallet, bank accounts, and bookings actions still run as client hooks (see below) |
 | 4. Feature migration | Mostly done | See the table below |
 | 5. Performance | Not started | Only the Maps script fix from phase 0 |
 | 6. i18n extraction | Not started | New strings (errors, contact form) are in `messages/*.json`; the existing Arabic text is not |
@@ -203,7 +203,7 @@ merged or pushed yet.
 | `cars`, `cities` | Yes | Yes | n/a | Filters and sort in the URL; merging `CarFilters` / `CityFilters` (doc 4) and their option data |
 | `home`, `rental-search` | Yes | Yes (FAQs, search options) | Yes (contact form) | `Partners` and `WhyChooseUs` still hold their static content |
 | `auth` | Yes | NextAuth + mocked `authApi` | Yes (Server Actions) | Real endpoints; `react-bootstrap` (the dialog still uses its `Modal`) |
-| `account` (profile, notifications) | Yes | No | No | Profile and notification mocks are still inline; profile writes are the last 4 `console.log` calls in the app |
+| `account` (profile, notifications) | Yes | Yes | No | Profile writes are the last 4 `console.log` calls in the app |
 | `layout` | No | n/a | n/a | Header is session-aware; still a client component |
 
 The `*.api.ts` files are backed by mocks only; no backend endpoint is wired in.
