@@ -189,6 +189,9 @@
     "booking": {
       "startInPast": "A booking cannot start in the past.",
       "carUnavailable": "This car is not available for that long. Choose a shorter rental or another car."
+    },
+    "cities": {
+      "notFound": "This city is not available."
     }
   }
 }

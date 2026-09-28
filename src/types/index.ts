@@ -1,8 +1,4 @@
 export type {
-  // City
-  City,
-  CityDetails,
-
   // Rental flow
   RentalType,
   PickupType,
