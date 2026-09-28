@@ -6,7 +6,13 @@ import { FiSearch, FiX } from 'react-icons/fi';
 
 import { MdTrain } from 'react-icons/md';
 
-import { Station, StationModalProps } from '@/types/car';
+import type { Station } from '../model';
+
+interface Props {
+  open: boolean;
+  onClose: () => void;
+  onSelect: (station: Station) => void;
+}
 
 
 
@@ -38,7 +44,7 @@ const stations: Station[] = [
   },
 ];
 
-export default function StationModal({ open, onClose, onSelect }: StationModalProps) {
+export default function StationModal({ open, onClose, onSelect }: Props) {
   const [search, setSearch] = useState('');
 
   const [selected, setSelected] = useState<Station | null>(null);

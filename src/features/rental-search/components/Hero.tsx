@@ -9,21 +9,21 @@ import { Autoplay, EffectFade } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/effect-fade';
 
-import hero1 from '../../../assets/images/hero1.jpg';
-import hero2 from '../../../assets/images/hero2.png';
-import hero3 from '../../../assets/images/hero3.png';
+import hero1 from '@/assets/images/hero1.jpg';
+import hero2 from '@/assets/images/hero2.png';
+import hero3 from '@/assets/images/hero3.png';
 
 import RentalTabs from './RentalTabs';
 
-import PickupTypeModal from '@/components/modals/PickupTypeModal';
-import MapLocationModal from '@/components/modals/MapLocationModal';
-import BranchModal from '@/components/modals/BranchModal';
-import AirportModal from '@/components/modals/AirportModal';
-import StationModal from '@/components/modals/StationModal';
-import CountryModal from '@/components/modals/CountryModal';
+import PickupTypeModal from './PickupTypeModal';
+import MapLocationModal from './MapLocationModal';
+import BranchModal from './BranchModal';
+import AirportModal from './AirportModal';
+import StationModal from './StationModal';
+import CountryModal from './CountryModal';
 
 import { useTranslations } from 'next-intl';;
-import { RentalType, PickupType, Branch, Airport, Station, LocationData, Country } from '@/types/car';
+import type { RentalType, PickupType, Branch, Airport, Station, LocationData, Country } from '../model';
 
 const slides = [hero1.src, hero2.src, hero3.src];
 

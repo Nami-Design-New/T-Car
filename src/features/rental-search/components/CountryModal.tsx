@@ -10,7 +10,13 @@ import flag3 from '@/assets/images/flages/flag3.png';
 import flag4 from '@/assets/images/flages/flag4.png';
 import flag5 from '@/assets/images/flages/flag5.png';
 
-import { Country, CountryModalProps } from '@/types/car';
+import type { Country } from '../model';
+
+interface Props {
+  open: boolean;
+  onClose: () => void;
+  onSelect: (country: Country) => void;
+}
 
 const countries: Country[] = [
   { id: 1, name: 'مصر', flag: flag1 },
@@ -20,7 +26,7 @@ const countries: Country[] = [
   { id: 5, name: ' البحرين', flag: flag5 },
 ];
 
-export default function CountryModal({ open, onClose, onSelect }: CountryModalProps) {
+export default function CountryModal({ open, onClose, onSelect }: Props) {
   const [search, setSearch] = useState('');
   const [selected, setSelected] = useState<Country | null>(null);
 

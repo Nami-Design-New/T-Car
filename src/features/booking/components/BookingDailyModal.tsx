@@ -5,10 +5,9 @@ import Image from 'next/image';
 import { createPortal } from 'react-dom';
 import { FiChevronRight, FiChevronLeft, FiClock, FiMapPin } from 'react-icons/fi';
 import { formatCurrency } from '@/shared/lib/format';
-import type { LocationData } from '@app-types/car';
 import type { BookingDetails } from '../model';
 import deliveryCarIcon from '@assets/icons/delivery-car.svg';
-import MapLocationModal from '@/components/modals/MapLocationModal';
+import { MapLocationModal, type LocationData } from '@/features/rental-search';
 
 interface Props {
   open: boolean;

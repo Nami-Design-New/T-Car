@@ -3,7 +3,13 @@
 import { useState } from 'react';
 import { FiMapPin, FiSearch, FiX } from 'react-icons/fi';
 
-import { Branch, BranchModalProps } from '@/types/car';
+import type { Branch } from '../model';
+
+interface Props {
+  open: boolean;
+  onClose: () => void;
+  onSelect: (branch: Branch) => void;
+}
 
 const branches: Branch[] = [
   {
@@ -32,7 +38,7 @@ const branches: Branch[] = [
   },
 ];
 
-export default function BranchModal({ open, onClose, onSelect }: BranchModalProps) {
+export default function BranchModal({ open, onClose, onSelect }: Props) {
   const [search, setSearch] = useState('');
   const [selected, setSelected] = useState<Branch | null>(null);
 

@@ -1,4 +1,4 @@
-import type { LocationData } from '@app-types/car';
+import type { LocationData } from '@/features/rental-search';
 
 export type PaymentMethod = 'wallet' | 'visa' | 'tabby' | 'tamara';
 

@@ -4,7 +4,15 @@ import { useState, useCallback, useEffect, useRef } from 'react';
 import { useLocale } from 'next-intl';
 import { GoogleMap, Marker, useJsApiLoader } from '@react-google-maps/api';
 import { FiSearch, FiMapPin, FiNavigation, FiX, FiLoader } from 'react-icons/fi';
-import type { MapLocationModalProps } from '@/types/car';
+import type { LocationData } from '../model';
+
+interface Props {
+  open: boolean;
+  onClose: () => void;
+  onConfirm: (location: LocationData) => void;
+  title?: string;
+  initialLocation?: LocationData | null;
+}
 
 const containerStyle = {
   width: '100%',
@@ -22,7 +30,7 @@ export default function MapLocationModal({
   onConfirm,
   title = 'حدد موقع الاستلام',
   initialLocation,
-}: MapLocationModalProps) {
+}: Props) {
   const [position, setPosition] = useState(defaultCenter);
   const [address, setAddress] = useState('');
   const [search, setSearch] = useState('');

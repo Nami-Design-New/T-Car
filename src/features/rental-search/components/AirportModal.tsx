@@ -9,10 +9,13 @@ import {
 
 import { MdFlightTakeoff } from 'react-icons/md';
 
-import {
-  Airport,
-  AirportModalProps,
-} from '@/types/car';
+import type { Airport } from '../model';
+
+interface Props {
+  open: boolean;
+  onClose: () => void;
+  onSelect: (airport: Airport) => void;
+}
 
 const airports: Airport[] = [
   {
@@ -51,7 +54,7 @@ export default function AirportModal({
   open,
   onClose,
   onSelect,
-}: AirportModalProps) {
+}: Props) {
   const [search, setSearch] = useState('');
 
   const [selected, setSelected] =

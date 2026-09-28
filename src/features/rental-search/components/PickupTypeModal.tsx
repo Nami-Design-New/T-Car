@@ -3,15 +3,21 @@
 import Image from 'next/image';
 import { FiX, FiArrowLeft } from 'react-icons/fi';
 
-import deliveryImg from '../../assets/icons/delivery-car.svg';
-import branchImg from '../../assets/icons/branch-car.svg';
-import { PickupTypeModalProps } from '@/types/car';
+import deliveryImg from '@/assets/icons/delivery-car.svg';
+import branchImg from '@/assets/icons/branch-car.svg';
+import type { PickupType } from '../model';
+
+interface Props {
+  open: boolean;
+  onClose: () => void;
+  onSelect: (type: PickupType) => void;
+}
 
 export default function PickupTypeModal({
   open,
   onClose,
   onSelect,
-}: PickupTypeModalProps) {
+}: Props) {
   if (!open) return null;
 
   return (

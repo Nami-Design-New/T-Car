@@ -3,16 +3,17 @@
 import Image, { StaticImageData } from 'next/image';
 import { useTranslations } from 'next-intl';;
 
-import dailyIcon from '../../../assets/icons/dailytab.svg';
-import monthlyIcon from '../../../assets/icons/monthlytab.svg';
-import airportIcon from '../../../assets/icons/airport.svg';
-import stationIcon from '../../../assets/icons/stationtab.svg';
-import internationalIcon from '../../../assets/icons/international.svg';
+import dailyIcon from '@/assets/icons/dailytab.svg';
+import monthlyIcon from '@/assets/icons/monthlytab.svg';
+import airportIcon from '@/assets/icons/airport.svg';
+import stationIcon from '@/assets/icons/stationtab.svg';
+import internationalIcon from '@/assets/icons/international.svg';
 
-import {
-  RentalTabsProps,
-  RentalType,
-} from '@/types/car';
+import type { RentalType } from '../model';
+
+interface Props {
+  onSelect: (type: RentalType) => void;
+}
 
 const tabs: {
   id: RentalType;
@@ -55,7 +56,7 @@ const tabs: {
 
 export default function RentalTabs({
   onSelect,
-}: RentalTabsProps) {
+}: Props) {
   const t = useTranslations();
 
 

@@ -1,4 +1,4 @@
-import Hero from '@components/home/Hero';
+import { Hero } from '@/features/rental-search';
 import { CarsRail, getHandpickedCars, getOfferCars } from '@/features/cars';
 import { PopularCities, getCities } from '@/features/cities';
 import { CTA, Contact, DownloadApp, FAQ, Partners, WhyChooseUs } from '@/features/home';
