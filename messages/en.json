@@ -126,7 +126,9 @@
     "address": "Address",
     "name": "Full Name",
     "message": "Your Message",
-    "send": "Send Message"
+    "send": "Send Message",
+    "sending": "Sending...",
+    "sent": "Your message was sent. We will get back to you soon."
   },
   "footer": {
     "rights": "All rights reserved.",
@@ -192,6 +194,9 @@
     },
     "cities": {
       "notFound": "This city is not available."
+    },
+    "contact": {
+      "phoneRequired": "Enter a valid phone number."
     }
   }
 }

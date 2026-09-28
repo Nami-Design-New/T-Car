@@ -1,23 +1,27 @@
 'use client';
 
 import { useState } from 'react';
-import { useTranslations } from 'next-intl';;
+import { useTranslations } from 'next-intl';
+
+import { useErrorMessage } from '@/shared/hooks/useErrorMessage';
+import type { AppError } from '@/shared/lib/errors';
 
 import Button from '@/shared/ui/Button';
 import FormInput from '@/shared/ui/FormInput';
 import FormTextarea from '@/shared/ui/FormTextarea';
 import PhoneField from '@/shared/ui/PhoneField';
+import type { ContactMessage } from '../model';
+import { useSendContactMessage } from '../hooks/useSendContactMessage';
+
+const EMPTY_FORM: ContactMessage = { name: '', email: '', phone: '', message: '' };
 
 export default function ContactForm() {
   const t = useTranslations();
+  const errorMessage = useErrorMessage();
+  const { submitting, send } = useSendContactMessage();
 
-
-  const [form, setForm] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    message: '',
-  });
+  const [form, setForm] = useState<ContactMessage>(EMPTY_FORM);
+  const [status, setStatus] = useState<{ sent: true } | { error: AppError } | null>(null);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -28,10 +32,19 @@ export default function ContactForm() {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (submitting) return;
 
-    console.log(form);
+    setStatus(null);
+    const result = await send(form);
+    if (result.ok) {
+      setForm(EMPTY_FORM);
+      setStatus({ sent: true });
+    } else {
+      // Keep what the user typed so they can fix it and resend.
+      setStatus({ error: result.error });
+    }
   };
 
   return (
@@ -88,13 +101,25 @@ export default function ContactForm() {
         required
       />
 
+      {status && 'error' in status && (
+        <p className="text-danger small mt-3 mb-0" role="alert">
+          {errorMessage(status.error)}
+        </p>
+      )}
+      {status && 'sent' in status && (
+        <p className="text-success small mt-3 mb-0" role="status">
+          {t('contact.sent')}
+        </p>
+      )}
+
       <Button
         type="submit"
         variant="primary"
         size="md"
         className="contact_btn"
+        disabled={submitting}
       >
-        {t('contact.send')}
+        {submitting ? t('contact.sending') : t('contact.send')}
       </Button>
     </form>
   );
