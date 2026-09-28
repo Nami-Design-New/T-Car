@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import AccountSidebar, { AccountTab } from '@components/account/AccountSidebar';
 import ProfileTab from '@components/account/ProfileTab';
-import WalletSection from '@components/account/WalletSection';
+import { WalletSection } from '@/features/wallet';
 import { BankAccountsSection } from '@/features/bank-accounts';
 import NotificationsTab from '@components/account/NotificationsTab';
 import BookingsTab from '@components/account/BookingsTab';

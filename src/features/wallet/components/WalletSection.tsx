@@ -2,11 +2,11 @@
 
 import { useCallback, useState } from 'react';
 import type { BankAccount } from '@/features/bank-accounts';
-import { useWallet } from '@hooks/useWallet';
-import { MIN_TOP_UP, MIN_WITHDRAW } from '@/features/wallet/model';
-import WalletTab from '@components/account/WalletTab';
-import WalletAmountModal from '@components/modals/WalletAmountModal';
-import BankSelectModal from '@components/modals/BankSelectModal';
+import { useWallet } from '../hooks/useWallet';
+import { MIN_TOP_UP, MIN_WITHDRAW } from '../model';
+import WalletTab from './WalletTab';
+import WalletAmountModal from './WalletAmountModal';
+import BankSelectModal from './BankSelectModal';
 import SuccessModal from '@components/common/SuccessModal';
 import FailedModal from '@components/common/FailedModal';
 

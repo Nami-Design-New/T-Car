@@ -4,7 +4,7 @@ import Image from 'next/image';
 import Lottie from 'lottie-react';
 import { FiLock } from 'react-icons/fi';
 import { formatAmount, formatTransactionDate } from '@/shared/lib/format';
-import type { WalletSummary, WalletTransaction } from '@app-types/car';
+import type { WalletSummary, WalletTransaction } from '../model';
 import Loader from '@/shared/ui/Loader';
 
 import walletIcon from '@assets/icons/money.svg';

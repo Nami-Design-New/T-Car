@@ -2,8 +2,8 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import type { BankAccount } from '@/features/bank-accounts';
-import type { WalletSummary, WalletTransaction } from '@app-types/car';
-import { walletService, type WithdrawParams } from '@services/wallet.service';
+import { walletApi } from '@/services/wallet.api';
+import type { WalletSummary, WalletTransaction, WithdrawParams } from '../model';
 
 const EMPTY_SUMMARY: WalletSummary = { total: 0, withdrawable: 0, nonWithdrawable: 0 };
 
@@ -19,7 +19,7 @@ export function useWallet() {
   const [submitting, setSubmitting] = useState(false);
 
   const refresh = useCallback(async () => {
-    const data = await walletService.getWallet();
+    const data = await walletApi.getWallet();
     setSummary(data.summary);
     setTransactions(data.transactions);
   }, []);
@@ -27,7 +27,7 @@ export function useWallet() {
   useEffect(() => {
     let active = true;
 
-    Promise.all([walletService.getWallet(), walletService.getBankAccounts()])
+    Promise.all([walletApi.getWallet(), walletApi.getBankAccounts()])
       .then(([data, accounts]) => {
         if (!active) return;
         setSummary(data.summary);
@@ -59,10 +59,10 @@ export function useWallet() {
     [refresh]
   );
 
-  const topUp = useCallback((amount: number) => run(() => walletService.topUp(amount)), [run]);
+  const topUp = useCallback((amount: number) => run(() => walletApi.topUp(amount)), [run]);
 
   const withdraw = useCallback(
-    (params: WithdrawParams) => run(() => walletService.withdraw(params)),
+    (params: WithdrawParams) => run(() => walletApi.withdraw(params)),
     [run]
   );
 
