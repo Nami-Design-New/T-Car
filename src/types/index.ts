@@ -47,6 +47,9 @@ export type {
   // Account
   UserProfile,
   WalletTransaction,
+  WalletTransactionType,
+  WalletSummary,
+  BankAccount,
   AppNotification,
 } from './car';
 

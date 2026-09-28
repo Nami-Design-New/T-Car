@@ -76,7 +76,7 @@ export default function CarBookingCard({
 
       <BookingDailyModal
         open={step === 'dates'}
-       
+
         onClose={() => setStep('closed')}
         pricePerDay={pricePerDay}
         onConfirm={handleDatesConfirmed}

@@ -21,7 +21,6 @@ interface Props {
   duration?: number;
 
   onDone?: () => void;
-  variant?: 'default' | 'wallet-topup';
   appearButton?: boolean;
   autoCloseDuration?: number;
 }
@@ -35,7 +34,6 @@ export default function SuccessModal({
   autoRedirect = false,
   duration = 2200,
   onDone,
-  variant = 'default',
   appearButton = true,
   autoCloseDuration = 2000,
 }: Props) {

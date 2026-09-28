@@ -3,15 +3,12 @@
 import { useState } from 'react';
 import AccountSidebar, { AccountTab } from '@components/account/AccountSidebar';
 import ProfileTab from '@components/account/ProfileTab';
-import WalletTab from '@components/account/WalletTab';
+import WalletSection from '@components/account/WalletSection';
 import NotificationsTab from '@components/account/NotificationsTab';
 import BookingsTab from '@components/account/BookingsTab';
-import WalletTopUpModal from '@components/modals/WalletTopUpModal';
-import FailedModal from '@components/common/FailedModal';
 import type { UserProfile, UserBooking } from '@app-types/car';
 
 import car1 from '@assets/images/car1.jpg';
-import SuccessModal from '@/components/common/SuccessModal';
 
 const MOCK_PROFILE: UserProfile = {
   fullName: 'أحمد عبدالله القحطاني',
@@ -19,33 +16,6 @@ const MOCK_PROFILE: UserProfile = {
   birthDate: '1993-03-15',
   phone: '+966 45 67 89',
 };
-
-const MOCK_TRANSACTIONS = [
-  {
-    id: '1',
-    type: 'topup' as const,
-    title: 'شحن',
-    amount: 2500,
-    reference: '7A3D6D',
-    date: '2025 ديسمبر 1 - 4:50Am',
-  },
-  {
-    id: '2',
-    type: 'refund' as const,
-    title: 'استرداد',
-    amount: 2500,
-    reference: '7A3D6D',
-    date: '2025 ديسمبر 1 - 4:50Am',
-  },
-  {
-    id: '3',
-    type: 'payment' as const,
-    title: 'دفع',
-    amount: 2500,
-    reference: '7A3D6D',
-    date: '2025 ديسمبر 1 - 4:50Am',
-  },
-];
 
 const MOCK_NOTIFICATIONS = [
   { id: '1', title: 'قدم إليك العميل عرض جديد اذهب بسرعة للطلب', time: 'الآن', read: false },
@@ -119,13 +89,6 @@ const MOCK_BOOKINGS: UserBooking[] = [
 
 export default function AccountPage() {
   const [activeTab, setActiveTab] = useState<AccountTab>('profile');
-  const [topUpOpen, setTopUpOpen] = useState(false);
-  const [topUpResult, setTopUpResult] = useState<'success' | 'failed' | null>(null);
-
-  const handleTopUp = (amount: number) => {
-    setTopUpOpen(false);
-    setTopUpResult(amount >= 10 ? 'success' : 'failed');
-  };
 
   return (
     <section className="section account-page">
@@ -147,13 +110,7 @@ export default function AccountPage() {
 
             {activeTab === 'bookings' && <BookingsTab bookings={MOCK_BOOKINGS} />}
 
-            {activeTab === 'wallet' && (
-              <WalletTab
-                balance={2500}
-                transactions={MOCK_TRANSACTIONS}
-                onTopUp={() => setTopUpOpen(true)}
-              />
-            )}
+            {activeTab === 'wallet' && <WalletSection />}
 
             {activeTab === 'notifications' && (
               <NotificationsTab notifications={MOCK_NOTIFICATIONS} />
@@ -161,26 +118,6 @@ export default function AccountPage() {
           </div>
         </div>
       </div>
-
-      <WalletTopUpModal
-        open={topUpOpen}
-        onClose={() => setTopUpOpen(false)}
-        onConfirm={handleTopUp}
-      />
-
-      {topUpResult === 'success' && (
-        <SuccessModal
-          appearButton={false}
-          open
-          title="تم الشحن بنجاح"
-          description=""
-          buttonText="حسناً"
-          variant="wallet-topup"
-          onDone={() => setTopUpResult(null)}
-        />
-      )}
-
-      <FailedModal open={topUpResult === 'failed'} onDone={() => setTopUpResult(null)} />
     </section>
   );
 }

@@ -228,13 +228,28 @@ export interface UserProfile {
   phone: string;
 }
 
+export type WalletTransactionType = 'topup' | 'refund' | 'payment' | 'withdraw';
+
 export interface WalletTransaction {
   id: string;
-  type: 'topup' | 'refund' | 'payment';
-  title: string;
+  type: WalletTransactionType;
   amount: number;
   reference: string;
-  date: string;
+  /** ISO date string */
+  createdAt: string;
+}
+
+export interface WalletSummary {
+  total: number;
+  withdrawable: number;
+  nonWithdrawable: number;
+}
+
+export interface BankAccount {
+  id: string;
+  bankName: string;
+  logo?: StaticImageData | string;
+  maskedNumber: string;
 }
 
 export interface AppNotification {

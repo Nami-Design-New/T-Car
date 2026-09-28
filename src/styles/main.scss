@@ -5055,10 +5055,14 @@ img {
   color: $ds-text-subtle;
 }
 
-.wallet_topup_input_group span {
-  font-size: 16px;
+.wallet_topup_input_group .currency_icon {
+  flex-shrink: 0;
+  object-fit: contain;
+  opacity: 0.7;
 }
 
+// The currency icon sits on the start side and the value on the end side, so
+// the field mirrors itself between RTL and LTR without direction rules.
 .wallet_topup_input_group input {
   min-width: 0;
   flex: 1;
@@ -5068,7 +5072,15 @@ img {
   background: transparent;
   color: $ds-text-primary;
   font-size: 14px;
-  text-align: left;
+  text-align: end;
+  appearance: textfield;
+  -moz-appearance: textfield;
+
+  &::-webkit-outer-spin-button,
+  &::-webkit-inner-spin-button {
+    margin: 0;
+    -webkit-appearance: none;
+  }
 }
 
 .wallet_topup_input_group input::placeholder {
@@ -5096,6 +5108,88 @@ img {
 .wallet_topup_submit:focus {
   background: darken($ds-action-primary, 5%);
   color: $ds-text-on-action;
+}
+
+.wallet_topup_submit:disabled {
+  background: $ds-surface-disabled;
+  color: $ds-text-on-action;
+}
+
+.wallet_topup_input_group.invalid {
+  border-color: $ds-status-error;
+}
+
+.wallet_topup_hint.invalid {
+  color: $ds-status-error;
+}
+
+.bank_select_modal {
+  width: min(380px, calc(100% - 32px));
+  padding: 14px 12px 20px;
+  border-radius: $ds-radius-xl;
+  background: $ds-surface-elevated;
+  box-shadow: 0 14px 40px rgba($ds-shadow-color, 0.16);
+}
+
+.bank_select_list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.bank_select_option {
+  display: flex;
+  width: 100%;
+  padding: 14px 12px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  border: 1px solid transparent;
+  border-radius: $ds-radius-md;
+  background: $ds-surface-on-background;
+  text-align: start;
+  transition: border-color 0.2s ease;
+
+  &:hover,
+  &:focus-visible {
+    border-color: $ds-action-primary;
+    outline: 0;
+  }
+}
+
+.bank_select_name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: $ds-text-primary;
+  font-size: 13px;
+  font-weight: 700;
+
+  svg {
+    color: $ds-status-success;
+    font-size: 22px;
+  }
+
+  img {
+    object-fit: contain;
+  }
+}
+
+.bank_select_number {
+  color: $ds-text-primary;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.bank_select_empty {
+  margin: 12px 0;
+  color: $ds-text-subtle;
+  font-size: 13px;
+  text-align: center;
 }
 
 .wallet_result_modal {
@@ -8161,19 +8255,27 @@ img {
   border-radius: $ds-radius-xl;
   padding: 24px;
   // ============ wallet ============
+  .wallet_amount {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+
+    .currency_icon {
+      object-fit: contain;
+    }
+  }
+
   .wallet_balance_card {
     margin-bottom: 28px;
-    padding: 28px 20px;
+    padding: 24px 20px;
 
     text-align: center;
 
+    border: 1px solid $ds-stroke-light;
     border-radius: $ds-radius-lg;
 
-    background: linear-gradient(
-      135deg,
-      rgba($ds-action-primary, 0.08),
-      rgba($ds-action-primary, 0.03)
-    );
+    background: $ds-surface-elevated;
+    box-shadow: 0 8px 24px rgba($ds-shadow-color, 0.06);
 
     .wallet_balance_label {
       display: flex;
@@ -8199,44 +8301,97 @@ img {
     .wallet_balance_amount {
       display: flex;
       justify-content: center;
-      align-items: center;
-      gap: 10px;
 
       margin-bottom: 22px;
 
-      h2 {
-        margin: 0;
-
-        color: $ds-text-primary;
-        font-size: 2.2rem;
-        font-weight: 800;
-        line-height: 1;
-      }
-
-      .currency_icon {
-        width: 34px;
-        height: 34px;
-        object-fit: contain;
-      }
+      color: $ds-text-primary;
+      font-size: 2.2rem;
+      font-weight: 800;
+      line-height: 1;
     }
 
-    .wallet_topup_btn {
-      width: 100%;
-      max-width: 280px;
-      height: 48px;
+    .wallet_balance_actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
 
-      border: none;
+      max-width: 420px;
+      margin: 0 auto 22px;
+    }
+
+    .wallet_action_btn {
+      height: 46px;
+
+      border: 1px solid $ds-action-primary;
       border-radius: $ds-radius-md;
 
-      background: $ds-action-primary;
-      color: $ds-text-on-action;
-
+      font-size: 0.9rem;
       font-weight: 700;
       cursor: pointer;
       transition: 0.3s;
 
-      &:hover {
-        background: darken($ds-action-primary, 6%);
+      &.primary {
+        background: $ds-action-primary;
+        color: $ds-text-on-action;
+
+        &:hover {
+          background: $ds-primary-400;
+        }
+      }
+
+      &.outline {
+        background: transparent;
+        color: $ds-action-primary;
+
+        &:hover:not(:disabled) {
+          background: $ds-primary-50;
+        }
+      }
+
+      &:disabled {
+        border-color: $ds-stroke-heavy;
+        color: $ds-text-placeholder;
+        cursor: not-allowed;
+      }
+    }
+
+    .wallet_balance_breakdown {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+
+      padding-top: 18px;
+      border-top: 1px solid $ds-stroke-light;
+    }
+
+    .wallet_breakdown_item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+
+      & + .wallet_breakdown_item {
+        border-inline-start: 1px solid $ds-stroke-light;
+      }
+
+      .wallet_amount {
+        color: $ds-text-primary;
+        font-size: 1.15rem;
+        font-weight: 800;
+      }
+    }
+
+    .wallet_breakdown_label {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+
+      color: $ds-text-subtle;
+      font-size: 0.78rem;
+      font-weight: 600;
+
+      svg {
+        color: $ds-status-warning;
+        font-size: 16px;
       }
     }
   }
@@ -8254,43 +8409,73 @@ img {
       display: flex;
       flex-direction: column;
       gap: 10px;
+
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    &_empty {
+      padding: 12px 0;
+      text-align: center;
+
+      p {
+        margin: 0;
+        color: $ds-text-subtle;
+        font-size: 0.85rem;
+      }
+    }
+
+    &_empty_animation {
+      width: 160px;
+      margin: 0 auto;
     }
 
     &_item {
       display: flex;
       justify-content: space-between;
       align-items: center;
+      gap: 12px;
 
       padding: 14px 16px;
 
       border-radius: $ds-radius-md;
-      border-inline-start: 3px solid transparent;
 
       background: $ds-surface-on-background;
 
       &.topup {
-        // border-inline-start-color: $ds-status-success;
-        background: linear-gradient(
-          135deg,
-          rgba($ds-action-primary, 0.08),
-          rgba($ds-action-primary, 0.03)
-        );
-      }
+        background: $ds-primary-50;
 
-      &.refund {
-        // border-inline-start-color: $ds-action-primary;
-        background: $ds-surface-on-background;
+        .wallet_history_item_title {
+          color: $ds-action-primary;
+        }
       }
 
       &.payment {
-        // border-inline-start-color: $ds-status-error;
-        background: rgba($ds-status-error, 0.08);
+        background: $ds-error-50;
+
+        .wallet_history_item_title {
+          color: $ds-status-error;
+        }
       }
 
-      &_body {
+      &.withdraw {
+        background: $ds-success-50;
+
+        .wallet_history_item_title {
+          color: $ds-status-success;
+        }
+      }
+
+      &_body,
+      &_side {
         display: flex;
         flex-direction: column;
-        gap: 3px;
+        gap: 4px;
+      }
+
+      &_side {
+        align-items: flex-end;
       }
 
       &_title {
@@ -8305,13 +8490,9 @@ img {
       }
 
       &_amount {
-        color: $ds-status-success;
+        color: $ds-text-primary;
         font-size: 0.95rem;
         font-weight: 800;
-
-        &.negative {
-          color: $ds-status-error;
-        }
       }
     }
   }

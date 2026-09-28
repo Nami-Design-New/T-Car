@@ -15933,8 +15933,10 @@ img {
   color: #737373;
 }
 
-.wallet_topup_input_group span {
-  font-size: 16px;
+.wallet_topup_input_group .currency_icon {
+  flex-shrink: 0;
+  object-fit: contain;
+  opacity: 0.7;
 }
 
 .wallet_topup_input_group input {
@@ -15946,11 +15948,13 @@ img {
   background: transparent;
   color: #1e1e1e;
   font-size: 14px;
-  text-align: left;
+  text-align: end;
+  appearance: textfield;
+  -moz-appearance: textfield;
 }
-
-.wallet_topup_input_group input::-moz-placeholder {
-  color: #969696;
+.wallet_topup_input_group input::-webkit-outer-spin-button, .wallet_topup_input_group input::-webkit-inner-spin-button {
+  margin: 0;
+  -webkit-appearance: none;
 }
 
 .wallet_topup_input_group input::placeholder {
@@ -15976,8 +15980,86 @@ img {
 
 .wallet_topup_submit:hover,
 .wallet_topup_submit:focus {
-  background: rgb(6.056768559, 112.7467248908, 249.443231441);
+  background: rgb(2.3752033565%, 44.214401918%, 97.8208750749%);
   color: #ffffff;
+}
+
+.wallet_topup_submit:disabled {
+  background: #969696;
+  color: #ffffff;
+}
+
+.wallet_topup_input_group.invalid {
+  border-color: #dc2626;
+}
+
+.wallet_topup_hint.invalid {
+  color: #dc2626;
+}
+
+.bank_select_modal {
+  width: min(380px, 100% - 32px);
+  padding: 14px 12px 20px;
+  border-radius: 24px;
+  background: #ffffff;
+  box-shadow: 0 14px 40px rgba(30, 30, 30, 0.16);
+}
+
+.bank_select_list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.bank_select_option {
+  display: flex;
+  width: 100%;
+  padding: 14px 12px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  background: #f8f8f8;
+  text-align: start;
+  transition: border-color 0.2s ease;
+}
+.bank_select_option:hover, .bank_select_option:focus-visible {
+  border-color: #1f7ffa;
+  outline: 0;
+}
+
+.bank_select_name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #1e1e1e;
+  font-size: 13px;
+  font-weight: 700;
+}
+.bank_select_name svg {
+  color: #16a34a;
+  font-size: 22px;
+}
+.bank_select_name img {
+  object-fit: contain;
+}
+
+.bank_select_number {
+  color: #1e1e1e;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.bank_select_empty {
+  margin: 12px 0;
+  color: #737373;
+  font-size: 13px;
+  text-align: center;
 }
 
 .wallet_result_modal {
@@ -18460,12 +18542,22 @@ img {
   border-radius: 24px;
   padding: 24px;
 }
+.account-panel .wallet_amount {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.account-panel .wallet_amount .currency_icon {
+  object-fit: contain;
+}
 .account-panel .wallet_balance_card {
   margin-bottom: 28px;
-  padding: 28px 20px;
+  padding: 24px 20px;
   text-align: center;
+  border: 1px solid #e9e9e9;
   border-radius: 16px;
-  background: linear-gradient(135deg, rgba(31, 127, 250, 0.08), rgba(31, 127, 250, 0.03));
+  background: #ffffff;
+  box-shadow: 0 8px 24px rgba(30, 30, 30, 0.06);
 }
 .account-panel .wallet_balance_card .wallet_balance_label {
   display: flex;
@@ -18482,43 +18574,83 @@ img {
 .account-panel .wallet_balance_card .wallet_balance_label img {
   width: 22px;
   height: 22px;
-  -o-object-fit: contain;
-     object-fit: contain;
+  object-fit: contain;
 }
 .account-panel .wallet_balance_card .wallet_balance_amount {
   display: flex;
   justify-content: center;
-  align-items: center;
-  gap: 10px;
   margin-bottom: 22px;
-}
-.account-panel .wallet_balance_card .wallet_balance_amount h2, .account-panel .wallet_balance_card .wallet_balance_amount .h2 {
-  margin: 0;
   color: #1e1e1e;
   font-size: 2.2rem;
   font-weight: 800;
   line-height: 1;
 }
-.account-panel .wallet_balance_card .wallet_balance_amount .currency_icon {
-  width: 34px;
-  height: 34px;
-  -o-object-fit: contain;
-     object-fit: contain;
+.account-panel .wallet_balance_card .wallet_balance_actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  max-width: 420px;
+  margin: 0 auto 22px;
 }
-.account-panel .wallet_balance_card .wallet_topup_btn {
-  width: 100%;
-  max-width: 280px;
-  height: 48px;
-  border: none;
+.account-panel .wallet_balance_card .wallet_action_btn {
+  height: 46px;
+  border: 1px solid #1f7ffa;
   border-radius: 12px;
-  background: #1f7ffa;
-  color: #ffffff;
+  font-size: 0.9rem;
   font-weight: 700;
   cursor: pointer;
   transition: 0.3s;
 }
-.account-panel .wallet_balance_card .wallet_topup_btn:hover {
-  background: rgb(5.4672489083, 110.4384279476, 244.9327510917);
+.account-panel .wallet_balance_card .wallet_action_btn.primary {
+  background: #1f7ffa;
+  color: #ffffff;
+}
+.account-panel .wallet_balance_card .wallet_action_btn.primary:hover {
+  background: #5195f4;
+}
+.account-panel .wallet_balance_card .wallet_action_btn.outline {
+  background: transparent;
+  color: #1f7ffa;
+}
+.account-panel .wallet_balance_card .wallet_action_btn.outline:hover:not(:disabled) {
+  background: #f3f8ff;
+}
+.account-panel .wallet_balance_card .wallet_action_btn:disabled {
+  border-color: #d6d6d6;
+  color: #969696;
+  cursor: not-allowed;
+}
+.account-panel .wallet_balance_card .wallet_balance_breakdown {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  padding-top: 18px;
+  border-top: 1px solid #e9e9e9;
+}
+.account-panel .wallet_balance_card .wallet_breakdown_item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.account-panel .wallet_balance_card .wallet_breakdown_item + .wallet_breakdown_item {
+  border-inline-start: 1px solid #e9e9e9;
+}
+.account-panel .wallet_balance_card .wallet_breakdown_item .wallet_amount {
+  color: #1e1e1e;
+  font-size: 1.15rem;
+  font-weight: 800;
+}
+.account-panel .wallet_balance_card .wallet_breakdown_label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #737373;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+.account-panel .wallet_balance_card .wallet_breakdown_label svg {
+  color: #d97706;
+  font-size: 16px;
 }
 .account-panel .wallet_history_title {
   margin-bottom: 14px;
@@ -18530,29 +18662,57 @@ img {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.account-panel .wallet_history_empty {
+  padding: 12px 0;
+  text-align: center;
+}
+.account-panel .wallet_history_empty p {
+  margin: 0;
+  color: #737373;
+  font-size: 0.85rem;
+}
+.account-panel .wallet_history_empty_animation {
+  width: 160px;
+  margin: 0 auto;
 }
 .account-panel .wallet_history_item {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 12px;
   padding: 14px 16px;
   border-radius: 12px;
-  border-inline-start: 3px solid transparent;
   background: #f8f8f8;
 }
 .account-panel .wallet_history_item.topup {
-  background: linear-gradient(135deg, rgba(31, 127, 250, 0.08), rgba(31, 127, 250, 0.03));
+  background: #f3f8ff;
 }
-.account-panel .wallet_history_item.refund {
-  background: #f8f8f8;
+.account-panel .wallet_history_item.topup .wallet_history_item_title {
+  color: #1f7ffa;
 }
 .account-panel .wallet_history_item.payment {
-  background: rgba(220, 38, 38, 0.08);
+  background: #fff1f2;
 }
-.account-panel .wallet_history_item_body {
+.account-panel .wallet_history_item.payment .wallet_history_item_title {
+  color: #dc2626;
+}
+.account-panel .wallet_history_item.withdraw {
+  background: #f0fdf4;
+}
+.account-panel .wallet_history_item.withdraw .wallet_history_item_title {
+  color: #16a34a;
+}
+.account-panel .wallet_history_item_body, .account-panel .wallet_history_item_side {
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 4px;
+}
+.account-panel .wallet_history_item_side {
+  align-items: flex-end;
 }
 .account-panel .wallet_history_item_title {
   color: #1e1e1e;
@@ -18564,12 +18724,9 @@ img {
   font-size: 0.75rem;
 }
 .account-panel .wallet_history_item_amount {
-  color: #16a34a;
+  color: #1e1e1e;
   font-size: 0.95rem;
   font-weight: 800;
-}
-.account-panel .wallet_history_item_amount.negative {
-  color: #dc2626;
 }
 .account-panel .notifications_header {
   display: flex;
@@ -19681,8 +19838,7 @@ img {
 .office-row__logo img {
   width: 100%;
   height: 100%;
-  -o-object-fit: contain;
-     object-fit: contain;
+  object-fit: contain;
 }
 .office-row__copy {
   display: flex;
