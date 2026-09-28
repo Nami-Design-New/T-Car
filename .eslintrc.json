@@ -39,8 +39,7 @@
               "@/features/*",
               "@/app/*",
               "@/shared/ui/*",
-              "@/shared/hooks/*",
-              "@/shared/config/*"
+              "@/shared/hooks/*"
             ]
           }
         ]

@@ -1,6 +1,7 @@
 import type { BankAccount, WalletSummary, WalletTransaction } from '@app-types/car';
 import { MOCK_WALLET_SUMMARY, MOCK_WALLET_TRANSACTIONS } from '@/data/wallet';
 import { bankAccountsService } from '@services/bankAccounts.service';
+import { AppError } from '@/shared/lib/errors';
 
 export interface WalletData {
   summary: WalletSummary;
@@ -14,7 +15,7 @@ export interface WithdrawParams {
 
 // The wallet endpoints are not available yet, so the service works on an
 // in-memory copy of the mock data. Swap each method body for an `api` call
-// (see cars.service.ts) once the backend is ready; callers stay unchanged.
+// (see cars.api.ts) once the backend is ready; callers stay unchanged.
 let summary: WalletSummary = { ...MOCK_WALLET_SUMMARY };
 let transactions: WalletTransaction[] = [...MOCK_WALLET_TRANSACTIONS];
 
@@ -55,7 +56,7 @@ export const walletService = {
 
   async topUp(amount: number): Promise<void> {
     await delay();
-    if (amount > MOCK_MAX_TOP_UP) throw new Error('Top-up rejected');
+    if (amount > MOCK_MAX_TOP_UP) throw new AppError('conflict', 'wallet.topUpRejected');
 
     summary = {
       ...summary,
@@ -68,8 +69,12 @@ export const walletService = {
   async withdraw({ bankAccountId, amount }: WithdrawParams): Promise<void> {
     const accounts = await bankAccountsService.getBankAccounts();
     await delay();
-    const accountExists = accounts.some((account) => account.id === bankAccountId);
-    if (!accountExists || amount > summary.withdrawable) throw new Error('Withdraw rejected');
+    if (!accounts.some((account) => account.id === bankAccountId)) {
+      throw new AppError('not_found', 'bankAccounts.notFound');
+    }
+    if (amount > summary.withdrawable) {
+      throw new AppError('conflict', 'wallet.insufficientBalance');
+    }
 
     summary = {
       ...summary,

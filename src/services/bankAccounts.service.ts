@@ -1,9 +1,10 @@
 import type { Bank, BankAccount, BankAccountPayload } from '@app-types/car';
 import { MOCK_BANKS, MOCK_BANK_ACCOUNTS } from '@/data/wallet';
+import { AppError } from '@/shared/lib/errors';
 
 // The bank account endpoints are not available yet, so the service works on an
 // in-memory copy of the mock data. Swap each method body for an `api` call
-// (see cars.service.ts) once the backend is ready; callers stay unchanged.
+// (see cars.api.ts) once the backend is ready; callers stay unchanged.
 let accounts: BankAccount[] = [...MOCK_BANK_ACCOUNTS];
 
 const delay = (ms = 600) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -20,10 +21,18 @@ export const maskIban = (iban: string) =>
 
 function toAccount(id: string, { bankId, iban }: BankAccountPayload): BankAccount {
   const bank = MOCK_BANKS.find((item) => item.id === bankId);
-  if (!bank) throw new Error('Unknown bank');
+  if (!bank) {
+    throw new AppError('validation', 'bankAccounts.unknownBank', undefined, {
+      bankId: 'bankAccounts.unknownBank',
+    });
+  }
 
   const normalized = normalizeIban(iban);
-  if (!normalized) throw new Error('IBAN is required');
+  if (!normalized) {
+    throw new AppError('validation', 'bankAccounts.ibanRequired', undefined, {
+      iban: 'bankAccounts.ibanRequired',
+    });
+  }
 
   return {
     id,
@@ -53,14 +62,18 @@ export const bankAccountsService = {
 
   async updateBankAccount(id: string, payload: BankAccountPayload): Promise<void> {
     await delay();
-    if (!accounts.some((account) => account.id === id)) throw new Error('Account not found');
+    if (!accounts.some((account) => account.id === id)) {
+      throw new AppError('not_found', 'bankAccounts.notFound');
+    }
 
     accounts = accounts.map((account) => (account.id === id ? toAccount(id, payload) : account));
   },
 
   async deleteBankAccount(id: string): Promise<void> {
     await delay();
-    if (!accounts.some((account) => account.id === id)) throw new Error('Account not found');
+    if (!accounts.some((account) => account.id === id)) {
+      throw new AppError('not_found', 'bankAccounts.notFound');
+    }
 
     accounts = accounts.filter((account) => account.id !== id);
   },
