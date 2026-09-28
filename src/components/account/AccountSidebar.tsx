@@ -1,18 +1,21 @@
 'use client';
 
+import type { IconType } from 'react-icons';
 import { FiUser, FiCreditCard, FiBell, FiCalendar } from 'react-icons/fi';
+import { PiBank } from 'react-icons/pi';
 
-export type AccountTab = 'profile' | 'bookings' | 'wallet' | 'notifications';
+export type AccountTab = 'profile' | 'bookings' | 'wallet' | 'bank-accounts' | 'notifications';
 
 interface Props {
   active: AccountTab;
   onChange: (tab: AccountTab) => void;
 }
 
-const TABS: { id: AccountTab; label: string; icon: typeof FiUser }[] = [
+const TABS: { id: AccountTab; label: string; icon: IconType }[] = [
   { id: 'profile', label: 'تعديل الحساب', icon: FiUser },
   { id: 'bookings', label: 'حجوزاتي', icon: FiCalendar },
   { id: 'wallet', label: 'المحفظة', icon: FiCreditCard },
+  { id: 'bank-accounts', label: 'الحسابات البنكية', icon: PiBank },
   { id: 'notifications', label: 'الإشعارات', icon: FiBell },
 ];
 

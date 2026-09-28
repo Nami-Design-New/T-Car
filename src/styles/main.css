@@ -16062,6 +16062,244 @@ img {
   text-align: center;
 }
 
+.bank_accounts_panel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.bank_accounts_title {
+  margin: 0;
+  color: #1e1e1e;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 23px;
+}
+
+.bank_accounts_list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.bank_account_card {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  border: 1px dashed #e9e9e9;
+  border-radius: 12px;
+  background: #f8f8f8;
+}
+
+.bank_account_info {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.bank_account_bank {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #1e1e1e;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 17px;
+}
+
+.bank_account_logo {
+  object-fit: cover;
+}
+
+.bank_account_logo_fallback {
+  color: #16a34a;
+  font-size: 20px;
+}
+
+.bank_account_number {
+  color: #1e1e1e;
+  font-size: 16px;
+  line-height: 23px;
+}
+
+.bank_account_actions {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 4px;
+}
+
+.bank_account_action {
+  display: grid;
+  width: 28px;
+  height: 28px;
+  padding: 4px;
+  place-items: center;
+  border: 0;
+  border-radius: 12px;
+  background: #ffffff;
+  transition: box-shadow 0.2s ease;
+}
+.bank_account_action:hover, .bank_account_action:focus-visible {
+  box-shadow: 0 0 0 1px #e9e9e9;
+  outline: 0;
+}
+
+.bank_accounts_empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #737373;
+  font-size: 13px;
+}
+.bank_accounts_empty p {
+  margin: 0;
+}
+
+.bank_accounts_empty_animation {
+  width: 180px;
+}
+
+.bank_accounts_add.wallet_topup_submit {
+  height: 52px;
+  border-radius: 12px;
+  font-size: 14px;
+}
+
+.bank_form_modal {
+  width: min(380px, 100% - 32px);
+  padding: 20px 16px 32px;
+  border-radius: 24px;
+  background: #ffffff;
+  box-shadow: 0 14px 40px rgba(30, 30, 30, 0.16);
+}
+.bank_form_modal .wallet_topup_header {
+  margin-bottom: 16px;
+}
+.bank_form_modal .wallet_topup_header h3, .bank_form_modal .wallet_topup_header .h3 {
+  font-size: 16px;
+  font-weight: 600;
+}
+.bank_form_modal .wallet_topup_submit {
+  height: 52px;
+  border-radius: 12px;
+  font-size: 14px;
+}
+
+.bank_form_field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 16px;
+}
+
+.bank_form_label {
+  color: #1e1e1e;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 20px;
+}
+
+.bank_form_picker {
+  position: relative;
+}
+
+.bank_form_control {
+  display: flex;
+  width: 100%;
+  height: 50px;
+  padding: 0 8px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+  border: 1px solid #e9e9e9;
+  border-radius: 12px;
+  background: #f8f8f8;
+  color: #1e1e1e;
+  font-size: 14px;
+  outline: 0;
+  transition: border-color 0.2s ease;
+}
+.bank_form_control:focus-visible, .bank_form_control.open {
+  border-color: #1f7ffa;
+}
+
+.bank_form_input:dir(rtl) {
+  text-align: right;
+}
+.bank_form_input::placeholder {
+  color: #969696;
+  font-size: 12px;
+}
+
+.bank_form_placeholder {
+  color: #969696;
+  font-size: 12px;
+}
+
+.bank_form_value,
+.bank_form_option {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.bank_form_logo {
+  object-fit: cover;
+}
+
+.bank_form_logo_fallback {
+  color: #16a34a;
+  font-size: 20px;
+}
+
+.bank_form_arrow {
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+
+.bank_form_control.open .bank_form_arrow {
+  transform: rotate(180deg);
+}
+
+.bank_form_options {
+  position: absolute;
+  z-index: 2;
+  top: calc(100% + 4px);
+  inset-inline: 0;
+  max-height: 220px;
+  margin: 0;
+  padding: 4px;
+  overflow-y: auto;
+  border: 1px solid #e9e9e9;
+  border-radius: 12px;
+  background: #ffffff;
+  box-shadow: 0 8px 24px rgba(30, 30, 30, 0.08);
+  list-style: none;
+}
+
+.bank_form_option {
+  width: 100%;
+  padding: 8px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: #1e1e1e;
+  font-size: 14px;
+  text-align: start;
+}
+.bank_form_option:hover, .bank_form_option:focus-visible, .bank_form_option.selected {
+  background: #f8f8f8;
+  outline: 0;
+}
+
 .wallet_result_modal {
   display: flex;
   width: min(420px, 100% - 30px);

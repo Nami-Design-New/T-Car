@@ -245,11 +245,25 @@ export interface WalletSummary {
   nonWithdrawable: number;
 }
 
+export interface Bank {
+  id: string;
+  name: string;
+  logo?: StaticImageData | string;
+}
+
 export interface BankAccount {
   id: string;
+  bankId: string;
   bankName: string;
   logo?: StaticImageData | string;
+  iban: string;
   maskedNumber: string;
+}
+
+/** What the add / edit bank account form submits. */
+export interface BankAccountPayload {
+  bankId: string;
+  iban: string;
 }
 
 export interface AppNotification {

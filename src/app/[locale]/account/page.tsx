@@ -4,6 +4,7 @@ import { useState } from 'react';
 import AccountSidebar, { AccountTab } from '@components/account/AccountSidebar';
 import ProfileTab from '@components/account/ProfileTab';
 import WalletSection from '@components/account/WalletSection';
+import BankAccountsSection from '@components/account/BankAccountsSection';
 import NotificationsTab from '@components/account/NotificationsTab';
 import BookingsTab from '@components/account/BookingsTab';
 import type { UserProfile, UserBooking } from '@app-types/car';
@@ -111,6 +112,8 @@ export default function AccountPage() {
             {activeTab === 'bookings' && <BookingsTab bookings={MOCK_BOOKINGS} />}
 
             {activeTab === 'wallet' && <WalletSection />}
+
+            {activeTab === 'bank-accounts' && <BankAccountsSection />}
 
             {activeTab === 'notifications' && (
               <NotificationsTab notifications={MOCK_NOTIFICATIONS} />

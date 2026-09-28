@@ -1,9 +1,6 @@
 import type { BankAccount, WalletSummary, WalletTransaction } from '@app-types/car';
-import {
-  MOCK_BANK_ACCOUNTS,
-  MOCK_WALLET_SUMMARY,
-  MOCK_WALLET_TRANSACTIONS,
-} from '@/data/wallet';
+import { MOCK_WALLET_SUMMARY, MOCK_WALLET_TRANSACTIONS } from '@/data/wallet';
+import { bankAccountsService } from '@services/bankAccounts.service';
 
 export interface WalletData {
   summary: WalletSummary;
@@ -51,9 +48,9 @@ export const walletService = {
     return { summary: { ...summary }, transactions: [...transactions] };
   },
 
-  async getBankAccounts(): Promise<BankAccount[]> {
-    await delay(300);
-    return [...MOCK_BANK_ACCOUNTS];
+  /** Same accounts the user manages from the bank accounts tab. */
+  getBankAccounts(): Promise<BankAccount[]> {
+    return bankAccountsService.getBankAccounts();
   },
 
   async topUp(amount: number): Promise<void> {
@@ -69,8 +66,9 @@ export const walletService = {
   },
 
   async withdraw({ bankAccountId, amount }: WithdrawParams): Promise<void> {
+    const accounts = await bankAccountsService.getBankAccounts();
     await delay();
-    const accountExists = MOCK_BANK_ACCOUNTS.some((account) => account.id === bankAccountId);
+    const accountExists = accounts.some((account) => account.id === bankAccountId);
     if (!accountExists || amount > summary.withdrawable) throw new Error('Withdraw rejected');
 
     summary = {
