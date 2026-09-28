@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { formatCurrency } from '@/shared/lib/format';
-import type { InsuranceOption } from '@app-types/car';
+import type { InsuranceOption } from '../model';
 
 interface Props {
   option: InsuranceOption;

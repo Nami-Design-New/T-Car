@@ -5,13 +5,6 @@ export type {
   CarFilters,
   CarListing,
 
-  // Car / Details page
-  Review,
-  CarWarranty,
-  AddonService,
-  InsuranceOption,
-  CarDetails,
-
   // City
   City,
   CityDetails,

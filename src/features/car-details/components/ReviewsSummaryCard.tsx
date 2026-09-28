@@ -2,8 +2,8 @@
 
 import { useState } from 'react';
 import { FiStar } from 'react-icons/fi';
-import ReviewsModal from '../modals/ReviewsModal';
-import type { Review } from '@app-types/car';
+import ReviewsModal from './ReviewsModal';
+import type { Review } from '../model';
 
 interface Props {
   rating: number;

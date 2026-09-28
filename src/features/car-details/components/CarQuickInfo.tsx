@@ -3,7 +3,7 @@
 import { FiStar, FiHome, FiShield, FiTruck, FiMapPin } from 'react-icons/fi';
 import { LuPlane } from 'react-icons/lu';
 import { MdTrain } from 'react-icons/md';
-import type { CarDetails } from '@app-types/car';
+import type { CarDetails } from '../model';
 
 const FACT_ICONS = { shield: FiShield, delivery: FiTruck, distance: FiMapPin };
 

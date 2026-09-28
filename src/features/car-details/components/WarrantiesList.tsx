@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { FiCheck, FiChevronDown } from 'react-icons/fi';
-import type { CarWarranty } from '@app-types/car';
+import type { CarWarranty } from '../model';
 
 interface Props {
   warranties: CarWarranty[];

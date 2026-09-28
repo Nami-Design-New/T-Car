@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { FiX, FiStar } from 'react-icons/fi';
-import type { Review } from '@app-types/car';
+import type { Review } from '../model';
 
 interface Props {
   open: boolean;

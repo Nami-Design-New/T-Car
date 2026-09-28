@@ -52,46 +52,6 @@ export interface OfficeCarGroup {
   cars: CarListing[];
 }
 
-// Car / Details page
-export interface Review {
-  id: string;
-  name: string;
-  rating: number;
-  date: string;
-  comment: string;
-}
-
-export interface CarWarranty {
-  id: string;
-  title: string;
-  description: string;
-}
-
-export interface AddonService {
-  id: string;
-  title: string;
-  price: number;
-  icon: 'external' | 'driver';
-}
-
-export interface InsuranceOption {
-  id: string;
-  title: string;
-  subtitle: string;
-  pricePerDay: number;
-  terms: string[];
-  cancellationPolicy: string[];
-}
-
-export interface CarDetails extends CarListing {
-  images: (string | StaticImageData)[];
-  showroom: string;
-  quickFacts: { icon: 'shield' | 'delivery' | 'distance'; label: string }[];
-  warranties: CarWarranty[];
-  addons: AddonService[];
-  insuranceOptions: InsuranceOption[];
-  reviews: Review[];
-}
 
 
 
