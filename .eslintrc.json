@@ -2,5 +2,48 @@
   "extends": ["next/core-web-vitals"],
   "rules": {
     "react/no-unescaped-entities": "off"
-  }
+  },
+  "overrides": [
+    {
+      "files": ["src/shared/**"],
+      "rules": {
+        "no-restricted-imports": [
+          "warn",
+          { "patterns": ["@/features/*", "@/app/*", "@/services/*"] }
+        ]
+      }
+    },
+    {
+      "files": ["src/app/**"],
+      "rules": {
+        "no-restricted-imports": [
+          "warn",
+          { "patterns": ["@/services/*", "@/features/*/*"] }
+        ]
+      }
+    },
+    {
+      "files": ["src/features/**"],
+      "rules": {
+        "no-restricted-imports": ["warn", { "patterns": ["@/app/*"] }]
+      }
+    },
+    {
+      "files": ["src/services/**"],
+      "rules": {
+        "no-restricted-imports": [
+          "warn",
+          {
+            "patterns": [
+              "@/features/*",
+              "@/app/*",
+              "@/shared/ui/*",
+              "@/shared/hooks/*",
+              "@/shared/config/*"
+            ]
+          }
+        ]
+      }
+    }
+  ]
 }
