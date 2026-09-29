@@ -41,11 +41,9 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
-    icons: {
-    icon: '../assets/images/fav.svg',
-    shortcut: '../assets/images/fav.svg',
-    apple: '../assets/images/fav.svg',
-  },
+  // The favicon is app/icon.svg (Next's metadata file convention). There is no
+  // social image yet: add a designed 1200x630 src/app/opengraph-image.jpg and
+  // Next links it for Open Graph and X automatically.
   title: {
     default: 'T-Car | Rent the Latest Cars',
     template: '%s | T-Car',
@@ -67,21 +65,12 @@ export const metadata: Metadata = {
     url: siteUrl,
     siteName: 'T-Car',
     type: 'website',
-    images: [
-      {
-        url: '/assets/images/og-image.jpg',
-        width: 1200,
-        height: 630,
-        alt: 'T-Car - Modern Car Rental Platform',
-      },
-    ],
   },
   twitter: {
-    card: 'summary_large_image',
+    card: 'summary',
     title: 'T-Car | Rent the Latest Cars',
     description:
       'Browse and rent the latest car models for business trips, family vacations, and personal transportation.',
-    images: ['/assets/images/og-image.jpg'],
   },
   robots: {
     index: true,

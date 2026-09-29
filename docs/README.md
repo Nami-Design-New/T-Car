@@ -3,7 +3,7 @@
 Status: **in progress** on branch `refactor/architecture-layers` (not merged). See
 [Migration status](#migration-status) for what is done and where the code
 deliberately differs from these documents.
-Last reviewed against the code: 2026-09-28 (commit `b0529f3`). Status updated: 2026-09-28.
+Last reviewed against the code: 2026-09-28 (commit `b0529f3`). Status updated: 2026-09-29.
 
 This folder reviews the current front end and sets out the target design and the
 migration path for six areas. Each document stands on its own: it covers the
@@ -65,15 +65,15 @@ kept up:
 
 | Bug | Where | Effect | Status |
 | --- | ----- | ------ | ------ |
-| Font path uses `Expo-Arabic-light.ttf`, but the file is `Expo-Arabic-Light.ttf` | [`layout.tsx:12`](../src/app/[locale]/layout.tsx) | Works on Windows, but **the build fails on case-sensitive file systems** (Linux CI, Vercel) | Open |
-| Messages use i18next `{{name}}` syntax, but `next-intl` expects `{name}` | [`messages/en.json:30-31`](../messages/en.json), same in `ar.json` | OTP digit label and resend timer do not interpolate | Open |
+| Font path uses `Expo-Arabic-light.ttf`, but the file is `Expo-Arabic-Light.ttf` | [`layout.tsx:12`](../src/app/[locale]/layout.tsx) | Works on Windows, but **the build fails on case-sensitive file systems** (Linux CI, Vercel) | Fixed (font source now uses the exact filename casing) |
+| Messages use i18next `{{name}}` syntax, but `next-intl` expects `{name}` | [`messages/en.json:30-31`](../messages/en.json), same in `ar.json` | OTP digit label and resend timer do not interpolate | Fixed (OTP placeholders use next-intl syntax) |
 | `Link` from `@/i18n/navigation` is given `/${locale}/cities/…` | [`home/Cities/index.tsx`](../src/components/home/Cities/index.tsx) | The locale prefix is added twice (`/ar/ar/cities/…`) | Fixed (now `features/cities/components/PopularCities.tsx`) |
 | `useRouter` from `next/navigation` instead of `@/i18n/navigation` | `Hero`, `CityHero`, `SuccessModal` | Pushes URLs without the locale, which costs a middleware redirect and can switch the language | Fixed in `Hero` and `SuccessModal`. `CityHero` was not affected: it builds the URL from `next/navigation`'s own `usePathname`, which already has the locale |
 | Back link to `/account?tab=bookings` | [`BookingDetailsHeader.tsx`](../src/components/bookings/details/BookingDetailsHeader.tsx) | Account page ignores the query and opens the profile tab | Fixed (the account page reads `?tab=`) |
 | Unknown car id falls back to `MOCK_CARS[0]` | [`cars/[carId]/page.tsx`](../src/app/[locale]/cars/[carId]/page.tsx) | Wrong car shown instead of a 404 | Fixed (`notFound()`); same for unknown bookings and city slugs |
 | Header renders both `UserMenu` and the login button | [`Header/index.tsx`](../src/components/layout/Header/index.tsx) | Logged-in state is ignored | Fixed (the header gets the NextAuth session from the layout) |
-| Sitemap lists `/services` and `/about`, which do not exist, and has no locale prefixes | [`sitemap.ts`](../src/app/sitemap.ts) | SEO errors | Open |
-| Metadata icon path `../assets/images/fav.svg` and missing `og-image.jpg` | [`layout.tsx`](../src/app/[locale]/layout.tsx) | Broken favicon and social previews | Open |
+| Sitemap lists `/services` and `/about`, which do not exist, and has no locale prefixes | [`sitemap.ts`](../src/app/sitemap.ts) | SEO errors | Fixed (only real routes are emitted, once per locale) |
+| Metadata icon path `../assets/images/fav.svg` and missing `og-image.jpg` | [`layout.tsx`](../src/app/[locale]/layout.tsx) | Broken favicon and social previews | Fixed (`app/icon.svg` supplies the favicon; nonexistent social-image references were removed). A designed Open Graph image remains an enhancement |
 | `MapLocationModal` is always mounted in `Hero`, and `useJsApiLoader` runs before the `if (!open)` return | [`MapLocationModal.tsx:48`](../src/components/modals/MapLocationModal.tsx) | The Google Maps script loads on every home page visit, even if the map is never opened | Fixed: mounted only while open (not yet confirmed in a browser's network tab) |
 
 ---
@@ -185,7 +185,7 @@ merged or pushed yet.
 
 | Phase | Status | Notes |
 | ----- | ------ | ----- |
-| 0. Bug fixes and dead code | Partly done | 6 of the 10 bugs above fixed. Deleted: `bookings/BookingsTab`, `BookingCarSummary`, `BookingPriceDetails`, `RateBookingButton`, `CityCarCard`, `CitiesGrid`. Still open: font path, `{{name}}` messages, sitemap, metadata icons, `lib/i18n.ts` and `layout/I18nProvider.tsx`. **Waiting on product:** `BookingModal`, `BookingMonthlyModal`, `InsufficientBalanceModal` (unused, kept). Not started: `typecheck` script, React 19 |
+| 0. Bug fixes and dead code | Partly done | All 10 bugs above fixed. Deleted: `bookings/BookingsTab`, `BookingCarSummary`, `BookingPriceDetails`, `RateBookingButton`, `CityCarCard`, `CitiesGrid`. Still open: `lib/i18n.ts` and `layout/I18nProvider.tsx`; a designed Open Graph image is an enhancement. **Waiting on product:** `BookingModal`, `BookingMonthlyModal`, `InsufficientBalanceModal` (unused, kept). Not started: `typecheck` script, React 19 |
 | 1. Foundations | Partly done | Done: `features/`, `shared/{ui,lib,hooks,config}`, `services/http`, the import rules (as warnings), `AppError` / `Result` / `reportError`, the `errors` messages. Not started: Radix `shared/ui` set, `error.tsx`, `global-error.tsx`, non-blocking `loading.tsx` |
 | 2. Routing | Not started | Account sections are still tabs (`?tab=` works as a stopgap); filters and sort are not in the URL; `/cars` still ignores the hero's search parameters |
 | 3. Server-first data and auth | Mostly done | Pages read through `features/*/queries.ts` for cars, cities, car details, bookings, home, rental search, account profile, and notifications. Auth is NextAuth v5 with the token in its `httpOnly` session cookie and a middleware guard ([doc 2](02-server-client-boundary.md#23-auth-across-the-boundary)). Wallet, bank accounts, and bookings actions still run as client hooks (see below) |
