@@ -1,0 +1,37 @@
+@use 'tokens/tokens' as *;
+
+.result-dialog__body {
+  align-items: center;
+  padding: $ds-space-8;
+  text-align: center;
+}
+.result-dialog__body .dialog__description {
+  margin-inline: 0;
+}
+.result-dialog__icon {
+  display: grid;
+  width: 64px;
+  height: 64px;
+  place-items: center;
+  margin-bottom: $ds-space-5;
+  border-radius: 50%;
+  color: $ds-text-on-action;
+  font-size: 36px;
+  font-weight: 700;
+}
+.result-dialog__icon--success {
+  background: $ds-status-success;
+}
+.result-dialog__icon--error {
+  background: $ds-status-error;
+}
+.result-dialog__action {
+  min-height: 44px;
+  margin-top: $ds-space-6;
+  padding-inline: $ds-space-6;
+  border: 0;
+  border-radius: $ds-radius-md;
+  background: $ds-action-primary;
+  color: $ds-text-on-action;
+  font-weight: 600;
+}

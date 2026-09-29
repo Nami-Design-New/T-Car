@@ -95,7 +95,9 @@ function Header({ children, className }: PartProps) {
 }
 
 function Title({ children, className }: PartProps) {
-  return <RadixDialog.Title className={cn('dialog__title', className)}>{children}</RadixDialog.Title>;
+  return (
+    <RadixDialog.Title className={cn('dialog__title', className)}>{children}</RadixDialog.Title>
+  );
 }
 
 function Description({ children, className }: PartProps) {
@@ -125,4 +127,11 @@ function Close({ className }: { className?: string }) {
   );
 }
 
-export const Dialog = Object.assign(DialogRoot, { Header, Title, Description, Body, Footer, Close });
+export const Dialog = Object.assign(DialogRoot, {
+  Header,
+  Title,
+  Description,
+  Body,
+  Footer,
+  Close,
+});

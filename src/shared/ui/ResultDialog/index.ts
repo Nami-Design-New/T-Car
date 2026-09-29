@@ -1,0 +1,1 @@
+export { ResultDialog } from './ResultDialog';
