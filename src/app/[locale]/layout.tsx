@@ -11,7 +11,7 @@ import localFont from 'next/font/local'
 const expo = localFont({
   src: [
     {
-      path: '../../assets/fonts/Expo-Arabic-light.ttf',
+      path: '../../assets/fonts/Expo-Arabic-Light.ttf',
       weight: '400',
       style: 'normal',
     },
