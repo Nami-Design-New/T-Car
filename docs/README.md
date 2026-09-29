@@ -203,7 +203,7 @@ merged or pushed yet.
 | `cars`, `cities` | Yes | Yes | n/a | Filters and sort in the URL; merging `CarFilters` / `CityFilters` (doc 4) and their option data |
 | `home`, `rental-search` | Yes | Yes (FAQs, search options) | Yes (contact form) | `Partners` and `WhyChooseUs` still hold their static content |
 | `auth` | Yes | NextAuth + mocked `authApi` | Yes (Server Actions) | Real endpoints; `react-bootstrap` (the dialog still uses its `Modal`) |
-| `account` (profile, notifications) | Yes | Yes | No | Profile writes are the last 4 `console.log` calls in the app |
+| `account` (profile, notifications) | Yes | Yes (scoped to the session user) | Yes (Server Actions: save, phone change send and verify, license upload, delete) | Notification mark-all-read is still static; opening the license details is still a TODO; account routes, forms (doc 3 step 7), and dialogs remain |
 | `layout` | No | n/a | n/a | Header is session-aware; still a client component |
 
 The `*.api.ts` files are backed by mocks only; no backend endpoint is wired in.

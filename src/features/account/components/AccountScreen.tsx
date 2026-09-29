@@ -33,14 +33,7 @@ export default function AccountScreen({
           <AccountSidebar active={activeTab} onChange={setActiveTab} />
 
           <div className="account-content">
-            {activeTab === 'profile' && (
-              <ProfileTab
-                profile={profile}
-                onSave={(nextProfile) => {
-                  console.log(nextProfile);
-                }}
-              />
-            )}
+            {activeTab === 'profile' && <ProfileTab profile={profile} />}
 
             {activeTab === 'bookings' && bookings}
 

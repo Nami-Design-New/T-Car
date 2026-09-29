@@ -7,13 +7,17 @@ import { FiX, FiUploadCloud } from 'react-icons/fi';
 interface Props {
   open: boolean;
   onClose: () => void;
-  onSubmit: (file: File) => void;
+  onSubmit: (file: File) => Promise<void>;
+  loading?: boolean;
+  error?: string;
 }
 
 export default function LicenseModal({
   open,
   onClose,
   onSubmit,
+  loading = false,
+  error,
 }: Props) {
   const [mounted, setMounted] = useState(false);
   const [file, setFile] = useState<File | null>(null);
@@ -66,10 +70,10 @@ export default function LicenseModal({
     setFile(selectedFile);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!file) return;
 
-    onSubmit(file);
+    await onSubmit(file);
   };
 
   const content = (
@@ -136,11 +140,18 @@ export default function LicenseModal({
           <button
             type="button"
             className="primary_btn wide"
-            disabled={!file}
+            disabled={!file || loading}
+            aria-busy={loading}
             onClick={handleSubmit}
           >
             إرسال
           </button>
+
+          {error && (
+            <p className="text-danger small mt-2 mb-0" role="alert">
+              {error}
+            </p>
+          )}
 
         </div>
       </div>

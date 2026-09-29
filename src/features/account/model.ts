@@ -9,5 +9,11 @@ export interface UserProfile {
   phone: string;
 }
 
+export interface LicenseUpload {
+  name: string;
+  size: number;
+  type: string;
+}
+
 export const isAccountTab = (value: unknown): value is AccountTab =>
   typeof value === 'string' && (ACCOUNT_TABS as readonly string[]).includes(value);

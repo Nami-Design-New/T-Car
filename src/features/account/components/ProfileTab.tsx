@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from '@/i18n/navigation';
 import {
   FiCalendar,
   FiChevronLeft,
@@ -10,6 +11,15 @@ import {
 } from 'react-icons/fi';
 
 import type { UserProfile } from '../model';
+import { useErrorMessage } from '@/shared/hooks/useErrorMessage';
+import { fromActionResult } from '@/shared/lib/result';
+import {
+  deleteAccountAction,
+  saveProfileAction,
+  sendPhoneCodeAction,
+  uploadLicenseAction,
+  verifyPhoneAction,
+} from '../actions';
 
 import EditPhoneModal from './EditPhoneModal';
 import VerifyPhoneModal from './VerifyPhoneModal';
@@ -18,16 +28,23 @@ import FailedModal from '@components/common/FailedModal';
 
 interface Props {
   profile: UserProfile;
-  onSave: (profile: UserProfile) => void;
 }
 
 type PhoneStep = 'edit' | 'verify' | null;
+type PendingAction = 'save' | 'send' | 'resend' | 'verify' | 'license' | 'delete' | null;
 
-export default function ProfileTab({
-  profile,
-  onSave,
-}: Props) {
+export default function ProfileTab({ profile }: Props) {
+  const errorMessage = useErrorMessage();
+  const router = useRouter();
   const [form, setForm] = useState(profile);
+  const [pendingAction, setPendingAction] = useState<PendingAction>(null);
+  const [saveError, setSaveError] = useState<string | null>(null);
+  const [saved, setSaved] = useState(false);
+  const [sendError, setSendError] = useState<string | null>(null);
+  const [verifyError, setVerifyError] = useState<string | null>(null);
+  const [resendError, setResendError] = useState<string | null>(null);
+  const [licenseError, setLicenseError] = useState<string | null>(null);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   // ==================== Phone ====================
 
@@ -61,25 +78,65 @@ export default function ProfileTab({
 
   // ==================== Send OTP ====================
 
-  const handleSendCode = (phone: string) => {
-    setPendingPhone(phone);
-
-    // TODO:
-    // إرسال OTP للـ backend
-
-    setPhoneStep('verify');
+  const handleSendCode = async (phone: string) => {
+    setPendingAction('send');
+    setSendError(null);
+    try {
+      const result = fromActionResult(await sendPhoneCodeAction(phone));
+      if (!result.ok) {
+        setSendError(errorMessage(result.error));
+        return;
+      }
+      setPendingPhone(phone);
+      setResendError(null);
+      setVerifyError(null);
+      setPhoneStep('verify');
+    } catch (error) {
+      setSendError(errorMessage(error));
+    } finally {
+      setPendingAction(null);
+    }
   };
 
   // ==================== Resend OTP ====================
 
-  const handleResendCode = (phone: string) => {
-    // TODO:
-    // إعادة إرسال OTP
-
-    console.log('Resend code to:', phone);
+  const handleResendCode = async (phone: string) => {
+    setPendingAction('resend');
+    setResendError(null);
+    try {
+      const result = fromActionResult(await sendPhoneCodeAction(phone));
+      if (!result.ok) {
+        setResendError(errorMessage(result.error));
+        return false;
+      }
+      return true;
+    } catch (error) {
+      setResendError(errorMessage(error));
+      return false;
+    } finally {
+      setPendingAction(null);
+    }
   };
 
   // ==================== Verify Phone ====================
+
+  const handleVerifyCode = async (code: string) => {
+    setPendingAction('verify');
+    setVerifyError(null);
+    try {
+      const result = fromActionResult(await verifyPhoneAction(pendingPhone, code));
+      if (!result.ok) {
+        setVerifyError(errorMessage(result.error));
+        return false;
+      }
+      return true;
+    } catch (error) {
+      setVerifyError(errorMessage(error));
+      return false;
+    } finally {
+      setPendingAction(null);
+    }
+  };
 
   const handleVerified = (phone: string) => {
     handleChange('phone', phone);
@@ -90,24 +147,64 @@ export default function ProfileTab({
 
   // ==================== Submit License ====================
 
-  const handleLicenseSubmit = (file: File) => {
-    console.log('License file:', file);
-
-    // TODO:
-    // إرسال الملف للـ API
-
-    setShowLicenseModal(false);
+  const handleLicenseSubmit = async (file: File) => {
+    setPendingAction('license');
+    setLicenseError(null);
+    try {
+      const formData = new FormData();
+      formData.set('license', file);
+      const result = fromActionResult(await uploadLicenseAction(formData));
+      if (!result.ok) {
+        setLicenseError(errorMessage(result.error));
+        return;
+      }
+      setShowLicenseModal(false);
+    } catch (error) {
+      setLicenseError(errorMessage(error));
+    } finally {
+      setPendingAction(null);
+    }
   };
 
   // ==================== Delete Account ====================
 
-  const handleDeleteAccount = () => {
-    // TODO:
-    // API request لحذف الحساب
+  const handleDeleteAccount = async () => {
+    setPendingAction('delete');
+    setDeleteError(null);
+    try {
+      const result = fromActionResult(await deleteAccountAction());
+      if (!result.ok) {
+        setDeleteError(errorMessage(result.error));
+        return;
+      }
+      // The action also ended the session; leave the protected page.
+      setShowDeleteModal(false);
+      router.replace('/');
+      router.refresh();
+    } catch (error) {
+      setDeleteError(errorMessage(error));
+    } finally {
+      setPendingAction(null);
+    }
+  };
 
-    console.log('Delete account');
-
-    setShowDeleteModal(false);
+  const handleSaveProfile = async () => {
+    setPendingAction('save');
+    setSaveError(null);
+    setSaved(false);
+    try {
+      const result = fromActionResult(await saveProfileAction(form));
+      if (!result.ok) {
+        setSaveError(errorMessage(result.error));
+        return;
+      }
+      setForm(result.data);
+      setSaved(true);
+    } catch (error) {
+      setSaveError(errorMessage(error));
+    } finally {
+      setPendingAction(null);
+    }
   };
 
   return (
@@ -212,9 +309,10 @@ export default function ProfileTab({
         <button
           type="button"
           className="profile_action_btn"
-          onClick={() =>
-            setShowLicenseModal(true)
-          }
+          onClick={() => {
+            setLicenseError(null);
+            setShowLicenseModal(true);
+          }}
         >
           <div className="profile_action_content">
 
@@ -273,9 +371,10 @@ export default function ProfileTab({
       <button
         type="button"
         className="delete_account_btn mb-2"
-        onClick={() =>
-          setShowDeleteModal(true)
-        }
+        onClick={() => {
+          setDeleteError(null);
+          setShowDeleteModal(true);
+        }}
       >
         <FiTrash2 />
 
@@ -289,22 +388,38 @@ export default function ProfileTab({
       <button
         type="button"
         className="save_btn"
-        onClick={() =>
-          onSave(form)
-        }
+        disabled={pendingAction === 'save'}
+        aria-busy={pendingAction === 'save'}
+        onClick={handleSaveProfile}
       >
         حفظ
       </button>
+
+      {saveError && (
+        <p className="text-danger small mt-2 mb-0" role="alert">
+          {saveError}
+        </p>
+      )}
+      {saved && (
+        <p className="text-success small mt-2 mb-0" role="status">
+          تم حفظ التعديلات
+        </p>
+      )}
 
       {/* ==================== Edit Phone Modal ==================== */}
 
       <EditPhoneModal
         open={phoneStep === 'edit'}
-        onClose={() =>
-          setPhoneStep(null)
-        }
+        onClose={() => {
+          if (pendingAction !== 'send') {
+            setSendError(null);
+            setPhoneStep(null);
+          }
+        }}
         currentPhone={form.phone}
         onSendCode={handleSendCode}
+        loading={pendingAction === 'send'}
+        error={sendError ?? undefined}
       />
 
       {/* ==================== Verify Phone Modal ==================== */}
@@ -315,21 +430,26 @@ export default function ProfileTab({
           setPhoneStep(null)
         }
         phone={pendingPhone}
-        onEditPhone={() =>
-          setPhoneStep('edit')
-        }
+        onEditPhone={() => {
+          if (pendingAction !== 'resend') setPhoneStep('edit');
+        }}
         onVerified={handleVerified}
         onResendCode={handleResendCode}
+        onVerifyCode={handleVerifyCode}
+        loading={pendingAction === 'resend' || pendingAction === 'verify'}
+        error={verifyError ?? resendError ?? undefined}
       />
 
       {/* ==================== License Modal ==================== */}
 
       <LicenseModal
         open={showLicenseModal}
-        onClose={() =>
-          setShowLicenseModal(false)
-        }
+        onClose={() => {
+          if (pendingAction !== 'license') setShowLicenseModal(false);
+        }}
         onSubmit={handleLicenseSubmit}
+        loading={pendingAction === 'license'}
+        error={licenseError ?? undefined}
       />
 
       {/* ==================== Delete Account Modal ==================== */}
@@ -341,10 +461,12 @@ export default function ProfileTab({
         primaryButtonText="حذف الحساب"
         secondaryButtonText="الاحتفاظ بالحساب"
         showButtons
+        loading={pendingAction === 'delete'}
+        error={deleteError ?? undefined}
         onPrimary={handleDeleteAccount}
-        onSecondary={() =>
-          setShowDeleteModal(false)
-        }
+        onSecondary={() => {
+          if (pendingAction !== 'delete') setShowDeleteModal(false);
+        }}
       />
 
     </div>

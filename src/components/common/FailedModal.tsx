@@ -16,8 +16,10 @@ interface Props {
   showButtons?: boolean;
   primaryButtonText?: string;
   secondaryButtonText?: string;
+  loading?: boolean;
+  error?: string;
 
-  onPrimary?: () => void;
+  onPrimary?: () => void | Promise<void>;
   onSecondary?: () => void;
 }
 
@@ -33,6 +35,8 @@ export default function FailedModal({
   showButtons = false,
   primaryButtonText = 'تأكيد',
   secondaryButtonText = 'إلغاء',
+  loading = false,
+  error,
 
   onPrimary,
   onSecondary,
@@ -114,6 +118,12 @@ export default function FailedModal({
           {description && (
             <p>{description}</p>
           )}
+
+          {error && (
+            <p className="text-danger small mt-2 mb-0" role="alert">
+              {error}
+            </p>
+          )}
         </div>
 
         {showButtons && (
@@ -121,6 +131,8 @@ export default function FailedModal({
             <button
               type="button"
               className="delete_account_confirm"
+              disabled={loading}
+              aria-busy={loading}
               onClick={onPrimary}
             >
               {primaryButtonText}
@@ -129,6 +141,7 @@ export default function FailedModal({
             <button
               type="button"
               className="delete_account_cancel"
+              disabled={loading}
               onClick={onSecondary}
             >
               {secondaryButtonText}

@@ -198,6 +198,14 @@
     "contact": {
       "phoneRequired": "Enter a valid phone number."
     },
+    "account": {
+      "profileRejected": "The profile could not be saved. Check the details and try again.",
+      "resendLimited": "The code cannot be resent yet. Wait a moment and try again.",
+      "licenseRequired": "Choose an image of your driving license.",
+      "licenseRejected": "The driving license could not be uploaded. Try another image.",
+      "deleteRejected": "The account cannot be deleted while it has active bookings.",
+      "invalidCode": "The verification code is incorrect. Try again."
+    },
     "auth": {
       "invalidPhone": "Enter a valid phone number.",
       "invalidCode": "The verification code is incorrect. Try again.",

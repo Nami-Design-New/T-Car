@@ -10,7 +10,10 @@ interface Props {
   open: boolean;
   onClose: () => void;
   currentPhone?: string;
-  onSendCode?: (fullNumber: string) => void;
+  onSendCode?: (fullNumber: string) => void | Promise<void>;
+  loading?: boolean;
+  /** Already translated; the dialog stays open with the number. */
+  error?: string;
 }
 
 export default function EditPhoneModal({
@@ -18,6 +21,8 @@ export default function EditPhoneModal({
   onClose,
   currentPhone = '',
   onSendCode,
+  loading = false,
+  error,
 }: Props) {
   const [mounted, setMounted] = useState(false);
   const [phone, setPhone] = useState('');
@@ -59,7 +64,7 @@ export default function EditPhoneModal({
   if (!open || !mounted) return null;
 
   const handleSend = () => {
-    if (!phone.trim()) return;
+    if (!phone.trim() || loading) return;
 
     onSendCode?.(phone);
   };
@@ -97,10 +102,18 @@ export default function EditPhoneModal({
             />
           </div>
 
+          {error && (
+            <p className="text-danger small mt-2 mb-0" role="alert">
+              {error}
+            </p>
+          )}
+
           <button
             type="button"
             className="auth_btn"
             onClick={handleSend}
+            disabled={loading}
+            aria-busy={loading}
           >
             إرسال كود التحقق
           </button>

@@ -12,7 +12,11 @@ interface Props {
   phone?: string;
   onEditPhone?: () => void;
   onVerified?: (phone: string) => void;
-  onResendCode?: (phone: string) => void;
+  onResendCode?: (phone: string) => Promise<boolean>;
+  /** Checks the code; resolves to false when it was rejected (the error prop says why). */
+  onVerifyCode?: (code: string) => Promise<boolean>;
+  loading?: boolean;
+  error?: string;
 }
 
 const OTP_LENGTH = 4;
@@ -25,6 +29,9 @@ export default function VerifyPhoneModal({
   onEditPhone,
   onVerified,
   onResendCode,
+  onVerifyCode,
+  loading = false,
+  error,
 }: Props) {
   const [mounted, setMounted] = useState(false);
 
@@ -224,12 +231,16 @@ export default function VerifyPhoneModal({
      Verify
   ========================= */
 
-  const handleVerify = () => {
+  const handleVerify = async () => {
     const code = otp.join('');
 
-    if (code.length !== OTP_LENGTH) {
+    if (code.length !== OTP_LENGTH || loading) {
       return;
     }
+
+    // A rejected code keeps the dialog open with the digits and the error.
+    const verified = (await onVerifyCode?.(code)) ?? true;
+    if (!verified) return;
 
     // show success animation/modal first
     setSuccessOpen(true);
@@ -239,17 +250,16 @@ export default function VerifyPhoneModal({
      Resend
   ========================= */
 
-  const handleResend = () => {
-    if (timer > 0) {
+  const handleResend = async () => {
+    if (timer > 0 || loading) {
       return;
     }
 
+    const sent = (await onResendCode?.(phone)) ?? true;
+    if (!sent) return;
+
     setTimer(INITIAL_SECONDS);
-
     setOtp(Array(OTP_LENGTH).fill(''));
-
-    onResendCode?.(phone);
-
     setTimeout(() => {
       inputs.current[0]?.focus();
     }, 0);
@@ -315,9 +325,15 @@ export default function VerifyPhoneModal({
           {timer > 0 ? (
             <p className="timer">إعادة الإرسال خلال {timer}s</p>
           ) : (
-            <button type="button" className="resend" onClick={handleResend}>
+            <button type="button" className="resend" onClick={handleResend} disabled={loading}>
               إعادة إرسال الرمز
             </button>
+          )}
+
+          {error && (
+            <p className="text-danger small mt-2 mb-0" role="alert">
+              {error}
+            </p>
           )}
 
           {/* Confirm */}
@@ -326,7 +342,8 @@ export default function VerifyPhoneModal({
             type="button"
             className="auth_btn"
             onClick={handleVerify}
-            disabled={otp.join('').length !== OTP_LENGTH}
+            disabled={otp.join('').length !== OTP_LENGTH || loading}
+            aria-busy={loading}
           >
             تحقق
           </button>
