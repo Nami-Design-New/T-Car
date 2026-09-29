@@ -1,6 +1,6 @@
 # Dialog Module Implementation and Migration Plan
 
-Status: proposed — documentation only, no implementation started.
+Status: in progress — the shared Dialog foundation and CountryModal pilot are implemented; other dialog migrations remain planned.
 
 ## 1. Purpose
 

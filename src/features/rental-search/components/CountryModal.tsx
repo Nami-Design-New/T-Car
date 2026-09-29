@@ -1,11 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import Image from 'next/image';
-import { FiSearch, FiX } from 'react-icons/fi';
-
-
+import { FiSearch } from 'react-icons/fi';
+import { Dialog } from '@/shared/ui/Dialog';
 import type { Country } from '../model';
+import './CountryModal.scss';
 
 interface Props {
   open: boolean;
@@ -14,67 +14,66 @@ interface Props {
   onSelect: (country: Country) => void;
 }
 
-
 export default function CountryModal({ open, countries, onClose, onSelect }: Props) {
   const [search, setSearch] = useState('');
   const [selected, setSelected] = useState<Country | null>(null);
-
-  if (!open) return null;
-
-  const filtered = countries.filter((c) => c.name.toLowerCase().includes(search.toLowerCase()));
+  const searchRef = useRef<HTMLInputElement>(null);
+  const filtered = countries.filter((country) =>
+    country.name.toLowerCase().includes(search.toLowerCase())
+  );
 
   return (
-    <div className="modal_overlay">
-      <div className="selection_modal">
-        <button className="close_btn" onClick={onClose}>
-          <FiX />
-        </button>
-
-        <div className="modal_header">
-          <h2>اختر الدولة</h2>
-
-          <p>اختر الدولة التي ترغب باستلام السيارة فيها.</p>
+    <Dialog open={open} onClose={onClose} className="country-dialog" initialFocusRef={searchRef}>
+      <Dialog.Header className="country-dialog__header">
+        <div>
+          <Dialog.Title>اختر الدولة</Dialog.Title>
+          <Dialog.Description>اختر الدولة التي ترغب باستلام السيارة فيها.</Dialog.Description>
         </div>
+        <Dialog.Close />
+      </Dialog.Header>
 
-        <div className="search_box">
-          <FiSearch />
-
+      <Dialog.Body className="country-dialog__body">
+        <label className="country-dialog__search" htmlFor="country-search">
+          <FiSearch aria-hidden="true" />
           <input
-            type="text"
+            ref={searchRef}
+            id="country-search"
+            type="search"
             placeholder="ابحث عن دولة..."
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(event) => setSearch(event.target.value)}
           />
-        </div>
+        </label>
 
-        <div className="selection_list">
+        <div className="country-dialog__list">
           {filtered.map((country) => (
             <button
               key={country.id}
               type="button"
-              className={`selection_item ${selected?.id === country.id ? 'active' : ''}`}
+              className="country-dialog__item"
+              data-selected={selected?.id === country.id || undefined}
+              aria-pressed={selected?.id === country.id}
               onClick={() => setSelected(country)}
             >
-              <div className="flag">
-                <Image src={country.flag} alt={country.name} width={36} height={24} />
-              </div>
-
-              <div className="content">
-                <h4>{country.name}</h4>
-
-              </div>
+              <span className="country-dialog__flag">
+                <Image src={country.flag} alt="" width={36} height={24} />
+              </span>
+              <span>{country.name}</span>
             </button>
           ))}
         </div>
+      </Dialog.Body>
 
+      <Dialog.Footer className="country-dialog__footer">
         <button
-          className="confirm_btn mt-3"
+          type="button"
+          className="country-dialog__confirm"
           disabled={!selected}
           onClick={() => selected && onSelect(selected)}
         >
           متابعة
         </button>
-      </div>
-    </div>
+      </Dialog.Footer>
+    </Dialog>
   );
 }
