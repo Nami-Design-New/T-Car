@@ -212,5 +212,15 @@
       "nameRequired": "الاسم الكامل مطلوب.",
       "registrationRequired": "هذا الرقم غير مسجل. أكمل إنشاء الحساب."
     }
+  },
+  "states": {
+    "loading": "جارٍ التحميل…",
+    "retry": "حاول مرة أخرى",
+    "error": {
+      "title": "حدث خطأ",
+      "offlineHint": "يبدو أنك غير متصل بالإنترنت.",
+      "signIn": "تسجيل الدخول",
+      "reference": "رمز المرجع: {reference}"
+    }
   }
 }

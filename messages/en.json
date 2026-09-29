@@ -212,5 +212,15 @@
       "nameRequired": "Full name is required.",
       "registrationRequired": "This number has no account yet. Finish creating your account."
     }
+  },
+  "states": {
+    "loading": "Loading…",
+    "retry": "Try again",
+    "error": {
+      "title": "Something went wrong",
+      "offlineHint": "You appear to be offline.",
+      "signIn": "Sign in",
+      "reference": "Reference: {reference}"
+    }
   }
 }

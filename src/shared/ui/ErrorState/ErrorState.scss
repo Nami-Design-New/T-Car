@@ -1,0 +1,81 @@
+@use 'tokens/tokens' as *;
+
+.error-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $ds-space-3;
+  text-align: center;
+  color: $ds-text-primary;
+
+  &--page {
+    min-height: 50vh;
+    justify-content: center;
+    padding: $ds-space-11 $ds-space-5;
+  }
+
+  &--section {
+    padding: $ds-space-9 $ds-space-5;
+  }
+
+  &--inline {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: $ds-space-4;
+  }
+
+  &__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 56px;
+    border-radius: $ds-radius-full;
+    background: $ds-status-error-background;
+    color: $ds-status-error;
+    font-size: 26px;
+  }
+
+  &--inline &__icon {
+    width: 32px;
+    height: 32px;
+    font-size: 16px;
+  }
+
+  &__title {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+  }
+
+  &--page &__title {
+    font-size: 1.5rem;
+  }
+
+  &--inline &__title {
+    font-size: 1rem;
+  }
+
+  &__description,
+  &__hint,
+  &__reference {
+    margin: 0;
+    max-width: 36rem;
+    color: $ds-text-subtle;
+  }
+
+  &__hint,
+  &__reference {
+    font-size: 0.875rem;
+  }
+
+  &__reference {
+    color: $ds-text-placeholder;
+    direction: ltr;
+  }
+
+  &__action {
+    margin-top: $ds-space-3;
+  }
+}
