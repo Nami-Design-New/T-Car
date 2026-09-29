@@ -221,6 +221,9 @@
       "offlineHint": "يبدو أنك غير متصل بالإنترنت.",
       "signIn": "تسجيل الدخول",
       "reference": "رمز المرجع: {reference}"
+    },
+    "dialog": {
+      "close": "إغلاق"
     }
   }
 }

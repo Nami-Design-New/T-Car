@@ -2,6 +2,7 @@ import { Footer, Header } from '@/features/layout';
 import type { Metadata } from 'next';
 import { NextIntlClientProvider } from 'next-intl';
 import { getDirection } from '@/shared/config/languages';
+import { DirectionProvider } from '@/shared/ui/DirectionProvider';
 import '../../styles/main.css';
 import localFont from 'next/font/local'
 
@@ -84,14 +85,17 @@ export default async function RootLayout({
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
+  const dir = getDirection(locale);
 
   return (
-    <html lang={locale} dir={getDirection(locale)} className={expo.variable}>
+    <html lang={locale} dir={dir} className={expo.variable}>
       <body>
          <NextIntlClientProvider>
+          <DirectionProvider dir={dir}>
             <Header />
                <main>{children}</main>
             <Footer />
+           </DirectionProvider>
          </NextIntlClientProvider>
       </body>
     </html>

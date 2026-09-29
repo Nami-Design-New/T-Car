@@ -1,0 +1,151 @@
+@use 'tokens/tokens' as *;
+
+.dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1050;
+  background: rgba($ds-shadow-color, 0.45);
+  animation: dialog-fade-in 0.15s ease-out;
+}
+
+.dialog {
+  position: fixed;
+  z-index: 1051;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  width: calc(100vw - #{2 * $ds-space-5});
+  max-height: calc(100dvh - #{2 * $ds-space-5});
+  background: $ds-surface-elevated;
+  color: $ds-text-primary;
+  border-radius: $ds-radius-lg;
+  box-shadow: 0 20px 48px rgba($ds-shadow-color, 0.18);
+  outline: none;
+  animation: dialog-pop-in 0.18s ease-out;
+
+  &--sm {
+    max-width: 400px;
+  }
+
+  &--md {
+    max-width: 520px;
+  }
+
+  &--lg {
+    max-width: 720px;
+  }
+
+  &--xl {
+    max-width: 960px;
+  }
+
+  &--fullscreen {
+    width: 100vw;
+    max-width: none;
+    height: 100dvh;
+    max-height: none;
+    border-radius: 0;
+  }
+
+  &__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: $ds-space-4;
+    padding: $ds-space-7 $ds-space-7 0;
+  }
+
+  &__title {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+  }
+
+  &__description {
+    margin: $ds-space-3 $ds-space-7 0;
+    color: $ds-text-subtle;
+  }
+
+  &__body {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    padding: $ds-space-7;
+  }
+
+  &__footer {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: $ds-space-4;
+    padding: 0 $ds-space-7 $ds-space-7;
+  }
+
+  &__close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+    margin-inline-start: auto;
+    border: 0;
+    border-radius: $ds-radius-full;
+    background: $ds-neutral-100;
+    color: $ds-text-primary;
+    font-size: 18px;
+    cursor: pointer;
+
+    &:hover {
+      background: $ds-neutral-200;
+    }
+
+    &:focus-visible {
+      outline: 2px solid $ds-action-primary;
+      outline-offset: 2px;
+    }
+  }
+}
+
+@media (max-width: #{$breakpoint-sm - 1px}) {
+  .dialog--bottom-sheet {
+    top: auto;
+    bottom: 0;
+    left: 0;
+    transform: none;
+    width: 100vw;
+    max-width: none;
+    max-height: 90dvh;
+    border-radius: $ds-radius-xl $ds-radius-xl 0 0;
+    padding-bottom: env(safe-area-inset-bottom);
+    animation-name: dialog-sheet-in;
+  }
+}
+
+@keyframes dialog-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes dialog-pop-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -48%) scale(0.98);
+  }
+}
+
+@keyframes dialog-sheet-in {
+  from {
+    transform: translateY(100%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dialog-backdrop,
+  .dialog {
+    animation: none;
+  }
+}
