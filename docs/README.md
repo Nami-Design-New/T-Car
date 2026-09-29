@@ -18,6 +18,7 @@ steps.
 | 4 | [Component design](04-component-design.md) | Which components are reusable, how are they built (Radix primitives), and how are they styled? |
 | 5 | [Performance and routing](05-performance-and-routing.md) | What should be a route, a URL parameter, or a local tab, and what is slowing the app down? |
 | 6 | [Loading, empty, and error states](06-ui-states.md) | What every screen shows while waiting, when there is nothing, and when something fails |
+| 7 | [Images and assets](07-images-and-assets.md) | Where each image lives (`public/icons`, `public/images`, backend URLs), and how it is referenced |
 
 The existing root-level plans stay valid and are referenced where they overlap:
 
@@ -173,6 +174,16 @@ the English locale still shows Arabic. Move each feature's strings into
 `messages/*.json` as part of its phase 4 migration, not as a separate
 big-bang pass.
 
+### Phase 7: Images and assets (about 2–3 days)
+
+Serve every image from `public/`, split into UI icons (`public/icons/`),
+static app images (`public/images/`), and data images that will come from
+the backend as URLs (mocked from `public/mock/`). Icons and static images go
+through one typed registry; data images become plain URL strings in the
+model types. Also re-export the three 1–2 MB PNG-in-SVG icons
+([doc 7](07-images-and-assets.md)). Independent of phases 2–6; best done
+before the API phase, so the model types already match the API.
+
 ---
 
 ## Migration status
@@ -192,6 +203,7 @@ merged or pushed yet.
 | 4. Feature migration | Mostly done | See the table below |
 | 5. Performance | Not started | Only the Maps script fix from phase 0 |
 | 6. i18n extraction | Not started | New strings (errors, contact form) are in `messages/*.json`; the existing Arabic text is not |
+| 7. Images and assets | Planned | [Doc 7](07-images-and-assets.md): inventory and classification of all 66 files done; migration not started |
 
 ### Features
 
@@ -204,7 +216,7 @@ merged or pushed yet.
 | `home`, `rental-search` | Yes | Yes (FAQs, search options) | Yes (contact form) | `Partners` and `WhyChooseUs` still hold their static content |
 | `auth` | Yes | NextAuth + mocked `authApi` | Yes (Server Actions) | Real endpoints; `react-bootstrap` (the dialog still uses its `Modal`) |
 | `account` (profile, notifications) | Yes | Yes (scoped to the session user) | Yes (Server Actions: save, phone change send and verify, license upload, delete) | Notification mark-all-read is still static; opening the license details is still a TODO; account routes, forms (doc 3 step 7), and dialogs remain |
-| `layout` | Yes | n/a | n/a | Header and footer are still client components; server/client boundary split and dead `I18nProvider` cleanup remain |
+| `layout` | Yes | n/a | n/a | Header shell and footer render on the server; mobile navigation, language, and auth are client islands. Trimming client messages and dead `I18nProvider` cleanup remain |
 
 The `*.api.ts` files are backed by mocks only; no backend endpoint is wired in.
 Mock rules that make failures reproducible (OTP `1234`, top-ups over 10,000,
