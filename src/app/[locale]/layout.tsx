@@ -1,4 +1,3 @@
-import { auth } from '@/auth';
 import { Footer, Header } from '@/features/layout';
 import type { Metadata } from 'next';
 import { NextIntlClientProvider } from 'next-intl';
@@ -84,13 +83,13 @@ export default async function RootLayout({
   children: React.ReactNode;
   params: Promise<{ locale: string }>;
 }) {
-  const [{ locale }, session] = await Promise.all([params, auth()]);
+  const { locale } = await params;
 
   return (
     <html lang={locale} dir={getDirection(locale)} className={expo.variable}>
       <body>
          <NextIntlClientProvider>
-            <Header user={session?.user ?? null} />
+            <Header />
                <main>{children}</main>
             <Footer />
          </NextIntlClientProvider>

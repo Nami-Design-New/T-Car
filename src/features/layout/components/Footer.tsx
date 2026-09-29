@@ -1,8 +1,6 @@
-'use client';
-
 import Image from 'next/image';
 import { Link } from '@/i18n/navigation';
-import { useTranslations } from 'next-intl';;
+import { getTranslations } from 'next-intl/server';
 import {
   FiFacebook,
   FiInstagram,
@@ -19,8 +17,8 @@ import googlePlay from '@assets/images/Play Sotre.webp';
 
 import { NAV_LINKS } from '@/shared/config/site';
 
-export default function Footer() {
-  const t = useTranslations();
+export default async function Footer() {
+  const t = await getTranslations();
 
   const year = new Date().getFullYear();
 

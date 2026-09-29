@@ -80,7 +80,7 @@ const MOCK_DETAILS_EXTRAS: Omit<CarDetails, keyof CarListing> = {
       comment: 'السائق كان مرنًا والسائق ساعدني في حمل الأمتعة. سأستخدم الخدمة مرة أخرى.',
     },
     {
-      id: '3',
+      id: '11',
       name: 'فهد القحطاني',
       rating: 5,
       date: '27 ديسمبر 2025',
@@ -112,9 +112,24 @@ const MOCK_DETAILS_EXTRAS: Omit<CarDetails, keyof CarListing> = {
     address: 'جدة، شارع الملك عبدالله بن عبدالعزيز',
     distanceKm: 2.9,
     branches: [
-      { id: '1', name: 'فرع جدة', address: 'جدة، شارع الملك عبدالله بن عبدالعزيز', distanceKm: 2.9 },
-      { id: '2', name: 'فرع جدة', address: 'جدة، شارع الملك عبدالله بن عبدالعزيز', distanceKm: 2.9 },
-      { id: '3', name: 'فرع جدة', address: 'جدة، شارع الملك عبدالله بن عبدالعزيز', distanceKm: 2.9 },
+      {
+        id: '1',
+        name: 'فرع جدة',
+        address: 'جدة، شارع الملك عبدالله بن عبدالعزيز',
+        distanceKm: 2.9,
+      },
+      {
+        id: '2',
+        name: 'فرع جدة',
+        address: 'جدة، شارع الملك عبدالله بن عبدالعزيز',
+        distanceKm: 2.9,
+      },
+      {
+        id: '3',
+        name: 'فرع جدة',
+        address: 'جدة، شارع الملك عبدالله بن عبدالعزيز',
+        distanceKm: 2.9,
+      },
     ],
   },
 };
