@@ -7,7 +7,8 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: '*',
       allow: '/',
-      disallow: ['/api/'],
+      // Signed-in pages redirect anonymous crawlers anyway; keep them out of the index.
+      disallow: ['/api/', '/*/account', '/*/my-bookings'],
     },
     sitemap: `${siteUrl}/sitemap.xml`,
   };
