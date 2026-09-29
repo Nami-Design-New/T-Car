@@ -8,6 +8,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "typecheck": "tsc --noEmit",
+    "check": "npm run typecheck && npm run lint",
     "css:sync-office": "node scripts/sync-office-css.mjs",
     "format": "prettier --write ."
   },
