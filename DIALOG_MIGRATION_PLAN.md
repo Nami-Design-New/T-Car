@@ -1,6 +1,6 @@
 # Dialog Module Implementation and Migration Plan
 
-Status: in progress — the shared Dialog foundation and CountryModal pilot are implemented; other dialog migrations remain planned.
+Status: in progress — the shared Dialog foundation plus the CountryModal and WalletAmountModal pilots are implemented; other dialog migrations remain planned.
 
 ## 1. Purpose
 

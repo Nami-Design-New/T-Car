@@ -1,9 +1,8 @@
 'use client';
 
-import { FormEvent, useEffect, useState } from 'react';
+import { type FormEvent, useRef, useState } from 'react';
 import Image from 'next/image';
-import { createPortal } from 'react-dom';
-import { FiX } from 'react-icons/fi';
+import { Dialog } from '@/shared/ui/Dialog';
 import { formatAmount } from '@/shared/lib/format';
 import sarIcon from '@assets/icons/sar.svg';
 
@@ -18,7 +17,7 @@ interface Props {
   onConfirm: (amount: number) => void;
 }
 
-/** Amount entry sheet shared by wallet top-up and withdraw. */
+/** Amount entry sheet shared by wallet top-up and withdrawal. */
 export default function WalletAmountModal({
   open,
   title,
@@ -30,26 +29,11 @@ export default function WalletAmountModal({
   onConfirm,
 }: Props) {
   const [amount, setAmount] = useState('');
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => setMounted(true), []);
-
-  useEffect(() => {
-    if (!open) return;
-
-    setAmount('');
-    document.body.style.overflow = 'hidden';
-
-    return () => {
-      document.body.style.overflow = '';
-    };
-  }, [open]);
-
-  if (!open || !mounted) return null;
-
+  const inputRef = useRef<HTMLInputElement>(null);
   const value = Number(amount);
   const aboveMax = max !== undefined && value > max;
   const valid = amount !== '' && value >= min && !aboveMax;
+  const hintId = 'wallet-amount-hint';
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -60,27 +44,28 @@ export default function WalletAmountModal({
     if (!loading) onClose();
   };
 
-  return createPortal(
-    <div className="modal_overlay" onClick={handleClose}>
-      <div className="wallet_topup_modal bg-white" onClick={(event) => event.stopPropagation()}>
-        <span className="wallet_topup_drag_handle" aria-hidden="true" />
+  return (
+    <Dialog
+      open={open}
+      onClose={handleClose}
+      className="wallet_topup_modal"
+      placement="bottom-sheet"
+      initialFocusRef={inputRef}
+      closeOnEscape={!loading}
+      closeOnBackdrop={!loading}
+    >
+      <span className="wallet_topup_drag_handle" aria-hidden="true" />
+      <Dialog.Header className="wallet_topup_header d-flex align-items-center justify-content-between">
+        <Dialog.Title>{title}</Dialog.Title>
+        <Dialog.Close className="wallet_topup_close btn btn-light d-grid p-0" />
+      </Dialog.Header>
 
-        <div className="wallet_topup_header d-flex align-items-center justify-content-between">
-          <h3 className="m-0">{title}</h3>
-          <button
-            type="button"
-            className="wallet_topup_close btn btn-light d-grid p-0"
-            onClick={handleClose}
-            aria-label="إغلاق"
-          >
-            <FiX />
-          </button>
-        </div>
-
+      <Dialog.Body className="wallet_topup_body">
         <form onSubmit={handleSubmit}>
           <div className={`wallet_topup_input_group ${aboveMax ? 'invalid' : ''}`}>
             <Image src={sarIcon} alt="" width={18} height={18} className="currency_icon" />
             <input
+              ref={inputRef}
               type="number"
               min={min}
               max={max}
@@ -89,11 +74,11 @@ export default function WalletAmountModal({
               onChange={(event) => setAmount(event.target.value)}
               placeholder="00"
               aria-label={title}
+              aria-describedby={hintId}
               required
-              autoFocus
             />
           </div>
-          <small className={`wallet_topup_hint ${aboveMax ? 'invalid' : ''}`}>
+          <small id={hintId} className={`wallet_topup_hint ${aboveMax ? 'invalid' : ''}`}>
             الحد الأدنى {formatAmount(min)} ريال
             {max !== undefined && ` - الحد الأقصى ${formatAmount(max)} ريال`}
           </small>
@@ -105,8 +90,7 @@ export default function WalletAmountModal({
             )}
           </button>
         </form>
-      </div>
-    </div>,
-    document.body
+      </Dialog.Body>
+    </Dialog>
   );
 }
