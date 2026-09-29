@@ -218,9 +218,10 @@ the old path only if another unmigrated file still imports it.
    5. Delete the old paths.
 6. ☐ **Delete** `types/car.ts`, `data/`, `components/modals/`, and the extra
    aliases once they are empty. Switch the lint rule from warning to error.
-   (`data/` is gone; `types/car.ts` holds only `UserProfile` and
-   `AppNotification`; `components/modals/` holds the account dialogs and the
-   three unused ones waiting on product.)
+   (`data/` and `types/car.ts` are gone; `types/` holds only
+   `next-auth.d.ts`. `components/modals/` holds only the three unused dialogs
+   waiting on product. Aliases left: `@/*`, plus `@components/*` (4 files) and
+   `@assets/*` (until phase 7). The lint rule is still a warning.)
 
 ## 1.5 As-built notes
 

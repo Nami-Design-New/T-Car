@@ -108,8 +108,8 @@ states) rather than one concern at a time across the whole app.
 
 ### Phase 0: Safety net and bug fixes (about 1–2 days)
 
-- Fix every bug in the table above.
-- Delete dead code: `lib/i18n.ts`, `layout/I18nProvider.tsx`,
+- ✅ Fix every bug in the table above.
+- ✅ Delete dead code (the three dialogs below still wait on product): `lib/i18n.ts`, `layout/I18nProvider.tsx`,
   `bookings/BookingsTab.tsx` (duplicate of `account/BookingsTab.tsx`),
   `cities/CityCarCard.tsx`, `home/Cities/CitiesGrid.tsx`,
   `bookings/details/{BookingCarSummary,BookingPriceDetails,RateBookingButton}.tsx`,
@@ -117,8 +117,8 @@ states) rather than one concern at a time across the whole app.
   Confirm with product first that the monthly booking and insufficient-balance
   dialogs are not needed soon. If they are, move them into their feature folder
   instead of deleting them.
-- Add `npm run typecheck` (`tsc --noEmit`) and run it with `lint` in CI.
-- Upgrade to React 19 and `@types/react@19`. The Next 15 App Router is built for
+- ✅ Add `npm run typecheck` (`tsc --noEmit`) and run it with `lint` in CI. (`npm run check` runs both; wiring it into CI waits for a CI config.)
+- ✅ Upgrade to React 19 and `@types/react@19`. The Next 15 App Router is built for
   React 19, and the plan uses `useActionState` and `useOptimistic`.
 
 ### Phase 1: Foundations (about 1 week)
@@ -196,7 +196,7 @@ merged or pushed yet.
 
 | Phase | Status | Notes |
 | ----- | ------ | ----- |
-| 0. Bug fixes and dead code | Partly done | All 10 bugs above fixed. Deleted: `bookings/BookingsTab`, `BookingCarSummary`, `BookingPriceDetails`, `RateBookingButton`, `CityCarCard`, `CitiesGrid`. Still open: `lib/i18n.ts` and `layout/I18nProvider.tsx`; a designed Open Graph image is an enhancement. **Waiting on product:** `BookingModal`, `BookingMonthlyModal`, `InsufficientBalanceModal` (unused, kept). Not started: `typecheck` script, React 19 |
+| 0. Bug fixes and dead code | Done (one item waiting on product) | All 10 bugs above fixed. Dead code deleted: `bookings/BookingsTab`, `BookingCarSummary`, `BookingPriceDetails`, `RateBookingButton`, `CityCarCard`, `CitiesGrid`, `lib/i18n.ts`, `layout/I18nProvider.tsx`, and 8 unused path aliases. `npm run typecheck` and `npm run check` (typecheck + lint) added; there is no CI config yet to run them in. React 19.3 (verified with the build and server rendering of every route; not yet checked in a browser). Also fixed on the way: a duplicated mock car id. **Waiting on product:** `BookingModal`, `BookingMonthlyModal`, `InsufficientBalanceModal` (unused, kept). Optional: a designed Open Graph image (`src/app/opengraph-image.jpg`) |
 | 1. Foundations | Partly done | Done: `features/`, `shared/{ui,lib,hooks,config}`, `services/http`, the import rules (as warnings), `AppError` / `Result` / `reportError`, the `errors` messages. Not started: Radix `shared/ui` set, `error.tsx`, `global-error.tsx`, non-blocking `loading.tsx` |
 | 2. Routing | Not started | Account sections are still tabs (`?tab=` works as a stopgap); filters and sort are not in the URL; `/cars` still ignores the hero's search parameters |
 | 3. Server-first data and auth | Mostly done | Pages read through `features/*/queries.ts` for cars, cities, car details, bookings, home, rental search, account profile, and notifications. Auth is NextAuth v5 with the token in its `httpOnly` session cookie and a middleware guard ([doc 2](02-server-client-boundary.md#23-auth-across-the-boundary)). Wallet, bank accounts, and bookings actions still run as client hooks (see below) |

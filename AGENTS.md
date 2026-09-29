@@ -10,8 +10,9 @@ conventions are in `docs/01-architecture-layers.md` §1.5.
 
 ## Workflow: one fraction per commit
 
-1. Pick the next item from the status tables (next up: phase 7, images and
-   assets: `docs/07-images-and-assets.md` §7.4, one step per commit).
+1. Pick the next item from the status tables; confirm the phase with the
+   user. Open: phase 1 (error boundaries, loading, Radix `shared/ui`),
+   2 (routing), 5 (performance), 6 (i18n), 7 (images, doc 7 §7.4).
 2. Split it into fractions, each its own commit, in this order:
    move into `features/<x>/` with no behavior change → data behind
    `services/<x>.api.ts` + `features/<x>/queries.ts` → writes that return a
