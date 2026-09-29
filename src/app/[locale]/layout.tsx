@@ -1,6 +1,5 @@
-import Footer from '@components/layout/Footer';
-import Header from '@components/layout/Header';
 import { auth } from '@/auth';
+import { Footer, Header } from '@/features/layout';
 import type { Metadata } from 'next';
 import { NextIntlClientProvider } from 'next-intl';
 import { getDirection } from '@/shared/config/languages';

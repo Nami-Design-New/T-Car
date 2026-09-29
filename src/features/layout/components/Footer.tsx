@@ -14,8 +14,8 @@ import {
 } from 'react-icons/fi';
 
 import logo from '@assets/images/fav.svg';
-import appStore from '../../../assets/images/Apple Store.webp';
-import googlePlay from '../../../assets/images/Play Sotre.webp';
+import appStore from '@assets/images/Apple Store.webp';
+import googlePlay from '@assets/images/Play Sotre.webp';
 
 import { NAV_LINKS } from '@/shared/config/site';
 

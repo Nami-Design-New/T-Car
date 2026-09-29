@@ -71,7 +71,7 @@ kept up:
 | `useRouter` from `next/navigation` instead of `@/i18n/navigation` | `Hero`, `CityHero`, `SuccessModal` | Pushes URLs without the locale, which costs a middleware redirect and can switch the language | Fixed in `Hero` and `SuccessModal`. `CityHero` was not affected: it builds the URL from `next/navigation`'s own `usePathname`, which already has the locale |
 | Back link to `/account?tab=bookings` | [`BookingDetailsHeader.tsx`](../src/components/bookings/details/BookingDetailsHeader.tsx) | Account page ignores the query and opens the profile tab | Fixed (the account page reads `?tab=`) |
 | Unknown car id falls back to `MOCK_CARS[0]` | [`cars/[carId]/page.tsx`](../src/app/[locale]/cars/[carId]/page.tsx) | Wrong car shown instead of a 404 | Fixed (`notFound()`); same for unknown bookings and city slugs |
-| Header renders both `UserMenu` and the login button | [`Header/index.tsx`](../src/components/layout/Header/index.tsx) | Logged-in state is ignored | Fixed (the header gets the NextAuth session from the layout) |
+| Header renders both `UserMenu` and the login button | [`Header.tsx`](../src/features/layout/components/Header.tsx) | Logged-in state is ignored | Fixed (the header gets the NextAuth session from the layout) |
 | Sitemap lists `/services` and `/about`, which do not exist, and has no locale prefixes | [`sitemap.ts`](../src/app/sitemap.ts) | SEO errors | Fixed (only real routes are emitted, once per locale) |
 | Metadata icon path `../assets/images/fav.svg` and missing `og-image.jpg` | [`layout.tsx`](../src/app/[locale]/layout.tsx) | Broken favicon and social previews | Fixed (`app/icon.svg` supplies the favicon; nonexistent social-image references were removed). A designed Open Graph image remains an enhancement |
 | `MapLocationModal` is always mounted in `Hero`, and `useJsApiLoader` runs before the `if (!open)` return | [`MapLocationModal.tsx:48`](../src/components/modals/MapLocationModal.tsx) | The Google Maps script loads on every home page visit, even if the map is never opened | Fixed: mounted only while open (not yet confirmed in a browser's network tab) |
@@ -204,7 +204,7 @@ merged or pushed yet.
 | `home`, `rental-search` | Yes | Yes (FAQs, search options) | Yes (contact form) | `Partners` and `WhyChooseUs` still hold their static content |
 | `auth` | Yes | NextAuth + mocked `authApi` | Yes (Server Actions) | Real endpoints; `react-bootstrap` (the dialog still uses its `Modal`) |
 | `account` (profile, notifications) | Yes | Yes (scoped to the session user) | Yes (Server Actions: save, phone change send and verify, license upload, delete) | Notification mark-all-read is still static; opening the license details is still a TODO; account routes, forms (doc 3 step 7), and dialogs remain |
-| `layout` | No | n/a | n/a | Header is session-aware; still a client component |
+| `layout` | Yes | n/a | n/a | Header and footer are still client components; server/client boundary split and dead `I18nProvider` cleanup remain |
 
 The `*.api.ts` files are backed by mocks only; no backend endpoint is wired in.
 Mock rules that make failures reproducible (OTP `1234`, top-ups over 10,000,
