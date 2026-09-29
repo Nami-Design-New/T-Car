@@ -1,0 +1,43 @@
+@use 'tokens/tokens' as *;
+
+.skeleton {
+  display: block;
+  background: linear-gradient(
+    90deg,
+    $ds-neutral-200 0%,
+    $ds-neutral-100 50%,
+    $ds-neutral-200 100%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.4s ease-in-out infinite;
+
+  &--text {
+    height: 1em;
+    border-radius: $ds-radius-xs;
+  }
+
+  &--rect {
+    width: 100%;
+    border-radius: $ds-radius-md;
+  }
+
+  &--circle {
+    border-radius: $ds-radius-full;
+    flex-shrink: 0;
+  }
+}
+
+@keyframes skeleton-shimmer {
+  from {
+    background-position: 200% 0;
+  }
+  to {
+    background-position: -200% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton {
+    animation: none;
+  }
+}
