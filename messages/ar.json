@@ -27,8 +27,8 @@
       "description": "أرسلنا رمزاً مكوّناً من 4 أرقام إلى",
       "backLabel": "العودة إلى رقم الجوال",
       "codeLabel": "رمز التحقق",
-      "digitLabel": "الرقم {{position}} من {{total}}",
-      "resendIn": "إعادة الإرسال خلال {{seconds}} ثانية",
+      "digitLabel": "الرقم {position} من {total}",
+      "resendIn": "إعادة الإرسال خلال {seconds} ثانية",
       "resend": "إعادة إرسال الرمز",
       "verify": "تحقق ومتابعة"
     },

@@ -27,8 +27,8 @@
       "description": "We sent a 4-digit code to",
       "backLabel": "Back to mobile number",
       "codeLabel": "Verification code",
-      "digitLabel": "Digit {{position}} of {{total}}",
-      "resendIn": "Resend in {{seconds}} seconds",
+      "digitLabel": "Digit {position} of {total}",
+      "resendIn": "Resend in {seconds} seconds",
       "resend": "Resend code",
       "verify": "Verify and continue"
     },
