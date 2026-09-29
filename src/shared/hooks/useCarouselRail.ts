@@ -13,7 +13,7 @@ interface UseCarouselRailOptions {
 }
 
 interface UseCarouselRail {
-  trackRef: React.RefObject<HTMLDivElement>;
+  trackRef: React.RefObject<HTMLDivElement | null>;
   scrollPrev: () => void;
   scrollNext: () => void;
   pause: () => void;
