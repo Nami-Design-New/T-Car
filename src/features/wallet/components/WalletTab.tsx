@@ -1,9 +1,11 @@
 'use client';
 
 import Image from 'next/image';
-import Lottie from 'lottie-react';
+import { useTranslations } from 'next-intl';
 import { FiLock } from 'react-icons/fi';
 import { formatTransactionDate } from '@/shared/lib/format';
+import { EmptyState } from '@/shared/ui/EmptyState';
+import { ErrorState } from '@/shared/ui/ErrorState';
 import { Price } from '@/shared/ui/Price';
 import type { WalletSummary, WalletTransaction } from '../model';
 import Loader from '@/shared/ui/Loader';
@@ -11,14 +13,13 @@ import Loader from '@/shared/ui/Loader';
 import walletIcon from '@assets/icons/money.svg';
 import coinIcon from '@assets/icons/coin.svg';
 import balanceIcon from '@assets/icons/balance.svg';
-import emptyAnimation from '@assets/images/non_data.json';
 
 interface Props {
   summary: WalletSummary;
   transactions: WalletTransaction[];
   loading?: boolean;
-  /** Already translated; set when the wallet failed to load. */
-  error?: string;
+  /** Set when the wallet failed to load; ErrorState picks the message. */
+  error?: unknown;
   onRetry?: () => void;
   onTopUp: () => void;
   onWithdraw: () => void;
@@ -31,7 +32,6 @@ const TYPE_LABELS: Record<WalletTransaction['type'], string> = {
   withdraw: 'سحب',
 };
 
-
 export default function WalletTab({
   summary,
   transactions,
@@ -41,6 +41,7 @@ export default function WalletTab({
   onTopUp,
   onWithdraw,
 }: Props) {
+  const t = useTranslations('wallet.empty');
   if (loading) {
     return (
       <div className="account-panel">
@@ -52,14 +53,7 @@ export default function WalletTab({
   if (error) {
     return (
       <div className="account-panel">
-        <div className="wallet_history_empty" role="alert">
-          <p>{error}</p>
-          {onRetry && (
-            <button type="button" className="wallet_topup_submit btn mt-3" onClick={onRetry}>
-              إعادة المحاولة
-            </button>
-          )}
-        </div>
+        <ErrorState error={error} onRetry={onRetry} size="section" />
       </div>
     );
   }
@@ -113,14 +107,7 @@ export default function WalletTab({
         <h3 className="wallet_history_title">سجل الرصيد</h3>
 
         {transactions.length === 0 ? (
-          <div className="wallet_history_empty">
-            <Lottie
-              animationData={emptyAnimation}
-              loop
-              className="wallet_history_empty_animation"
-            />
-            <p>لا توجد عمليات على المحفظة بعد</p>
-          </div>
+          <EmptyState title={t('history')} size="section" />
         ) : (
           <ul className="wallet_history_list">
             {transactions.map((tx) => (

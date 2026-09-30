@@ -228,5 +228,23 @@
     "price": {
       "sar": "SAR"
     }
+  },
+  "bookings": {
+    "empty": {
+      "active": "No current bookings",
+      "past": "No past bookings",
+      "title": "No bookings yet",
+      "cta": "Start a new booking"
+    }
+  },
+  "wallet": {
+    "empty": {
+      "history": "No wallet activity yet"
+    }
+  },
+  "bankAccounts": {
+    "empty": {
+      "title": "No bank accounts added"
+    }
   }
 }

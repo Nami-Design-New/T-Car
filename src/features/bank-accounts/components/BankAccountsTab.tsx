@@ -1,20 +1,21 @@
 'use client';
 
 import Image from 'next/image';
-import Lottie from 'lottie-react';
+import { useTranslations } from 'next-intl';
 import { PiBank } from 'react-icons/pi';
 import type { BankAccount } from '../model';
 import Loader from '@/shared/ui/Loader';
+import { EmptyState } from '@/shared/ui/EmptyState';
+import { ErrorState } from '@/shared/ui/ErrorState';
 
 import deleteIcon from '@assets/icons/bank-delete.svg';
 import editIcon from '@assets/icons/bank-edit.svg';
-import emptyAnimation from '@assets/images/non_data.json';
 
 interface Props {
   accounts: BankAccount[];
   loading?: boolean;
-  /** Already translated; set when the accounts failed to load. */
-  error?: string;
+  /** Set when the accounts failed to load; ErrorState picks the message. */
+  error?: unknown;
   onRetry?: () => void;
   onAdd: () => void;
   onEdit: (account: BankAccount) => void;
@@ -30,6 +31,7 @@ export default function BankAccountsTab({
   onEdit,
   onDelete,
 }: Props) {
+  const t = useTranslations('bankAccounts.empty');
   if (loading) {
     return (
       <div className="account-panel">
@@ -42,14 +44,7 @@ export default function BankAccountsTab({
     return (
       <div className="account-panel bank_accounts_panel">
         <h3 className="bank_accounts_title">الحسابات البنكية</h3>
-        <div className="bank_accounts_empty" role="alert">
-          <p>{error}</p>
-          {onRetry && (
-            <button type="button" className="wallet_topup_submit btn mt-3" onClick={onRetry}>
-              إعادة المحاولة
-            </button>
-          )}
-        </div>
+        <ErrorState error={error} onRetry={onRetry} size="section" />
       </div>
     );
   }
@@ -59,10 +54,7 @@ export default function BankAccountsTab({
       <h3 className="bank_accounts_title">الحسابات البنكية</h3>
 
       {accounts.length === 0 ? (
-        <div className="bank_accounts_empty">
-          <Lottie animationData={emptyAnimation} loop className="bank_accounts_empty_animation" />
-          <p>لا توجد حسابات بنكية مضافة</p>
-        </div>
+        <EmptyState title={t('title')} size="section" />
       ) : (
         <ul className="bank_accounts_list">
           {accounts.map((account) => (
@@ -70,7 +62,13 @@ export default function BankAccountsTab({
               <div className="bank_account_info">
                 <div className="bank_account_bank">
                   {account.logo ? (
-                    <Image src={account.logo} alt="" width={45} height={20} className="bank_account_logo" />
+                    <Image
+                      src={account.logo}
+                      alt=""
+                      width={45}
+                      height={20}
+                      className="bank_account_logo"
+                    />
                   ) : (
                     <PiBank className="bank_account_logo_fallback" aria-hidden="true" />
                   )}
@@ -104,7 +102,11 @@ export default function BankAccountsTab({
         </ul>
       )}
 
-      <button type="button" className="bank_accounts_add wallet_topup_submit btn w-100" onClick={onAdd}>
+      <button
+        type="button"
+        className="bank_accounts_add wallet_topup_submit btn w-100"
+        onClick={onAdd}
+      >
         إضافة حساب بنكي
       </button>
     </div>

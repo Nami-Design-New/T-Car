@@ -56,7 +56,7 @@ export default function BankAccountsSection() {
       <BankAccountsTab
         accounts={accounts}
         loading={loading}
-        error={error ? errorMessage(error) : undefined}
+        error={error ?? undefined}
         onRetry={reload}
         onAdd={() => setFlow({ step: 'add' })}
         onEdit={(account) => setFlow({ step: 'edit', account })}

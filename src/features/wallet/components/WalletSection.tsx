@@ -51,7 +51,7 @@ export default function WalletSection() {
         summary={summary}
         transactions={transactions}
         loading={loading}
-        error={error ? errorMessage(error) : undefined}
+        error={error ?? undefined}
         onRetry={reload}
         onTopUp={() => setFlow({ step: 'topup-amount' })}
         onWithdraw={() => setFlow({ step: 'withdraw-bank' })}
