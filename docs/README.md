@@ -3,7 +3,7 @@
 Status: **in progress** on branch `refactor/architecture-layers` (not merged). See
 [Migration status](#migration-status) for what is done and where the code
 deliberately differs from these documents.
-Last reviewed against the code: 2026-09-28 (commit `b0529f3`). Status updated: 2026-09-29.
+Last reviewed against the code: 2026-09-28 (commit `b0529f3`). Status updated: 2026-09-30.
 
 This folder reviews the current front end and sets out the target design and the
 migration path for six areas. Each document stands on its own: it covers the
@@ -210,11 +210,11 @@ merged or pushed yet.
 | ----- | ------ | ----- |
 | 0. Bug fixes and dead code | Done (one item waiting on product) | All 10 bugs above fixed. Dead code deleted: `bookings/BookingsTab`, `BookingCarSummary`, `BookingPriceDetails`, `RateBookingButton`, `CityCarCard`, `CitiesGrid`, `lib/i18n.ts`, `layout/I18nProvider.tsx`, and 8 unused path aliases. `npm run typecheck` and `npm run check` (typecheck + lint) added; there is no CI config yet to run them in. React 19.3 (verified with the build and server rendering of every route; not yet checked in a browser). Also fixed on the way: a duplicated mock car id. **Waiting on product:** `BookingModal`, `BookingMonthlyModal`, `InsufficientBalanceModal` (unused, kept). Optional: a designed Open Graph image (`src/app/opengraph-image.jpg`) |
 | 1. Foundations | Done | `features/`, `shared/{ui,lib,hooks,config}`, `services/http`, the import rules (as warnings), `AppError` / `Result` / `reportError`, the `errors` and `states` messages, root `error.tsx` and `global-error.tsx`, a non-blocking root `loading.tsx` with `Skeleton`, and the first Radix `shared/ui` set, each tested and with at least one production caller: `Dialog` (`CountryModal`, `WalletAmountModal`, `BankSelectModal`), `ConfirmDialog`, `ResultDialog`, `Tabs` (insurance terms), `Accordion` (warranties), `RadioCards` (payment method), `Menu` (user menu), `Button` with `loading` / `asChild`, `Price` (wallet), `EmptyState` + lazy `Illustration` and `ErrorState` (bookings, wallet, bank accounts). The FAQ became native `<details>` rather than `Accordion` (answers stay in the server HTML). Vitest + Testing Library (`npm run test`, 53 tests). Moved to phase 2: per-segment `loading.tsx`, which real 404 status codes need. Replacing the remaining dialogs and menus is doc 4 / phase 4 work |
-| 2. Routing | Not started | Account sections are still tabs (`?tab=` works as a stopgap); filters and sort are not in the URL; `/cars` still ignores the hero's search parameters |
-| 3. Server-first data and auth | Mostly done | Pages read through `features/*/queries.ts` for cars, cities, car details, bookings, home, rental search, account profile, and notifications. Auth is NextAuth v5 with the token in its `httpOnly` session cookie and a middleware guard ([doc 2](02-server-client-boundary.md#23-auth-across-the-boundary)). Wallet, bank accounts, and bookings actions still run as client hooks (see below) |
+| 2. Routing | Not started | Account sections are still tabs (`?tab=` works as a stopgap); filters and sort are not in the URL; `/cars` still ignores the hero's search parameters (it now receives `airportId`, `stationId`, `countryId`). Moved here from phase 1: per-segment `loading.tsx`, which real 404 status codes need (today unknown ids get the 404 page with HTTP 200 + `noindex`; verified that removing the root loading boundary gives a real 404) |
+| 3. Server-first data and auth | Mostly done | Reads go through `features/*/queries.ts` for cars, cities, car details, bookings, home, rental search, account profile, and notifications (car and city pages also set their own `<title>`). Auth is NextAuth v5 with the backend token in its `httpOnly` session cookie and a middleware guard ([doc 2](02-server-client-boundary.md#23-auth-across-the-boundary)). Server Actions: auth and the account profile. Still client hooks over the mocks: wallet, bank accounts, booking actions, checkout, and the contact form (they move with phase 2 routes and the API phase) |
 | 4. Feature migration | Mostly done | See the table below |
-| 5. Performance | Not started | Only the Maps script fix from phase 0 |
-| 6. i18n extraction | Not started | New strings (errors, contact form) are in `messages/*.json`; the existing Arabic text is not |
+| 5. Performance | Started (side effects of other phases) | Done: the Maps script loads only when a map dialog opens; the auth dialog loads on first open; Lottie animations load on first use through `Illustration` (`SuccessModal` still imports Lottie directly); the header and footer render on the server; the FAQ ships no client JavaScript. Not started: lazy dialogs in general, one carousel (drop Swiper), `next/image` for the hero, `woff2` fonts; the Bootstrap and SCSS items are phase 8. Note: Radix raised First Load JS on pages with migrated dialogs (home 233 -> 247 kB, account 321 -> 334 kB, car details 290 -> 314 kB); lazy dialogs are the main lever to win it back |
+| 6. i18n extraction | Not started | New text goes to `messages/*.json` in both languages (errors, `states`, the contact form, the bookings / wallet / bank-account empty states, dialog close and currency labels, the OTP placeholders fixed in phase 0). The existing hardcoded Arabic in components is not moved yet; data from the mocks is Arabic only |
 | 7. Images and assets | Planned | [Doc 7](07-images-and-assets.md): inventory and classification of all 66 files done; migration not started |
 | 8. Styles compiled from SCSS | Planned | [Doc 8](08-styles-and-scss.md): drift check done (0 rules differ in meaning between `main.scss` and the committed `main.css`); migration not started. Component styles from phase 1 already compile from SCSS |
 
@@ -222,14 +222,14 @@ merged or pushed yet.
 
 | Feature | Moved to `features/` | Data behind queries / api | Actions return `Result` | Remaining |
 | ------- | :---: | :---: | :---: | --------- |
-| `wallet`, `bank-accounts` | Yes | Client hooks over `*.api.ts` (stateful mocks) | Yes | Server Actions, forms (doc 3 step 7), dialogs (doc 4) |
-| `my-bookings` | Yes | Yes | Yes (client hook) | Route move to `/account/bookings/[id]`, `router.refresh()` after an action once the API keeps state |
-| `car-details`, `booking` | Yes | Yes | Yes (checkout) | A failed edit request cannot stay open inside `BookingDailyModal` yet |
+| `wallet`, `bank-accounts` | Yes | Client hooks over `*.api.ts` (stateful mocks) | Yes | The amount and bank-select dialogs use `shared/ui/Dialog`; the tabs use `Price`, `EmptyState`, and `ErrorState`. Left: Server Actions, the bank-account form dialog, forms (doc 3 step 7) |
+| `my-bookings` | Yes | Yes | Yes (client hook) | The list uses `EmptyState`. Left: route move to `/account/bookings/[id]`, `router.refresh()` after an action once the API keeps state, the booking dialogs (extend, cancel, review) on `Dialog` |
+| `car-details`, `booking` | Yes | Yes | Yes (checkout) | Insurance uses `Tabs`, warranties `Accordion`, the payment method `RadioCards`. Left: a failed edit request cannot stay open inside `BookingDailyModal` yet; the booking dialogs on `Dialog` |
 | `cars`, `cities` | Yes | Yes | n/a | Filters and sort in the URL; merging `CarFilters` / `CityFilters` (doc 4) and their option data |
-| `home`, `rental-search` | Yes | Yes (FAQs, search options) | Yes (contact form) | `Partners` and `WhyChooseUs` still hold their static content |
+| `home`, `rental-search` | Yes | Yes (FAQs, search options) | Yes (contact form) | The FAQ is native `<details>` (server-rendered); `CountryModal` uses `Dialog`. Left: `Partners` and `WhyChooseUs` still hold their static content; the other search dialogs (pickup type, branch, airport, station, map) on `Dialog` |
 | `auth` | Yes | NextAuth + mocked `authApi` | Yes (Server Actions) | Real endpoints; `react-bootstrap` (the dialog still uses its `Modal`) |
 | `account` (profile, notifications) | Yes | Yes (scoped to the session user) | Yes (Server Actions: save, phone change send and verify, license upload, delete) | Notification mark-all-read is still static; opening the license details is still a TODO; account routes, forms (doc 3 step 7), and dialogs remain |
-| `layout` | Yes | n/a | n/a | Header shell and footer render on the server; mobile navigation, language, and auth are client islands. Trimming client messages and dead `I18nProvider` cleanup remain |
+| `layout` | Yes | n/a | n/a | The header shell and footer render on the server; mobile navigation, language, and auth are client islands; the user menu uses `Menu`. Left: trimming the client messages (doc 2 step 7), the language switcher on `Menu` |
 
 The `*.api.ts` files are backed by mocks only; no backend endpoint is wired in.
 Mock rules that make failures reproducible (OTP `1234`, top-ups over 10,000,
