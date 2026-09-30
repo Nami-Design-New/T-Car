@@ -3,12 +3,73 @@
 import { useCallback, useState } from 'react';
 import type { AppError } from '@/shared/lib/errors';
 import { useErrorMessage } from '@/shared/hooks/useErrorMessage';
+import { ConfirmDialog } from '@/shared/ui/ConfirmDialog';
+import { ResultDialog } from '@/shared/ui/ResultDialog';
 import type { BankAccount, BankAccountPayload } from '../model';
 import { useBankAccounts } from '../hooks/useBankAccounts';
 import BankAccountsTab from './BankAccountsTab';
 import BankAccountFormModal from './BankAccountFormModal';
-import SuccessModal from '@components/common/SuccessModal';
-import FailedModal from '@components/common/FailedModal';
+
+interface LegacyFailedModalProps {
+  open: boolean;
+  title?: string;
+  description?: string;
+  showButtons?: boolean;
+  primaryButtonText?: string;
+  secondaryButtonText?: string;
+  onPrimary?: () => void;
+  onSecondary?: () => void;
+  onDone?: () => void;
+}
+
+function FailedModal({
+  open,
+  title,
+  description,
+  showButtons,
+  primaryButtonText = 'Confirm',
+  secondaryButtonText = 'Cancel',
+  onPrimary,
+  onSecondary,
+  onDone,
+}: LegacyFailedModalProps) {
+  if (showButtons) {
+    return (
+      <ConfirmDialog
+        open={open}
+        title={title ?? ''}
+        description={description}
+        confirmLabel={primaryButtonText}
+        cancelLabel={secondaryButtonText}
+        tone="danger"
+        onConfirm={onPrimary ?? (() => undefined)}
+        onCancel={onSecondary ?? (() => undefined)}
+      />
+    );
+  }
+
+  return (
+    <ResultDialog
+      open={open}
+      status="error"
+      title={title ?? ''}
+      description={description}
+      onClose={onDone ?? (() => undefined)}
+    />
+  );
+}
+
+interface LegacySuccessModalProps {
+  open: boolean;
+  title?: string;
+  description?: string;
+  appearButton?: boolean;
+  onDone?: () => void;
+}
+
+function SuccessModal({ open, title = '', onDone }: LegacySuccessModalProps) {
+  return <ResultDialog open={open} status="success" title={title} autoCloseMs={2000} onClose={onDone ?? (() => undefined)} />;
+}
 
 type ResultKind = 'added' | 'updated' | 'deleted';
 
