@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
-import { createPortal } from 'react-dom';
 import { FiChevronRight, FiChevronLeft, FiClock, FiMapPin } from 'react-icons/fi';
 import { formatCurrency } from '@/shared/lib/format';
+import { Dialog } from '@/shared/ui/Dialog';
 import type { BookingDetails } from '../model';
 import deliveryCarIcon from '@assets/icons/delivery-car.svg';
 import { MapLocationModal, type LocationData } from '@/features/rental-search';
@@ -70,10 +70,6 @@ export default function BookingDailyModal({ open, onClose, pricePerDay, onConfir
   const [pickupLocation, setPickupLocation] = useState<LocationData | null>(null);
   const [dropoffLocation, setDropoffLocation] = useState<LocationData | null>(null);
   const [mapField, setMapField] = useState<MapField | null>(null);
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => setMounted(true), []);
-
   // Prefill when opened in edit mode or when initialDetails provided
   useEffect(() => {
     if (!open) return;
@@ -98,13 +94,6 @@ export default function BookingDailyModal({ open, onClose, pricePerDay, onConfir
   }, [open, initialDetails]);
 
   useEffect(() => {
-    document.body.style.overflow = open ? 'hidden' : '';
-    return () => {
-      document.body.style.overflow = '';
-    };
-  }, [open]);
-
-  useEffect(() => {
     if (!open) return;
 
     const handleKey = (e: KeyboardEvent) => {
@@ -116,8 +105,6 @@ export default function BookingDailyModal({ open, onClose, pricePerDay, onConfir
     document.addEventListener('keydown', handleKey);
     return () => document.removeEventListener('keydown', handleKey);
   }, [mapField, onClose, open]);
-
-  if (!open || !mounted) return null;
 
   const year = cursor.getFullYear();
   const month = cursor.getMonth();
@@ -188,9 +175,9 @@ export default function BookingDailyModal({ open, onClose, pricePerDay, onConfir
     });
   };
 
-  const content = (
-    <div className="modal_overlay" onClick={onClose}>
-      <div className="booking_modal" onClick={(e) => e.stopPropagation()}>
+  return (
+    <Dialog open={open} onClose={onClose} size="xl" label={mode === 'edit' ? 'Edit booking' : 'New booking'}>
+      <div className="booking_modal">
         <div className="booking_modal_calendar">
           <div className="calendar_header">
             <button type="button" onClick={() => setCursor(new Date(year, month - 1, 1))}>
@@ -369,8 +356,6 @@ export default function BookingDailyModal({ open, onClose, pricePerDay, onConfir
           initialLocation={mapField === 'dropoff' ? dropoffLocation : pickupLocation}
         />
       )}
-    </div>
+    </Dialog>
   );
-
-  return createPortal(content, document.body);
 }

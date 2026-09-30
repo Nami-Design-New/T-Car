@@ -1,9 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { createPortal } from 'react-dom';
+import { useState } from 'react';
 import { FiX, FiStar, FiArrowLeft } from 'react-icons/fi';
 import { formatCurrency } from '@/shared/lib/format';
+import { Dialog } from '@/shared/ui/Dialog';
 import type { BookingDetails } from '../model';
 import type { StaticImageData } from 'next/image';
 import Image from 'next/image';
@@ -53,22 +53,9 @@ export default function BookingConfirmModal({
   booking,
 }: Props) {
   const [termsAccepted, setTermsAccepted] = useState(false);
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => setMounted(true), []);
-
-  useEffect(() => {
-    document.body.style.overflow = open ? 'hidden' : '';
-    return () => {
-      document.body.style.overflow = '';
-    };
-  }, [open]);
-
-  if (!open || !mounted) return null;
-
-  const content = (
-    <div className="modal_overlay" onClick={onClose}>
-      <div className="confirm_modal confirm_booking_modal" onClick={(e) => e.stopPropagation()}>
+  return (
+    <Dialog open={open} onClose={onClose} size="xl" label="Confirm booking">
+      <div className="confirm_modal confirm_booking_modal">
         <button className="close_btn" onClick={onClose} aria-label="إغلاق">
           <FiX />
         </button>
@@ -199,8 +186,6 @@ export default function BookingConfirmModal({
           </button>
         </div>
       </div>
-    </div>
+    </Dialog>
   );
-
-  return createPortal(content, document.body);
 }

@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from 'react';
 import Image, { type StaticImageData } from 'next/image';
-import { createPortal } from 'react-dom';
 import { FiX } from 'react-icons/fi';
 import { RadioCards } from '@/shared/ui/RadioCards';
+import { Dialog } from '@/shared/ui/Dialog';
 import type { PaymentMethod } from '../model';
 import walletIcon from '@assets/icons/Wallet.svg';
 import cardIcon from '@assets/card.svg';
@@ -70,22 +70,9 @@ export default function PaymentMethodModal({
 }: Props) {
   const [method, setMethod] = useState<PaymentMethod>('wallet');
   const [usePoints, setUsePoints] = useState(false);
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => setMounted(true), []);
-
-  useEffect(() => {
-    document.body.style.overflow = open ? 'hidden' : '';
-    return () => {
-      document.body.style.overflow = '';
-    };
-  }, [open]);
-
-  if (!open || !mounted) return null;
-
-  return createPortal(
-    <div className="modal_overlay" onClick={onClose}>
-      <div className="payment_method_modal bg-white" onClick={(e) => e.stopPropagation()}>
+  return (
+    <Dialog open={open} onClose={onClose} placement="bottom-sheet" label="Payment method">
+      <div className="payment_method_modal bg-white">
         <span className="payment_drag_handle" />
 
         <div className="payment_modal_header d-flex align-items-center justify-content-between mb-3">
@@ -190,7 +177,6 @@ export default function PaymentMethodModal({
           {loading ? 'جاري تأكيد الحجز...' : 'تأكيد'}
         </button>
       </div>
-    </div>,
-    document.body
+    </Dialog>
   );
 }

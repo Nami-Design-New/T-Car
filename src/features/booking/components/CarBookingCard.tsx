@@ -4,9 +4,9 @@ import { useState } from 'react';
 import { formatCurrency } from '@/shared/lib/format';
 import { useErrorMessage } from '@/shared/hooks/useErrorMessage';
 import type { AppError } from '@/shared/lib/errors';
+import { ResultDialog } from '@/shared/ui/ResultDialog';
 
 import BookingConfirmModal from './BookingConfirmModal';
-import SuccessModal from '@/components/common/SuccessModal';
 import Image from 'next/image';
 import RiyalIcon from '@/assets/icons/sar.svg';
 import type { BookingDetails, PaymentMethod } from '../model';
@@ -15,6 +15,33 @@ import type { StaticImageData } from 'next/image';
 import BookingDailyModal from './BookingDailyModal';
 import PaymentMethodModal from './PaymentMethodModal';
 import { useCreateBooking } from '../hooks/useCreateBooking';
+
+interface SuccessProps {
+  open: boolean;
+  title: string;
+  description: string;
+  buttonText: string;
+  redirectTo: string;
+  autoRedirect?: boolean;
+}
+
+function SuccessModal({ open, title, description, buttonText, redirectTo }: SuccessProps) {
+  const handleRedirect = () => {
+    window.location.assign(redirectTo);
+  };
+
+  return (
+    <ResultDialog
+      open={open}
+      status="success"
+      title={title}
+      description={description}
+      action={{ label: buttonText, onClick: handleRedirect }}
+      autoCloseMs={3000}
+      onClose={handleRedirect}
+    />
+  );
+}
 
 /** One sheet at a time. A failed booking keeps the payment sheet open with the error. */
 type Flow =
