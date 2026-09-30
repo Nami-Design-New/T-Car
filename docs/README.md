@@ -3,7 +3,7 @@
 Status: **in progress** on branch `refactor/architecture-layers` (not merged). See
 [Migration status](#migration-status) for what is done and where the code
 deliberately differs from these documents.
-Last reviewed against the code: 2026-09-28 (commit `b0529f3`). Status updated: 2026-09-30.
+Last reviewed against the code: 2026-09-30 (commit `b154930`). Status updated: 2026-09-30.
 
 This folder reviews the current front end and sets out the target design and the
 migration path for six areas. Each document stands on its own: it covers the
