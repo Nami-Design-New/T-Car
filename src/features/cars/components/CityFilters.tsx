@@ -1,8 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { FiTruck, FiGrid, FiShield } from 'react-icons/fi';
 import nissanLogo from '@/assets/icons/nissan.svg';
+import { useRouter, usePathname } from '@/i18n/navigation';
+import { useSearchParams } from 'next/navigation';
 
 import FilterPanel from './filters/FilterPanel';
 import PriceRangeSlider from './filters/PriceRangeSlider';
@@ -31,6 +33,9 @@ const PRICE_MIN = 100;
 const PRICE_MAX = 30000;
 
 export default function CitiesFilters() {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const [search, setSearch] = useState('');
   const [minPrice, setMinPrice] = useState(PRICE_MIN);
   const [maxPrice, setMaxPrice] = useState(PRICE_MAX);
@@ -40,13 +45,37 @@ export default function CitiesFilters() {
   const services = useToggleList();
   const [selectedBrand, setSelectedBrand] = useState<number | null>(null);
 
+  useEffect(() => {
+    setSearch(searchParams.get('q') ?? '');
+    setMinPrice(Number(searchParams.get('priceMin')) || PRICE_MIN);
+    setMaxPrice(Number(searchParams.get('priceMax')) || PRICE_MAX);
+  }, [searchParams]);
+
+  const updateParams = (updates: Record<string, string | null>) => {
+    const next = new URLSearchParams(searchParams.toString());
+    Object.entries(updates).forEach(([key, value]) => {
+      if (value === null || value === '') next.delete(key);
+      else next.set(key, value);
+    });
+    router.replace(`${pathname}${next.toString() ? `?${next}` : ''}`, { scroll: false });
+  };
+
+  const updateSearch = (value: string) => {
+    setSearch(value);
+    updateParams({ q: value.trim() || null });
+  };
+
   const handleMinChange = (value: number) => {
     if (Number.isNaN(value)) return;
-    setMinPrice(Math.min(Math.max(value, PRICE_MIN), maxPrice - 1));
+    const next = Math.min(Math.max(value, PRICE_MIN), maxPrice - 1);
+    setMinPrice(next);
+    updateParams({ priceMin: next === PRICE_MIN ? null : String(next) });
   };
   const handleMaxChange = (value: number) => {
     if (Number.isNaN(value)) return;
-    setMaxPrice(Math.max(Math.min(value, PRICE_MAX), minPrice + 1));
+    const next = Math.max(Math.min(value, PRICE_MAX), minPrice + 1);
+    setMaxPrice(next);
+    updateParams({ priceMax: next === PRICE_MAX ? null : String(next) });
   };
 
   const hasActiveFilters =
@@ -61,7 +90,7 @@ export default function CitiesFilters() {
   return (
     <FilterPanel
       searchValue={search}
-      onSearchChange={setSearch}
+      onSearchChange={updateSearch}
       hasActiveFilters={hasActiveFilters}
     >
       <PriceRangeSlider

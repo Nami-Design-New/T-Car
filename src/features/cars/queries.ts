@@ -7,15 +7,18 @@ import {
   type CarListing,
   type OfficeCarGroup,
 } from './model';
+import { filterAndSortCars, filterOfficeGroups, type CarSearchParams } from './searchParams';
 
-export async function getOfficeCarGroups(): Promise<OfficeCarGroup[]> {
+export async function getOfficeCarGroups(params?: CarSearchParams): Promise<OfficeCarGroup[]> {
   const [offices, cars] = await Promise.all([carsApi.listOffices(), carsApi.listCars()]);
-  return groupCarsByOffice(offices, cars);
+  const groups = groupCarsByOffice(offices, cars);
+  return params ? filterOfficeGroups(groups, params) : groups;
 }
 
 /** The mock cars have no city yet, so every city lists all cars. */
-export function getCarsForCity(_slug: string): Promise<CarListing[]> {
-  return carsApi.listCars();
+export async function getCarsForCity(_slug: string, params?: CarSearchParams): Promise<CarListing[]> {
+  const cars = await carsApi.listCars();
+  return params ? filterAndSortCars(cars, params) : cars;
 }
 
 export async function getOfferCars(): Promise<CarListing[]> {

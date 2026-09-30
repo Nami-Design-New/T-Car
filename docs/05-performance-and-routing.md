@@ -3,8 +3,8 @@
 > **Status (2026-09-30):** routing steps 1 to 3 done (account routes, booking
 > details moved, bookings `?status=`). Performance:
 > the Maps script, the auth dialog, and Lottie load on first use. The hero sends
-> `airportId`, `stationId`, and `countryId` to `/cars`, which still reads none of
-> its search parameters.
+> `airportId`, `stationId`, and `countryId` to `/cars`; `/cars` and city listings
+> now read the shared URL search state for query, price range, sort, and context.
 
 ## Part A: Routes, URL state, or tabs
 

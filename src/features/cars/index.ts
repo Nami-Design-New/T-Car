@@ -13,3 +13,5 @@ export type {
   PickupPoint,
   SearchCarsParams,
 } from './model';
+export { parseCarSearchParams } from './searchParams';
+export type { CarSearchParams, CarSort } from './searchParams';
