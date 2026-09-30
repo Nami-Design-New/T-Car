@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { FiStar, FiX } from 'react-icons/fi';
+import { Dialog } from '@/shared/ui/Dialog';
 import { useErrorMessage } from '@/shared/hooks/useErrorMessage';
 import type { AppError } from '@/shared/lib/errors';
 import type { Result } from '@/shared/lib/result';
@@ -31,7 +32,7 @@ export default function BookingReviewModal({ submitting = false, onSubmit, onClo
   }
 
   return (
-    <div className="review-modal-overlay" onClick={onClose}>
+    <Dialog open onClose={onClose} label="Booking review">
       <div className="review-modal" onClick={(e) => e.stopPropagation()}>
         <button className="close_btn" onClick={onClose} aria-label="إغلاق">
           <FiX />
@@ -77,6 +78,6 @@ export default function BookingReviewModal({ submitting = false, onSubmit, onClo
           {submitting ? 'جارٍ الإرسال...' : 'إرسال'}
         </button>
       </div>
-    </div>
+    </Dialog>
   );
 }

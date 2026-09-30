@@ -4,10 +4,9 @@ import { useCallback, useState } from 'react';
 import { Link } from '@/i18n/navigation';
 import { FiArrowRight, FiMoreVertical, FiEdit2, FiCalendar, FiX } from 'react-icons/fi';
 
-import SuccessModal from '@/components/common/SuccessModal';
-import FailedModal from '@/components/common/FailedModal';
 import { useErrorMessage } from '@/shared/hooks/useErrorMessage';
 import type { AppError } from '@/shared/lib/errors';
+import { ResultDialog } from '@/shared/ui/ResultDialog';
 import {
   bookingTabFor,
   bookingsListPath,
@@ -21,6 +20,22 @@ import { useBookingActions } from '../hooks/useBookingActions';
 import ExtendDurationModal from './ExtendDurationModal';
 import EditDailyBookingModal from './EditDailyBookingModal';
 import CancelBookingModal from './CancelBookingModal';
+
+interface LegacyResultProps {
+  open: boolean;
+  title?: string;
+  description?: string;
+  onDone?: () => void;
+  buttonText?: string;
+}
+
+function SuccessModal({ open, title = '', description, onDone }: LegacyResultProps) {
+  return <ResultDialog open={open} status="success" title={title} description={description} onClose={onDone ?? (() => undefined)} />;
+}
+
+function FailedModal({ open, title = '', description, onDone }: LegacyResultProps) {
+  return <ResultDialog open={open} status="error" title={title} description={description} onClose={onDone ?? (() => undefined)} />;
+}
 
 interface Props {
   booking: BookingDetailsView;

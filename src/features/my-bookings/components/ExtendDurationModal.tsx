@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { FiX } from 'react-icons/fi';
+import { Dialog } from '@/shared/ui/Dialog';
 
 interface Props {
   open: boolean;
@@ -29,8 +30,6 @@ export default function ExtendDurationModal({
     setDays(currentDays);
   }, [currentDays, open]);
 
-  if (!open) return null;
-
   const increment = () => {
     setDays((d) => d + 1);
   };
@@ -44,7 +43,7 @@ export default function ExtendDurationModal({
   const total = subtotal + vat;
 
   return (
-    <div className="modal_overlay">
+    <Dialog open={open} onClose={onClose} placement="bottom-sheet" label="Extend booking">
       <div className="selection_modal extend_modal">
 
         {/* Close */}
@@ -200,6 +199,6 @@ export default function ExtendDurationModal({
         </button>
 
       </div>
-    </div>
+    </Dialog>
   );
 }

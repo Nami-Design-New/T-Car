@@ -1,8 +1,8 @@
 'use client';
 
-import { useEffect } from 'react';
 import { FiX } from 'react-icons/fi';
 import Image from 'next/image';
+import { Dialog } from '@/shared/ui/Dialog';
 
 import cancelBookingImage from '@/assets/icons/cancel_booking.svg';
 
@@ -29,24 +29,11 @@ export default function CancelBookingModal({
   loading = false,
   error,
 }: Props) {
-  useEffect(() => {
-    if (!open) return;
-
-    const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') onClose();
-    };
-
-    document.addEventListener('keydown', handleEscape);
-    return () => document.removeEventListener('keydown', handleEscape);
-  }, [open, onClose]);
-
-  if (!open) return null;
-
   const refundedAmount = bookingAmount - cancellationFee;
 
   return (
   
-    <div className="modal_overlay" >
+    <Dialog open={open} onClose={onClose} placement="bottom-sheet" label="Cancel booking">
       <div className=" selection_modal cancel_booking_modal">
          {/* Close */}
         <button
@@ -127,6 +114,6 @@ export default function CancelBookingModal({
           </button>
         </div>
       </div>
-    </div>
+    </Dialog>
   );
 }
