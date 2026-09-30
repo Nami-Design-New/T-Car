@@ -2,9 +2,9 @@
 
 import { FormEvent, useEffect, useState } from 'react';
 import Image from 'next/image';
-import { createPortal } from 'react-dom';
 import { FiX } from 'react-icons/fi';
 import { PiBank } from 'react-icons/pi';
+import { Dialog } from '@/shared/ui/Dialog';
 import { normalizeIban, type Bank, type BankAccount, type BankAccountPayload } from '../model';
 import arrowDownIcon from '@assets/icons/arrow-down.svg';
 
@@ -45,24 +45,13 @@ export default function BankAccountFormModal({
   const [bankId, setBankId] = useState('');
   const [iban, setIban] = useState('');
   const [pickerOpen, setPickerOpen] = useState(false);
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => setMounted(true), []);
-
   useEffect(() => {
     if (!open) return;
 
     setBankId(account?.bankId ?? '');
     setIban(account?.iban ?? '');
     setPickerOpen(false);
-    document.body.style.overflow = 'hidden';
-
-    return () => {
-      document.body.style.overflow = '';
-    };
   }, [open, account]);
-
-  if (!open || !mounted) return null;
 
   const copy = COPY[mode];
   const selectedBank = banks.find((bank) => bank.id === bankId);
@@ -85,9 +74,16 @@ export default function BankAccountFormModal({
     setPickerOpen(false);
   };
 
-  return createPortal(
-    <div className="modal_overlay" onClick={handleClose}>
-      <div className="bank_form_modal bg-white" onClick={(event) => event.stopPropagation()}>
+  return (
+    <Dialog
+      open={open}
+      onClose={handleClose}
+      placement="bottom-sheet"
+      closeOnEscape={!loading}
+      closeOnBackdrop={!loading}
+      label={copy.title}
+      className="bank_form_modal bg-white"
+    >
         <span className="wallet_topup_drag_handle" aria-hidden="true" />
 
         <div className="wallet_topup_header d-flex align-items-center justify-content-between">
@@ -172,8 +168,6 @@ export default function BankAccountFormModal({
             )}
           </button>
         </form>
-      </div>
-    </div>,
-    document.body
+    </Dialog>
   );
 }
