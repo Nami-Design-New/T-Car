@@ -1,7 +1,7 @@
 # 3. Error handling
 
-> **Status (2026-09-28):** steps 1, 2, 3, 4, and 8 done; 5 partly done (real 404
-> status codes wait for phase 2); 6, 7, and 9 not started. See the markers in [§3.4](#34-migration-steps).
+> **Status (2026-09-30):** steps 1, 2, 3, 4, 5, and 8 done; 6, 7, and 9
+> not started. See the markers in [§3.4](#34-migration-steps).
 
 ## 3.1 Current state
 

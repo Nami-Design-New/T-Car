@@ -1,7 +1,13 @@
 @use 'tokens/tokens' as *;
 
 .page-skeleton {
-  min-height: 60vh;
+  &--page {
+    min-height: 60vh;
+  }
+
+  &--section {
+    padding: $ds-space-7;
+  }
 
   &__subtitle {
     margin-top: $ds-space-4;
@@ -9,9 +15,13 @@
 
   &__grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
     gap: $ds-space-7;
     margin-top: $ds-space-9;
+  }
+
+  &--section &__grid {
+    margin-top: $ds-space-7;
   }
 
   &__card {
