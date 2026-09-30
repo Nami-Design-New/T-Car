@@ -1,20 +1,19 @@
 'use client';
 
 import { useCallback, useState } from 'react';
-import { contactApi } from '@/services/contact.api';
+import { fail, fromActionResult, type Result } from '@/shared/lib/result';
 import { reportError } from '@/shared/lib/report';
-import { fail, ok, type Result } from '@/shared/lib/result';
+import { sendContactMessageAction } from '../actions';
 import type { ContactMessage } from '../model';
 
-/** Sends the contact form. `send` resolves to a Result. */
+/** Sends the contact form through the public Server Action boundary. */
 export function useSendContactMessage() {
   const [submitting, setSubmitting] = useState(false);
 
   const send = useCallback(async (message: ContactMessage): Promise<Result<void>> => {
     setSubmitting(true);
     try {
-      await contactApi.sendMessage(message);
-      return ok(undefined);
+      return fromActionResult(await sendContactMessageAction(message));
     } catch (error) {
       reportError(error, { scope: 'contact.send' });
       return fail(error);
