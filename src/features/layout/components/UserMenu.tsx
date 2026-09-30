@@ -1,14 +1,14 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
-import { Link } from '@/i18n/navigation';
-import {FiLogOut, FiChevronDown } from 'react-icons/fi';
-import { ImUser } from "react-icons/im";
+import { useState } from 'react';
 import Image from 'next/image';
+import { FiChevronDown, FiLogOut } from 'react-icons/fi';
+import { ImUser } from 'react-icons/im';
+import { Link } from '@/i18n/navigation';
+import { Menu } from '@/shared/ui/Menu';
 
 import accountIcon from '@assets/icons/account.svg';
-import bookingIcon from '@assets/icons/booking.svg';
-// import logoutIcon from '@assets/icons/logout.svg';
+
 interface Props {
   avatarUrl?: string;
   onLogout: () => void;
@@ -16,66 +16,38 @@ interface Props {
 
 export default function UserMenu({ avatarUrl, onLogout }: Props) {
   const [open, setOpen] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) {
-        setOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
 
   return (
-    <div className="user-menu" ref={ref}>
-      <button
-        type="button"
-        className="user-menu-trigger"
-        onClick={() => setOpen((prev) => !prev)}
-        aria-haspopup="menu"
-        aria-expanded={open}
-      >
-        <span className="user-menu-avatar">
-          {avatarUrl ? <Image src={avatarUrl} alt="avatar" fill sizes="32px" /> : <ImUser />}
-        </span>
+    <div className="user-menu">
+      <Menu.Root open={open} onOpenChange={setOpen}>
+        <Menu.Trigger asChild>
+          <button type="button" className="user-menu-trigger" aria-label="حسابي">
+            <span className="user-menu-avatar">
+              {avatarUrl ? <Image src={avatarUrl} alt="" fill sizes="32px" /> : <ImUser />}
+            </span>
 
-        <FiChevronDown className={`user-menu-chevron ${open ? 'open' : ''}`} />
-      </button>
+            <FiChevronDown
+              aria-hidden="true"
+              className={`user-menu-chevron ${open ? 'open' : ''}`}
+            />
+          </button>
+        </Menu.Trigger>
 
-      {open && (
-        <ul className="user-menu-list" role="menu">
-          <li role="menuitem">
-            <Link href="/account" onClick={() => setOpen(false)}>
+        <Menu.Content>
+          <Menu.Item asChild>
+            <Link href="/account">
               <Image src={accountIcon} alt="" width={18} height={18} className="menu-icon" />
               <span>حسابي</span>
             </Link>
-          </li>
+          </Menu.Item>
 
-          {/* <li role="menuitem">
-            <Link href="/my-bookings" onClick={() => setOpen(false)}>
-              <Image src={bookingIcon} alt="" width={18} height={18} className="menu-icon" />
-              <span>حجوزاتي</span>
-            </Link>
-          </li> */}
+          <Menu.Separator />
 
-          <li className="user-menu-divider" role="separator" />
-
-          <li role="menuitem">
-            <button
-              type="button"
-              className="logout_btn"
-              onClick={() => {
-                setOpen(false);
-                onLogout();
-              }}
-            >
-              <FiLogOut /> تسجيل الخروج
-            </button>
-          </li>
-        </ul>
-      )}
+          <Menu.Item tone="danger" onSelect={onLogout}>
+            <FiLogOut aria-hidden="true" /> تسجيل الخروج
+          </Menu.Item>
+        </Menu.Content>
+      </Menu.Root>
     </div>
   );
 }

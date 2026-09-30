@@ -1,0 +1,24 @@
+@use 'tokens/tokens' as *;
+
+// Zero specificity (:where), so each card's own feature class (for example
+// .payment_modal_option) still decides its border, background, and spacing.
+:where(.radio-card) {
+  width: 100%;
+  margin: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+
+.radio-card:focus-visible {
+  outline: 2px solid $ds-action-primary;
+  outline-offset: 2px;
+}
+
+.radio-card:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}

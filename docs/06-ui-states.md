@@ -1,8 +1,10 @@
 # 6. Loading, empty, and error states
 
-> **Status (2026-09-28):** not started. As a stopgap, the wallet and bank-account
-> tabs show an error with a retry button instead of the empty state when the load
-> fails (doc 3, step 4).
+> **Status (2026-09-30):** steps 1 to 3 done (`Skeleton`, `EmptyState` with a
+> lazy `Illustration`, `ErrorState`, `Button loading`; the root `loading.tsx` is
+> a content-area skeleton). Step 4 partly: bookings, wallet history, and bank
+> accounts use `EmptyState`; cars, city listing, notifications, and no-results
+> remain. Steps 5 to 8 not started.
 
 ## 6.1 Current state
 

@@ -1,0 +1,75 @@
+@use 'tokens/tokens' as *;
+
+.menu {
+  z-index: 1060;
+  min-width: 200px;
+  padding: 6px;
+  background: $ds-surface-elevated;
+  border: 1px solid $ds-stroke-light;
+  border-radius: $ds-radius-md;
+  box-shadow: 0 10px 30px rgba($ds-shadow-color, 0.1);
+  animation: menu-in 0.12s ease-out;
+}
+
+.menu__item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 12px;
+  border: 0;
+  border-radius: $ds-radius-sm;
+  background: transparent;
+  color: $ds-text-primary;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  outline: none;
+  user-select: none;
+
+  img,
+  svg {
+    flex-shrink: 0;
+    object-fit: contain;
+  }
+
+  // Radix moves focus to the highlighted item (keyboard and pointer alike).
+  &[data-highlighted] {
+    background: $ds-surface-card-primary;
+    color: $ds-text-primary;
+  }
+
+  &[data-disabled] {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+
+  &--danger {
+    color: $ds-status-error;
+
+    &[data-highlighted] {
+      background: $ds-status-error-background;
+      color: $ds-status-error;
+    }
+  }
+}
+
+.menu__separator {
+  height: 1px;
+  margin: 6px 4px;
+  background: $ds-stroke-light;
+}
+
+@keyframes menu-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .menu {
+    animation: none;
+  }
+}

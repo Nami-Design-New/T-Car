@@ -1,7 +1,11 @@
 # 4. Component design: reusable and feature components, built the Radix way
 
-> **Status (2026-09-28):** not started. The generic components moved to
-> `shared/ui/` unchanged; no Radix primitives yet.
+> **Status (2026-09-30):** tier 1 started. Built on Radix in `shared/ui/`, each
+> tested: `Dialog`, `ConfirmDialog`, `ResultDialog`, `Tabs`, `Accordion`,
+> `RadioCards`, `Menu`, plus `Button` (`loading`, `asChild`), `Price`,
+> `EmptyState`, `ErrorState`, `Skeleton`. Step 1 (dialogs) is in progress:
+> three dialogs migrated, the rest remain. Steps 5 to 9 not started. Component
+> styles `@use` `styles/tokens/_tokens.scss`, so `main.css` is not recompiled.
 
 > **Scope note.** "Radix method" here means the approach behind
 > [Radix Primitives](https://www.radix-ui.com/primitives). Behavior and

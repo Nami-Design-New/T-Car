@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import Image, { type StaticImageData } from 'next/image';
 import { createPortal } from 'react-dom';
 import { FiX } from 'react-icons/fi';
+import { RadioCards } from '@/shared/ui/RadioCards';
 import type { PaymentMethod } from '../model';
 import walletIcon from '@assets/icons/Wallet.svg';
 import cardIcon from '@assets/card.svg';
@@ -100,55 +101,50 @@ export default function PaymentMethodModal({
         </div>
 
         <div className="payment_modal_options d-flex flex-column gap-3">
-          <label
-            className={`payment_modal_option d-flex align-items-center justify-content-between gap-3 ${method === 'wallet' ? 'selected' : ''}`}
+          <RadioCards.Root
+            value={method}
+            onValueChange={(value) => setMethod(value as PaymentMethod)}
+            aria-label="طريقة الدفع"
+            className="d-flex flex-column gap-3"
           >
-            <input
-              className="visually-hidden"
-              type="radio"
-              name="payment"
-              checked={method === 'wallet'}
-              onChange={() => setMethod('wallet')}
-            />
-            <span className="payment_option_text d-flex flex-column">
-              <span className="payment_option_title">المحفظة</span>
-              <span className="payment_option_desc">ادفع بالمحفظة بطريقة اسرع</span>
-            </span>
-            <span className="payment_option_info d-flex align-items-center gap-2">
-              <Image src={walletIcon} alt="" width={24} height={24} />
-              <strong className="d-flex align-items-center gap-1">
-                500
-                <Image src={riyalIcon} alt="ريال" width={14} height={14} />
-              </strong>
-            </span>
-          </label>
-
-          {OPTIONS.map((option) => (
-            <label
-              key={option.id}
-              className={`payment_modal_option d-flex align-items-center justify-content-between gap-3 ${method === option.id ? 'selected' : ''}`}
+            <RadioCards.Item
+              value="wallet"
+              className={`payment_modal_option d-flex align-items-center justify-content-between gap-3 ${method === 'wallet' ? 'selected' : ''}`}
             >
-              <input
-                className="visually-hidden"
-                type="radio"
-                name="payment"
-                checked={method === option.id}
-                onChange={() => setMethod(option.id)}
-              />
               <span className="payment_option_text d-flex flex-column">
-                <span className="payment_option_title">{option.title}</span>
-                <span className="payment_option_desc">{option.description}</span>
+                <span className="payment_option_title">المحفظة</span>
+                <span className="payment_option_desc">ادفع بالمحفظة بطريقة اسرع</span>
               </span>
-              <span className="payment_option_info d-flex align-items-center">
-                <Image
-                  src={option.icon}
-                  alt={option.iconAlt}
-                  width={option.iconWidth}
-                  height={option.iconHeight}
-                />
+              <span className="payment_option_info d-flex align-items-center gap-2">
+                <Image src={walletIcon} alt="" width={24} height={24} />
+                <strong className="d-flex align-items-center gap-1">
+                  500
+                  <Image src={riyalIcon} alt="ريال" width={14} height={14} />
+                </strong>
               </span>
-            </label>
-          ))}
+            </RadioCards.Item>
+
+            {OPTIONS.map((option) => (
+              <RadioCards.Item
+                key={option.id}
+                value={option.id}
+                className={`payment_modal_option d-flex align-items-center justify-content-between gap-3 ${method === option.id ? 'selected' : ''}`}
+              >
+                <span className="payment_option_text d-flex flex-column">
+                  <span className="payment_option_title">{option.title}</span>
+                  <span className="payment_option_desc">{option.description}</span>
+                </span>
+                <span className="payment_option_info d-flex align-items-center">
+                  <Image
+                    src={option.icon}
+                    alt={option.iconAlt}
+                    width={option.iconWidth}
+                    height={option.iconHeight}
+                  />
+                </span>
+              </RadioCards.Item>
+            ))}
+          </RadioCards.Root>
 
           <label className="payment_modal_option d-flex align-items-center justify-content-between gap-3">
             <span className="payment_option_text d-flex flex-column">

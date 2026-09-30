@@ -1,7 +1,7 @@
 # 3. Error handling
 
-> **Status (2026-09-28):** steps 1, 3, 4, and 8 done; 5 partly done; 2, 6, 7,
-> and 9 not started. See the markers in [§3.4](#34-migration-steps).
+> **Status (2026-09-28):** steps 1, 2, 3, 4, and 8 done; 5 partly done (real 404
+> status codes wait for phase 2); 6, 7, and 9 not started. See the markers in [§3.4](#34-migration-steps).
 
 ## 3.1 Current state
 
@@ -248,7 +248,7 @@ failure path gets built and tested now, not after launch.
 1. ✅ **Foundations:** `shared/lib/{errors,result,report}.ts`, the `errors`
    namespace in both message files, and the `no-console` lint rule (as a
    warning at first).
-2. ☐ **Boundaries:** `app/global-error.tsx`, `app/[locale]/error.tsx`, and the
+2. ✅ **Boundaries:** `app/global-error.tsx`, `app/[locale]/error.tsx`, and the
    shared `ErrorState` component.
 3. ✅ **HTTP client:** (The 401 handling only classifies the error; signing out
    on a backend 401 comes with the real auth endpoints.) build `services/http/client.ts` with the `toAppError`

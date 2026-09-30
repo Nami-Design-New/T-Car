@@ -123,15 +123,15 @@ states) rather than one concern at a time across the whole app.
 
 ### Phase 1: Foundations (about 1 week)
 
-- Create the `features/`, `shared/`, and `services/http/` folders and the import
+- ✅ Create the `features/`, `shared/`, and `services/http/` folders and the import
   rules ([doc 1](01-architecture-layers.md)).
-- Build `services/http` with `AppError`, `toAppError`, and `Result`
+- ✅ Build `services/http` with `AppError`, `toAppError`, and `Result`
   ([doc 3](03-error-handling.md)).
-- Build the first `shared/ui` set on Radix: `Dialog`, `ConfirmDialog`,
+- ✅ Build the first `shared/ui` set on Radix: `Dialog`, `ConfirmDialog`,
   `ResultDialog`, `Tabs`, `RadioCards`, `Accordion`, `DropdownMenu`, `Button`
   with `loading`, `Price`, `EmptyState`, `ErrorState`, `Skeleton`
   ([doc 4](04-component-design.md), [doc 6](06-ui-states.md)).
-- Add root `error.tsx`, `global-error.tsx`, and a non-blocking root `loading.tsx`.
+- ✅ Add root `error.tsx`, `global-error.tsx`, and a non-blocking root `loading.tsx`.
 
 ### Phase 2: Routing (about 3–4 days)
 
@@ -197,7 +197,7 @@ merged or pushed yet.
 | Phase | Status | Notes |
 | ----- | ------ | ----- |
 | 0. Bug fixes and dead code | Done (one item waiting on product) | All 10 bugs above fixed. Dead code deleted: `bookings/BookingsTab`, `BookingCarSummary`, `BookingPriceDetails`, `RateBookingButton`, `CityCarCard`, `CitiesGrid`, `lib/i18n.ts`, `layout/I18nProvider.tsx`, and 8 unused path aliases. `npm run typecheck` and `npm run check` (typecheck + lint) added; there is no CI config yet to run them in. React 19.3 (verified with the build and server rendering of every route; not yet checked in a browser). Also fixed on the way: a duplicated mock car id. **Waiting on product:** `BookingModal`, `BookingMonthlyModal`, `InsufficientBalanceModal` (unused, kept). Optional: a designed Open Graph image (`src/app/opengraph-image.jpg`) |
-| 1. Foundations | Partly done | Done: `features/`, `shared/{ui,lib,hooks,config}`, `services/http`, the import rules (as warnings), `AppError` / `Result` / `reportError`, the `errors` and `states` messages, root `error.tsx`, `global-error.tsx`, a non-blocking root `loading.tsx`, and in `shared/ui`: `Dialog` (Radix, tested; production callers `CountryModal`, `WalletAmountModal`, `BankSelectModal`), `ConfirmDialog`, `ResultDialog`, `ErrorState`, `Skeleton`, `Button` with `loading` / `asChild`, `Price` (first caller: the wallet tab), and `EmptyState` with a lazy `Illustration` (callers: bookings, wallet history, bank accounts, which also use `ErrorState` for a failed load), `Tabs` (first caller: the insurance terms / cancellation switch) and `Accordion` (first caller: the car warranties). The home FAQ became native `<details name>` instead (doc 2 step 2): Radix unmounts closed content, which would have dropped the answers from the server HTML. Vitest + Testing Library (`npm run test`). Remaining: `RadioCards`, `Menu` (DropdownMenu). Per-segment `loading.tsx` (needed for real 404 status codes) moves to phase 2 |
+| 1. Foundations | Done | `features/`, `shared/{ui,lib,hooks,config}`, `services/http`, the import rules (as warnings), `AppError` / `Result` / `reportError`, the `errors` and `states` messages, root `error.tsx` and `global-error.tsx`, a non-blocking root `loading.tsx` with `Skeleton`, and the first Radix `shared/ui` set, each tested and with at least one production caller: `Dialog` (`CountryModal`, `WalletAmountModal`, `BankSelectModal`), `ConfirmDialog`, `ResultDialog`, `Tabs` (insurance terms), `Accordion` (warranties), `RadioCards` (payment method), `Menu` (user menu), `Button` with `loading` / `asChild`, `Price` (wallet), `EmptyState` + lazy `Illustration` and `ErrorState` (bookings, wallet, bank accounts). The FAQ became native `<details>` rather than `Accordion` (answers stay in the server HTML). Vitest + Testing Library (`npm run test`, 53 tests). Moved to phase 2: per-segment `loading.tsx`, which real 404 status codes need. Replacing the remaining dialogs and menus is doc 4 / phase 4 work |
 | 2. Routing | Not started | Account sections are still tabs (`?tab=` works as a stopgap); filters and sort are not in the URL; `/cars` still ignores the hero's search parameters |
 | 3. Server-first data and auth | Mostly done | Pages read through `features/*/queries.ts` for cars, cities, car details, bookings, home, rental search, account profile, and notifications. Auth is NextAuth v5 with the token in its `httpOnly` session cookie and a middleware guard ([doc 2](02-server-client-boundary.md#23-auth-across-the-boundary)). Wallet, bank accounts, and bookings actions still run as client hooks (see below) |
 | 4. Feature migration | Mostly done | See the table below |
