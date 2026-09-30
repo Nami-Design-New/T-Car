@@ -21,6 +21,12 @@ const nextConfig = {
         permanent: true,
       },
       { source: `/${locale}/account`, destination: '/:locale/account/profile', permanent: false },
+      // Booking details moved under the account (doc 5).
+      {
+        source: `/${locale}/my-bookings/:id`,
+        destination: '/:locale/account/bookings/:id',
+        permanent: true,
+      },
     ];
   },
 
@@ -52,5 +58,3 @@ const nextConfig = {
 };
 
 export default withNextIntl(nextConfig);
-
-

@@ -1,6 +1,7 @@
 # 5. Performance and routing
 
-> **Status (2026-09-30):** routing step 1 done (account routes). Performance:
+> **Status (2026-09-30):** routing steps 1 and 2 done (account routes, booking
+> details moved). Performance:
 > the Maps script, the auth dialog, and Lottie load on first use. The hero sends
 > `airportId`, `stationId`, and `countryId` to `/cars`, which still reads none of
 > its search parameters.
@@ -194,8 +195,10 @@ and the page, so it runs once per request.
    tab's content into its page unchanged at first. (The redirects are in
    `next.config.mjs`, so they are real HTTP redirects; old `?tab=` links map to
    their section.)
-2. Add the `/my-bookings/:id` redirect and move the details page. Fix the back
-   link to `/account/bookings?status=…`.
+2. ✅ Add the `/my-bookings/:id` redirect and move the details page. Fix the back
+   link to `/account/bookings?status=…`. (The page sits outside the account
+   `(sections)` route group, so it keeps its full-width layout; the back link
+   gets `?status=` with step 3.)
 3. Bookings status as a search parameter, using `Tabs.LinkList`.
 4. Car search params: build the schema, have `/cars` and `/cities/[slug]` read
    it, have the filters panel write it, and make the hero submit into it.

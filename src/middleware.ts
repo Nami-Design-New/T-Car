@@ -5,8 +5,11 @@ import { routing } from './i18n/routing';
 
 const intlMiddleware = createMiddleware(routing);
 
-/** Pages that need a signed-in customer, with or without a locale prefix. */
-const PROTECTED = new RegExp(`^/(?:(${routing.locales.join('|')})/)?(?:account|my-bookings)(?:/|$)`);
+/**
+ * Pages that need a signed-in customer, with or without a locale prefix.
+ * (/my-bookings/[id] redirects to /account/bookings/[id] in next.config.mjs.)
+ */
+const PROTECTED = new RegExp(`^/(?:(${routing.locales.join('|')})/)?(?:account)(?:/|$)`);
 
 /**
  * A fast redirect for signed-out visitors: they land on the home page with the

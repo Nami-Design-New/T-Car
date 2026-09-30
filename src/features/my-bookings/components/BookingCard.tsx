@@ -9,7 +9,7 @@ interface Props {
 
 export default function BookingCard({ booking }: Props) {
   return (
-    <Link href={`/my-bookings/${booking.id}`} className="booking-card">
+    <Link href={`/account/bookings/${booking.id}`} className="booking-card">
       <div className="booking-card-image">
         <Image src={booking.carImage} alt={booking.carName} fill sizes="(max-width: 768px) 100vw, 320px" />
 

@@ -12,7 +12,7 @@ type Entry = {
   priority: number;
 };
 
-/** Public pages only; /account and /my-bookings need a session and are left out. */
+/** Public pages only; /account needs a session and is left out. */
 const STATIC_PAGES: Entry[] = [
   { path: '', changeFrequency: 'weekly', priority: 1 },
   { path: '/cars', changeFrequency: 'daily', priority: 0.9 },
