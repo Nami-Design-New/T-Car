@@ -1,21 +1,25 @@
 'use client';
 
 import { useCallback, useState } from 'react';
-import { bookingsApi } from '@/services/bookings.api';
+import { fail, fromActionResult, type Result } from '@/shared/lib/result';
 import { reportError } from '@/shared/lib/report';
-import { fail, ok, type Result } from '@/shared/lib/result';
+import {
+  cancelBookingAction,
+  extendBookingAction,
+  requestBookingEditAction,
+  submitBookingReviewAction,
+} from '../actions';
 import type { BookingEditRequest, BookingReviewInput } from '../model';
 
-/** The actions a customer can take on one booking. Each resolves to a Result. */
+/** Booking writes cross authenticated Server Actions and resolve to a Result. */
 export function useBookingActions(bookingId: string) {
   const [submitting, setSubmitting] = useState(false);
 
   const run = useCallback(
-    async (action: () => Promise<void>): Promise<Result<void>> => {
+    async (action: () => Promise<Awaited<ReturnType<typeof extendBookingAction>>>): Promise<Result<void>> => {
       setSubmitting(true);
       try {
-        await action();
-        return ok(undefined);
+        return fromActionResult(await action());
       } catch (error) {
         reportError(error, { scope: 'bookings.action', bookingId });
         return fail(error);
@@ -27,22 +31,22 @@ export function useBookingActions(bookingId: string) {
   );
 
   const extend = useCallback(
-    (days: number) => run(() => bookingsApi.extendBooking(bookingId, days)),
+    (days: number) => run(() => extendBookingAction(bookingId, days)),
     [run, bookingId]
   );
 
   const requestEdit = useCallback(
-    (request: BookingEditRequest) => run(() => bookingsApi.requestBookingEdit(bookingId, request)),
+    (request: BookingEditRequest) => run(() => requestBookingEditAction(bookingId, request)),
     [run, bookingId]
   );
 
   const cancel = useCallback(
-    () => run(() => bookingsApi.cancelBooking(bookingId)),
+    () => run(() => cancelBookingAction(bookingId)),
     [run, bookingId]
   );
 
   const review = useCallback(
-    (input: BookingReviewInput) => run(() => bookingsApi.submitReview(bookingId, input)),
+    (input: BookingReviewInput) => run(() => submitBookingReviewAction(bookingId, input)),
     [run, bookingId]
   );
 
