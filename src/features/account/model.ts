@@ -15,5 +15,8 @@ export interface LicenseUpload {
   type: string;
 }
 
+/** Each account section is its own route: /account/<section>. */
+export const accountSectionPath = (section: AccountTab) => `/account/${section}` as const;
+
 export const isAccountTab = (value: unknown): value is AccountTab =>
   typeof value === 'string' && (ACCOUNT_TABS as readonly string[]).includes(value);

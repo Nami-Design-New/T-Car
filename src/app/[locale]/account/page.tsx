@@ -1,27 +1,13 @@
-import { AccountScreen, isAccountTab } from '@/features/account';
-import { getProfile } from '@/features/account/queries';
-import { BookingsTab } from '@/features/my-bookings';
-import { getMyBookings } from '@/features/my-bookings/queries';
-import { getNotifications } from '@/features/notifications/queries';
+import { accountSectionPath, isAccountTab } from '@/features/account';
+import { redirect } from '@/i18n/navigation';
 
 interface Props {
+  params: Promise<{ locale: string }>;
   searchParams: Promise<{ tab?: string | string[] }>;
 }
 
-export default async function AccountPage({ searchParams }: Props) {
-  const { tab } = await searchParams;
-  const [profile, notifications, bookings] = await Promise.all([
-    getProfile(),
-    getNotifications(),
-    getMyBookings(),
-  ]);
-
-  return (
-    <AccountScreen
-      initialTab={isAccountTab(tab) ? tab : undefined}
-      profile={profile}
-      notifications={notifications}
-      bookings={<BookingsTab bookings={bookings} />}
-    />
-  );
+/** /account opens the profile; old /account?tab=<section> links still land on their section. */
+export default async function AccountPage({ params, searchParams }: Props) {
+  const [{ locale }, { tab }] = await Promise.all([params, searchParams]);
+  redirect({ href: accountSectionPath(isAccountTab(tab) ? tab : 'profile'), locale });
 }

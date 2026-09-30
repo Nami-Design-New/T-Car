@@ -266,10 +266,10 @@ change. Each item says why.
    interface (`WalletApi`, `CarsApi`, ...) and currently only the mock
    implementation. The flag is worth adding with the first real endpoint.
 
-7. **Server data into client screens.** The account page is still one client
-   screen with tabs. The server page loads the bookings and passes the
-   rendered `<BookingsTab>` into it as a prop. With item 1 in place, a plain data
-   prop would also work; the account routes (doc 5) replace both.
+7. **Server data into client screens.** Each account section is its own route
+   now (doc 5): its server page reads its data through `queries` and passes it
+   to the client component as props. (Before the routes, one client screen held
+   every tab and the bookings list came in as a pre-rendered slot.)
 
 8. **Types.** `types/car.ts` is split into each feature's `model.ts`; the
    global `*Props` interfaces are gone. What remains is `UserProfile` and

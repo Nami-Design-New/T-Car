@@ -1,8 +1,9 @@
 # 5. Performance and routing
 
-> **Status (2026-09-28):** not started, except the Google Maps script now loading
-> only when a map dialog opens. The hero now sends `airportId`, `stationId`, and
-> `countryId` to `/cars`, which still reads none of its search parameters.
+> **Status (2026-09-30):** routing step 1 done (account routes). Performance:
+> the Maps script, the auth dialog, and Lottie load on first use. The hero sends
+> `airportId`, `stationId`, and `countryId` to `/cars`, which still reads none of
+> its search parameters.
 
 ## Part A: Routes, URL state, or tabs
 
@@ -188,9 +189,11 @@ and the page, so it runs once per request.
 
 **Routing**
 
-1. Create `account/layout.tsx` with the nav as `Link`s, one `page.tsx` per
+1. ✅ Create `account/layout.tsx` with the nav as `Link`s, one `page.tsx` per
    section, and `account/page.tsx` redirecting to `/account/profile`. Move each
-   tab's content into its page unchanged at first.
+   tab's content into its page unchanged at first. (The redirects are in
+   `next.config.mjs`, so they are real HTTP redirects; old `?tab=` links map to
+   their section.)
 2. Add the `/my-bookings/:id` redirect and move the details page. Fix the back
    link to `/account/bookings?status=…`.
 3. Bookings status as a search parameter, using `Tabs.LinkList`.

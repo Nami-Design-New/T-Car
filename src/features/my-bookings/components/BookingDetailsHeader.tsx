@@ -84,7 +84,7 @@ export default function BookingDetailsHeader({ booking }: Props) {
   return (
     <div className="booking-details-header">
       {/* Back */}
-      <Link href="/account?tab=bookings" className="back_link" aria-label="رجوع">
+      <Link href="/account/bookings" className="back_link" aria-label="رجوع">
         <FiArrowRight />
       </Link>
 

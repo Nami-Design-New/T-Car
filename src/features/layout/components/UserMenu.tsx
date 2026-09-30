@@ -35,7 +35,7 @@ export default function UserMenu({ avatarUrl, onLogout }: Props) {
 
         <Menu.Content>
           <Menu.Item asChild>
-            <Link href="/account">
+            <Link href="/account/profile">
               <Image src={accountIcon} alt="" width={18} height={18} className="menu-icon" />
               <span>حسابي</span>
             </Link>

@@ -126,7 +126,7 @@ export default function CarBookingCard({
         title="تم تأكيد الحجز بنجاح!"
         description="جاري تحويلك إلى صفحة حجوزاتي..."
         buttonText="الانتقال الآن"
-        redirectTo="/account?tab=bookings"
+        redirectTo="/account/bookings"
         autoRedirect
       />
     </aside>
