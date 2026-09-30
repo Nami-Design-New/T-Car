@@ -6,7 +6,7 @@ import { Link, usePathname } from '@/i18n/navigation';
 import { useErrorMessage } from '@/shared/hooks/useErrorMessage';
 import { cn } from '@/shared/lib/cn';
 import { toAppError } from '@/shared/lib/errors';
-import Button from '@/shared/ui/Button';
+import { Button } from '@/shared/ui/Button';
 import './ErrorState.scss';
 
 interface Props {
@@ -44,12 +44,9 @@ export function ErrorState({ error, onRetry, size = 'section', title, reference 
       {offline && <p className="error-state__hint">{t('offlineHint')}</p>}
 
       {needsSignIn ? (
-        <Link
-          className="btn btn-primary btn-md error-state__action"
-          href={{ pathname: '/', query: { auth: 'login', next: pathname } }}
-        >
-          <span>{t('signIn')}</span>
-        </Link>
+        <Button asChild className="error-state__action">
+          <Link href={{ pathname: '/', query: { auth: 'login', next: pathname } }}>{t('signIn')}</Link>
+        </Button>
       ) : (
         onRetry && (
           <Button className="error-state__action" onClick={onRetry}>

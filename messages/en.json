@@ -224,6 +224,9 @@
     },
     "dialog": {
       "close": "Close"
+    },
+    "price": {
+      "sar": "SAR"
     }
   }
 }

@@ -1,0 +1,35 @@
+@use 'tokens/tokens' as *;
+
+.btn--loading {
+  position: relative;
+
+  // Hidden, not removed: the button keeps its width and its accessible name.
+  .btn__label {
+    visibility: hidden;
+  }
+}
+
+.btn__spinner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 1.1em;
+  height: 1.1em;
+  margin: -0.55em 0 0 -0.55em;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: $ds-radius-full;
+  animation: btn-spin 0.7s linear infinite;
+}
+
+@keyframes btn-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn__spinner {
+    animation-duration: 1.6s;
+  }
+}

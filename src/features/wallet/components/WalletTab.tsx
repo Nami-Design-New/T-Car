@@ -3,14 +3,14 @@
 import Image from 'next/image';
 import Lottie from 'lottie-react';
 import { FiLock } from 'react-icons/fi';
-import { formatAmount, formatTransactionDate } from '@/shared/lib/format';
+import { formatTransactionDate } from '@/shared/lib/format';
+import { Price } from '@/shared/ui/Price';
 import type { WalletSummary, WalletTransaction } from '../model';
 import Loader from '@/shared/ui/Loader';
 
 import walletIcon from '@assets/icons/money.svg';
 import coinIcon from '@assets/icons/coin.svg';
 import balanceIcon from '@assets/icons/balance.svg';
-import sarIcon from '@assets/icons/sar.svg';
 import emptyAnimation from '@assets/images/non_data.json';
 
 interface Props {
@@ -31,14 +31,6 @@ const TYPE_LABELS: Record<WalletTransaction['type'], string> = {
   withdraw: 'سحب',
 };
 
-function Amount({ value, size }: { value: number; size: number }) {
-  return (
-    <span className="wallet_amount">
-      <span>{formatAmount(value)}</span>
-      <Image src={sarIcon} alt="ريال" width={size} height={size} className="currency_icon" />
-    </span>
-  );
-}
 
 export default function WalletTab({
   summary,
@@ -81,7 +73,7 @@ export default function WalletTab({
         </div>
 
         <div className="wallet_balance_amount">
-          <Amount value={summary.total} size={30} />
+          <Price amount={summary.total} size="xl" className="wallet_amount" />
         </div>
 
         <div className="wallet_balance_actions">
@@ -104,7 +96,7 @@ export default function WalletTab({
               <Image src={coinIcon} alt="" width={18} height={18} />
               رصيد قابل للسحب
             </span>
-            <Amount value={summary.withdrawable} size={16} />
+            <Price amount={summary.withdrawable} size="md" className="wallet_amount" />
           </div>
 
           <div className="wallet_breakdown_item">
@@ -112,7 +104,7 @@ export default function WalletTab({
               <Image src={balanceIcon} alt="" width={18} height={18} />
               رصيد غير قابل للسحب
             </span>
-            <Amount value={summary.nonWithdrawable} size={16} />
+            <Price amount={summary.nonWithdrawable} size="md" className="wallet_amount" />
           </div>
         </div>
       </div>
@@ -142,7 +134,7 @@ export default function WalletTab({
 
                 <div className="wallet_history_item_side">
                   <span className="wallet_history_item_amount">
-                    <Amount value={tx.amount} size={14} />
+                    <Price amount={tx.amount} size="sm" className="wallet_amount" />
                   </span>
                   <span className="wallet_history_item_meta">#{tx.reference}</span>
                 </div>
