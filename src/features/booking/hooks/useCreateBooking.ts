@@ -1,12 +1,12 @@
 'use client';
 
 import { useCallback, useState } from 'react';
-import { bookingsApi } from '@/services/bookings.api';
+import { fail, fromActionResult, type Result } from '@/shared/lib/result';
 import { reportError } from '@/shared/lib/report';
-import { fail, ok, type Result } from '@/shared/lib/result';
+import { createBookingAction } from '../actions';
 import type { BookingDetails, PaymentMethod } from '../model';
 
-/** Books one car. `createBooking` resolves to a Result. */
+/** Books one car through the authenticated checkout Server Action. */
 export function useCreateBooking(carId: string) {
   const [submitting, setSubmitting] = useState(false);
 
@@ -14,8 +14,7 @@ export function useCreateBooking(carId: string) {
     async (details: BookingDetails, paymentMethod: PaymentMethod): Promise<Result<void>> => {
       setSubmitting(true);
       try {
-        await bookingsApi.createBooking({ carId, details, paymentMethod });
-        return ok(undefined);
+        return fromActionResult(await createBookingAction({ carId, details, paymentMethod }));
       } catch (error) {
         reportError(error, { scope: 'booking.create', carId });
         return fail(error);
