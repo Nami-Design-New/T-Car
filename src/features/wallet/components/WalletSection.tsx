@@ -4,13 +4,28 @@ import { useCallback, useState } from 'react';
 import type { BankAccount } from '@/features/bank-accounts';
 import type { AppError } from '@/shared/lib/errors';
 import { useErrorMessage } from '@/shared/hooks/useErrorMessage';
+import { ResultDialog } from '@/shared/ui/ResultDialog';
 import { useWallet } from '../hooks/useWallet';
 import { MIN_TOP_UP, MIN_WITHDRAW } from '../model';
 import WalletTab from './WalletTab';
 import WalletAmountModal from './WalletAmountModal';
 import BankSelectModal from './BankSelectModal';
-import SuccessModal from '@components/common/SuccessModal';
-import FailedModal from '@components/common/FailedModal';
+
+interface LegacyResultProps {
+  open: boolean;
+  title?: string;
+  description?: string;
+  onDone?: () => void;
+  appearButton?: boolean;
+}
+
+function SuccessModal({ open, title = '', onDone }: LegacyResultProps) {
+  return <ResultDialog open={open} status="success" title={title} autoCloseMs={2000} onClose={onDone ?? (() => undefined)} />;
+}
+
+function FailedModal({ open, title = '', description, onDone }: LegacyResultProps) {
+  return <ResultDialog open={open} status="error" title={title} description={description} onClose={onDone ?? (() => undefined)} />;
+}
 
 type ResultKind = 'topup' | 'withdraw';
 
