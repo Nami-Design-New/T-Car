@@ -21,7 +21,7 @@ Other findings:
 - **Oversized "icons".** `icons/balance.svg` (2.0 MB), `icons/coin.svg`
   (1.9 MB), and `images/gift.svg` (1.3 MB) are each one PNG wrapped in an
   SVG. The wallet tab and every car card download megabytes for small icons.
-- **Unused files:** `Variables.svg` (2.0 MB), `icons/Payment.svg`,
+- **Unused by code:** `icons/Payment.svg`,
   `images/cta.png`, `images/notlogin.png`, `images/logo.svg`,
   `images/car1-back.jpg`, `car1-interior.jpg`, `car1-side.jpg`.
 - **Naming:** `Play Sotre.webp` (typo), `Apple Store.webp` (spaces),
@@ -121,7 +121,8 @@ its content changes.
 | `images/flages/flag1-5.png` | `mock/flags/…` | data |
 | `icons/nissan.svg` | `mock/brands/…` (filter options come from the API with the URL filters) | data |
 | `images/non_data.json`, `successful_login.json` | `src/assets/animations/` | animation |
-| `Variables.svg`, `icons/Payment.svg`, `images/cta.png`, `images/notlogin.png`, `images/logo.svg` | delete (unused; confirm `notlogin.png` and `cta.png` with design first) | unused |
+| `Variables.svg` | `docs/design/Variables.svg`: the design-token source sheet (`styles/tokens/_tokens.scss` cites it); not an app asset | design reference |
+| `icons/Payment.svg`, `images/cta.png`, `images/notlogin.png`, `images/logo.svg` | delete (unused; confirm `notlogin.png` and `cta.png` with design first) | unused |
 
 ## 7.4 Migration steps
 
@@ -136,7 +137,9 @@ images still render (no 404s in the served HTML's image URLs).
    `string | StaticImageData` to `string`; point the mocks at `/mock/...` URLs.
    `Partners` reads the offices through a query instead of importing logos.
 4. **Animations and cleanup.** Move the Lottie JSON to `src/assets/animations/`;
-   delete the unused files; add the lint rule; `src/assets/` keeps only
+   move `Variables.svg` to `docs/design/` and update the path in
+   `_tokens.scss`; delete the unused files; rewrite the two `url()` references
+   in `main.scss` (see [doc 8](08-styles-and-scss.md) §8.5); add the lint rule; `src/assets/` keeps only
    `fonts/` and `animations/`.
 5. **Weight** (can run in parallel, needs design): re-export `coin`,
    `balance`, and `gift` as real SVGs or small WebP files.

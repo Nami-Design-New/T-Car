@@ -215,6 +215,10 @@ features/wallet/components/
 
 ## 4.5 Styling
 
+> The migration plan for this section (switching from the committed `main.css`
+> to the SCSS sources, trimming Bootstrap, splitting `main.scss`) is
+> [doc 8](08-styles-and-scss.md).
+
 Class names stay global and BEM-like (`car-card__media`), as the codebase does
 today, but the **source** is split:
 

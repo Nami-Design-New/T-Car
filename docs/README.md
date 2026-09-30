@@ -19,6 +19,7 @@ steps.
 | 5 | [Performance and routing](05-performance-and-routing.md) | What should be a route, a URL parameter, or a local tab, and what is slowing the app down? |
 | 6 | [Loading, empty, and error states](06-ui-states.md) | What every screen shows while waiting, when there is nothing, and when something fails |
 | 7 | [Images and assets](07-images-and-assets.md) | Where each image lives (`public/icons`, `public/images`, backend URLs), and how it is referenced |
+| 8 | [Styles: compile from SCSS](08-styles-and-scss.md) | How stylesheets are built: SCSS sources compiled by Next, no committed CSS |
 
 The existing root-level plans stay valid and are referenced where they overlap:
 
@@ -165,7 +166,8 @@ Each feature is done when it passes the checklist below.
 
 Lazy dialogs and Lottie, one carousel approach (drop Swiper), a trimmed
 Bootstrap import, split SCSS, `next/image` for hero slides, and `woff2` fonts
-([doc 5](05-performance-and-routing.md)).
+([doc 5](05-performance-and-routing.md)). The Bootstrap and SCSS items are
+planned in detail in phase 8 ([doc 8](08-styles-and-scss.md)).
 
 ### Phase 6: Internationalization extraction (continuous)
 
@@ -183,6 +185,16 @@ through one typed registry; data images become plain URL strings in the
 model types. Also re-export the three 1–2 MB PNG-in-SVG icons
 ([doc 7](07-images-and-assets.md)). Independent of phases 2–6; best done
 before the API phase, so the model types already match the API.
+
+### Phase 8: Styles compiled from SCSS (about 2–3 days, plus the split alongside features)
+
+Load the SCSS sources instead of the committed `main.css`, pin Sass, delete the
+generated `main.css` / `main.css.map` and the sync script, give Bootstrap its
+own trimmed entry, then split `main.scss` into per-feature partials as each
+feature is touched ([doc 8](08-styles-and-scss.md)). A drift check found that
+`main.scss` and `main.css` match rule for rule, so the switch is not expected
+to change what users see. Covers phase 5's "trimmed Bootstrap import" and
+"split SCSS" items.
 
 ---
 
@@ -204,6 +216,7 @@ merged or pushed yet.
 | 5. Performance | Not started | Only the Maps script fix from phase 0 |
 | 6. i18n extraction | Not started | New strings (errors, contact form) are in `messages/*.json`; the existing Arabic text is not |
 | 7. Images and assets | Planned | [Doc 7](07-images-and-assets.md): inventory and classification of all 66 files done; migration not started |
+| 8. Styles compiled from SCSS | Planned | [Doc 8](08-styles-and-scss.md): drift check done (0 rules differ in meaning between `main.scss` and the committed `main.css`); migration not started. Component styles from phase 1 already compile from SCSS |
 
 ### Features
 
