@@ -1,7 +1,7 @@
 # 5. Performance and routing
 
-> **Status (2026-09-30):** routing steps 1 and 2 done (account routes, booking
-> details moved). Performance:
+> **Status (2026-09-30):** routing steps 1 to 3 done (account routes, booking
+> details moved, bookings `?status=`). Performance:
 > the Maps script, the auth dialog, and Lottie load on first use. The hero sends
 > `airportId`, `stationId`, and `countryId` to `/cars`, which still reads none of
 > its search parameters.
@@ -199,7 +199,9 @@ and the page, so it runs once per request.
    link to `/account/bookings?status=…`. (The page sits outside the account
    `(sections)` route group, so it keeps its full-width layout; the back link
    gets `?status=` with step 3.)
-3. Bookings status as a search parameter, using `Tabs.LinkList`.
+3. ✅ Bookings status as a search parameter, using `Tabs.LinkList`. (Built as
+   links with `aria-current` inside the bookings feature; a shared link-tabs
+   component can be extracted when a second caller appears.)
 4. Car search params: build the schema, have `/cars` and `/cities/[slug]` read
    it, have the filters panel write it, and make the hero submit into it.
    Replace `SortBar`'s local state with the same mechanism.

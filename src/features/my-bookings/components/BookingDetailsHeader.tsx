@@ -9,6 +9,8 @@ import FailedModal from '@/components/common/FailedModal';
 import { useErrorMessage } from '@/shared/hooks/useErrorMessage';
 import type { AppError } from '@/shared/lib/errors';
 import {
+  bookingTabFor,
+  bookingsListPath,
   cancellationFee,
   isActiveBooking,
   toEditRequest,
@@ -84,7 +86,7 @@ export default function BookingDetailsHeader({ booking }: Props) {
   return (
     <div className="booking-details-header">
       {/* Back */}
-      <Link href="/account/bookings" className="back_link" aria-label="رجوع">
+      <Link href={bookingsListPath(bookingTabFor(booking.status))} className="back_link" aria-label="رجوع">
         <FiArrowRight />
       </Link>
 

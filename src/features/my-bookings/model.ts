@@ -5,6 +5,17 @@ export type BookingStatus = 'current' | 'upcoming' | 'late' | 'completed' | 'can
 
 export type BookingTab = 'active' | 'past';
 
+/** Reads ?status= from the URL; anything else means the default, 'active'. */
+export const parseBookingTab = (value: unknown): BookingTab => (value === 'past' ? 'past' : 'active');
+
+/** The bookings list for a status; 'active' is the default, so it needs no parameter. */
+export const bookingsListPath = (status: BookingTab) =>
+  status === 'active' ? '/account/bookings' : '/account/bookings?status=past';
+
+/** Which list a booking belongs to, e.g. for the details page's back link. */
+export const bookingTabFor = (status: BookingStatus): BookingTab =>
+  isActiveBooking(status) ? 'active' : 'past';
+
 export interface UserBooking {
   id: string;
   carName: string;

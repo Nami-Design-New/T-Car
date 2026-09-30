@@ -1,0 +1,66 @@
+@use 'tokens/tokens' as *;
+
+// The tabs are links now; main.scss styles `.bookings-tabs button`, so the
+// same look is applied to `a` here (the container rules still come from main.scss).
+.bookings-tabs a {
+  flex: 1;
+  height: 55px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border-radius: $ds-radius-md;
+  background: transparent;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: $ds-text-primary;
+  text-decoration: none;
+  transition: 0.25s ease;
+
+  .count {
+    min-width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: $ds-radius-full;
+    background: $ds-surface-on-background;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: $ds-text-subtle;
+    transition: inherit;
+  }
+
+  &:hover:not(.active) {
+    background: $ds-surface-card-primary;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $ds-action-primary;
+    outline-offset: 2px;
+  }
+
+  &.active {
+    background: $ds-action-primary;
+    color: $ds-text-on-action;
+
+    .count {
+      background: rgba($ds-text-on-action, 0.18);
+      color: $ds-text-on-action;
+    }
+  }
+}
+
+@media (max-width: 576px) {
+  .bookings-tabs a {
+    font-size: 0.85rem;
+    gap: 6px;
+
+    .count {
+      width: 24px;
+      min-width: 24px;
+      height: 24px;
+      font-size: 0.7rem;
+    }
+  }
+}
