@@ -2,14 +2,17 @@
 
 import { useState } from 'react';
 import { formatCurrency } from '@/shared/lib/format';
+import { Tabs } from '@/shared/ui/Tabs';
 import type { InsuranceOption } from '../model';
 
 interface Props {
   option: InsuranceOption;
 }
 
+type InsuranceTab = 'terms' | 'cancellation';
+
 export default function InsuranceOptions({ option }: Props) {
-  const [activeTab, setActiveTab] = useState<'terms' | 'cancellation'>('terms');
+  const [activeTab, setActiveTab] = useState<InsuranceTab>('terms');
 
   return (
     <section className="details-section">
@@ -24,28 +27,37 @@ export default function InsuranceOptions({ option }: Props) {
         </div>
       </div>
 
-      <div className="insurance-tabs">
-        <button
-          type="button"
-          className={activeTab === 'terms' ? 'active' : ''}
-          onClick={() => setActiveTab('terms')}
-        >
-          تعليمات المستأجر
-        </button>
-        <button
-          type="button"
-          className={activeTab === 'cancellation' ? 'active' : ''}
-          onClick={() => setActiveTab('cancellation')}
-        >
-          سياسة الإلغاء
-        </button>
-      </div>
+      <Tabs.Root
+        value={activeTab}
+        onValueChange={(value) => setActiveTab(value as InsuranceTab)}
+      >
+        <Tabs.List className="insurance-tabs" aria-label="تفاصيل التأمين">
+          <Tabs.Trigger value="terms" className={activeTab === 'terms' ? 'active' : ''}>
+            تعليمات المستأجر
+          </Tabs.Trigger>
+          <Tabs.Trigger
+            value="cancellation"
+            className={activeTab === 'cancellation' ? 'active' : ''}
+          >
+            سياسة الإلغاء
+          </Tabs.Trigger>
+        </Tabs.List>
 
-      <ul className="insurance-terms-list">
-        {(activeTab === 'terms' ? option.terms : option.cancellationPolicy).map((term, i) => (
-          <li key={i}>{term}</li>
-        ))}
-      </ul>
+        <Tabs.Content value="terms">
+          <ul className="insurance-terms-list">
+            {option.terms.map((term, i) => (
+              <li key={i}>{term}</li>
+            ))}
+          </ul>
+        </Tabs.Content>
+        <Tabs.Content value="cancellation">
+          <ul className="insurance-terms-list">
+            {option.cancellationPolicy.map((term, i) => (
+              <li key={i}>{term}</li>
+            ))}
+          </ul>
+        </Tabs.Content>
+      </Tabs.Root>
     </section>
   );
 }

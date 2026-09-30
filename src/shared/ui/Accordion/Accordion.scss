@@ -1,0 +1,41 @@
+// The heading is structural only; the trigger keeps the caller's typography.
+.accordion__header {
+  margin: 0;
+  font: inherit;
+}
+
+.accordion__content {
+  overflow: hidden;
+
+  &[data-state='open'] {
+    animation: accordion-open 0.3s ease;
+  }
+
+  &[data-state='closed'] {
+    animation: accordion-close 0.3s ease;
+  }
+}
+
+@keyframes accordion-open {
+  from {
+    height: 0;
+  }
+  to {
+    height: var(--radix-accordion-content-height);
+  }
+}
+
+@keyframes accordion-close {
+  from {
+    height: var(--radix-accordion-content-height);
+  }
+  to {
+    height: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .accordion__content {
+    animation: none !important;
+  }
+}

@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { FiCheck, FiChevronDown } from 'react-icons/fi';
+import { Accordion } from '@/shared/ui/Accordion';
 import type { CarWarranty } from '../model';
 
 interface Props {
@@ -9,31 +10,39 @@ interface Props {
 }
 
 export default function WarrantiesList({ warranties }: Props) {
-  const [openId, setOpenId] = useState<string | null>(null);
+  // All closed at first; '' is Radix's "none open" for a single accordion.
+  const [openId, setOpenId] = useState('');
 
   return (
     <section className="details-section">
       <h3>ضمانات تي كار</h3>
 
-      <div className="warranties-list">
+      <Accordion.Root
+        type="single"
+        collapsible
+        value={openId}
+        onValueChange={setOpenId}
+        className="warranties-list"
+      >
         {warranties.map((w) => (
-          <div key={w.id} className="warranty-item">
-            <button
-              type="button"
-              className="warranty-item-header"
-              onClick={() => setOpenId(openId === w.id ? null : w.id)}
-            >
-              <span className="warranty-icon"><FiCheck /></span>
+          <Accordion.Item key={w.id} value={w.id} className="warranty-item">
+            <Accordion.Trigger className="warranty-item-header">
+              <span className="warranty-icon" aria-hidden="true">
+                <FiCheck />
+              </span>
               <span className="warranty-title">{w.title}</span>
-              <FiChevronDown className={`warranty-chevron ${openId === w.id ? 'open' : ''}`} />
-            </button>
+              <FiChevronDown
+                aria-hidden="true"
+                className={`warranty-chevron ${openId === w.id ? 'open' : ''}`}
+              />
+            </Accordion.Trigger>
 
-            {openId === w.id && (
+            <Accordion.Content>
               <p className="warranty-description">{w.description}</p>
-            )}
-          </div>
+            </Accordion.Content>
+          </Accordion.Item>
         ))}
-      </div>
+      </Accordion.Root>
     </section>
   );
 }
