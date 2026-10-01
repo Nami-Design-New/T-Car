@@ -1,20 +1,22 @@
 'use client';
 
 import { useState } from 'react';
+import dynamic from 'next/dynamic';
 import { formatCurrency } from '@/shared/lib/format';
 import { useErrorMessage } from '@/shared/hooks/useErrorMessage';
 import type { AppError } from '@/shared/lib/errors';
 import { ResultDialog } from '@/shared/ui/ResultDialog';
 
-import BookingConfirmModal from './BookingConfirmModal';
 import Image from 'next/image';
 import RiyalIcon from '@/assets/icons/sar.svg';
 import type { BookingDetails, PaymentMethod } from '../model';
 
 import type { StaticImageData } from 'next/image';
-import BookingDailyModal from './BookingDailyModal';
-import PaymentMethodModal from './PaymentMethodModal';
 import { useCreateBooking } from '../hooks/useCreateBooking';
+
+const BookingDailyModal = dynamic(() => import('./BookingDailyModal'), { ssr: false });
+const BookingConfirmModal = dynamic(() => import('./BookingConfirmModal'), { ssr: false });
+const PaymentMethodModal = dynamic(() => import('./PaymentMethodModal'), { ssr: false });
 
 interface SuccessProps {
   open: boolean;
@@ -115,17 +117,18 @@ export default function CarBookingCard({
 
       <p className="car-booking-card-note">لن يتم خصم أي مبلغ الآن، الدفع عند الاستلام</p>
 
-      <BookingDailyModal
-        open={step === 'dates'}
+      {step === 'dates' && (
+        <BookingDailyModal
+          open
+          onClose={() => setStep('closed')}
+          pricePerDay={pricePerDay}
+          onConfirm={handleDatesConfirmed}
+        />
+      )}
 
-        onClose={() => setStep('closed')}
-        pricePerDay={pricePerDay}
-        onConfirm={handleDatesConfirmed}
-      />
-
-      {booking && (
+      {booking && step === 'confirm' && (
         <BookingConfirmModal
-          open={step === 'confirm'}
+          open
           onClose={() => setStep('closed')}
           onBack={() => setStep('dates')}
           onContinue={() => setStep('payment')}
@@ -138,15 +141,17 @@ export default function CarBookingCard({
         />
       )}
 
-      <PaymentMethodModal
-        open={step === 'payment'}
-        onClose={() => {
-          if (!submitting) setStep('closed');
-        }}
-        onConfirm={handlePay}
-        loading={submitting}
-        error={flow.step === 'payment' && flow.error ? errorMessage(flow.error) : undefined}
-      />
+      {step === 'payment' && (
+        <PaymentMethodModal
+          open
+          onClose={() => {
+            if (!submitting) setStep('closed');
+          }}
+          onConfirm={handlePay}
+          loading={submitting}
+          error={flow.step === 'payment' && flow.error ? errorMessage(flow.error) : undefined}
+        />
+      )}
 
       <SuccessModal
         open={step === 'success'}
