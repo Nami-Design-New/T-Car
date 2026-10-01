@@ -1,0 +1,110 @@
+@use 'tokens/tokens' as *;
+
+.pickup_modal.dialog {
+  width: min(720px, calc(100% - 28px));
+  padding: 24px;
+  border-radius: $ds-radius-xl;
+
+  .modal_header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+
+    h2 {
+      margin: 0;
+      color: $ds-text-primary;
+      font-size: 24px;
+    }
+  }
+
+  .pickup_cards {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px;
+
+    .pickup_card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 22px 18px;
+      border: 1px solid $ds-stroke-light;
+      border-radius: $ds-radius-lg;
+      background: $ds-surface-elevated;
+      cursor: pointer;
+      transition: 0.3s;
+
+      img {
+        width: 60px;
+        height: auto;
+        margin-bottom: 14px;
+        transition: 0.3s;
+      }
+
+      h4 {
+        margin-bottom: 6px;
+        color: $ds-text-primary;
+        font-size: 17px;
+        transition: 0.3s;
+      }
+
+      p {
+        margin: 0;
+        color: $ds-text-subtle;
+        font-size: 13px;
+        line-height: 1.6;
+        text-align: center;
+      }
+
+      &:hover {
+        transform: translateY(-4px);
+        border-color: $ds-action-primary;
+        box-shadow: 0 10px 24px rgba($ds-action-primary, 0.12);
+
+        img {
+          transform: scale(1.05);
+        }
+
+        h4 {
+          color: $ds-action-primary;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: $breakpoint-md) {
+  .pickup_modal.dialog {
+    width: calc(100% - 24px);
+    padding: 24px;
+
+    .modal_header {
+      margin-bottom: 16px;
+
+      h2 {
+        font-size: 24px;
+      }
+    }
+
+    .pickup_cards {
+      grid-template-columns: 1fr;
+      gap: 14px;
+
+      .pickup_card {
+        padding: 18px 14px;
+
+        img {
+          width: 48px;
+        }
+
+        h4 {
+          font-size: 15px;
+        }
+
+        p {
+          font-size: 12px;
+        }
+      }
+    }
+  }
+}

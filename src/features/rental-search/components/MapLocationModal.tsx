@@ -4,6 +4,7 @@ import { useState, useCallback, useEffect, useRef } from 'react';
 import { useLocale } from 'next-intl';
 import { GoogleMap, Marker, useJsApiLoader } from '@react-google-maps/api';
 import { FiSearch, FiMapPin, FiNavigation, FiX, FiLoader } from 'react-icons/fi';
+import { Dialog } from '@/shared/ui/Dialog';
 import type { LocationData } from '../model';
 
 interface Props {
@@ -37,7 +38,9 @@ export default function MapLocationModal({
   const [position, setPosition] = useState(defaultCenter);
   const [address, setAddress] = useState('');
   const [search, setSearch] = useState('');
-  const [predictions, setPredictions] = useState<google.maps.places.AutocompletePrediction[] | null>(null);
+  const [predictions, setPredictions] = useState<
+    google.maps.places.AutocompletePrediction[] | null
+  >(null);
   const [isLocating, setIsLocating] = useState(false);
   const [locationError, setLocationError] = useState('');
 
@@ -182,130 +185,105 @@ export default function MapLocationModal({
     });
   };
 
-  if (!open) return null;
-
   return (
-    <div className="modal_overlay" onClick={(event) => event.stopPropagation()}>
-      <div className="map_modal" onClick={(event) => event.stopPropagation()}>
-        <button type="button" className="close_btn" onClick={onClose} aria-label="إغلاق">
-          <FiX />
+    <Dialog open={open} onClose={onClose} size="xl" className="map_modal">
+      <Dialog.Close className="close_btn" />
+
+      <div className="modal_header">
+        <Dialog.Title>{title}</Dialog.Title>
+      </div>
+
+      <div className="search_box">
+        <FiSearch className="search_icon" />
+        <input
+          type="text"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="ابحث عن عنوان أو مكان..."
+        />
+        {search && (
+          <button
+            type="button"
+            className="clear_search"
+            onClick={() => {
+              setSearch('');
+              setPredictions(null);
+            }}
+          >
+            <FiX />
+          </button>
+        )}
+
+        {predictions && predictions.length > 0 && (
+          <ul className="predictions_list">
+            {predictions.map((p) => (
+              <li key={p.place_id} onClick={() => selectPrediction(p.place_id, p.description)}>
+                <FiMapPin />
+                <div>
+                  <span className="main_text">
+                    {p.structured_formatting?.main_text || p.description}
+                  </span>
+                  {p.structured_formatting?.secondary_text && (
+                    <span className="secondary_text">{p.structured_formatting.secondary_text}</span>
+                  )}
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+
+      <div className="map_placeholder">
+        {isLoaded ? (
+          <GoogleMap
+            mapContainerStyle={containerStyle}
+            center={position}
+            zoom={14}
+            onLoad={onMapLoad}
+            options={{
+              disableDefaultUI: true,
+              zoomControl: true,
+            }}
+          >
+            <Marker position={position} draggable onDragEnd={handleDragEnd} />
+          </GoogleMap>
+        ) : (
+          <>
+            <FiMapPin />
+            <span>جاري تحميل الخريطة...</span>
+          </>
+        )}
+      </div>
+
+      {address && <p className="selected_address">{address}</p>}
+
+      {locationError && <p className="location_error">{locationError}</p>}
+
+      <div className="location_actions">
+        <button
+          type="button"
+          className="current_location"
+          onClick={useCurrentLocation}
+          disabled={isLocating}
+        >
+          {isLocating ? <FiLoader className="spin" /> : <FiNavigation />}
+          <span>{isLocating ? 'جاري التحديد...' : 'استخدام موقعي الحالي'}</span>
         </button>
 
-        <div className="modal_header">
-          <h2>{title}</h2>
-        </div>
-
-        <div className="search_box">
-          <FiSearch className="search_icon" />
-          <input
-            type="text"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="ابحث عن عنوان أو مكان..."
-          />
-          {search && (
-            <button
-              type="button"
-              className="clear_search"
-              onClick={() => {
-                setSearch('');
-                setPredictions(null);
-              }}
-            >
-              <FiX />
-            </button>
-          )}
-
-          {predictions && predictions.length > 0 && (
-            <ul className="predictions_list">
-              {predictions.map((p) => (
-                <li
-                  key={p.place_id}
-                  onClick={() => selectPrediction(p.place_id, p.description)}
-                >
-                  <FiMapPin />
-                  <div>
-                    <span className="main_text">
-                      {p.structured_formatting?.main_text || p.description}
-                    </span>
-                    {p.structured_formatting?.secondary_text && (
-                      <span className="secondary_text">
-                        {p.structured_formatting.secondary_text}
-                      </span>
-                    )}
-                  </div>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-
-        <div className="map_placeholder">
-          {isLoaded ? (
-            <GoogleMap
-              mapContainerStyle={containerStyle}
-              center={position}
-              zoom={14}
-              onLoad={onMapLoad}
-              options={{
-                disableDefaultUI: true,
-                zoomControl: true,
-              }}
-            >
-              <Marker
-                position={position}
-                draggable
-                onDragEnd={handleDragEnd}
-              />
-            </GoogleMap>
-          ) : (
-            <>
-              <FiMapPin />
-              <span>جاري تحميل الخريطة...</span>
-            </>
-          )}
-        </div>
-
-        {address && (
-          <p className="selected_address">
-            {address}
-          </p>
-        )}
-
-        {locationError && (
-          <p className="location_error">{locationError}</p>
-        )}
-
-        <div className="location_actions">
-          <button
-            type="button"
-            className="current_location"
-            onClick={useCurrentLocation}
-            disabled={isLocating}
-          >
-            {isLocating ? (
-              <FiLoader className="spin" />
-            ) : (
-              <FiNavigation />
-            )}
-            <span>{isLocating ? 'جاري التحديد...' : 'استخدام موقعي الحالي'}</span>
-          </button>
-
-          <button
-            type="button"
-            className="confirm_btn"
-            onClick={() =>
-              onConfirm({
-                lat: position.lat,
-                lng: position.lng,
-                address,
-              })
-            }
-          >
-            تأكيد الموقع
-          </button>
-        </div>
+        <button
+          type="button"
+          className="confirm_btn"
+          onClick={() =>
+            onConfirm({
+              lat: position.lat,
+              lng: position.lng,
+              address,
+            })
+          }
+        >
+          تأكيد الموقع
+        </button>
       </div>
-    </div>
+    </Dialog>
   );
 }
