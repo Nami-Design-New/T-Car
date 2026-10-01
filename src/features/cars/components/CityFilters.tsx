@@ -1,42 +1,39 @@
 'use client';
-
 import { useState } from 'react';
 import { FiTruck, FiGrid, FiShield } from 'react-icons/fi';
 import nissanLogo from '@/assets/icons/nissan.svg';
-
+import { useTranslations } from 'next-intl';
 import FilterPanel from './filters/FilterPanel';
 import PriceRangeSlider from './filters/PriceRangeSlider';
 import CheckboxGroup from './filters/CheckboxGroup';
 import BrandGrid from './filters/BrandGrid';
 import { useToggleList } from '@/shared/hooks/useToggleList';
 import { PRICE_MAX, PRICE_MIN, useUrlCarFilters } from '../hooks/useUrlCarFilters';
-
-const COMPANIES = ['معرض النخبة', 'معرض النخبة', 'معرض النخبة', 'معرض النخبة', 'معرض النخبة'];
-const TYPES = ['اقتصادية', 'سيدان', 'SUV', 'فاخرة'];
-
-const SERVICES = [
-  { title: 'خدمة توصيل السيارات', desc: 'يتم توصيل السيارة عند باب منزلك' },
-  { title: 'خدمة توصيل السيارات', desc: 'يتم توصيل السيارة عند باب منزلك' },
-  { title: 'خدمة توصيل السيارات', desc: 'يتم توصيل السيارة عند باب منزلك' },
-  { title: 'خدمة توصيل السيارات', desc: 'يتم توصيل السيارة عند باب منزلك' },
-];
-
+const COMPANIES = ['elite', 'elite', 'elite', 'elite', 'elite'];
+const TYPES = ['economy', 'sedan', 'suv', 'luxury'];
+const SERVICES = ['delivery', 'delivery', 'delivery', 'delivery'];
 const BRANDS = [
-  { name: 'نيسان', logo: nissanLogo },
-  { name: 'نيسان', logo: nissanLogo },
-  { name: 'نيسان', logo: nissanLogo },
-  { name: 'نيسان', logo: nissanLogo },
+  { name: 'nissan', logo: nissanLogo },
+  { name: 'nissan', logo: nissanLogo },
+  { name: 'nissan', logo: nissanLogo },
+  { name: 'nissan', logo: nissanLogo },
 ];
-
 export default function CitiesFilters() {
+  const t = useTranslations('cars');
   const companies = useToggleList();
   const types = useToggleList();
   const services = useToggleList();
   const [selectedBrand, setSelectedBrand] = useState<number | null>(null);
-  const { search, minPrice, maxPrice, updateSearch, handleMinChange, handleMaxChange, clearPriceRange } =
-    useUrlCarFilters();
-
-  const hasActiveFilters =
+  const {
+    search,
+    minPrice,
+    maxPrice,
+    updateSearch,
+    handleMinChange,
+    handleMaxChange,
+    clearPriceRange,
+  } = useUrlCarFilters();
+  const active =
     search.trim() !== '' ||
     minPrice !== PRICE_MIN ||
     maxPrice !== PRICE_MAX ||
@@ -44,13 +41,8 @@ export default function CitiesFilters() {
     types.selected.length > 0 ||
     services.selected.length > 0 ||
     selectedBrand !== null;
-
   return (
-    <FilterPanel
-      searchValue={search}
-      onSearchChange={updateSearch}
-      hasActiveFilters={hasActiveFilters}
-    >
+    <FilterPanel searchValue={search} onSearchChange={updateSearch} hasActiveFilters={active}>
       <PriceRangeSlider
         min={PRICE_MIN}
         max={PRICE_MAX}
@@ -60,50 +52,45 @@ export default function CitiesFilters() {
         onMaxChange={handleMaxChange}
         onClear={clearPriceRange}
       />
-
       <CheckboxGroup
         icon={<FiTruck />}
-        title="الشركات"
+        title={t('filters.companies')}
         items={COMPANIES}
+        getLabel={() => t('companies.elite')}
         selected={companies.selected}
         onToggle={companies.toggle}
         onClear={companies.clear}
         visibleCount={3}
       />
-
       <CheckboxGroup
         icon={<FiGrid />}
-        title="نوع السيارة"
+        title={t('filters.type')}
         items={TYPES}
+        getLabel={(item) => t(`cityTypes.${item}`)}
         selected={types.selected}
         onToggle={types.toggle}
         onClear={types.clear}
       />
-
       <CheckboxGroup
         icon={<FiShield />}
-        title="خدمات إضافية"
-        items={SERVICES.map((s) => s.title)}
+        title={t('filters.services')}
+        items={SERVICES}
         selected={services.selected}
         onToggle={services.toggle}
         onClear={services.clear}
         visibleCount={2}
         itemClassName="check_item service_item"
-        renderExtra={(item) => {
-          const service = SERVICES.find((s) => s.title === item);
-          return (
-            <div>
-              <span className="service_title">{item}</span>
-              <span className="service_desc">{service?.desc}</span>
-            </div>
-          );
-        }}
+        renderExtra={() => (
+          <div>
+            <span className="service_title">{t('services.delivery.title')}</span>
+            <span className="service_desc">{t('services.delivery.description')}</span>
+          </div>
+        )}
       />
-
       <BrandGrid
         icon={<FiTruck />}
-        title="العلامة التجارية"
-        brands={BRANDS}
+        title={t('filters.brand')}
+        brands={BRANDS.map((brand) => ({ ...brand, name: t(`brands.${brand.name}`) }))}
         selected={selectedBrand}
         onSelect={setSelectedBrand}
       />

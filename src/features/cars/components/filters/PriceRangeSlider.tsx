@@ -1,5 +1,5 @@
 import { FiDollarSign } from 'react-icons/fi';
-
+import { useTranslations } from 'next-intl';
 interface PriceRangeSliderProps {
   min: number;
   max: number;
@@ -9,7 +9,6 @@ interface PriceRangeSliderProps {
   onMaxChange: (value: number) => void;
   onClear: () => void;
 }
-
 export default function PriceRangeSlider({
   min,
   max,
@@ -19,38 +18,33 @@ export default function PriceRangeSlider({
   onMaxChange,
   onClear,
 }: PriceRangeSliderProps) {
+  const t = useTranslations('cars.filters');
   const minPercent = ((minValue - min) / (max - min)) * 100;
   const maxPercent = ((maxValue - min) / (max - min)) * 100;
-
   return (
     <div className="filter_group">
       <div className="filter_title">
         <h4>
           <FiDollarSign />
-          نطاق السعر
+          {t('priceRange')}
         </h4>
         <button type="button" className="view_all" onClick={onClear}>
-          مسح
+          {t('clear')}
         </button>
       </div>
-
       <div className="range_slider">
         <div className="range_track">
           <div
             className="range_fill"
-            style={{
-              insetInlineStart: `${minPercent}%`,
-              insetInlineEnd: `${100 - maxPercent}%`,
-            }}
+            style={{ insetInlineStart: `${minPercent}%`, insetInlineEnd: `${100 - maxPercent}%` }}
           />
         </div>
-
         <input
           type="range"
           min={min}
           max={max}
           value={minValue}
-          onChange={(e) => onMinChange(Number(e.target.value))}
+          onChange={(event) => onMinChange(Number(event.target.value))}
           className="thumb thumb_min"
         />
         <input
@@ -58,36 +52,34 @@ export default function PriceRangeSlider({
           min={min}
           max={max}
           value={maxValue}
-          onChange={(e) => onMaxChange(Number(e.target.value))}
+          onChange={(event) => onMaxChange(Number(event.target.value))}
           className="thumb thumb_max"
         />
       </div>
-
       <div className="price_inputs">
         <div className="price_box">
           <FiDollarSign />
           <div>
-            <span className="price_label">الحد الأدنى</span>
+            <span className="price_label">{t('minimum')}</span>
             <input
               type="number"
               value={minValue}
               min={min}
               max={max}
-              onChange={(e) => onMinChange(Number(e.target.value))}
+              onChange={(event) => onMinChange(Number(event.target.value))}
             />
           </div>
         </div>
-
         <div className="price_box">
           <FiDollarSign />
           <div>
-            <span className="price_label">الحد الأقصى</span>
+            <span className="price_label">{t('maximum')}</span>
             <input
               type="number"
               value={maxValue}
               min={min}
               max={max}
-              onChange={(e) => onMaxChange(Number(e.target.value))}
+              onChange={(event) => onMaxChange(Number(event.target.value))}
             />
           </div>
         </div>

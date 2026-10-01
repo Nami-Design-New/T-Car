@@ -203,6 +203,17 @@
     "title": "السيارات المتاحة",
     "subtitle": "تصفح مكاتب التأجير وقارن أفضل السيارات المتاحة في مكان واحد."
   },
+  "cars": {
+    "currency": "ريال سعودي",
+    "filters": { "title": "تصفية النتائج", "searchPlaceholder": "ابحث عن سيارة أو ماركة...", "apply": "بحث", "clearAll": "مسح الكل", "open": "فتح الفلاتر", "close": "إغلاق الفلاتر", "clear": "مسح", "showLess": "عرض أقل", "showAll": "عرض الكل", "priceRange": "نطاق السعر", "minimum": "الحد الأدنى", "maximum": "الحد الأقصى", "brand": "العلامة التجارية", "type": "نوع السيارة", "companies": "الشركات", "services": "خدمات إضافية" },
+    "companies": { "elite": "معرض النخبة" },
+    "brands": { "nissan": "نيسان" },
+    "types": { "family": "عائلية", "convertible": "كشف", "hatchback": "هاتشباك", "sedan": "سيدان", "pickup": "حوض", "van": "فان" },
+    "cityTypes": { "economy": "اقتصادية", "sedan": "سيدان", "suv": "SUV", "luxury": "فاخرة" },
+    "services": { "delivery": { "title": "خدمة توصيل السيارات", "description": "يتم توصيل السيارة عند باب منزلك" } },
+    "sort": { "recommended": "الأكثر ملاءمة", "priceAsc": "السعر: من الأقل للأعلى", "priceDesc": "السعر: من الأعلى للأقل", "rating": "الأعلى تقييمًا", "filter": "فلتر", "results": "{count} نتيجة" }
+  },
+  "cities": { "hero": { "title": "تأجير سيارات {city}", "description": "تأجير سيارات المدينة الآن سهل مع تكلفي، خدمة مميزة وسرعة في التأجير", "pickup": "الاستلام", "pickupPlaceholder": "اختر تاريخ الاستلام", "dropoff": "التسليم", "dropoffPlaceholder": "اختر تاريخ التسليم", "search": "بحث" } },
   "carSections": {
     "offers": "العروض",
     "offersSubtitle": "اختر من أفضل عروض السيارات المتاحة الآن",
@@ -483,20 +494,119 @@
   },
   "booking": {
     "daily": {
-      "editBooking": "تعديل الحجز", "newBooking": "حجز جديد",
-      "weekdays": { "sun": "الأحد", "mon": "الاثنين", "tue": "الثلاثاء", "wed": "الأربعاء", "thu": "الخميس", "fri": "الجمعة", "sat": "السبت" },
-      "months": { "jan": "يناير", "feb": "فبراير", "mar": "مارس", "apr": "أبريل", "may": "مايو", "jun": "يونيو", "jul": "يوليو", "aug": "أغسطس", "sep": "سبتمبر", "oct": "أكتوبر", "nov": "نوفمبر", "dec": "ديسمبر" },
-      "to": "إلى", "chooseEndDate": "اختر تاريخ النهاية", "pickupDropoffTime": "حدد وقت الاستلام والتسليم", "pickupAddress": "عنوان الاستلام", "dropoffAddress": "عنوان التسليم", "chooseFromMap": "اختر من الخريطة", "changePickup": "تغيير عنوان الاستلام", "changeDropoff": "تغيير عنوان التسليم", "pickupLocation": "موقع الاستلام", "dropoffLocation": "موقع التسليم", "selected": "تم التحديد", "enterAddress": "ادخل عنوانك", "distanceHint": "يجب أن يكون الموقع في حدود 20 كم من موقع المعرض", "additionalDetails": "تفاصيل إضافية", "notesPlaceholder": "اكتب أي ملاحظات أو طلبات خاصة...", "submitEdit": "إرسال طلب التعديل", "continue": "متابعة الحجز", "total": "الإجمالي", "selectPickup": "حدد موقع الاستلام", "selectDropoff": "حدد موقع التسليم"
+      "editBooking": "تعديل الحجز",
+      "newBooking": "حجز جديد",
+      "weekdays": {
+        "sun": "الأحد",
+        "mon": "الاثنين",
+        "tue": "الثلاثاء",
+        "wed": "الأربعاء",
+        "thu": "الخميس",
+        "fri": "الجمعة",
+        "sat": "السبت"
+      },
+      "months": {
+        "jan": "يناير",
+        "feb": "فبراير",
+        "mar": "مارس",
+        "apr": "أبريل",
+        "may": "مايو",
+        "jun": "يونيو",
+        "jul": "يوليو",
+        "aug": "أغسطس",
+        "sep": "سبتمبر",
+        "oct": "أكتوبر",
+        "nov": "نوفمبر",
+        "dec": "ديسمبر"
+      },
+      "to": "إلى",
+      "chooseEndDate": "اختر تاريخ النهاية",
+      "pickupDropoffTime": "حدد وقت الاستلام والتسليم",
+      "pickupAddress": "عنوان الاستلام",
+      "dropoffAddress": "عنوان التسليم",
+      "chooseFromMap": "اختر من الخريطة",
+      "changePickup": "تغيير عنوان الاستلام",
+      "changeDropoff": "تغيير عنوان التسليم",
+      "pickupLocation": "موقع الاستلام",
+      "dropoffLocation": "موقع التسليم",
+      "selected": "تم التحديد",
+      "enterAddress": "ادخل عنوانك",
+      "distanceHint": "يجب أن يكون الموقع في حدود 20 كم من موقع المعرض",
+      "additionalDetails": "تفاصيل إضافية",
+      "notesPlaceholder": "اكتب أي ملاحظات أو طلبات خاصة...",
+      "submitEdit": "إرسال طلب التعديل",
+      "continue": "متابعة الحجز",
+      "total": "الإجمالي",
+      "selectPickup": "حدد موقع الاستلام",
+      "selectDropoff": "حدد موقع التسليم"
     },
     "confirm": {
-      "dialogLabel": "تأكيد الحجز", "close": "إغلاق", "back": "رجوع", "title": "تأكيد الحجز", "perDay": "/يوم", "pickupAddress": "عنوان الاستلام", "dropoffAddress": "عنوان التسليم", "pickupTime": "موعد الاستلام", "dropoffTime": "موعد التسليم", "insurance": "تفاصيل التأمين", "insuranceValue": "تأمين السيارة تكون جاهزة قبل الموعد", "orderTime": "وقت الطلب", "priceDetails": "تفاصيل السعر", "dailyPrice": "السعر اليومي", "days": "عدد الأيام", "day": "يوم", "subtotal": "المجموع الفرعي", "tax": "الضريبة", "total": "الإجمالي", "termsTitle": "الشروط والأحكام", "eligibility": "أوافق على جميع هذه المتطلبات، أنا مؤهل للحجز.", "continuePayment": "متابعة للدفع",
-      "terms": { "license": "لدي رخصة قيادة سارية.", "identity": "لدي هوية وطنية سارية / إقامة.", "refundable": "قد يتطلب بعض مواقف التأجير أو الدفع مقدماً مبلغاً قابلاً للاسترداد.", "agree": "أوافق على جميع الشروط والأحكام." }
+      "dialogLabel": "تأكيد الحجز",
+      "close": "إغلاق",
+      "back": "رجوع",
+      "title": "تأكيد الحجز",
+      "perDay": "/يوم",
+      "pickupAddress": "عنوان الاستلام",
+      "dropoffAddress": "عنوان التسليم",
+      "pickupTime": "موعد الاستلام",
+      "dropoffTime": "موعد التسليم",
+      "insurance": "تفاصيل التأمين",
+      "insuranceValue": "تأمين السيارة تكون جاهزة قبل الموعد",
+      "orderTime": "وقت الطلب",
+      "priceDetails": "تفاصيل السعر",
+      "dailyPrice": "السعر اليومي",
+      "days": "عدد الأيام",
+      "day": "يوم",
+      "subtotal": "المجموع الفرعي",
+      "tax": "الضريبة",
+      "total": "الإجمالي",
+      "termsTitle": "الشروط والأحكام",
+      "eligibility": "أوافق على جميع هذه المتطلبات، أنا مؤهل للحجز.",
+      "continuePayment": "متابعة للدفع",
+      "terms": {
+        "license": "لدي رخصة قيادة سارية.",
+        "identity": "لدي هوية وطنية سارية / إقامة.",
+        "refundable": "قد يتطلب بعض مواقف التأجير أو الدفع مقدماً مبلغاً قابلاً للاسترداد.",
+        "agree": "أوافق على جميع الشروط والأحكام."
+      }
     },
     "payment": {
-      "dialogLabel": "طريقة الدفع", "title": "طريقة الدفع", "close": "إغلاق", "wallet": "المحفظة", "walletDescription": "ادفع بالمحفظة بطريقة أسرع", "points": "استخدم النقاط", "pointsDescription": "وفر وادفع بالنقاط التي لديك", "upTo": "حتى", "pointsUnit": "نقطة", "currency": "ريال", "confirming": "جاري تأكيد الحجز...", "confirm": "تأكيد",
-      "options": { "visa": { "title": "دفع إلكتروني (فيزا / ماستركارد)", "description": "دعم مدى، فيزا، وماستركارد من أي مكان بالعالم" }, "tabby": { "title": "ادفع لاحقاً عبر تابي", "description": "قسم فاتورتك على 4 دفعات بدون فوائد" }, "tamara": { "title": "ادفع لاحقاً عبر تمارا", "description": "ادفع على 3 دفعات مريحة ومتوافقة مع الشريعة" } }
+      "dialogLabel": "طريقة الدفع",
+      "title": "طريقة الدفع",
+      "close": "إغلاق",
+      "wallet": "المحفظة",
+      "walletDescription": "ادفع بالمحفظة بطريقة أسرع",
+      "points": "استخدم النقاط",
+      "pointsDescription": "وفر وادفع بالنقاط التي لديك",
+      "upTo": "حتى",
+      "pointsUnit": "نقطة",
+      "currency": "ريال",
+      "confirming": "جاري تأكيد الحجز...",
+      "confirm": "تأكيد",
+      "options": {
+        "visa": {
+          "title": "دفع إلكتروني (فيزا / ماستركارد)",
+          "description": "دعم مدى، فيزا، وماستركارد من أي مكان بالعالم"
+        },
+        "tabby": {
+          "title": "ادفع لاحقاً عبر تابي",
+          "description": "قسم فاتورتك على 4 دفعات بدون فوائد"
+        },
+        "tamara": {
+          "title": "ادفع لاحقاً عبر تمارا",
+          "description": "ادفع على 3 دفعات مريحة ومتوافقة مع الشريعة"
+        }
+      }
     },
-    "card": { "currency": "ريال", "perDay": "/ يوم", "bookNow": "احجز الآن", "paymentNote": "لن يتم خصم أي مبلغ الآن، الدفع عند الاستلام", "successTitle": "تم تأكيد الحجز بنجاح!", "successDescription": "جاري تحويلك إلى صفحة حجوزاتي...", "goNow": "الانتقال الآن" }
+    "card": {
+      "currency": "ريال",
+      "perDay": "/ يوم",
+      "bookNow": "احجز الآن",
+      "paymentNote": "لن يتم خصم أي مبلغ الآن، الدفع عند الاستلام",
+      "successTitle": "تم تأكيد الحجز بنجاح!",
+      "successDescription": "جاري تحويلك إلى صفحة حجوزاتي...",
+      "goNow": "الانتقال الآن"
+    }
   },
   "carDetails": {
     "addons": "خدمات إضافية",

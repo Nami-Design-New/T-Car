@@ -1,57 +1,49 @@
 'use client';
-
 import { FiShield, FiTruck, FiX } from 'react-icons/fi';
 import { TbCar, TbCar4Wd, TbCaravan, TbCarOffRoad, TbCarSuv, TbTruck } from 'react-icons/tb';
-import nissanLogo from '@/assets/icons/nissan.svg';
 import Image from 'next/image';
-
+import nissanLogo from '@/assets/icons/nissan.svg';
+import { useTranslations } from 'next-intl';
 import FilterPanel from './filters/FilterPanel';
 import PriceRangeSlider from './filters/PriceRangeSlider';
 import CheckboxGroup from './filters/CheckboxGroup';
 import { useToggleList } from '@/shared/hooks/useToggleList';
 import { PRICE_MAX, PRICE_MIN, useUrlCarFilters } from '../hooks/useUrlCarFilters';
-
-const COMPANIES = ['معرض النخبة', 'معرض النخبة', 'معرض النخبة', 'معرض النخبة', 'معرض النخبة'];
-
+const COMPANIES = ['elite', 'elite', 'elite', 'elite', 'elite'];
+const SERVICES = ['delivery', 'delivery', 'delivery', 'delivery'];
+const BRANDS = ['nissan-1', 'nissan-2', 'nissan-3', 'nissan-4'];
 const CAR_TYPES = [
-  { id: 'family', label: 'عائلية', icon: TbCarSuv },
-  { id: 'convertible', label: 'كشف', icon: TbCar },
-  { id: 'hatchback', label: 'هاتشباك', icon: TbCar4Wd },
-  { id: 'sedan', label: 'سيدان', icon: TbCarOffRoad },
-  { id: 'pickup', label: 'حوض', icon: TbTruck },
-  { id: 'van', label: 'فان', icon: TbCaravan },
+  { id: 'family', key: 'family', icon: TbCarSuv },
+  { id: 'convertible', key: 'convertible', icon: TbCar },
+  { id: 'hatchback', key: 'hatchback', icon: TbCar4Wd },
+  { id: 'sedan', key: 'sedan', icon: TbCarOffRoad },
+  { id: 'pickup', key: 'pickup', icon: TbTruck },
+  { id: 'van', key: 'van', icon: TbCaravan },
 ];
-
-const SERVICES = [
-  { title: 'خدمة توصيل السيارات', desc: 'يتم توصيل السيارة عند باب منزلك' },
-  { title: 'خدمة توصيل السيارات', desc: 'يتم توصيل السيارة عند باب منزلك' },
-  { title: 'خدمة توصيل السيارات', desc: 'يتم توصيل السيارة عند باب منزلك' },
-  { title: 'خدمة توصيل السيارات', desc: 'يتم توصيل السيارة عند باب منزلك' },
-];
-
-const BRANDS = [
-  { id: 'nissan-1', name: 'نيسان', logo: nissanLogo },
-  { id: 'nissan-2', name: 'نيسان', logo: nissanLogo },
-  { id: 'nissan-3', name: 'نيسان', logo: nissanLogo },
-  { id: 'nissan-4', name: 'نيسان', logo: nissanLogo },
-];
-
 export default function CarFilters() {
+  const t = useTranslations('cars');
   const companies = useToggleList();
   const types = useToggleList();
   const services = useToggleList();
   const brands = useToggleList();
-  const { search, minPrice, maxPrice, updateSearch, handleMinChange, handleMaxChange, clearPriceRange, clearUrlFilters } =
-    useUrlCarFilters({
-      onClear: () => {
-    companies.clear();
-    types.clear();
-    services.clear();
-    brands.clear();
-      },
-    });
-
-  const hasActiveFilters =
+  const {
+    search,
+    minPrice,
+    maxPrice,
+    updateSearch,
+    handleMinChange,
+    handleMaxChange,
+    clearPriceRange,
+    clearUrlFilters,
+  } = useUrlCarFilters({
+    onClear: () => {
+      companies.clear();
+      types.clear();
+      services.clear();
+      brands.clear();
+    },
+  });
+  const active =
     search.trim() !== '' ||
     minPrice !== PRICE_MIN ||
     maxPrice !== PRICE_MAX ||
@@ -59,44 +51,41 @@ export default function CarFilters() {
     types.selected.length > 0 ||
     services.selected.length > 0 ||
     brands.selected.length > 0;
-
   return (
     <FilterPanel
       searchValue={search}
       onSearchChange={updateSearch}
-      hasActiveFilters={hasActiveFilters}
+      hasActiveFilters={active}
       onClearAll={clearUrlFilters}
     >
-      <section className="filter_group chip_filter_group" aria-labelledby="brand-filter-title">
+      <section className="filter_group chip_filter_group">
         <div className="filter_title">
-          <h4 id="brand-filter-title">العلامة التجارية</h4>
+          <h4>{t('filters.brand')}</h4>
           <button
             type="button"
             className="view_all"
             onClick={brands.clear}
-            disabled={brands.selected.length === 0}
+            disabled={!brands.selected.length}
           >
-            مسح
+            {t('filters.clear')}
           </button>
         </div>
-
         <div className="filter_chip_list">
-          {BRANDS.map((brand) => {
-            const isSelected = brands.selected.includes(brand.id);
-
+          {BRANDS.map((id) => {
+            const selected = brands.selected.includes(id);
             return (
               <button
                 type="button"
-                key={brand.id}
-                className={`filter_chip brand_filter_chip${isSelected ? ' is-selected' : ''}`}
-                aria-pressed={isSelected}
-                onClick={() => brands.toggle(brand.id)}
+                key={id}
+                className={`filter_chip brand_filter_chip${selected ? ' is-selected' : ''}`}
+                aria-pressed={selected}
+                onClick={() => brands.toggle(id)}
               >
-                <span className="filter_chip_visual brand_chip_logo" aria-hidden="true">
-                  <Image src={brand.logo} alt="" width={24} height={24} />
+                <span className="filter_chip_visual brand_chip_logo">
+                  <Image src={nissanLogo} alt="" width={24} height={24} />
                 </span>
-                <span className="filter_chip_label">{brand.name}</span>
-                {isSelected && (
+                <span className="filter_chip_label">{t('brands.nissan')}</span>
+                {selected && (
                   <span className="filter_chip_remove" aria-hidden="true">
                     <FiX />
                   </span>
@@ -106,38 +95,34 @@ export default function CarFilters() {
           })}
         </div>
       </section>
-
-      <section className="filter_group chip_filter_group" aria-labelledby="car-type-filter-title">
+      <section className="filter_group chip_filter_group">
         <div className="filter_title">
-          <h4 id="car-type-filter-title">نوع السيارة</h4>
+          <h4>{t('filters.type')}</h4>
           <button
             type="button"
             className="view_all"
             onClick={types.clear}
-            disabled={types.selected.length === 0}
+            disabled={!types.selected.length}
           >
-            مسح
+            {t('filters.clear')}
           </button>
         </div>
-
         <div className="filter_chip_list car_type_chip_list">
-          {CAR_TYPES.map((type) => {
-            const isSelected = types.selected.includes(type.id);
-            const TypeIcon = type.icon;
-
+          {CAR_TYPES.map(({ id, key, icon: Icon }) => {
+            const selected = types.selected.includes(id);
             return (
               <button
                 type="button"
-                key={type.id}
-                className={`filter_chip car_type_filter_chip${isSelected ? ' is-selected' : ''}`}
-                aria-pressed={isSelected}
-                onClick={() => types.toggle(type.id)}
+                key={id}
+                className={`filter_chip car_type_filter_chip${selected ? ' is-selected' : ''}`}
+                aria-pressed={selected}
+                onClick={() => types.toggle(id)}
               >
                 <span className="filter_chip_visual car_type_icon" aria-hidden="true">
-                  <TypeIcon />
+                  <Icon />
                 </span>
-                <span className="filter_chip_label">{type.label}</span>
-                {isSelected && (
+                <span className="filter_chip_label">{t(`types.${key}`)}</span>
+                {selected && (
                   <span className="filter_chip_remove" aria-hidden="true">
                     <FiX />
                   </span>
@@ -147,7 +132,6 @@ export default function CarFilters() {
           })}
         </div>
       </section>
-
       <PriceRangeSlider
         min={PRICE_MIN}
         max={PRICE_MAX}
@@ -157,35 +141,31 @@ export default function CarFilters() {
         onMaxChange={handleMaxChange}
         onClear={clearPriceRange}
       />
-
       <CheckboxGroup
         icon={<FiTruck />}
-        title="الشركات"
+        title={t('filters.companies')}
         items={COMPANIES}
+        getLabel={() => t('companies.elite')}
         selected={companies.selected}
         onToggle={companies.toggle}
         onClear={companies.clear}
         visibleCount={3}
       />
-
       <CheckboxGroup
         icon={<FiShield />}
-        title="خدمات إضافية"
-        items={SERVICES.map((s) => s.title)}
+        title={t('filters.services')}
+        items={SERVICES}
         selected={services.selected}
         onToggle={services.toggle}
         onClear={services.clear}
         visibleCount={2}
         itemClassName="check_item service_item"
-        renderExtra={(item) => {
-          const service = SERVICES.find((s) => s.title === item);
-          return (
-            <div>
-              <span className="service_title">{item}</span>
-              <span className="service_desc">{service?.desc}</span>
-            </div>
-          );
-        }}
+        renderExtra={() => (
+          <div>
+            <span className="service_title">{t('services.delivery.title')}</span>
+            <span className="service_desc">{t('services.delivery.description')}</span>
+          </div>
+        )}
       />
     </FilterPanel>
   );

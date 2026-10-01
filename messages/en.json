@@ -227,6 +227,17 @@
     "title": "Frequently Asked Questions",
     "subtitle": "Everything you need for a smooth rental experience"
   },
+  "cars": {
+    "currency": "Saudi riyal",
+    "filters": { "title": "Filter results", "searchPlaceholder": "Search for a car or brand...", "apply": "Search", "clearAll": "Clear all", "open": "Open filters", "close": "Close filters", "clear": "Clear", "showLess": "Show less", "showAll": "Show all", "priceRange": "Price range", "minimum": "Minimum", "maximum": "Maximum", "brand": "Brand", "type": "Car type", "companies": "Companies", "services": "Additional services" },
+    "companies": { "elite": "Elite showroom" },
+    "brands": { "nissan": "Nissan" },
+    "types": { "family": "Family", "convertible": "Convertible", "hatchback": "Hatchback", "sedan": "Sedan", "pickup": "Pickup", "van": "Van" },
+    "cityTypes": { "economy": "Economy", "sedan": "Sedan", "suv": "SUV", "luxury": "Luxury" },
+    "services": { "delivery": { "title": "Car delivery service", "description": "The car is delivered to your doorstep" } },
+    "sort": { "recommended": "Most relevant", "priceAsc": "Price: low to high", "priceDesc": "Price: high to low", "rating": "Top rated", "filter": "Filter", "results": "{count} results" }
+  },
+  "cities": { "hero": { "title": "Car rental in {city}", "description": "Renting a car in the city is easy with T-Car, with excellent service and fast booking.", "pickup": "Pick-up", "pickupPlaceholder": "Choose pick-up date", "dropoff": "Drop-off", "dropoffPlaceholder": "Choose drop-off date", "search": "Search" } },
   "homeCta": {
     "title": "Join us as a partner",
     "description": "Join the T-Car platform, showcase your cars to thousands of customers, and receive booking requests with ease.",
