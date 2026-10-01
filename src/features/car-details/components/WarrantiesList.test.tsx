@@ -1,7 +1,8 @@
-import { render, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
 import WarrantiesList from './WarrantiesList';
+import { renderWithIntl } from '@/shared/test/render';
 
 const WARRANTIES = [
   { id: '1', title: 'On-time arrival', description: '20% off the first day if late.' },
@@ -10,7 +11,7 @@ const WARRANTIES = [
 
 describe('WarrantiesList', () => {
   it('starts closed and opens one warranty at a time', async () => {
-    render(<WarrantiesList warranties={WARRANTIES} />);
+    renderWithIntl(<WarrantiesList warranties={WARRANTIES} />);
     const onTime = screen.getByRole('button', { name: 'On-time arrival' });
     const clean = screen.getByRole('button', { name: 'Clean car' });
     expect(onTime).toHaveAttribute('aria-expanded', 'false');

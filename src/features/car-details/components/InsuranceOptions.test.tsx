@@ -1,7 +1,8 @@
-import { render, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
 import InsuranceOptions from './InsuranceOptions';
+import { renderWithIntl } from '@/shared/test/render';
 
 const OPTION = {
   id: '1',
@@ -14,10 +15,10 @@ const OPTION = {
 
 describe('InsuranceOptions', () => {
   it('shows the terms first and the cancellation policy on its tab', async () => {
-    render(<InsuranceOptions option={OPTION} />);
+    renderWithIntl(<InsuranceOptions option={OPTION} />);
     expect(screen.getByRole('tabpanel')).toHaveTextContent('Report accidents');
 
-    const cancellation = screen.getByRole('tab', { name: 'سياسة الإلغاء' });
+    const cancellation = screen.getByRole('tab', { name: 'Cancellation policy' });
     await userEvent.click(cancellation);
     expect(cancellation).toHaveAttribute('aria-selected', 'true');
     expect(cancellation).toHaveClass('active');

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { FiCheck, FiChevronDown } from 'react-icons/fi';
 import { Accordion } from '@/shared/ui/Accordion';
 import type { CarWarranty } from '../model';
@@ -10,12 +11,13 @@ interface Props {
 }
 
 export default function WarrantiesList({ warranties }: Props) {
+  const t = useTranslations('carDetails');
   // All closed at first; '' is Radix's "none open" for a single accordion.
   const [openId, setOpenId] = useState('');
 
   return (
     <section className="details-section">
-      <h3>ضمانات تي كار</h3>
+      <h3>{t('warranties')}</h3>
 
       <Accordion.Root
         type="single"

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useTranslations } from 'next-intl';
 import { createPortal } from 'react-dom';
 import { FiX, FiStar } from 'react-icons/fi';
 import type { Review } from '../model';
@@ -13,14 +14,8 @@ interface Props {
   reviews: Review[];
 }
 
-function ratingLabel(rating: number) {
-  if (rating >= 4.5) return 'ممتاز';
-  if (rating >= 4) return 'جيد جدًا';
-  if (rating >= 3) return 'جيد';
-  return 'مقبول';
-}
-
 export default function ReviewsModal({ open, onClose, rating, reviewsCount, reviews }: Props) {
+  const t = useTranslations('carDetails.reviews');
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => setMounted(true), []);
@@ -44,16 +39,16 @@ export default function ReviewsModal({ open, onClose, rating, reviewsCount, revi
   const content = (
     <div className="modal_overlay" onClick={onClose}>
       <div className="reviews_modal" onClick={(e) => e.stopPropagation()}>
-        <button className="close_btn" onClick={onClose} aria-label="إغلاق">
+        <button className="close_btn" onClick={onClose} aria-label={t('close')}>
           <FiX />
         </button>
 
         <div className="reviews_modal_scroll">
-          <h2 className="reviews_modal_title">التقييمات</h2>
+          <h2 className="reviews_modal_title">{t('title')}</h2>
 
           <div className="reviews-summary-overall">
             <div className="reviews-summary-label">
-              <span className="label-text">{ratingLabel(rating)}</span>
+              <span className="label-text">{t(rating >= 4.5 ? 'excellent' : rating >= 4 ? 'veryGood' : rating >= 3 ? 'good' : 'acceptable')}</span>
               <div className="stars">
                 {Array.from({ length: 5 }).map((_, i) => (
                   <FiStar key={i} className={i < Math.round(rating) ? 'filled' : ''} />

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { formatCurrency } from '@/shared/lib/format';
 import { Tabs } from '@/shared/ui/Tabs';
 import type { InsuranceOption } from '../model';
@@ -12,11 +13,12 @@ interface Props {
 type InsuranceTab = 'terms' | 'cancellation';
 
 export default function InsuranceOptions({ option }: Props) {
+  const t = useTranslations('carDetails.insurance');
   const [activeTab, setActiveTab] = useState<InsuranceTab>('terms');
 
   return (
     <section className="details-section">
-      <h3>نوع التأمين</h3>
+      <h3>{t('title')}</h3>
 
       <div className="insurance-list">
         <div className="insurance-item">
@@ -31,15 +33,15 @@ export default function InsuranceOptions({ option }: Props) {
         value={activeTab}
         onValueChange={(value) => setActiveTab(value as InsuranceTab)}
       >
-        <Tabs.List className="insurance-tabs" aria-label="تفاصيل التأمين">
+        <Tabs.List className="insurance-tabs" aria-label={t('details')}>
           <Tabs.Trigger value="terms" className={activeTab === 'terms' ? 'active' : ''}>
-            تعليمات المستأجر
+            {t('terms')}
           </Tabs.Trigger>
           <Tabs.Trigger
             value="cancellation"
             className={activeTab === 'cancellation' ? 'active' : ''}
           >
-            سياسة الإلغاء
+            {t('cancellation')}
           </Tabs.Trigger>
         </Tabs.List>
 

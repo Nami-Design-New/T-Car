@@ -481,6 +481,42 @@
       "cancelledFailure": "فشل في إلغاء الحجز"
     }
   },
+  "carDetails": {
+    "addons": "خدمات إضافية",
+    "modelYear": "موديل {year}",
+    "airportPickup": "استلام من المطار",
+    "stationPickup": "استلام من محطة",
+    "warranties": "ضمانات تي كار",
+    "insurance": {
+      "title": "نوع التأمين",
+      "details": "تفاصيل التأمين",
+      "terms": "تعليمات المستأجر",
+      "cancellation": "سياسة الإلغاء"
+    },
+    "reviews": {
+      "overall": "التقييم الإجمالي",
+      "viewAll": "عرض كل التقييمات",
+      "countLabel": "تقييم",
+      "close": "إغلاق",
+      "title": "التقييمات",
+      "excellent": "ممتاز",
+      "veryGood": "جيد جدًا",
+      "good": "جيد",
+      "acceptable": "مقبول"
+    },
+    "pickup": {
+      "sectionLabel": "معلومات الاستلام والفرع",
+      "airportTitle": "مواقف تي كار في المطار",
+      "stationTitle": "مواقف تي كار في المحطة",
+      "airportDescription": "خدمة الاستلام والإرجاع السريعة في مواقف السيارات بالمطار",
+      "stationDescription": "خدمة الاستلام والإرجاع السريعة في مواقف السيارات بالمحطة",
+      "nearestBranch": "أقرب فرع لك",
+      "viewBranch": "عرض تفاصيل {showroom}",
+      "branches": "الفروع",
+      "closeBranches": "إغلاق قائمة الفروع",
+      "km": "كم"
+    }
+  },
   "wallet": {
     "topUpTitle": "اشحن المحفظة",
     "topUp": "شحن",

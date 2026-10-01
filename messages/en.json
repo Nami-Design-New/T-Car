@@ -481,6 +481,42 @@
       "cancelledFailure": "Failed to cancel booking"
     }
   },
+  "carDetails": {
+    "addons": "Additional services",
+    "modelYear": "Model {year}",
+    "airportPickup": "Airport pickup",
+    "stationPickup": "Station pickup",
+    "warranties": "T-Car warranties",
+    "insurance": {
+      "title": "Insurance type",
+      "details": "Insurance details",
+      "terms": "Renter instructions",
+      "cancellation": "Cancellation policy"
+    },
+    "reviews": {
+      "overall": "Overall rating",
+      "viewAll": "View all reviews",
+      "countLabel": "reviews",
+      "close": "Close",
+      "title": "Reviews",
+      "excellent": "Excellent",
+      "veryGood": "Very good",
+      "good": "Good",
+      "acceptable": "Acceptable"
+    },
+    "pickup": {
+      "sectionLabel": "Pickup and branch information",
+      "airportTitle": "T-Car airport parking",
+      "stationTitle": "T-Car station parking",
+      "airportDescription": "Fast pickup and return service at airport parking",
+      "stationDescription": "Fast pickup and return service at station parking",
+      "nearestBranch": "Nearest branch",
+      "viewBranch": "View details for {showroom}",
+      "branches": "Branches",
+      "closeBranches": "Close branches list",
+      "km": "km"
+    }
+  },
   "wallet": {
     "topUpTitle": "Top up wallet",
     "topUp": "Top up",

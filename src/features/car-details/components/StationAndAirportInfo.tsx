@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import { FiExternalLink, FiHome, FiX } from 'react-icons/fi';
 import { LuPlane } from 'react-icons/lu';
@@ -20,6 +21,7 @@ export default function StationAndAirportInfo({
   pickup,
   type = 'airport',
 }: Props) {
+  const t = useTranslations('carDetails.pickup');
   const { address, distanceKm, branches } = pickup;
   const [showBranches, setShowBranches] = useState(false);
 
@@ -44,16 +46,16 @@ export default function StationAndAirportInfo({
 
   return (
     <>
-      <section className="station-airport-info" aria-label="معلومات الاستلام والفرع">
+      <section className="station-airport-info" aria-label={t('sectionLabel')}>
         <div className="station-airport-info-banner">
           <div className="station-airport-info-heading">
             {isAirport ? <LuPlane aria-hidden="true" /> : <MdTrain aria-hidden="true" />}
-            <strong>{isAirport ? 'مواقف تي كار في المطار' : 'مواقف تي كار في المحطة'}</strong>
+            <strong>{isAirport ? t('airportTitle') : t('stationTitle')}</strong>
           </div>
           <p>
             {isAirport
-              ? 'خدمة الاستلام والإرجاع السريعة في مواقف السيارات بالمطار'
-              : 'خدمة الاستلام والإرجاع السريعة في مواقف السيارات بالمحطة'}
+              ? t('airportDescription')
+              : t('stationDescription')}
           </p>
         </div>
 
@@ -61,7 +63,7 @@ export default function StationAndAirportInfo({
           <div className="station-airport-info-branch-main">
             <span className="station-airport-info-eyebrow">
               <FiHome aria-hidden="true" />
-              أقرب فرع لك
+              {t('nearestBranch')}
             </span>
             <h3>{showroom}</h3>
             <p>{address}</p>
@@ -71,13 +73,13 @@ export default function StationAndAirportInfo({
             <button
               type="button"
               className="station-airport-info-branches-trigger"
-              aria-label={`عرض تفاصيل ${showroom}`}
+              aria-label={t('viewBranch', { showroom })}
               onClick={() => setShowBranches(true)}
             >
               <FiExternalLink aria-hidden="true" />
-              الفروع
+              {t('branches')}
             </button>
-            <span>{distanceKm.toLocaleString('ar-SA')} كم</span>
+            <span>{distanceKm.toLocaleString()} {t('km')}</span>
           </div>
         </div>
       </section>
@@ -99,11 +101,11 @@ export default function StationAndAirportInfo({
             <div className="branches-info-handle" aria-hidden="true" />
 
             <div className="branches-info-header">
-              <h2 id="branches-info-title">الفروع</h2>
+              <h2 id="branches-info-title">{t('branches')}</h2>
               <button
                 type="button"
                 className="branches-info-close"
-                aria-label="إغلاق قائمة الفروع"
+                aria-label={t('closeBranches')}
                 onClick={() => setShowBranches(false)}
               >
                 <FiX aria-hidden="true" />
@@ -123,7 +125,7 @@ export default function StationAndAirportInfo({
                   </div>
 
                   <span className="branches-info-distance">
-                    {branch.distanceKm.toLocaleString('ar-SA')} كم
+                    {branch.distanceKm.toLocaleString()} {t('km')}
                   </span>
                 </article>
               ))}

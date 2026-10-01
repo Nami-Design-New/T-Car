@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { FiFileText, FiUserPlus } from 'react-icons/fi';
 import { formatCurrency } from '@/shared/lib/format';
 import type { AddonService } from '../model';
@@ -13,6 +14,7 @@ interface Props {
 }
 
 export default function AddonsGrid({ addons, onChange }: Props) {
+  const t = useTranslations('carDetails');
   const [selected, setSelected] = useState<string[]>([]);
 
   const toggle = (id: string) => {
@@ -23,7 +25,7 @@ export default function AddonsGrid({ addons, onChange }: Props) {
 
   return (
     <section className="details-section">
-      <h3>خدمات إضافية</h3>
+      <h3>{t('addons')}</h3>
 
       <div className="addons-grid">
         {addons.map((addon) => {
