@@ -26,7 +26,7 @@ export default function ContactInfo() {
 
           <div>
             <span>{t('contact.phone')}</span>
-            <strong>+966 500000000</strong>
+            <strong>{t('phoneValue')}</strong>
           </div>
         </div>
 
@@ -35,7 +35,7 @@ export default function ContactInfo() {
 
           <div>
             <span>{t('contact.email')}</span>
-            <strong>info@tcar.com</strong>
+            <strong>{t('emailValue')}</strong>
           </div>
         </div>
 
@@ -44,7 +44,7 @@ export default function ContactInfo() {
 
           <div>
             <span>{t('contact.address')}</span>
-            <strong>Riyadh, Saudi Arabia</strong>
+            <strong>{t('addressValue')}</strong>
           </div>
         </div>
       </div>

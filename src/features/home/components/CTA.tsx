@@ -1,7 +1,10 @@
 import Button from '@/shared/ui/Button';
 import { Link } from '@/i18n/navigation';
+import { getTranslations } from 'next-intl/server';
 
-export default function CTA() {
+export default async function CTA() {
+  const t = await getTranslations('homeCta');
+
   return (
     <section className="cta">
       <div className="container-tcar">
@@ -9,15 +12,13 @@ export default function CTA() {
           <div className="cta_pattern" />
 
           <div className="cta_text">
-            <h3>انضم كشريك معنا</h3>
+            <h3>{t('title')}</h3>
 
-            <p>
-              انضم إلى منصة تي كار واعرض سياراتك أمام آلاف العملاء، واستقبل طلبات الحجز بكل سهولة.
-            </p>
+            <p>{t('description')}</p>
 
             <Link href="/join-us">
               <Button size="lg" className="bg-white text-primary border-0">
-                انضم الآن
+                {t('cta')}
               </Button>
             </Link>
           </div>

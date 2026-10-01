@@ -115,6 +115,35 @@
     "title": "الأسئلة الشائعة",
     "subtitle": "كل ما تحتاجه لتجربة استئجار سلسة"
   },
+  "homeCta": {
+    "title": "انضم كشريك معنا",
+    "description": "انضم إلى منصة تي كار واعرض سياراتك أمام آلاف العملاء، واستقبل طلبات الحجز بكل سهولة.",
+    "cta": "انضم الآن"
+  },
+  "downloadApp": {
+    "imageAlt": "تطبيق تي كار",
+    "tag": "تطبيق T-Car",
+    "title": "حمّل التطبيق واحجز سيارتك في دقائق",
+    "description": "ابحث عن أفضل السيارات، قارن الأسعار، احجز بسهولة، واستلم سيارتك أينما كنت داخل المملكة.",
+    "appStoreAlt": "حمّل من App Store",
+    "playStoreAlt": "احصل عليه من Google Play"
+  },
+  "whyChooseUs": {
+    "smallTitle": "لماذا نحن",
+    "title": "لماذا تختار",
+    "brandQuestion": "TCar؟",
+    "description": "نجعل تجربة استئجار السيارة أسهل وأسرع وأكثر أمانًا، مع أفضل الأسعار وخدمة احترافية أينما كنت.",
+    "features": {
+      "bestCompanies": "أفضل شركات التأجير",
+      "bestCompaniesDescription": "نتعاون مع أفضل شركات ومعارض تأجير السيارات لتوفير تجربة موثوقة وآمنة.",
+      "roundTheClockSupport": "دعم على مدار الساعة",
+      "roundTheClockSupportDescription": "فريق خدمة العملاء متواجد 24/7 للإجابة عن جميع استفساراتك.",
+      "comprehensiveInsurance": "تأمين شامل",
+      "comprehensiveInsuranceDescription": "خيارات تأمين متعددة تمنحك راحة البال أثناء رحلتك.",
+      "flexiblePickup": "استلام وتسليم مرن",
+      "flexiblePickupDescription": "اختر المكان والوقت المناسبين لاستلام وتسليم سيارتك."
+    }
+  },
   "contact": {
     "smallTitle": "تواصل معنا",
     "title": "يسعدنا سماعك",
@@ -124,6 +153,9 @@
     "phone": "رقم الجوال",
     "email": "البريد الإلكتروني",
     "address": "العنوان",
+    "phoneValue": "+966 500000000",
+    "emailValue": "info@tcar.com",
+    "addressValue": "الرياض، المملكة العربية السعودية",
     "name": "الاسم الكامل",
     "message": "رسالتك",
     "send": "إرسال الرسالة",

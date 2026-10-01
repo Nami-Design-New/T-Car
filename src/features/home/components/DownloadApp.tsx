@@ -1,12 +1,15 @@
 'use client';
 
 import Image from 'next/image';
+import { useTranslations } from 'next-intl';
 
 import phone from '@/assets/images/app-phone.png';
 import appStore from '@/assets/images/Apple Store.webp';
 import playStore from '@/assets/images/Play Sotre.webp';
 
 export default function DownloadApp() {
+  const t = useTranslations('downloadApp');
+
   return (
     <section className="download_app section">
       <div className="container-tcar">
@@ -15,7 +18,7 @@ export default function DownloadApp() {
           <div className="download_app_image">
             <Image
               src={phone}
-              alt="T-Car App"
+              alt={t('imageAlt')}
               width={470}
               height={760}
               priority
@@ -25,16 +28,15 @@ export default function DownloadApp() {
           <div className="download_app_content">
 
             <span className="tag">
-              تطبيق T-Car
+              {t('tag')}
             </span>
 
             <h2>
-              حمّل التطبيق واحجز سيارتك في دقائق
+              {t('title')}
             </h2>
 
             <p>
-              ابحث عن أفضل السيارات، قارن الأسعار، احجز بسهولة،
-              واستلم سيارتك أينما كنت داخل المملكة.
+              {t('description')}
             </p>
 
             <div className="download_buttons">
@@ -42,7 +44,7 @@ export default function DownloadApp() {
               <a href="#">
                 <Image
                   src={appStore}
-                  alt="Download on the App Store"
+                  alt={t('appStoreAlt')}
                   width={180}
                   height={54}
                 />
@@ -51,7 +53,7 @@ export default function DownloadApp() {
               <a href="#">
                 <Image
                   src={playStore}
-                  alt="Get it on Google Play"
+                  alt={t('playStoreAlt')}
                   width={180}
                   height={54}
                 />

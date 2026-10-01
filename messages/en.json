@@ -115,6 +115,35 @@
     "title": "Frequently Asked Questions",
     "subtitle": "Everything you need for a smooth rental experience"
   },
+  "homeCta": {
+    "title": "Join us as a partner",
+    "description": "Join the T-Car platform, showcase your cars to thousands of customers, and receive booking requests with ease.",
+    "cta": "Join now"
+  },
+  "downloadApp": {
+    "imageAlt": "T-Car app",
+    "tag": "T-Car app",
+    "title": "Download the app and book your car in minutes",
+    "description": "Find the best cars, compare prices, book easily, and pick up your car anywhere in the Kingdom.",
+    "appStoreAlt": "Download on the App Store",
+    "playStoreAlt": "Get it on Google Play"
+  },
+  "whyChooseUs": {
+    "smallTitle": "Why us",
+    "title": "Why choose",
+    "brandQuestion": "TCar?",
+    "description": "We make car rental easier, faster, and safer, with the best prices and professional service wherever you are.",
+    "features": {
+      "bestCompanies": "Top rental companies",
+      "bestCompaniesDescription": "We work with the best car rental companies and showrooms to provide a reliable and safe experience.",
+      "roundTheClockSupport": "Round-the-clock support",
+      "roundTheClockSupportDescription": "Our customer service team is available 24/7 to answer all your questions.",
+      "comprehensiveInsurance": "Comprehensive insurance",
+      "comprehensiveInsuranceDescription": "Multiple insurance options give you peace of mind throughout your journey.",
+      "flexiblePickup": "Flexible pickup and return",
+      "flexiblePickupDescription": "Choose the right place and time to pick up and return your car."
+    }
+  },
   "contact": {
     "smallTitle": "Contact Us",
     "title": "We'd Love to Hear From You",
@@ -124,6 +153,9 @@
     "phone": "Phone Number",
     "email": "Email Address",
     "address": "Address",
+    "phoneValue": "+966 500000000",
+    "emailValue": "info@tcar.com",
+    "addressValue": "Riyadh, Saudi Arabia",
     "name": "Full Name",
     "message": "Your Message",
     "send": "Send Message",
