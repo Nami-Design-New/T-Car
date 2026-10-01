@@ -56,6 +56,54 @@
     "station": "الاستلام من محطة القطار",
     "international": "التأجير الدولي"
   },
+  "rentalSearch": {
+    "airport": {
+      "title": "اختر المطار",
+      "description": "اختر المطار الذي ترغب في استلام السيارة منه.",
+      "searchPlaceholder": "ابحث عن مطار...",
+      "confirm": "متابعة"
+    },
+    "branch": {
+      "title": "اختر الفرع",
+      "description": "اختر أقرب فرع لاستلام السيارة.",
+      "searchPlaceholder": "ابحث عن مدينة أو فرع...",
+      "confirm": "متابعة"
+    },
+    "country": {
+      "title": "اختر الدولة",
+      "description": "اختر الدولة التي ترغب باستلام السيارة فيها.",
+      "searchPlaceholder": "ابحث عن دولة...",
+      "confirm": "متابعة"
+    },
+    "station": {
+      "title": "اختر محطة القطار",
+      "description": "اختر محطة القطار التي ترغب في استلام السيارة منها.",
+      "searchPlaceholder": "ابحث عن محطة...",
+      "confirm": "متابعة"
+    },
+    "pickup": {
+      "title": "اختر نوع الاستلام",
+      "delivery": {
+        "title": "نوصل لمكانك",
+        "description": "استلم السيارة أمام منزلك أو موقعك"
+      },
+      "branch": {
+        "title": "استلام من الفرع",
+        "description": "استلم السيارة من أقرب فرع لك"
+      }
+    },
+    "map": {
+      "title": "حدد موقع الاستلام",
+      "searchPlaceholder": "ابحث عن عنوان أو مكان...",
+      "loading": "جاري تحميل الخريطة...",
+      "locating": "جاري التحديد...",
+      "useCurrentLocation": "استخدام موقعي الحالي",
+      "confirm": "تأكيد الموقع",
+      "unsupported": "المتصفح لا يدعم تحديد الموقع",
+      "permissionDenied": "تم رفض إذن الوصول للموقع",
+      "unavailable": "تعذر تحديد موقعك الحالي"
+    }
+  },
   "search": {
     "title": "ابحث عن سيارتك المثالية",
     "location": "موقع الاستلام",

@@ -2,6 +2,7 @@
 
 import { useRef, useState } from 'react';
 import Image from 'next/image';
+import { useTranslations } from 'next-intl';
 import { FiSearch } from 'react-icons/fi';
 import { Dialog } from '@/shared/ui/Dialog';
 import type { Country } from '../model';
@@ -15,6 +16,7 @@ interface Props {
 }
 
 export default function CountryModal({ open, countries, onClose, onSelect }: Props) {
+  const t = useTranslations('rentalSearch.country');
   const [search, setSearch] = useState('');
   const [selected, setSelected] = useState<Country | null>(null);
   const searchRef = useRef<HTMLInputElement>(null);
@@ -26,8 +28,8 @@ export default function CountryModal({ open, countries, onClose, onSelect }: Pro
     <Dialog open={open} onClose={onClose} className="country-dialog" initialFocusRef={searchRef}>
       <Dialog.Header className="country-dialog__header">
         <div>
-          <Dialog.Title>اختر الدولة</Dialog.Title>
-          <Dialog.Description>اختر الدولة التي ترغب باستلام السيارة فيها.</Dialog.Description>
+          <Dialog.Title>{t('title')}</Dialog.Title>
+          <Dialog.Description>{t('description')}</Dialog.Description>
         </div>
         <Dialog.Close />
       </Dialog.Header>
@@ -39,7 +41,7 @@ export default function CountryModal({ open, countries, onClose, onSelect }: Pro
             ref={searchRef}
             id="country-search"
             type="search"
-            placeholder="ابحث عن دولة..."
+            placeholder={t('searchPlaceholder')}
             value={search}
             onChange={(event) => setSearch(event.target.value)}
           />
@@ -71,7 +73,7 @@ export default function CountryModal({ open, countries, onClose, onSelect }: Pro
           disabled={!selected}
           onClick={() => selected && onSelect(selected)}
         >
-          متابعة
+          {t('confirm')}
         </button>
       </Dialog.Footer>
     </Dialog>

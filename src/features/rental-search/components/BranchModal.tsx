@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { FiMapPin, FiSearch } from 'react-icons/fi';
 import { Dialog } from '@/shared/ui/Dialog';
 
@@ -14,6 +15,7 @@ interface Props {
 }
 
 export default function BranchModal({ open, branches, onClose, onSelect }: Props) {
+  const t = useTranslations('rentalSearch.branch');
   const [search, setSearch] = useState('');
   const [selected, setSelected] = useState<Branch | null>(null);
 
@@ -26,9 +28,9 @@ export default function BranchModal({ open, branches, onClose, onSelect }: Props
       <Dialog.Close className="close_btn" />
 
       <div className="modal_header">
-        <Dialog.Title>اختر الفرع</Dialog.Title>
+        <Dialog.Title>{t('title')}</Dialog.Title>
 
-        <Dialog.Description>اختر أقرب فرع لاستلام السيارة.</Dialog.Description>
+        <Dialog.Description>{t('description')}</Dialog.Description>
       </div>
 
       <div className="search_box">
@@ -36,7 +38,7 @@ export default function BranchModal({ open, branches, onClose, onSelect }: Props
 
         <input
           type="text"
-          placeholder="ابحث عن مدينة أو فرع..."
+          placeholder={t('searchPlaceholder')}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
@@ -70,7 +72,7 @@ export default function BranchModal({ open, branches, onClose, onSelect }: Props
         disabled={!selected}
         onClick={() => selected && onSelect(selected)}
       >
-        متابعة
+        {t('confirm')}
       </button>
     </Dialog>
   );

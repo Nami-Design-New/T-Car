@@ -56,6 +56,54 @@
     "station": "Train Station Pickup",
     "international": "International Rental"
   },
+  "rentalSearch": {
+    "airport": {
+      "title": "Choose an airport",
+      "description": "Choose the airport where you would like to pick up the car.",
+      "searchPlaceholder": "Search airports...",
+      "confirm": "Continue"
+    },
+    "branch": {
+      "title": "Choose a branch",
+      "description": "Choose the nearest branch to pick up the car.",
+      "searchPlaceholder": "Search for a city or branch...",
+      "confirm": "Continue"
+    },
+    "country": {
+      "title": "Choose a country",
+      "description": "Choose the country where you would like to pick up the car.",
+      "searchPlaceholder": "Search countries...",
+      "confirm": "Continue"
+    },
+    "station": {
+      "title": "Choose a train station",
+      "description": "Choose the train station where you would like to pick up the car.",
+      "searchPlaceholder": "Search stations...",
+      "confirm": "Continue"
+    },
+    "pickup": {
+      "title": "Choose a pickup type",
+      "delivery": {
+        "title": "We deliver to you",
+        "description": "Pick up the car at your home or location."
+      },
+      "branch": {
+        "title": "Pick up from a branch",
+        "description": "Pick up the car from the nearest branch."
+      }
+    },
+    "map": {
+      "title": "Set pickup location",
+      "searchPlaceholder": "Search for an address or place...",
+      "loading": "Loading map...",
+      "locating": "Locating...",
+      "useCurrentLocation": "Use my current location",
+      "confirm": "Confirm location",
+      "unsupported": "Your browser does not support location services.",
+      "permissionDenied": "Location permission was denied.",
+      "unavailable": "Your current location could not be determined."
+    }
+  },
   "search": {
     "title": "Find Your Perfect Car",
     "location": "Pickup Location",

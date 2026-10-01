@@ -21,7 +21,7 @@ function renderCountryModal(overrides: Partial<React.ComponentProps<typeof Count
 describe('CountryModal', () => {
   it('uses the shared accessible dialog and focuses country search', () => {
     renderCountryModal();
-    expect(screen.getByRole('dialog')).toHaveAccessibleName('اختر الدولة');
+    expect(screen.getByRole('dialog')).toHaveAccessibleName('Choose a country');
     expect(screen.getByRole('searchbox')).toHaveFocus();
   });
 
@@ -32,7 +32,7 @@ describe('CountryModal', () => {
     const country = screen.getByRole('button', { name: 'United Arab Emirates' });
     await user.click(country);
     expect(country).toHaveAttribute('aria-pressed', 'true');
-    await user.click(screen.getByRole('button', { name: 'متابعة' }));
+    await user.click(screen.getByRole('button', { name: 'Continue' }));
     expect(onSelect).toHaveBeenCalledWith(countries[1]);
   });
 

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 
 import { FiSearch } from 'react-icons/fi';
 
@@ -17,6 +18,7 @@ interface Props {
 }
 
 export default function StationModal({ open, stations, onClose, onSelect }: Props) {
+  const t = useTranslations('rentalSearch.station');
   const [search, setSearch] = useState('');
 
   const [selected, setSelected] = useState<Station | null>(null);
@@ -30,9 +32,9 @@ export default function StationModal({ open, stations, onClose, onSelect }: Prop
       <Dialog.Close className="close_btn" />
 
       <div className="modal_header">
-        <Dialog.Title>اختر محطة القطار</Dialog.Title>
+        <Dialog.Title>{t('title')}</Dialog.Title>
 
-        <Dialog.Description>اختر محطة القطار التي ترغب في استلام السيارة منها.</Dialog.Description>
+        <Dialog.Description>{t('description')}</Dialog.Description>
       </div>
 
       <div className="search_box">
@@ -40,7 +42,7 @@ export default function StationModal({ open, stations, onClose, onSelect }: Prop
 
         <input
           type="text"
-          placeholder="ابحث عن محطة..."
+          placeholder={t('searchPlaceholder')}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
@@ -72,7 +74,7 @@ export default function StationModal({ open, stations, onClose, onSelect }: Prop
         disabled={!selected}
         onClick={() => selected && onSelect(selected)}
       >
-        متابعة
+        {t('confirm')}
       </button>
     </Dialog>
   );

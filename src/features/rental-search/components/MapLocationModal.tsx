@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useCallback, useEffect, useRef } from 'react';
-import { useLocale } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { GoogleMap, Marker, useJsApiLoader } from '@react-google-maps/api';
 import { FiSearch, FiMapPin, FiNavigation, FiX, FiLoader } from 'react-icons/fi';
 import { Dialog } from '@/shared/ui/Dialog';
@@ -32,9 +32,10 @@ export default function MapLocationModal({
   open,
   onClose,
   onConfirm,
-  title = 'حدد موقع الاستلام',
+  title,
   initialLocation,
 }: Props) {
+  const t = useTranslations('rentalSearch.map');
   const [position, setPosition] = useState(defaultCenter);
   const [address, setAddress] = useState('');
   const [search, setSearch] = useState('');
@@ -45,6 +46,7 @@ export default function MapLocationModal({
   const [locationError, setLocationError] = useState('');
 
   const locale = useLocale();
+  const displayTitle = title ?? t('title');
 
   // The Maps script is injected once per page session, and useJsApiLoader
   // throws ("must not be called again with different options") if it is later
@@ -110,7 +112,7 @@ export default function MapLocationModal({
 
   const useCurrentLocation = () => {
     if (!navigator.geolocation) {
-      setLocationError('المتصفح لا يدعم تحديد الموقع');
+      setLocationError(t('unsupported'));
       return;
     }
 
@@ -130,8 +132,8 @@ export default function MapLocationModal({
         setIsLocating(false);
         setLocationError(
           err.code === err.PERMISSION_DENIED
-            ? 'تم رفض إذن الوصول للموقع'
-            : 'تعذر تحديد موقعك الحالي'
+            ? t('permissionDenied')
+            : t('unavailable')
         );
       },
       { enableHighAccuracy: true, timeout: 10000 }
@@ -190,7 +192,7 @@ export default function MapLocationModal({
       <Dialog.Close className="close_btn" />
 
       <div className="modal_header">
-        <Dialog.Title>{title}</Dialog.Title>
+        <Dialog.Title>{displayTitle}</Dialog.Title>
       </div>
 
       <div className="search_box">
@@ -199,7 +201,7 @@ export default function MapLocationModal({
           type="text"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          placeholder="ابحث عن عنوان أو مكان..."
+          placeholder={t('searchPlaceholder')}
         />
         {search && (
           <button
@@ -250,7 +252,7 @@ export default function MapLocationModal({
         ) : (
           <>
             <FiMapPin />
-            <span>جاري تحميل الخريطة...</span>
+            <span>{t('loading')}</span>
           </>
         )}
       </div>
@@ -267,7 +269,7 @@ export default function MapLocationModal({
           disabled={isLocating}
         >
           {isLocating ? <FiLoader className="spin" /> : <FiNavigation />}
-          <span>{isLocating ? 'جاري التحديد...' : 'استخدام موقعي الحالي'}</span>
+          <span>{isLocating ? t('locating') : t('useCurrentLocation')}</span>
         </button>
 
         <button
@@ -281,7 +283,7 @@ export default function MapLocationModal({
             })
           }
         >
-          تأكيد الموقع
+          {t('confirm')}
         </button>
       </div>
     </Dialog>

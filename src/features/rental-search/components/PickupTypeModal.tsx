@@ -1,6 +1,7 @@
 'use client';
 
 import Image from 'next/image';
+import { useTranslations } from 'next-intl';
 import { Dialog } from '@/shared/ui/Dialog';
 
 import deliveryImg from '@/assets/icons/delivery-car.svg';
@@ -15,29 +16,31 @@ interface Props {
 }
 
 export default function PickupTypeModal({ open, onClose, onSelect }: Props) {
+  const t = useTranslations('rentalSearch.pickup');
+
   return (
     <Dialog open={open} onClose={onClose} size="lg" className="pickup_modal">
       <Dialog.Close className="close_btn" />
 
       <div className="modal_header">
-        <Dialog.Title>اختر نوع الإستلام</Dialog.Title>
+        <Dialog.Title>{t('title')}</Dialog.Title>
       </div>
 
       <div className="pickup_cards">
         <button className="pickup_card" onClick={() => onSelect('delivery')}>
-          <Image src={deliveryImg} alt="Delivery" />
+          <Image src={deliveryImg} alt={t('delivery.title')} />
 
-          <h4>نوصل لمكانك</h4>
+          <h4>{t('delivery.title')}</h4>
 
-          <p>استلم السيارة أمام منزلك أو موقعك</p>
+          <p>{t('delivery.description')}</p>
         </button>
 
         <button className="pickup_card" onClick={() => onSelect('branch')}>
-          <Image src={branchImg} alt="Branch" />
+          <Image src={branchImg} alt={t('branch.title')} />
 
-          <h4>استلام من الفرع</h4>
+          <h4>{t('branch.title')}</h4>
 
-          <p>استلم السيارة من أقرب فرع لك</p>
+          <p>{t('branch.description')}</p>
         </button>
       </div>
     </Dialog>
