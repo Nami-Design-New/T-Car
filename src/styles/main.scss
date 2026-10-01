@@ -10121,8 +10121,17 @@ img {
   }
 
   &__swiper {
+    display: flex;
+    gap: 14px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
     min-width: 0;
     padding: 2px 2px 6px;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
 
     &:active {
       cursor: grabbing;
@@ -10130,10 +10139,32 @@ img {
   }
 
   &__slide {
+    flex: 0 0 89%;
     height: auto;
+    scroll-snap-align: start;
 
     .car-card {
       height: 100%;
+    }
+  }
+
+  @media (min-width: $breakpoint-sm) {
+    &__swiper {
+      gap: 18px;
+    }
+
+    &__slide {
+      flex-basis: calc((100% - 18px) / 2);
+    }
+  }
+
+  @media (min-width: $breakpoint-lg) {
+    &__swiper {
+      gap: 20px;
+    }
+
+    &__slide {
+      flex-basis: calc((100% - 40px) / 3);
     }
   }
 
