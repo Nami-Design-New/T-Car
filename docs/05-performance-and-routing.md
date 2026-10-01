@@ -128,7 +128,7 @@ async redirects() {
 | P6 | **Lottie is imported directly** (`lottie-react` plus the JSON) in `WalletTab`, `BankAccountsTab`, `BookingsEmptyState`, and `SuccessModal`. | Medium | A lazy `Illustration` component. Consider static SVGs for empty states |
 | P7 | **Hero slides use CSS `background-image`** with the raw `.src`, so there is no resizing, no modern format, and no priority hint. This is the LCP element. | High for LCP | `next/image` with `fill`, `priority` on the first slide, and `sizes="100vw"`. Lazy-load the others |
 | P8 | **All of Bootstrap plus 12.7k lines of SCSS** compile into one 22k-line global CSS file on every route. | Medium | Bootstrap partials only, and split the SCSS ([doc 4](04-component-design.md)) |
-| P9 | **Fonts:** 4 `.ttf` weights (plus an unused `Book` file), and a casing bug in the path. | Medium | Convert to `woff2`. Check whether all 4 weights are used. Fix `Light` |
+| P9 | **Fonts:** 4 `.ttf` weights (plus an unused `Book` file), and a casing bug in the path. | Medium | Done: the four active weights are loaded as `woff2`; the unused `Book` source remains available but is not loaded |
 | P10 | **Two phone input libraries** (`react-phone-input-2` and `react-phone-number-input`). | Low–medium | Keep one |
 | P11 | **`images.remotePatterns` allows `hostname: '**'`**, so the image optimizer will fetch and resize any URL on the internet. | Security and cost | Restrict to the API/CDN host(s) |
 | P12 | **All messages are sent to the client** (`NextIntlClientProvider` without `messages`). | Low now, grows with extraction | `pick()` the needed namespaces |
@@ -220,5 +220,5 @@ and the page, so it runs once per request.
 4. P2: header split and lazy auth dialog.
 5. P6: lazy Lottie or static illustrations.
 6. P5: one carousel, remove Swiper.
-7. P8 and P9: CSS split, Bootstrap partials, `woff2` fonts.
+7. P8: CSS split and Bootstrap partials (the `woff2` font migration is complete).
 8. P10–P12, P15: phone library, image hosts, messages, countdown.
