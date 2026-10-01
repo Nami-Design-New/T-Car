@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import dynamic from 'next/dynamic';
 import { formatCurrency } from '@/shared/lib/format';
 import { useErrorMessage } from '@/shared/hooks/useErrorMessage';
@@ -74,6 +75,7 @@ export default function CarBookingCard({
   pricePerDay,
   originalPrice,
 }: Props) {
+  const t = useTranslations('booking.card');
   const [flow, setFlow] = useState<Flow>({ step: 'closed' });
   const { step } = flow;
   const setStep = (next: 'closed' | 'dates' | 'confirm' | 'payment') => setFlow({ step: next });
@@ -104,18 +106,18 @@ export default function CarBookingCard({
         <div className="car-booking-card-current">
           <h2>
             {pricePerDay}
-            <Image src={RiyalIcon} alt="ريال" width={18} height={18} className="riyal-icon" />
+            <Image src={RiyalIcon} alt={t('currency')} width={18} height={18} className="riyal-icon" />
           </h2>
 
-          <small>/ يوم</small>
+          <small>{t('perDay')}</small>
         </div>
       </div>
 
       <button type="button" className="car-booking-card-btn" onClick={() => setStep('dates')}>
-        احجز الآن
+        {t('bookNow')}
       </button>
 
-      <p className="car-booking-card-note">لن يتم خصم أي مبلغ الآن، الدفع عند الاستلام</p>
+      <p className="car-booking-card-note">{t('paymentNote')}</p>
 
       {step === 'dates' && (
         <BookingDailyModal
@@ -155,9 +157,9 @@ export default function CarBookingCard({
 
       <SuccessModal
         open={step === 'success'}
-        title="تم تأكيد الحجز بنجاح!"
-        description="جاري تحويلك إلى صفحة حجوزاتي..."
-        buttonText="الانتقال الآن"
+        title={t('successTitle')}
+        description={t('successDescription')}
+        buttonText={t('goNow')}
         redirectTo="/account/bookings"
         autoRedirect
       />

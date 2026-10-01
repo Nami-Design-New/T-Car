@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import Image, { type StaticImageData } from 'next/image';
 import { FiX } from 'react-icons/fi';
 import { RadioCards } from '@/shared/ui/RadioCards';
@@ -34,8 +35,8 @@ interface PaymentOption {
 const OPTIONS: PaymentOption[] = [
   {
     id: 'visa',
-    title: 'دفع الكتروني ( فيزا / ماستركارد )',
-    description: 'دعم مدي , فيزا , ماستركارد من اي مكان بالعالم',
+    title: 'visa.title',
+    description: 'visa.description',
     icon: cardIcon,
     iconAlt: '',
     iconWidth: 24,
@@ -43,19 +44,19 @@ const OPTIONS: PaymentOption[] = [
   },
   {
     id: 'tabby',
-    title: 'ادفع لاحقاً عبر تـابي',
-    description: 'قسم فاتورتك على 4 دفعات بدون فوائد',
+    title: 'tabby.title',
+    description: 'tabby.description',
     icon: tabyIcon,
-    iconAlt: 'تابي',
+    iconAlt: '',
     iconWidth: 58,
     iconHeight: 24,
   },
   {
     id: 'tamara',
-    title: 'ادفع لاحقاً عبر تمـارا',
-    description: 'ادفع على 3 دفعات مريحة ومتوافقة مع الشريعة',
+    title: 'tamara.title',
+    description: 'tamara.description',
     icon: tamaraIcon,
-    iconAlt: 'تمارا',
+    iconAlt: '',
     iconWidth: 66,
     iconHeight: 24,
   },
@@ -68,20 +69,21 @@ export default function PaymentMethodModal({
   loading = false,
   error,
 }: Props) {
+  const t = useTranslations('booking.payment');
   const [method, setMethod] = useState<PaymentMethod>('wallet');
   const [usePoints, setUsePoints] = useState(false);
   return (
-    <Dialog open={open} onClose={onClose} placement="bottom-sheet" label="Payment method">
+    <Dialog open={open} onClose={onClose} placement="bottom-sheet" label={t('dialogLabel')}>
       <div className="payment_method_modal bg-white">
         <span className="payment_drag_handle" />
 
         <div className="payment_modal_header d-flex align-items-center justify-content-between mb-3">
-          <h3>طريقة الدفع</h3>
+          <h3>{t('title')}</h3>
           <button
             type="button"
             className="payment_modal_close btn btn-light d-grid p-0"
             onClick={onClose}
-            aria-label="إغلاق"
+            aria-label={t('close')}
           >
             <FiX />
           </button>
@@ -91,7 +93,7 @@ export default function PaymentMethodModal({
           <RadioCards.Root
             value={method}
             onValueChange={(value) => setMethod(value as PaymentMethod)}
-            aria-label="طريقة الدفع"
+            aria-label={t('title')}
             className="d-flex flex-column gap-3"
           >
             <RadioCards.Item
@@ -99,14 +101,14 @@ export default function PaymentMethodModal({
               className={`payment_modal_option d-flex align-items-center justify-content-between gap-3 ${method === 'wallet' ? 'selected' : ''}`}
             >
               <span className="payment_option_text d-flex flex-column">
-                <span className="payment_option_title">المحفظة</span>
-                <span className="payment_option_desc">ادفع بالمحفظة بطريقة اسرع</span>
+                <span className="payment_option_title">{t('wallet')}</span>
+                <span className="payment_option_desc">{t('walletDescription')}</span>
               </span>
               <span className="payment_option_info d-flex align-items-center gap-2">
                 <Image src={walletIcon} alt="" width={24} height={24} />
                 <strong className="d-flex align-items-center gap-1">
                   500
-                  <Image src={riyalIcon} alt="ريال" width={14} height={14} />
+                  <Image src={riyalIcon} alt={t('currency')} width={14} height={14} />
                 </strong>
               </span>
             </RadioCards.Item>
@@ -118,8 +120,8 @@ export default function PaymentMethodModal({
                 className={`payment_modal_option d-flex align-items-center justify-content-between gap-3 ${method === option.id ? 'selected' : ''}`}
               >
                 <span className="payment_option_text d-flex flex-column">
-                  <span className="payment_option_title">{option.title}</span>
-                  <span className="payment_option_desc">{option.description}</span>
+                <span className="payment_option_title">{t(`options.${option.id}.title`)}</span>
+                <span className="payment_option_desc">{t(`options.${option.id}.description`)}</span>
                 </span>
                 <span className="payment_option_info d-flex align-items-center">
                   <Image
@@ -135,8 +137,8 @@ export default function PaymentMethodModal({
 
           <label className="payment_modal_option d-flex align-items-center justify-content-between gap-3">
             <span className="payment_option_text d-flex flex-column">
-              <span className="payment_option_title">استخدم النقاط</span>
-              <span className="payment_option_desc">وفر وادفع بالنقاط اللي ليك</span>
+              <span className="payment_option_title">{t('points')}</span>
+              <span className="payment_option_desc">{t('pointsDescription')}</span>
             </span>
             <span className="points_info d-flex align-items-center gap-3">
               <span className="form-check form-switch m-0 p-0">
@@ -150,12 +152,12 @@ export default function PaymentMethodModal({
               </span>
               <span className="points_value d-flex flex-column" dir="rtl">
                 <small>
-                  حتي <strong>100 نقطة</strong>
+                  {t('upTo')} <strong>100 {t('pointsUnit')}</strong>
                 </small>
                 <span className="points_amount d-flex align-items-center gap-1">
                   <span>=</span>
                   <strong>500</strong>
-                  <Image src={riyalIcon} alt="ريال" width={12} height={12} />
+                  <Image src={riyalIcon} alt={t('currency')} width={12} height={12} />
                 </span>
               </span>
             </span>
@@ -174,7 +176,7 @@ export default function PaymentMethodModal({
           onClick={() => onConfirm(method)}
           disabled={loading}
         >
-          {loading ? 'جاري تأكيد الحجز...' : 'تأكيد'}
+          {loading ? t('confirming') : t('confirm')}
         </button>
       </div>
     </Dialog>

@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import { FiChevronRight, FiChevronLeft, FiClock, FiMapPin } from 'react-icons/fi';
 import { formatCurrency } from '@/shared/lib/format';
@@ -28,21 +29,10 @@ type MapField = 'pickup' | 'dropoff';
 // Sunday-first, matching Date#getDay() (0 = Sunday) used by startOffset below.
 // Column order is then handled by the inherited `dir`, not by reversing this
 // array -- reversing it silently mislabels every column.
-const WEEKDAYS = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+const WEEKDAYS = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
 
 const MONTHS = [
-  'يناير',
-  'فبراير',
-  'مارس',
-  'أبريل',
-  'مايو',
-  'يونيو',
-  'يوليو',
-  'أغسطس',
-  'سبتمبر',
-  'أكتوبر',
-  'نوفمبر',
-  'ديسمبر',
+  'jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec',
 ];
 
 const TIME_SLOTS = ['8:00 AM', '9:00 AM', '10:00 AM', '11:00 AM', '12:00 PM', '1:00 PM', '2:00 PM'];
@@ -52,15 +42,12 @@ function sameDay(a: Date, b: Date) {
   return a.toDateString() === b.toDateString();
 }
 
-function formatShort(d: Date) {
-  return `${d.getDate()} ${MONTHS[d.getMonth()]} ${d.getFullYear()}`;
-}
-
 function getAddressTitle(address: string, fallback: string) {
   return address.split(',')[0]?.trim() || fallback;
 }
 
 export default function BookingDailyModal({ open, onClose, pricePerDay, onConfirm, initialDetails = null, mode = 'create' }: Props) {
+  const t = useTranslations('booking.daily');
   const [cursor, setCursor] = useState<Date>(new Date());
   const [range, setRange] = useState<DateRange>({ start: null, end: null });
   const [time, setTime] = useState('9:00 AM');
@@ -176,7 +163,7 @@ export default function BookingDailyModal({ open, onClose, pricePerDay, onConfir
   };
 
   return (
-    <Dialog open={open} onClose={onClose} size="xl" label={mode === 'edit' ? 'Edit booking' : 'New booking'}>
+    <Dialog open={open} onClose={onClose} size="xl" label={mode === 'edit' ? t('editBooking') : t('newBooking')}>
       <div className="booking_modal">
         <div className="booking_modal_calendar">
           <div className="calendar_header">
@@ -184,7 +171,7 @@ export default function BookingDailyModal({ open, onClose, pricePerDay, onConfir
               <FiChevronRight />
             </button>
 
-            <span>{MONTHS[month]} {year}</span>
+            <span>{t(`months.${MONTHS[month]}`)} {year}</span>
 
             <button type="button" onClick={() => setCursor(new Date(year, month + 1, 1))}>
               <FiChevronLeft />
@@ -192,7 +179,7 @@ export default function BookingDailyModal({ open, onClose, pricePerDay, onConfir
           </div>
 
           <div className="calendar_weekdays">
-            {WEEKDAYS.map((day) => <span key={day}>{day}</span>)}
+            {WEEKDAYS.map((day) => <span key={day}>{t(`weekdays.${day}`)}</span>)}
           </div>
 
           <div className="calendar_days">
@@ -225,14 +212,14 @@ export default function BookingDailyModal({ open, onClose, pricePerDay, onConfir
           {range.start && (
             <div className="range_display">
               {range.end
-                ? `${formatShort(range.start)} إلى ${formatShort(range.end)}`
-                : `${formatShort(range.start)} — اختر تاريخ النهاية`}
+                ? `${range.start.toLocaleDateString()} ${t('to')} ${range.end.toLocaleDateString()}`
+                : `${range.start.toLocaleDateString()} — ${t('chooseEndDate')}`}
             </div>
           )}
         </div>
 
         <div className="booking_field">
-          <label>حدد وقت الاستلام والتسليم</label>
+          <label>{t('pickupDropoffTime')}</label>
           <div className="time_select">
             <FiClock />
             <select value={time} onChange={(e) => setTime(e.target.value)}>
@@ -243,10 +230,10 @@ export default function BookingDailyModal({ open, onClose, pricePerDay, onConfir
 
         <div className="booking_field booking_location_field">
           <div className="booking_location_label">
-            <label htmlFor="pickup-address">عنوان الاستلام</label>
+            <label htmlFor="pickup-address">{t('pickupAddress')}</label>
             <button type="button" onClick={() => setMapField('pickup')}>
               <FiMapPin />
-              اختر من الخريطة
+              {t('chooseFromMap')}
             </button>
           </div>
           {pickupLocation ? (
@@ -254,22 +241,22 @@ export default function BookingDailyModal({ open, onClose, pricePerDay, onConfir
               type="button"
               className="booking_daily_address_card"
               onClick={() => setMapField('pickup')}
-              aria-label="تغيير عنوان الاستلام"
+              aria-label={t('changePickup')}
             >
               <span className="booking_daily_address_icon">
                 <Image src={deliveryCarIcon} alt="" width={24} height={24} />
               </span>
               <span className="booking_daily_address_content">
-                <strong>{getAddressTitle(pickupAddress, 'موقع الاستلام')}</strong>
+                <strong>{getAddressTitle(pickupAddress, t('pickupLocation'))}</strong>
                 <small>{pickupAddress}</small>
               </span>
-              <span className="booking_daily_address_distance">تم التحديد</span>
+              <span className="booking_daily_address_distance">{t('selected')}</span>
             </button>
           ) : (
             <input
               id="pickup-address"
               type="text"
-              placeholder="ادخل عنوانك"
+              placeholder={t('enterAddress')}
               value={pickupAddress}
               onChange={(e) => {
                 setPickupAddress(e.target.value);
@@ -277,15 +264,15 @@ export default function BookingDailyModal({ open, onClose, pricePerDay, onConfir
               }}
             />
           )}
-          <p>يجب أن يكون الموقع في حدود <strong>20 كم</strong> من موقع المعرض</p>
+          <p>{t('distanceHint')}</p>
         </div>
 
         <div className="booking_field booking_location_field">
           <div className="booking_location_label">
-            <label htmlFor="dropoff-address">عنوان التسليم</label>
+            <label htmlFor="dropoff-address">{t('dropoffAddress')}</label>
             <button type="button" onClick={() => setMapField('dropoff')}>
               <FiMapPin />
-              اختر من الخريطة
+              {t('chooseFromMap')}
             </button>
           </div>
           {dropoffLocation ? (
@@ -293,22 +280,22 @@ export default function BookingDailyModal({ open, onClose, pricePerDay, onConfir
               type="button"
               className="booking_daily_address_card"
               onClick={() => setMapField('dropoff')}
-              aria-label="تغيير عنوان التسليم"
+              aria-label={t('changeDropoff')}
             >
               <span className="booking_daily_address_icon">
                 <Image src={deliveryCarIcon} alt="" width={24} height={24} />
               </span>
               <span className="booking_daily_address_content">
-                <strong>{getAddressTitle(dropoffAddress, 'موقع التسليم')}</strong>
+                <strong>{getAddressTitle(dropoffAddress, t('dropoffLocation'))}</strong>
                 <small>{dropoffAddress}</small>
               </span>
-              <span className="booking_daily_address_distance">تم التحديد</span>
+              <span className="booking_daily_address_distance">{t('selected')}</span>
             </button>
           ) : (
             <input
               id="dropoff-address"
               type="text"
-              placeholder="ادخل عنوانك"
+              placeholder={t('enterAddress')}
               value={dropoffAddress}
               onChange={(e) => {
                 setDropoffAddress(e.target.value);
@@ -316,14 +303,14 @@ export default function BookingDailyModal({ open, onClose, pricePerDay, onConfir
               }}
             />
           )}
-          <p>يجب أن يكون الموقع في حدود <strong>20 كم</strong> من موقع المعرض</p>
+          <p>{t('distanceHint')}</p>
         </div>
 
         <div className="booking_field">
-          <label>تفاصيل إضافية</label>
+          <label>{t('additionalDetails')}</label>
           <textarea
             rows={4}
-            placeholder="اكتب أي ملاحظات أو طلبات خاصة..."
+            placeholder={t('notesPlaceholder')}
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
           />
@@ -336,11 +323,11 @@ export default function BookingDailyModal({ open, onClose, pricePerDay, onConfir
             disabled={!range.start || !range.end}
             onClick={handleConfirmClick}
           >
-            {mode === 'edit' ? 'إرسال طلب التعديل' : 'متابعة الحجز'}
+            {mode === 'edit' ? t('submitEdit') : t('continue')}
           </button>
 
           <div className="booking_total">
-            <span>الإجمالي</span>
+            <span>{t('total')}</span>
             <h3>{formatCurrency(total)}</h3>
           </div>
         </div>
@@ -352,7 +339,7 @@ export default function BookingDailyModal({ open, onClose, pricePerDay, onConfir
           open
           onClose={() => setMapField(null)}
           onConfirm={handleLocationConfirm}
-          title={mapField === 'dropoff' ? 'حدد موقع التسليم' : 'حدد موقع الاستلام'}
+          title={mapField === 'dropoff' ? t('selectDropoff') : t('selectPickup')}
           initialLocation={mapField === 'dropoff' ? dropoffLocation : pickupLocation}
         />
       )}

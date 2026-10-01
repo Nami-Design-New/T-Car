@@ -481,6 +481,24 @@
       "cancelledFailure": "Failed to cancel booking"
     }
   },
+  "booking": {
+    "daily": {
+      "editBooking": "Edit booking",
+      "newBooking": "New booking",
+      "weekdays": { "sun": "Sun", "mon": "Mon", "tue": "Tue", "wed": "Wed", "thu": "Thu", "fri": "Fri", "sat": "Sat" },
+      "months": { "jan": "January", "feb": "February", "mar": "March", "apr": "April", "may": "May", "jun": "June", "jul": "July", "aug": "August", "sep": "September", "oct": "October", "nov": "November", "dec": "December" },
+      "to": "to", "chooseEndDate": "Choose an end date", "pickupDropoffTime": "Pickup and drop-off time", "pickupAddress": "Pickup address", "dropoffAddress": "Drop-off address", "chooseFromMap": "Choose from map", "changePickup": "Change pickup address", "changeDropoff": "Change drop-off address", "pickupLocation": "Pickup location", "dropoffLocation": "Drop-off location", "selected": "Selected", "enterAddress": "Enter your address", "distanceHint": "The location must be within 20 km of the showroom", "additionalDetails": "Additional details", "notesPlaceholder": "Write any notes or special requests...", "submitEdit": "Send change request", "continue": "Continue booking", "total": "Total", "selectPickup": "Set pickup location", "selectDropoff": "Set drop-off location"
+    },
+    "confirm": {
+      "dialogLabel": "Confirm booking", "close": "Close", "back": "Back", "title": "Confirm booking", "perDay": "/ day", "pickupAddress": "Pickup address", "dropoffAddress": "Drop-off address", "pickupTime": "Pickup time", "dropoffTime": "Drop-off time", "insurance": "Insurance details", "insuranceValue": "The car will be ready before the appointment", "orderTime": "Order time", "priceDetails": "Price details", "dailyPrice": "Daily price", "days": "Number of days", "day": "days", "subtotal": "Subtotal", "tax": "Tax", "total": "Total", "termsTitle": "Terms and conditions", "eligibility": "I agree to all requirements and am eligible to book.", "continuePayment": "Continue to payment",
+      "terms": { "license": "I have a valid driving license.", "identity": "I have a valid national ID or residency permit.", "refundable": "Some rental locations or prepayments may require a refundable amount.", "agree": "I agree to all terms and conditions." }
+    },
+    "payment": {
+      "dialogLabel": "Payment method", "title": "Payment method", "close": "Close", "wallet": "Wallet", "walletDescription": "Pay from your wallet faster", "points": "Use points", "pointsDescription": "Save by paying with your points", "upTo": "Up to", "pointsUnit": "points", "currency": "SAR", "confirming": "Confirming booking...", "confirm": "Confirm",
+      "options": { "visa": { "title": "Electronic payment (Visa / Mastercard)", "description": "Mada, Visa, and Mastercard accepted worldwide" }, "tabby": { "title": "Pay later with Tabby", "description": "Split your bill into 4 interest-free payments" }, "tamara": { "title": "Pay later with Tamara", "description": "Pay in 3 comfortable, Sharia-compliant installments" } }
+    },
+    "card": { "currency": "SAR", "perDay": "/ day", "bookNow": "Book now", "paymentNote": "No amount will be charged now; pay on pickup", "successTitle": "Booking confirmed successfully!", "successDescription": "Redirecting to your bookings...", "goNow": "Go now" }
+  },
   "carDetails": {
     "addons": "Additional services",
     "modelYear": "Model {year}",

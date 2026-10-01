@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { FiX, FiStar, FiArrowLeft } from 'react-icons/fi';
 import { formatCurrency } from '@/shared/lib/format';
 import { Dialog } from '@/shared/ui/Dialog';
@@ -21,25 +22,6 @@ interface Props {
   booking: BookingDetails;
 }
 
-const MONTHS = [
-  'يناير',
-  'فبراير',
-  'مارس',
-  'أبريل',
-  'مايو',
-  'يونيو',
-  'يوليو',
-  'أغسطس',
-  'سبتمبر',
-  'أكتوبر',
-  'نوفمبر',
-  'ديسمبر',
-];
-
-function formatFull(d: Date, time: string) {
-  return `${d.getDate()} ${MONTHS[d.getMonth()]} ${d.getFullYear()} - ${time}`;
-}
-
 export default function BookingConfirmModal({
   open,
   onClose,
@@ -52,19 +34,21 @@ export default function BookingConfirmModal({
   rating,
   booking,
 }: Props) {
+  const t = useTranslations('booking.confirm');
   const [termsAccepted, setTermsAccepted] = useState(false);
+  const formatFull = (date: Date, time: string) => `${date.toLocaleDateString()} - ${time}`;
   return (
-    <Dialog open={open} onClose={onClose} size="xl" label="Confirm booking">
+    <Dialog open={open} onClose={onClose} size="xl" label={t('dialogLabel')}>
       <div className="confirm_modal confirm_booking_modal">
-        <button className="close_btn" onClick={onClose} aria-label="إغلاق">
+        <button className="close_btn" onClick={onClose} aria-label={t('close')}>
           <FiX />
         </button>
 
         <div className="confirm_modal_header">
-          <button type="button" className="back_btn" onClick={onBack} aria-label="رجوع">
+          <button type="button" className="back_btn" onClick={onBack} aria-label={t('back')}>
             <FiArrowLeft className="mirror-in-rtl" />
           </button>
-          <h2>تأكيد الحجز</h2>
+          <h2>{t('title')}</h2>
         </div>
 
         <div className="confirm_modal_scroll">
@@ -84,38 +68,38 @@ export default function BookingConfirmModal({
 
             <div className="confirm_car_summary_price">
               <span className="old">{formatCurrency(booking.pricePerDay + 100)}</span>
-              <span className="current">{formatCurrency(booking.pricePerDay)}/يوم</span>
+              <span className="current">{formatCurrency(booking.pricePerDay)}{t('perDay')}</span>
             </div>
           </div>
 
           <div className="confirm_dates">
             <div className="confirm_date_row">
-              <span className="label">عنوان الاستلام</span>
+              <span className="label">{t('pickupAddress')}</span>
               <span className="value">{booking.pickupAddress || showroom}</span>
             </div>
 
             <div className="confirm_date_row">
-              <span className="label">عنوان التسليم</span>
+              <span className="label">{t('dropoffAddress')}</span>
               <span className="value">{booking.dropoffAddress || showroom}</span>
             </div>
 
             <div className="confirm_date_row">
-              <span className="label">موعد الاستلام</span>
+              <span className="label">{t('pickupTime')}</span>
               <span className="value">{formatFull(booking.startDate, booking.time)}</span>
             </div>
 
             <div className="confirm_date_row">
-              <span className="label">موعد التسليم</span>
+              <span className="label">{t('dropoffTime')}</span>
               <span className="value">{formatFull(booking.endDate, booking.time)}</span>
             </div>
 
             <div className="confirm_date_row">
-              <span className="label">تفاصيل التأمين</span>
-              <span className="value">تأمين السيارة تكون جاهزة قبل الموعد</span>
+              <span className="label">{t('insurance')}</span>
+              <span className="value">{t('insuranceValue')}</span>
             </div>
 
             <div className="confirm_date_row">
-              <span className="label">وقت الطلب</span>
+              <span className="label">{t('orderTime')}</span>
               <span className="value">
                 {new Date().toLocaleString('ar-SA', {
                   day: 'numeric',
@@ -129,44 +113,44 @@ export default function BookingConfirmModal({
           </div>
 
           <div className="confirm_section">
-            <h3>تفاصيل السعر</h3>
+            <h3>{t('priceDetails')}</h3>
 
             <div className="price_breakdown">
               <div className="price_item">
-                <span>السعر اليومي</span>
+                <span>{t('dailyPrice')}</span>
                 <strong>{formatCurrency(booking.pricePerDay)}</strong>
               </div>
 
               <div className="price_item">
-                <span>عدد الأيام</span>
-                <strong>{booking.days} يوم</strong>
+                <span>{t('days')}</span>
+                <strong>{booking.days} {t('day')}</strong>
               </div>
 
               <div className="price_item">
-                <span>المجموع الفرعي</span>
+                <span>{t('subtotal')}</span>
                 <strong>{formatCurrency(booking.subtotal)}</strong>
               </div>
 
               <div className="price_item">
-                <span>الضريبة</span>
+                <span>{t('tax')}</span>
                 <strong>{formatCurrency(booking.vat)}</strong>
               </div>
 
               <div className="price_total">
-                <span>الإجمالي</span>
+                <span>{t('total')}</span>
                 <h3>{formatCurrency(booking.total)}</h3>
               </div>
             </div>
           </div>
 
           <div className="confirm_section">
-            <h3>الشروط والأحكام</h3>
+            <h3>{t('termsTitle')}</h3>
 
             <ul>
-              <li>لدي رخصة قيادة سارية.</li>
-              <li>لدي هوية وطنية سارية / إقامة.</li>
-              <li>قد يتطلب بعض مواقف التأجير أو الدفع مقدماً مبلغاً قابلاً للاسترداد.</li>
-              <li>أوافق على جميع الشروط والأحكام.</li>
+              <li>{t('terms.license')}</li>
+              <li>{t('terms.identity')}</li>
+              <li>{t('terms.refundable')}</li>
+              <li>{t('terms.agree')}</li>
             </ul>
 
             <label>
@@ -175,14 +159,14 @@ export default function BookingConfirmModal({
                 checked={termsAccepted}
                 onChange={(e) => setTermsAccepted(e.target.checked)}
               />{' '}
-              أوافق على جميع هذه المتطلبات، أنا مؤهل للحجز.
+              {t('eligibility')}
             </label>
           </div>
         </div>
 
         <div className="confirm_modal_footer">
           <button type="button" className="pay_btn" onClick={onContinue}>
-            متابعة للدفع
+            {t('continuePayment')}
           </button>
         </div>
       </div>

@@ -1,14 +1,15 @@
-import { render, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 import PaymentMethodModal from './PaymentMethodModal';
+import { renderWithIntl } from '@/shared/test/render';
 
 describe('PaymentMethodModal', () => {
   it('offers the payment methods as one radio group and confirms the chosen one', async () => {
     const onConfirm = vi.fn();
-    render(<PaymentMethodModal open onClose={() => {}} onConfirm={onConfirm} />);
+    renderWithIntl(<PaymentMethodModal open onClose={() => {}} onConfirm={onConfirm} />);
 
-    const group = screen.getByRole('radiogroup', { name: 'طريقة الدفع' });
+    const group = screen.getByRole('radiogroup', { name: 'Payment method' });
     expect(group).toBeInTheDocument();
     expect(screen.getAllByRole('radio')).toHaveLength(4);
 
@@ -21,12 +22,12 @@ describe('PaymentMethodModal', () => {
     expect(tabby).toBeChecked();
     expect(tabby).toHaveClass('selected');
 
-    await userEvent.click(screen.getByRole('button', { name: 'تأكيد' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Confirm' }));
     expect(onConfirm).toHaveBeenCalledWith('tabby');
   });
 
   it('keeps the points switch outside the payment choice', () => {
-    render(<PaymentMethodModal open onClose={() => {}} onConfirm={() => {}} />);
+    renderWithIntl(<PaymentMethodModal open onClose={() => {}} onConfirm={() => {}} />);
     const points = screen.getByRole('switch');
     expect(screen.getByRole('radiogroup')).not.toContainElement(points);
   });
