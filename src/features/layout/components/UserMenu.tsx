@@ -8,7 +8,8 @@ import { ImUser } from 'react-icons/im';
 import { Link } from '@/i18n/navigation';
 import { Menu } from '@/shared/ui/Menu';
 
-import accountIcon from '@assets/icons/account.svg';
+import { ICONS } from '@/shared/config/assets';
+const accountIcon = ICONS.account;
 
 interface Props {
   avatarUrl?: string;

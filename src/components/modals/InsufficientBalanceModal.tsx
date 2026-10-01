@@ -4,7 +4,8 @@ import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { createPortal } from 'react-dom';
 import { FiX } from 'react-icons/fi';
-import walletIcon from '@assets/icons/Wallet.svg';
+import { PAYMENT_ICONS } from '@/shared/config/assets';
+const walletIcon = PAYMENT_ICONS.wallet;
 
 interface Props {
   open: boolean;

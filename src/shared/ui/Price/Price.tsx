@@ -2,7 +2,8 @@ import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { cn } from '@/shared/lib/cn';
 import { formatAmount } from '@/shared/lib/format';
-import sarIcon from '@assets/icons/sar.svg';
+import { ICONS } from '@/shared/config/assets';
+const sarIcon = ICONS.riyal;
 import './Price.scss';
 
 const ICON_SIZES = { sm: 14, md: 16, lg: 20, xl: 30 } as const;

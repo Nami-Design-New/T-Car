@@ -10,9 +10,10 @@ import { Price } from '@/shared/ui/Price';
 import type { WalletSummary, WalletTransaction } from '../model';
 import Loader from '@/shared/ui/Loader';
 
-import walletIcon from '@assets/icons/money.svg';
-import coinIcon from '@assets/icons/coin.svg';
-import balanceIcon from '@assets/icons/balance.svg';
+import { ICONS } from '@/shared/config/assets';
+const walletIcon = ICONS.money;
+const coinIcon = ICONS.coin;
+const balanceIcon = ICONS.balance;
 
 interface Props {
   summary: WalletSummary;

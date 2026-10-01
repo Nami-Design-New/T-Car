@@ -4,8 +4,9 @@ import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { Dialog } from '@/shared/ui/Dialog';
 
-import deliveryImg from '@/assets/icons/delivery-car.svg';
-import branchImg from '@/assets/icons/branch-car.svg';
+import { ICONS } from '@/shared/config/assets';
+const deliveryImg = ICONS.deliveryCar;
+const branchImg = ICONS.branchCar;
 import type { PickupType } from '../model';
 import './PickupTypeModal.scss';
 

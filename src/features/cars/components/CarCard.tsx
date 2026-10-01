@@ -3,7 +3,8 @@
 import { Link } from '@/i18n/navigation';
 import { discountPercent as getDiscountPercent, type CarListing } from '../model';
 import giftImage from '@assets/images/gift.svg';
-import RiyalIcon from '@assets/ryal.svg';
+import { ICONS } from '@/shared/config/assets';
+const RiyalIcon = ICONS.riyalAlt;
 import { cn } from '@/shared/lib/cn';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';

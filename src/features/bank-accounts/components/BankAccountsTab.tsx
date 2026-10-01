@@ -8,8 +8,9 @@ import Loader from '@/shared/ui/Loader';
 import { EmptyState } from '@/shared/ui/EmptyState';
 import { ErrorState } from '@/shared/ui/ErrorState';
 
-import deleteIcon from '@assets/icons/bank-delete.svg';
-import editIcon from '@assets/icons/bank-edit.svg';
+import { ICONS } from '@/shared/config/assets';
+const deleteIcon = ICONS.bankDelete;
+const editIcon = ICONS.bankEdit;
 
 interface Props {
   accounts: BankAccount[];

@@ -7,11 +7,12 @@ import { FiX } from 'react-icons/fi';
 import { RadioCards } from '@/shared/ui/RadioCards';
 import { Dialog } from '@/shared/ui/Dialog';
 import type { PaymentMethod } from '../model';
-import walletIcon from '@assets/icons/Wallet.svg';
-import cardIcon from '@assets/card.svg';
-import tabyIcon from '@assets/taby.svg';
-import tamaraIcon from '@assets/tamara.svg';
-import riyalIcon from '@assets/icons/sar.svg';
+import { ICONS, PAYMENT_ICONS } from '@/shared/config/assets';
+const walletIcon = PAYMENT_ICONS.wallet;
+const cardIcon = PAYMENT_ICONS.card;
+const tabyIcon = PAYMENT_ICONS.tabby;
+const tamaraIcon = PAYMENT_ICONS.tamara;
+const riyalIcon = ICONS.riyal;
 
 interface Props {
   open: boolean;

@@ -6,7 +6,8 @@ import Image from 'next/image';
 import { FiExternalLink, FiHome, FiX } from 'react-icons/fi';
 import { LuPlane } from 'react-icons/lu';
 import { MdTrain } from 'react-icons/md';
-import branchIcon from '@assets/icons/branch-car.svg';
+import { ICONS } from '@/shared/config/assets';
+const branchIcon = ICONS.branchCar;
 import type { PickupPoint } from '@/features/cars';
 import type { CarPickupInfo } from '../model';
 

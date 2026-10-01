@@ -9,7 +9,8 @@ import type { AppError } from '@/shared/lib/errors';
 import { ResultDialog } from '@/shared/ui/ResultDialog';
 
 import Image from 'next/image';
-import RiyalIcon from '@/assets/icons/sar.svg';
+import { ICONS } from '@/shared/config/assets';
+const RiyalIcon = ICONS.riyal;
 import type { BookingDetails, PaymentMethod } from '../model';
 
 import type { StaticImageData } from 'next/image';

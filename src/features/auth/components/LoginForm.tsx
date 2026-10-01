@@ -5,7 +5,8 @@ import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import PhoneField from '@/shared/ui/PhoneField';
 import logo from '@assets/images/fav.svg';
-import whatsappIcon from '@assets/icons/whatsapp-icon.svg';
+import { ICONS } from '@/shared/config/assets';
+const whatsappIcon = ICONS.whatsapp;
 
 type Props = {
   /** Sends the code to this phone. */

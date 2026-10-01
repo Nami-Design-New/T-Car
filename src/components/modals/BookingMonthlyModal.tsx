@@ -7,7 +7,8 @@ import { FiClock, FiMapPin } from 'react-icons/fi';
 import { formatCurrency } from '@/shared/lib/format';
 import { MapLocationModal, type LocationData } from '@/features/rental-search';
 import type { BookingDetails } from '@/features/booking';
-import deliveryCarIcon from '@assets/icons/delivery-car.svg';
+import { ICONS } from '@/shared/config/assets';
+const deliveryCarIcon = ICONS.deliveryCar;
 
 interface Props {
   open: boolean;

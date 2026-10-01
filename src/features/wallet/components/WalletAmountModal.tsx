@@ -5,7 +5,8 @@ import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { Dialog } from '@/shared/ui/Dialog';
 import { formatAmount } from '@/shared/lib/format';
-import sarIcon from '@assets/icons/sar.svg';
+import { ICONS } from '@/shared/config/assets';
+const sarIcon = ICONS.riyal;
 
 interface Props {
   open: boolean;

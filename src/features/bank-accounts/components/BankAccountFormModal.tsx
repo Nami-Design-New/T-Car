@@ -7,7 +7,8 @@ import { FiX } from 'react-icons/fi';
 import { PiBank } from 'react-icons/pi';
 import { Dialog } from '@/shared/ui/Dialog';
 import { normalizeIban, type Bank, type BankAccount, type BankAccountPayload } from '../model';
-import arrowDownIcon from '@assets/icons/arrow-down.svg';
+import { ICONS } from '@/shared/config/assets';
+const arrowDownIcon = ICONS.arrowDown;
 
 interface Props {
   open: boolean;
