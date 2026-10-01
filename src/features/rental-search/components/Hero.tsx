@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import { useRouter } from '@/i18n/navigation';
 
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -38,7 +39,7 @@ interface Props {
   options: RentalSearchOptions;
 }
 
-const slides = [hero1.src, hero2.src, hero3.src];
+const slides = [hero1, hero2, hero3];
 
 export default function Hero({ options }: Props) {
   const t = useTranslations();
@@ -219,13 +220,17 @@ export default function Hero({ options }: Props) {
         className="hero_swiper"
       >
         {slides.map((image, index) => (
-          <SwiperSlide key={index}>
-            <div
-              className="hero_slide"
-              style={{
-                backgroundImage: `url(${image})`,
-              }}
-            />
+          <SwiperSlide key={image.src}>
+            <div className="hero_slide" style={{ position: 'relative' }}>
+              <Image
+                src={image}
+                alt=""
+                fill
+                priority={index === 0}
+                sizes="100vw"
+                style={{ objectFit: 'cover', objectPosition: 'center' }}
+              />
+            </div>
           </SwiperSlide>
         ))}
       </Swiper>
