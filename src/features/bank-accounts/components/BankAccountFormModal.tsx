@@ -2,6 +2,7 @@
 
 import { FormEvent, useEffect, useState } from 'react';
 import Image from 'next/image';
+import { useTranslations } from 'next-intl';
 import { FiX } from 'react-icons/fi';
 import { PiBank } from 'react-icons/pi';
 import { Dialog } from '@/shared/ui/Dialog';
@@ -18,11 +19,6 @@ interface Props {
   onClose: () => void;
   onConfirm: (payload: BankAccountPayload) => void;
 }
-
-const COPY = {
-  add: { title: 'إضافة حساب بنكي', submit: 'إضافة' },
-  edit: { title: 'تعديل حساب بنكي', submit: 'حفظ' },
-};
 
 function BankLogo({ bank }: { bank: Bank }) {
   return bank.logo ? (
@@ -42,6 +38,7 @@ export default function BankAccountFormModal({
   onClose,
   onConfirm,
 }: Props) {
+  const t = useTranslations('bankAccounts.form');
   const [bankId, setBankId] = useState('');
   const [iban, setIban] = useState('');
   const [pickerOpen, setPickerOpen] = useState(false);
@@ -53,7 +50,8 @@ export default function BankAccountFormModal({
     setPickerOpen(false);
   }, [open, account]);
 
-  const copy = COPY[mode];
+  const title = t(`${mode}.title`);
+  const submit = t(`${mode}.submit`);
   const selectedBank = banks.find((bank) => bank.id === bankId);
   const normalizedIban = normalizeIban(iban);
   const unchanged =
@@ -81,18 +79,18 @@ export default function BankAccountFormModal({
       placement="bottom-sheet"
       closeOnEscape={!loading}
       closeOnBackdrop={!loading}
-      label={copy.title}
+      label={title}
       className="bank_form_modal bg-white"
     >
         <span className="wallet_topup_drag_handle" aria-hidden="true" />
 
         <div className="wallet_topup_header d-flex align-items-center justify-content-between">
-          <h3 className="m-0">{copy.title}</h3>
+          <h3 className="m-0">{title}</h3>
           <button
             type="button"
             className="wallet_topup_close btn btn-light d-grid p-0"
             onClick={handleClose}
-            aria-label="إغلاق"
+            aria-label={t('close')}
           >
             <FiX />
           </button>
@@ -101,7 +99,7 @@ export default function BankAccountFormModal({
         <form onSubmit={handleSubmit}>
           <div className="bank_form_field">
             <span className="bank_form_label" id="bank_form_bank_label">
-              اسم البنك
+              {t('bankName')}
             </span>
             <div className="bank_form_picker">
               <button
@@ -118,7 +116,7 @@ export default function BankAccountFormModal({
                     {selectedBank.name}
                   </span>
                 ) : (
-                  <span className="bank_form_placeholder">اختر البنك</span>
+                  <span className="bank_form_placeholder">{t('chooseBank')}</span>
                 )}
                 <Image src={arrowDownIcon} alt="" width={18} height={18} className="bank_form_arrow" />
               </button>
@@ -144,7 +142,7 @@ export default function BankAccountFormModal({
 
           <div className="bank_form_field">
             <label className="bank_form_label" htmlFor="bank_form_iban">
-              رقم الآيبان
+              {t('iban')}
             </label>
             <input
               id="bank_form_iban"
@@ -162,9 +160,9 @@ export default function BankAccountFormModal({
 
           <button type="submit" className="wallet_topup_submit btn w-100" disabled={!valid || loading}>
             {loading ? (
-              <span className="spinner-border spinner-border-sm" role="status" aria-label="جاري التنفيذ" />
+              <span className="spinner-border spinner-border-sm" role="status" aria-label={t('loading')} />
             ) : (
-              copy.submit
+              submit
             )}
           </button>
         </form>

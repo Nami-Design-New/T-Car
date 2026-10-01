@@ -17,7 +17,7 @@ describe('BankSelectModal', () => {
     const onSelect = vi.fn();
     const user = userEvent.setup();
     renderWithIntl(<BankSelectModal open accounts={[account]} onClose={vi.fn()} onSelect={onSelect} />);
-    expect(screen.getByRole('dialog')).toHaveAccessibleName('اختر البنك');
+    expect(screen.getByRole('dialog')).toHaveAccessibleName('Choose a bank');
     await user.click(screen.getByRole('button', { name: /Al Rajhi/ }));
     expect(onSelect).toHaveBeenCalledWith(account);
   });
@@ -26,7 +26,7 @@ describe('BankSelectModal', () => {
     const onClose = vi.fn();
     const user = userEvent.setup();
     renderWithIntl(<BankSelectModal open accounts={[]} onClose={onClose} onSelect={vi.fn()} />);
-    expect(screen.getByText('لا توجد حسابات بنكية مضافة')).toBeInTheDocument();
+    expect(screen.getByText('No bank accounts added')).toBeInTheDocument();
     await user.click(screen.getByRole('button', { name: 'Close' }));
     expect(onClose).toHaveBeenCalledOnce();
   });

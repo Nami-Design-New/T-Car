@@ -386,11 +386,63 @@
     }
   },
   "wallet": {
+    "topUpTitle": "Top up wallet",
+    "topUp": "Top up",
+    "withdrawTitle": "Withdraw balance",
+    "withdraw": "Withdraw",
+    "totalBalance": "Total balance",
+    "addBalance": "Add balance",
+    "withdrawBalance": "Withdraw balance",
+    "withdrawableBalance": "Withdrawable balance",
+    "nonWithdrawableBalance": "Non-withdrawable balance",
+    "history": "Balance history",
+    "topUpSuccess": "Top-up completed successfully",
+    "topUpFailure": "Top-up failed",
+    "withdrawSuccess": "Withdrawal completed successfully",
+    "withdrawFailure": "Withdrawal failed",
+    "transaction": {
+      "topup": "Top-up",
+      "refund": "Refund",
+      "payment": "Payment",
+      "withdraw": "Withdrawal"
+    },
+    "amount": {
+      "rangeMin": "Minimum {min} SAR",
+      "rangeWithMax": "Minimum {min} SAR - Maximum {max} SAR",
+      "loading": "Processing"
+    },
+    "bankSelect": {
+      "title": "Choose a bank",
+      "empty": "No bank accounts added"
+    },
     "empty": {
       "history": "No wallet activity yet"
     }
   },
   "bankAccounts": {
+    "title": "Bank accounts",
+    "add": "Add bank account",
+    "edit": "Edit {bank}",
+    "delete": "Delete {bank}",
+    "deleteConfirmTitle": "Delete bank account?",
+    "deleteConfirmDescription": "Are you sure you want to delete this bank account? You will not be able to use it for withdrawals after deletion.",
+    "deleting": "Deleting...",
+    "cancel": "Cancel",
+    "addedSuccess": "Bank account added successfully",
+    "addedFailure": "Failed to add bank account",
+    "updatedSuccess": "Changes saved successfully",
+    "updatedFailure": "Failed to save changes",
+    "deletedSuccess": "Bank account deleted successfully",
+    "deletedFailure": "Failed to delete bank account",
+    "form": {
+      "add": { "title": "Add bank account", "submit": "Add" },
+      "edit": { "title": "Edit bank account", "submit": "Save" },
+      "close": "Close",
+      "bankName": "Bank name",
+      "chooseBank": "Choose a bank",
+      "iban": "IBAN",
+      "loading": "Processing"
+    },
     "empty": {
       "title": "No bank accounts added"
     }

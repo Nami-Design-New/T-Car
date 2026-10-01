@@ -25,13 +25,6 @@ interface Props {
   onWithdraw: () => void;
 }
 
-const TYPE_LABELS: Record<WalletTransaction['type'], string> = {
-  topup: 'شحن',
-  refund: 'استرداد',
-  payment: 'دفع',
-  withdraw: 'سحب',
-};
-
 export default function WalletTab({
   summary,
   transactions,
@@ -41,7 +34,7 @@ export default function WalletTab({
   onTopUp,
   onWithdraw,
 }: Props) {
-  const t = useTranslations('wallet.empty');
+  const t = useTranslations('wallet');
   if (loading) {
     return (
       <div className="account-panel">
@@ -63,7 +56,7 @@ export default function WalletTab({
       <div className="wallet_balance_card">
         <div className="wallet_balance_label">
           <Image src={walletIcon} alt="" width={22} height={22} />
-          <span>اجمالي الرصيد</span>
+          <span>{t('totalBalance')}</span>
         </div>
 
         <div className="wallet_balance_amount">
@@ -72,7 +65,7 @@ export default function WalletTab({
 
         <div className="wallet_balance_actions">
           <button type="button" className="wallet_action_btn primary" onClick={onTopUp}>
-            إضافة رصيد
+            {t('addBalance')}
           </button>
           <button
             type="button"
@@ -80,7 +73,7 @@ export default function WalletTab({
             onClick={onWithdraw}
             disabled={summary.withdrawable <= 0}
           >
-            اسحب رصيد
+            {t('withdrawBalance')}
           </button>
         </div>
 
@@ -88,7 +81,7 @@ export default function WalletTab({
           <div className="wallet_breakdown_item">
             <span className="wallet_breakdown_label">
               <Image src={coinIcon} alt="" width={18} height={18} />
-              رصيد قابل للسحب
+              {t('withdrawableBalance')}
             </span>
             <Price amount={summary.withdrawable} size="md" className="wallet_amount" />
           </div>
@@ -96,7 +89,7 @@ export default function WalletTab({
           <div className="wallet_breakdown_item">
             <span className="wallet_breakdown_label">
               <Image src={balanceIcon} alt="" width={18} height={18} />
-              رصيد غير قابل للسحب
+              {t('nonWithdrawableBalance')}
             </span>
             <Price amount={summary.nonWithdrawable} size="md" className="wallet_amount" />
           </div>
@@ -104,16 +97,16 @@ export default function WalletTab({
       </div>
 
       <div className="wallet_history">
-        <h3 className="wallet_history_title">سجل الرصيد</h3>
+        <h3 className="wallet_history_title">{t('history')}</h3>
 
         {transactions.length === 0 ? (
-          <EmptyState title={t('history')} size="section" />
+          <EmptyState title={t('empty.history')} size="section" />
         ) : (
           <ul className="wallet_history_list">
             {transactions.map((tx) => (
               <li key={tx.id} className={`wallet_history_item ${tx.type}`}>
                 <div className="wallet_history_item_body">
-                  <span className="wallet_history_item_title">{TYPE_LABELS[tx.type]}</span>
+                  <span className="wallet_history_item_title">{t(`transaction.${tx.type}`)}</span>
                   <span className="wallet_history_item_meta">
                     {formatTransactionDate(tx.createdAt)}
                   </span>

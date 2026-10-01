@@ -31,7 +31,7 @@ export default function BankAccountsTab({
   onEdit,
   onDelete,
 }: Props) {
-  const t = useTranslations('bankAccounts.empty');
+  const t = useTranslations('bankAccounts');
   if (loading) {
     return (
       <div className="account-panel">
@@ -43,7 +43,7 @@ export default function BankAccountsTab({
   if (error) {
     return (
       <div className="account-panel bank_accounts_panel">
-        <h3 className="bank_accounts_title">الحسابات البنكية</h3>
+        <h3 className="bank_accounts_title">{t('title')}</h3>
         <ErrorState error={error} onRetry={onRetry} size="section" />
       </div>
     );
@@ -51,7 +51,7 @@ export default function BankAccountsTab({
 
   return (
     <div className="account-panel bank_accounts_panel">
-      <h3 className="bank_accounts_title">الحسابات البنكية</h3>
+      <h3 className="bank_accounts_title">{t('title')}</h3>
 
       {accounts.length === 0 ? (
         <EmptyState title={t('title')} size="section" />
@@ -84,7 +84,7 @@ export default function BankAccountsTab({
                   type="button"
                   className="bank_account_action"
                   onClick={() => onEdit(account)}
-                  aria-label={`تعديل ${account.bankName}`}
+                  aria-label={t('edit', { bank: account.bankName })}
                 >
                   <Image src={editIcon} alt="" width={20} height={20} />
                 </button>
@@ -92,7 +92,7 @@ export default function BankAccountsTab({
                   type="button"
                   className="bank_account_action"
                   onClick={() => onDelete(account)}
-                  aria-label={`حذف ${account.bankName}`}
+                  aria-label={t('delete', { bank: account.bankName })}
                 >
                   <Image src={deleteIcon} alt="" width={20} height={20} />
                 </button>
@@ -107,7 +107,7 @@ export default function BankAccountsTab({
         className="bank_accounts_add wallet_topup_submit btn w-100"
         onClick={onAdd}
       >
-        إضافة حساب بنكي
+        {t('add')}
       </button>
     </div>
   );

@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import type { AppError } from '@/shared/lib/errors';
 import { useErrorMessage } from '@/shared/hooks/useErrorMessage';
 import { ConfirmDialog } from '@/shared/ui/ConfirmDialog';
@@ -81,13 +82,14 @@ type BankAccountsFlow =
   | { step: 'confirm-delete'; account: BankAccount }
   | { step: 'result'; kind: ResultKind; error?: AppError }; // no error means success
 
-const RESULT_TITLES: Record<ResultKind, { success: string; failure: string }> = {
-  added: { success: 'تم إضافة حسابك بنجاح', failure: 'فشل في إضافة الحساب البنكي' },
-  updated: { success: 'تم حفظ تعديلك بنجاح', failure: 'فشل في حفظ التعديل' },
-  deleted: { success: 'تم حذف حسابك بنجاح', failure: 'فشل في حذف الحساب البنكي' },
+const RESULT_KEYS: Record<ResultKind, { success: string; failure: string }> = {
+  added: { success: 'addedSuccess', failure: 'addedFailure' },
+  updated: { success: 'updatedSuccess', failure: 'updatedFailure' },
+  deleted: { success: 'deletedSuccess', failure: 'deletedFailure' },
 };
 
 export default function BankAccountsSection() {
+  const t = useTranslations('bankAccounts');
   const { accounts, banks, loading, error, reload, submitting, add, update, remove } =
     useBankAccounts();
   const errorMessage = useErrorMessage();
@@ -136,11 +138,11 @@ export default function BankAccountsSection() {
 
       <FailedModal
         open={flow.step === 'confirm-delete'}
-        title="حذف الحساب البنكي؟"
-        description="هل أنت متأكد من رغبتك في حذف هذا الحساب البنكي؟ لن تتمكن من استخدامه في عمليات السحب بعد حذفه."
+        title={t('deleteConfirmTitle')}
+        description={t('deleteConfirmDescription')}
         showButtons
-        primaryButtonText={submitting ? 'جاري الحذف...' : 'حذف'}
-        secondaryButtonText="تراجع"
+        primaryButtonText={submitting ? t('deleting') : t('delete')}
+        secondaryButtonText={t('cancel')}
         onPrimary={handleDelete}
         onSecondary={() => {
           if (!submitting) close();
@@ -151,7 +153,7 @@ export default function BankAccountsSection() {
         <SuccessModal
           open
           appearButton={false}
-          title={RESULT_TITLES[flow.kind].success}
+          title={t(RESULT_KEYS[flow.kind].success)}
           description=""
           onDone={close}
         />
@@ -159,7 +161,7 @@ export default function BankAccountsSection() {
 
       <FailedModal
         open={flow.step === 'result' && Boolean(flow.error)}
-        title={flow.step === 'result' ? RESULT_TITLES[flow.kind].failure : undefined}
+        title={flow.step === 'result' ? t(RESULT_KEYS[flow.kind].failure) : undefined}
         description={flow.step === 'result' && flow.error ? errorMessage(flow.error) : undefined}
         onDone={close}
       />

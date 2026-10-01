@@ -2,6 +2,7 @@
 
 import { type FormEvent, useRef, useState } from 'react';
 import Image from 'next/image';
+import { useTranslations } from 'next-intl';
 import { Dialog } from '@/shared/ui/Dialog';
 import { formatAmount } from '@/shared/lib/format';
 import sarIcon from '@assets/icons/sar.svg';
@@ -28,6 +29,7 @@ export default function WalletAmountModal({
   onClose,
   onConfirm,
 }: Props) {
+  const t = useTranslations('wallet.amount');
   const [amount, setAmount] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
   const value = Number(amount);
@@ -79,12 +81,13 @@ export default function WalletAmountModal({
             />
           </div>
           <small id={hintId} className={`wallet_topup_hint ${aboveMax ? 'invalid' : ''}`}>
-            الحد الأدنى {formatAmount(min)} ريال
-            {max !== undefined && ` - الحد الأقصى ${formatAmount(max)} ريال`}
+            {max === undefined
+              ? t('rangeMin', { min: formatAmount(min) })
+              : t('rangeWithMax', { min: formatAmount(min), max: formatAmount(max) })}
           </small>
           <button type="submit" className="wallet_topup_submit btn w-100" disabled={!valid || loading}>
             {loading ? (
-              <span className="spinner-border spinner-border-sm" role="status" aria-label="جاري التنفيذ" />
+              <span className="spinner-border spinner-border-sm" role="status" aria-label={t('loading')} />
             ) : (
               submitLabel
             )}

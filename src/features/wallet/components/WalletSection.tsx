@@ -2,6 +2,7 @@
 
 import { useCallback, useState } from 'react';
 import dynamic from 'next/dynamic';
+import { useTranslations } from 'next-intl';
 import type { BankAccount } from '@/features/bank-accounts';
 import type { AppError } from '@/shared/lib/errors';
 import { useErrorMessage } from '@/shared/hooks/useErrorMessage';
@@ -38,12 +39,13 @@ type WalletFlow =
   | { step: 'withdraw-amount'; account: BankAccount }
   | { step: 'result'; kind: ResultKind; error?: AppError }; // no error means success
 
-const RESULT_TITLES: Record<ResultKind, { success: string; failure: string }> = {
-  topup: { success: 'تمت الشحن بنجاح', failure: 'فشل في عملية الشحن' },
-  withdraw: { success: 'تم السحب بنجاح', failure: 'فشل في عملية السحب' },
+const RESULT_KEYS: Record<ResultKind, { success: string; failure: string }> = {
+  topup: { success: 'topUpSuccess', failure: 'topUpFailure' },
+  withdraw: { success: 'withdrawSuccess', failure: 'withdrawFailure' },
 };
 
 export default function WalletSection() {
+  const t = useTranslations('wallet');
   const { summary, transactions, bankAccounts, loading, error, reload, submitting, topUp, withdraw } =
     useWallet();
   const errorMessage = useErrorMessage();
@@ -75,8 +77,8 @@ export default function WalletSection() {
 
       <WalletAmountModal
         open={flow.step === 'topup-amount'}
-        title="اشحن المحفظة"
-        submitLabel="شحن"
+        title={t('topUpTitle')}
+        submitLabel={t('topUp')}
         min={MIN_TOP_UP}
         loading={submitting}
         onClose={close}
@@ -92,8 +94,8 @@ export default function WalletSection() {
 
       <WalletAmountModal
         open={flow.step === 'withdraw-amount'}
-        title="اسحب الرصيد"
-        submitLabel="سحب"
+        title={t('withdrawTitle')}
+        submitLabel={t('withdraw')}
         min={MIN_WITHDRAW}
         max={summary.withdrawable}
         loading={submitting}
@@ -107,7 +109,7 @@ export default function WalletSection() {
         <SuccessModal
           open
           appearButton={false}
-          title={RESULT_TITLES[flow.kind].success}
+          title={t(RESULT_KEYS[flow.kind].success)}
           description=""
           onDone={close}
         />
@@ -115,7 +117,7 @@ export default function WalletSection() {
 
       <FailedModal
         open={flow.step === 'result' && Boolean(flow.error)}
-        title={flow.step === 'result' ? RESULT_TITLES[flow.kind].failure : undefined}
+        title={flow.step === 'result' ? t(RESULT_KEYS[flow.kind].failure) : undefined}
         description={flow.step === 'result' && flow.error ? errorMessage(flow.error) : undefined}
         onDone={close}
       />

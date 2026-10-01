@@ -386,11 +386,63 @@
     }
   },
   "wallet": {
+    "topUpTitle": "اشحن المحفظة",
+    "topUp": "شحن",
+    "withdrawTitle": "اسحب الرصيد",
+    "withdraw": "سحب",
+    "totalBalance": "إجمالي الرصيد",
+    "addBalance": "إضافة رصيد",
+    "withdrawBalance": "اسحب رصيد",
+    "withdrawableBalance": "رصيد قابل للسحب",
+    "nonWithdrawableBalance": "رصيد غير قابل للسحب",
+    "history": "سجل الرصيد",
+    "topUpSuccess": "تم الشحن بنجاح",
+    "topUpFailure": "فشل في عملية الشحن",
+    "withdrawSuccess": "تم السحب بنجاح",
+    "withdrawFailure": "فشل في عملية السحب",
+    "transaction": {
+      "topup": "شحن",
+      "refund": "استرداد",
+      "payment": "دفع",
+      "withdraw": "سحب"
+    },
+    "amount": {
+      "rangeMin": "الحد الأدنى {min} ريال",
+      "rangeWithMax": "الحد الأدنى {min} ريال - الحد الأقصى {max} ريال",
+      "loading": "جاري التنفيذ"
+    },
+    "bankSelect": {
+      "title": "اختر البنك",
+      "empty": "لا توجد حسابات بنكية مضافة"
+    },
     "empty": {
       "history": "لا توجد عمليات على المحفظة بعد"
     }
   },
   "bankAccounts": {
+    "title": "الحسابات البنكية",
+    "add": "إضافة حساب بنكي",
+    "edit": "تعديل {bank}",
+    "delete": "حذف {bank}",
+    "deleteConfirmTitle": "حذف الحساب البنكي؟",
+    "deleteConfirmDescription": "هل أنت متأكد من رغبتك في حذف هذا الحساب البنكي؟ لن تتمكن من استخدامه في عمليات السحب بعد حذفه.",
+    "deleting": "جاري الحذف...",
+    "cancel": "تراجع",
+    "addedSuccess": "تم إضافة حسابك بنجاح",
+    "addedFailure": "فشل في إضافة الحساب البنكي",
+    "updatedSuccess": "تم حفظ تعديلك بنجاح",
+    "updatedFailure": "فشل في حفظ التعديل",
+    "deletedSuccess": "تم حذف حسابك بنجاح",
+    "deletedFailure": "فشل في حذف الحساب البنكي",
+    "form": {
+      "add": { "title": "إضافة حساب بنكي", "submit": "إضافة" },
+      "edit": { "title": "تعديل حساب بنكي", "submit": "حفظ" },
+      "close": "إغلاق",
+      "bankName": "اسم البنك",
+      "chooseBank": "اختر البنك",
+      "iban": "رقم الآيبان",
+      "loading": "جاري التنفيذ"
+    },
     "empty": {
       "title": "لا توجد حسابات بنكية مضافة"
     }

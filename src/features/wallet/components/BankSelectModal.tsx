@@ -1,6 +1,7 @@
 'use client';
 
 import Image from 'next/image';
+import { useTranslations } from 'next-intl';
 import { PiBank } from 'react-icons/pi';
 import { Dialog } from '@/shared/ui/Dialog';
 import type { BankAccount } from '@/features/bank-accounts';
@@ -13,17 +14,19 @@ interface Props {
 }
 
 export default function BankSelectModal({ open, accounts, onClose, onSelect }: Props) {
+  const t = useTranslations('wallet.bankSelect');
+
   return (
     <Dialog open={open} onClose={onClose} className="bank_select_modal" placement="bottom-sheet">
       <span className="wallet_topup_drag_handle" aria-hidden="true" />
       <Dialog.Header className="wallet_topup_header d-flex align-items-center justify-content-between">
-        <Dialog.Title>اختر البنك</Dialog.Title>
+        <Dialog.Title>{t('title')}</Dialog.Title>
         <Dialog.Close className="wallet_topup_close btn btn-light d-grid p-0" />
       </Dialog.Header>
 
       <Dialog.Body>
         {accounts.length === 0 ? (
-          <p className="bank_select_empty">لا توجد حسابات بنكية مضافة</p>
+          <p className="bank_select_empty">{t('empty')}</p>
         ) : (
           <ul className="bank_select_list">
             {accounts.map((account) => (
