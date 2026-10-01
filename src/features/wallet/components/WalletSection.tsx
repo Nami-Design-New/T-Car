@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useState } from 'react';
+import dynamic from 'next/dynamic';
 import type { BankAccount } from '@/features/bank-accounts';
 import type { AppError } from '@/shared/lib/errors';
 import { useErrorMessage } from '@/shared/hooks/useErrorMessage';
@@ -8,8 +9,8 @@ import { ResultDialog } from '@/shared/ui/ResultDialog';
 import { useWallet } from '../hooks/useWallet';
 import { MIN_TOP_UP, MIN_WITHDRAW } from '../model';
 import WalletTab from './WalletTab';
-import WalletAmountModal from './WalletAmountModal';
-import BankSelectModal from './BankSelectModal';
+const WalletAmountModal = dynamic(() => import('./WalletAmountModal'), { ssr: false });
+const BankSelectModal = dynamic(() => import('./BankSelectModal'), { ssr: false });
 
 interface LegacyResultProps {
   open: boolean;

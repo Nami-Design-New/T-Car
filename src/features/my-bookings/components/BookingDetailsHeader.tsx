@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useState } from 'react';
+import dynamic from 'next/dynamic';
 import { Link } from '@/i18n/navigation';
 import { FiArrowRight, FiMoreVertical, FiEdit2, FiCalendar, FiX } from 'react-icons/fi';
 
@@ -17,9 +18,9 @@ import {
   type BookingEditRequest,
 } from '../model';
 import { useBookingActions } from '../hooks/useBookingActions';
-import ExtendDurationModal from './ExtendDurationModal';
-import EditDailyBookingModal from './EditDailyBookingModal';
-import CancelBookingModal from './CancelBookingModal';
+const ExtendDurationModal = dynamic(() => import('./ExtendDurationModal'), { ssr: false });
+const EditDailyBookingModal = dynamic(() => import('./EditDailyBookingModal'), { ssr: false });
+const CancelBookingModal = dynamic(() => import('./CancelBookingModal'), { ssr: false });
 
 interface LegacyResultProps {
   open: boolean;

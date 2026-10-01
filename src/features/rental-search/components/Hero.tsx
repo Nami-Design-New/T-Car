@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import dynamic from 'next/dynamic';
 import Image from 'next/image';
 import { useRouter } from '@/i18n/navigation';
 
@@ -16,12 +17,12 @@ import hero3 from '@/assets/images/hero3.png';
 
 import RentalTabs from './RentalTabs';
 
-import PickupTypeModal from './PickupTypeModal';
-import MapLocationModal from './MapLocationModal';
-import BranchModal from './BranchModal';
-import AirportModal from './AirportModal';
-import StationModal from './StationModal';
-import CountryModal from './CountryModal';
+const PickupTypeModal = dynamic(() => import('./PickupTypeModal'), { ssr: false });
+const MapLocationModal = dynamic(() => import('./MapLocationModal'), { ssr: false });
+const BranchModal = dynamic(() => import('./BranchModal'), { ssr: false });
+const AirportModal = dynamic(() => import('./AirportModal'), { ssr: false });
+const StationModal = dynamic(() => import('./StationModal'), { ssr: false });
+const CountryModal = dynamic(() => import('./CountryModal'), { ssr: false });
 
 import { useTranslations } from 'next-intl';
 import type {

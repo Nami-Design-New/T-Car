@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import dynamic from 'next/dynamic';
 import { useRouter } from '@/i18n/navigation';
 import {
   FiCalendar,
@@ -21,10 +22,10 @@ import {
   verifyPhoneAction,
 } from '../actions';
 
-import EditPhoneModal from './EditPhoneModal';
-import VerifyPhoneModal from './VerifyPhoneModal';
-import LicenseModal from './LicenseModal';
-import FailedModal from '@components/common/FailedModal';
+const EditPhoneModal = dynamic(() => import('./EditPhoneModal'), { ssr: false });
+const VerifyPhoneModal = dynamic(() => import('./VerifyPhoneModal'), { ssr: false });
+const LicenseModal = dynamic(() => import('./LicenseModal'), { ssr: false });
+const FailedModal = dynamic(() => import('@components/common/FailedModal'), { ssr: false });
 
 interface Props {
   profile: UserProfile;

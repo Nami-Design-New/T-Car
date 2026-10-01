@@ -1,10 +1,11 @@
 'use client';
 
 import { useState } from 'react';
+import dynamic from 'next/dynamic';
 import { FiStar } from 'react-icons/fi';
 import { formatCurrency } from '@/shared/lib/format';
 import { useBookingActions } from '../hooks/useBookingActions';
-import BookingReviewModal from './BookingReviewModal';
+const BookingReviewModal = dynamic(() => import('./BookingReviewModal'), { ssr: false });
 
 interface Props {
   bookingId: string;
