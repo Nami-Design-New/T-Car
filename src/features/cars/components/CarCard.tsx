@@ -2,7 +2,8 @@
 
 import { Link } from '@/i18n/navigation';
 import { discountPercent as getDiscountPercent, type CarListing } from '../model';
-import giftImage from '@assets/images/gift.svg';
+import { IMAGES } from '@/shared/config/assets';
+const giftImage = IMAGES.gift;
 import { ICONS } from '@/shared/config/assets';
 const RiyalIcon = ICONS.riyalAlt;
 import { cn } from '@/shared/lib/cn';

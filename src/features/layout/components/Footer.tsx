@@ -11,9 +11,10 @@ import {
   FiDownload,
 } from 'react-icons/fi';
 
-import logo from '@assets/images/fav.svg';
-import appStore from '@assets/images/Apple Store.webp';
-import googlePlay from '@assets/images/Play Sotre.webp';
+import { IMAGES } from '@/shared/config/assets';
+const logo = IMAGES.brandMark;
+const appStore = IMAGES.appStore;
+const googlePlay = IMAGES.googlePlay;
 
 import { NAV_LINKS } from '@/shared/config/site';
 

@@ -215,7 +215,7 @@ merged or pushed yet.
 | 4. Feature migration | Done (8 of 8 fractions) | Wallet, bank-account, my-bookings, booking-flow, rental-search, cars/cities filters, and auth dialog migration are complete. Remaining performance, i18n, image, and SCSS work is tracked in phases 5–8 |
 | 5. Performance | Started (fraction 5 of 8) | Done: the Maps script loads only when a map dialog opens; the auth dialog loads on first open; booking-flow, rental-search, wallet, profile, booking-details, and booking-review dialogs load on demand and mount only for their active step; Lottie animations load on first use through `Illustration` (`SuccessModal` still imports Lottie directly); the header and footer render on the server; the FAQ ships no client JavaScript; hero slides use `next/image` with `fill`, `sizes="100vw"`, and first-slide priority; WOFF2 font files are used for all four active Expo Arabic weights. Decision: retain Swiper for the car rails, hero, and partners; the planned carousel replacement is not being pursued because the measured bundle trade-off does not justify the design and behavior changes. Remaining: the Bootstrap and SCSS items are phase 8 |
 | 6. i18n extraction | Complete (10 fractions) | Extracted home, rental-search, layout, account, wallet, bank accounts, my-bookings, car-details, booking flow, cars/cities, legal pages, common controls, date picker, city index, and auth success copy into both locale files. The global error remains intentionally fixed and bilingual because it renders outside the locale layout. |
-| 7. Images and assets | Started (fraction 1 of 4) | [Doc 7](07-images-and-assets.md): UI icon registry and public icon trees are complete. Remaining: static images, data images, animations/cleanup, and image-weight reductions. |
+| 7. Images and assets | Started (fraction 2 of 4) | [Doc 7](07-images-and-assets.md): UI icons and static app images now use typed registry entries under `public/`. API-bound mock images remain explicitly temporary and will be deleted after backend image URL integration. Remaining: data images, animations/cleanup, and image-weight reductions. |
 | 8. Styles compiled from SCSS | Planned | [Doc 8](08-styles-and-scss.md): drift check done (0 rules differ in meaning between `main.scss` and the committed `main.css`); migration not started. Component styles from phase 1 already compile from SCSS |
 
 ### Features
@@ -246,10 +246,12 @@ extensions over 30 days, and so on) are documented in each `services/mocks/*.ts`
   Swiper is intentionally retained for the existing car rails, hero, and
   partners carousels.
 - Phase 6 is complete with ten fractions covering feature copy, static/legal pages, common controls, date picking, city index copy, and auth success copy. The global error remains intentionally fixed and bilingual because it renders outside the locale layout.
-- Phase 7 image/assets classification is complete and fraction 1 of 4 is done:
-    UI icons now use `shared/config/assets.ts` and `public/icons`. Remaining
-    fractions cover static images, data images, animations/cleanup, and image
-    weight reductions. Phase 8 SCSS compilation migration has not started.
+- Phase 7 image/assets classification is complete and fraction 2 of 4 is done:
+    UI icons and static images now use `shared/config/assets.ts` and `public/`.
+    API-bound mock images are temporary and will be deleted after backend image
+    URL integration. Remaining fractions cover data images,
+    animations/cleanup, and image weight reductions. Phase 8 SCSS compilation
+    migration has not started.
 - Product decisions are still needed before deleting `BookingModal`,
   `BookingMonthlyModal`, or `InsufficientBalanceModal`.
 

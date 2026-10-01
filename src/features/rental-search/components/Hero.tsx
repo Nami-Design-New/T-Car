@@ -11,9 +11,10 @@ import { Autoplay, EffectFade } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/effect-fade';
 
-import hero1 from '@/assets/images/hero1.jpg';
-import hero2 from '@/assets/images/hero2.png';
-import hero3 from '@/assets/images/hero3.png';
+import { IMAGES } from '@/shared/config/assets';
+const hero1 = IMAGES.heroOne;
+const hero2 = IMAGES.heroTwo;
+const hero3 = IMAGES.heroThree;
 
 import RentalTabs from './RentalTabs';
 

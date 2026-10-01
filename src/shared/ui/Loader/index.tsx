@@ -4,8 +4,9 @@ interface LoaderProps {
 
 import Image from "next/image";
 
-import logoText from "@/assets/icons/logo-text.svg";
-import logoCar from "@/assets/icons/logo-car.svg";
+import { IMAGES } from '@/shared/config/assets';
+const logoText = IMAGES.brandText;
+const logoCar = IMAGES.brandCar;
 
 export default function Loader({
   fullScreen = true,

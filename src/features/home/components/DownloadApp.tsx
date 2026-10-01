@@ -3,9 +3,10 @@
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 
-import phone from '@/assets/images/app-phone.png';
-import appStore from '@/assets/images/Apple Store.webp';
-import playStore from '@/assets/images/Play Sotre.webp';
+import { IMAGES } from '@/shared/config/assets';
+const phone = IMAGES.appPhone;
+const appStore = IMAGES.appStore;
+const playStore = IMAGES.googlePlay;
 
 export default function DownloadApp() {
   const t = useTranslations('downloadApp');

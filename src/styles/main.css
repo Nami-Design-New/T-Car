@@ -14054,7 +14054,7 @@ img {
   margin: 50px 0;
   position: relative;
   overflow: hidden;
-  background: linear-gradient(rgba(30, 30, 30, 0.72), rgba(30, 30, 30, 0.72)), url("../assets/images/hero2.png");
+  background: linear-gradient(rgba(30, 30, 30, 0.72), rgba(30, 30, 30, 0.72)), url("/images/hero/hero-2.png");
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
@@ -14540,7 +14540,7 @@ img {
   top: 29%;
   width: 320px;
   height: 320px;
-  background: url("../assets/images/fav.svg") no-repeat center;
+  background: url("/images/brand/fav.svg") no-repeat center;
   background-size: contain;
   opacity: 0.09;
   filter: brightness(0) invert(1);

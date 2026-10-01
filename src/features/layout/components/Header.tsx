@@ -1,7 +1,8 @@
 import Image from 'next/image';
 import { getTranslations } from 'next-intl/server';
 import { auth } from '@/auth';
-import logo from '@assets/images/logo.png';
+import { IMAGES } from '@/shared/config/assets';
+const logo = IMAGES.brandLogo;
 import { Link } from '@/i18n/navigation';
 import { NAV_LINKS } from '@/shared/config/site';
 import AuthControl from './AuthControl';

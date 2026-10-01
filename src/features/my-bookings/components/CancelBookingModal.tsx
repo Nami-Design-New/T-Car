@@ -5,7 +5,8 @@ import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { Dialog } from '@/shared/ui/Dialog';
 
-import cancelBookingImage from '@/assets/icons/cancel_booking.svg';
+import { IMAGES } from '@/shared/config/assets';
+const cancelBookingImage = IMAGES.cancelBooking;
 
 interface Props {
   open: boolean;
