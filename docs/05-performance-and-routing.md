@@ -5,6 +5,10 @@
 > the Maps script, the auth dialog, and Lottie load on first use. The hero sends
 > `airportId`, `stationId`, and `countryId` to `/cars`; `/cars` and city listings
 > now read the shared URL search state for query, price range, sort, and context.
+> Swiper is intentionally retained for the existing car rails, hero, and
+> partners carousels; replacing it with a lighter library was evaluated but
+> declined because the bundle saving did not justify the design and behavior
+> changes.
 
 ## Part A: Routes, URL state, or tabs
 
@@ -120,7 +124,7 @@ async redirects() {
 | P2 | **The header is client code on every page**, and so is everything it imports: `AuthModal` (react-bootstrap), three auth forms, and the phone input library. | High: on every route | Server header with islands. Lazy-load `AuthDialog` on click ([doc 2](02-server-client-boundary.md)) |
 | P3 | **The home page is almost entirely client code.** Hero with Swiper and 6 dialogs, Cities, Partners (Swiper), FAQ, Why, Contact. | High | Server sections, client leaves only, lazy dialogs |
 | P4 | **All dialogs are imported eagerly** by their parents (`Hero` 6, `BookingDetailsHeader` 4, `CarBookingCard` 4, `ProfileTab` 4, `WalletSection` 4). | Medium–high | `const X = dynamic(() => import('./XDialog'))` and render `{open && <X/>}` |
-| P5 | **Three carousel approaches.** Swiper in `Hero`, `Partners`, and `CarOfficeRow`, plus the custom scroll-snap `useCarouselRail` in `CarsRail` and `Cities`. | Medium: Swiper JS and CSS on home and `/cars` | One `Carousel` on CSS scroll-snap. `Partners` becomes a CSS marquee, and `Hero` becomes a CSS cross-fade. Then remove `swiper` |
+| P5 | **Three carousel approaches.** Swiper in `Hero`, `Partners`, and `CarOfficeRow`, plus the custom scroll-snap `useCarouselRail` in `CarsRail` and `Cities`. | Medium: Swiper JS and CSS on home and `/cars` | Keep the existing Swiper implementation; the replacement was declined because the measured bundle saving did not justify the design and behavior changes |
 | P6 | **Lottie is imported directly** (`lottie-react` plus the JSON) in `WalletTab`, `BankAccountsTab`, `BookingsEmptyState`, and `SuccessModal`. | Medium | A lazy `Illustration` component. Consider static SVGs for empty states |
 | P7 | **Hero slides use CSS `background-image`** with the raw `.src`, so there is no resizing, no modern format, and no priority hint. This is the LCP element. | High for LCP | `next/image` with `fill`, `priority` on the first slide, and `sizes="100vw"`. Lazy-load the others |
 | P8 | **All of Bootstrap plus 12.7k lines of SCSS** compile into one 22k-line global CSS file on every route. | Medium | Bootstrap partials only, and split the SCSS ([doc 4](04-component-design.md)) |
