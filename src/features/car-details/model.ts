@@ -1,4 +1,3 @@
-import type { StaticImageData } from 'next/image';
 import type { CarListing } from '@/features/cars';
 
 export interface Review {
@@ -46,7 +45,7 @@ export interface CarPickupInfo {
 }
 
 export interface CarDetails extends CarListing {
-  images: (string | StaticImageData)[];
+  images: string[];
   showroom: string;
   quickFacts: { icon: 'shield' | 'delivery' | 'distance'; label: string }[];
   warranties: CarWarranty[];

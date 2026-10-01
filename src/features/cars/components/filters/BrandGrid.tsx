@@ -1,9 +1,9 @@
-import Image, { StaticImageData } from 'next/image';
+import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 
 interface Brand {
   name: string;
-  logo: StaticImageData;
+  logo: string;
 }
 interface BrandGridProps {
   title: string;

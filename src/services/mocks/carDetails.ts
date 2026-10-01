@@ -3,7 +3,7 @@ import type { CarListing } from '@/features/cars/model';
 import { AppError } from '@/shared/lib/errors';
 import type { CarDetailsApi } from '../carDetails.api';
 import { getCarListingById } from './cars';
-import car1 from '@assets/images/car1.jpg';
+const car1 = '/mock/cars/creta.jpg';
 
 /** Everything the details page shows beyond the listing; the same for every mock car. */
 const MOCK_DETAILS_EXTRAS: Omit<CarDetails, keyof CarListing> = {

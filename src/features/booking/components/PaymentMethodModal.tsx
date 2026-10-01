@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
-import Image, { type StaticImageData } from 'next/image';
+import Image from 'next/image';
 import { FiX } from 'react-icons/fi';
 import { RadioCards } from '@/shared/ui/RadioCards';
 import { Dialog } from '@/shared/ui/Dialog';
@@ -27,7 +27,7 @@ interface PaymentOption {
   id: PaymentMethod;
   title: string;
   description: string;
-  icon: StaticImageData;
+  icon: { src: string; width: number; height: number };
   iconAlt: string;
   iconWidth: number;
   iconHeight: number;

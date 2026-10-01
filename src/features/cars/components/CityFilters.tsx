@@ -1,7 +1,7 @@
 'use client';
 import { useState } from 'react';
 import { FiTruck, FiGrid, FiShield } from 'react-icons/fi';
-import nissanLogo from '@/assets/icons/nissan.svg';
+const nissanLogo = '/mock/brands/nissan.svg';
 import { useTranslations } from 'next-intl';
 import FilterPanel from './filters/FilterPanel';
 import PriceRangeSlider from './filters/PriceRangeSlider';

@@ -1,16 +1,15 @@
-import type { StaticImageData } from 'next/image';
 
 export interface Bank {
   id: string;
   name: string;
-  logo?: StaticImageData | string;
+  logo?: string;
 }
 
 export interface BankAccount {
   id: string;
   bankId: string;
   bankName: string;
-  logo?: StaticImageData | string;
+  logo?: string;
   iban: string;
   maskedNumber: string;
 }

@@ -7,7 +7,7 @@ import {
 } from '@/features/bank-accounts/model';
 import { AppError } from '@/shared/lib/errors';
 import type { BankAccountsApi } from '../bankAccounts.api';
-import sedadBankLogo from '@assets/images/banks/sedad-bank.png';
+const sedadBankLogo = '/mock/banks/sedad-bank.png';
 
 export const MOCK_BANKS: Bank[] = [
   { id: 'sedad', name: 'بنك السداد', logo: sedadBankLogo },

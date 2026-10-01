@@ -1,4 +1,3 @@
-import type { StaticImageData } from 'next/image';
 import type { BookingDetails } from '@/features/booking';
 
 export type BookingStatus = 'current' | 'upcoming' | 'late' | 'completed' | 'cancelled';
@@ -20,7 +19,7 @@ export interface UserBooking {
   id: string;
   carName: string;
   carBrand: string;
-  carImage: string | StaticImageData;
+  carImage: string;
   showroom: string;
   year: number;
   rating: number;
@@ -34,7 +33,7 @@ export interface BookingDetailsView {
   reference: string;
   carName: string;
   carBrand: string;
-  carImage: string | StaticImageData;
+  carImage: string;
   showroom: string;
   status: BookingStatus;
   statusLabel: string;

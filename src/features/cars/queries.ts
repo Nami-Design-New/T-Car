@@ -28,3 +28,7 @@ export async function getOfferCars(): Promise<CarListing[]> {
 export async function getHandpickedCars(): Promise<CarListing[]> {
   return selectHandpickedCars(await carsApi.listCars());
 }
+
+export async function getOffices() {
+  return carsApi.listOffices();
+}

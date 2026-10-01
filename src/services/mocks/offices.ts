@@ -1,12 +1,12 @@
 import type { Office } from '@/features/cars/model';
-import b1 from '@assets/images/b1.webp';
-import b2 from '@assets/images/b2.webp';
-import b3 from '@assets/images/b3.webp';
-import b4 from '@assets/images/b4.webp';
-import b5 from '@assets/images/b5.webp';
-import b6 from '@assets/images/b6.webp';
-import b7 from '@assets/images/b7.webp';
-import b8 from '@assets/images/b8.webp';
+const b1 = '/mock/offices/office-1.webp';
+const b2 = '/mock/offices/office-2.webp';
+const b3 = '/mock/offices/office-3.webp';
+const b4 = '/mock/offices/office-4.webp';
+const b5 = '/mock/offices/office-5.webp';
+const b6 = '/mock/offices/office-6.webp';
+const b7 = '/mock/offices/office-7.webp';
+const b8 = '/mock/offices/office-8.webp';
 
 export const MOCK_OFFICES: Office[] = [
   { id: 'el-nokhba', slug: 'el-nokhba', name: 'النخبة', showroom: 'معرض النخبة', logo: b1 },
@@ -18,4 +18,3 @@ export const MOCK_OFFICES: Office[] = [
   { id: 'al-sakhra', slug: 'al-sakhra', name: 'الصخراء', showroom: 'معرض الصخراء', logo: b7 },
   { id: 'al-mutawassit', slug: 'al-mutawassit', name: 'المتوسط', showroom: 'معرض المتوسط', logo: b8 },
 ];
-

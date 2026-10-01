@@ -14,4 +14,5 @@ export type {
   SearchCarsParams,
 } from './model';
 export { parseCarSearchParams } from './searchParams';
+export { getOffices } from './queries';
 export type { CarSearchParams, CarSort } from './searchParams';

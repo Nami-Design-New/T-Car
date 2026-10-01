@@ -1,6 +1,6 @@
 'use client';
 
-import Image, { StaticImageData } from 'next/image';
+import Image from 'next/image';
 import { useTranslations } from 'next-intl';;
 
 import { RENTAL_ICONS } from '@/shared/config/assets';
@@ -19,7 +19,7 @@ interface Props {
 const tabs: {
   id: RentalType;
   title: string;
-  icon: StaticImageData;
+  icon: { src: string; width: number; height: number };
   type: RentalType;
 }[] = [
   {

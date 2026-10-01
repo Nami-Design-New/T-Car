@@ -5,7 +5,7 @@ import {
 } from '@/features/my-bookings/model';
 import { AppError } from '@/shared/lib/errors';
 import type { BookingsApi } from '../bookings.api';
-import car1 from '@assets/images/car1.jpg';
+const car1 = '/mock/cars/creta.jpg';
 
 export const MOCK_BOOKINGS: UserBooking[] = [
   {

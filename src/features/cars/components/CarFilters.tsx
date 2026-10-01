@@ -2,7 +2,7 @@
 import { FiShield, FiTruck, FiX } from 'react-icons/fi';
 import { TbCar, TbCar4Wd, TbCaravan, TbCarOffRoad, TbCarSuv, TbTruck } from 'react-icons/tb';
 import Image from 'next/image';
-import nissanLogo from '@/assets/icons/nissan.svg';
+const nissanLogo = '/mock/brands/nissan.svg';
 import { useTranslations } from 'next-intl';
 import FilterPanel from './filters/FilterPanel';
 import PriceRangeSlider from './filters/PriceRangeSlider';

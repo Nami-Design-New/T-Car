@@ -13,7 +13,6 @@ import { ICONS } from '@/shared/config/assets';
 const RiyalIcon = ICONS.riyal;
 import type { BookingDetails, PaymentMethod } from '../model';
 
-import type { StaticImageData } from 'next/image';
 import { useCreateBooking } from '../hooks/useCreateBooking';
 
 const BookingDailyModal = dynamic(() => import('./BookingDailyModal'), { ssr: false });
@@ -59,7 +58,7 @@ interface Props {
   carId: string;
   carName: string;
   carBrand: string;
-  carImage: string | StaticImageData;
+  carImage: string;
   showroom: string;
   rating: number;
   pricePerDay: number;

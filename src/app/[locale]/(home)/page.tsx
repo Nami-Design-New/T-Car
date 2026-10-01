@@ -1,6 +1,6 @@
 import { Hero } from '@/features/rental-search';
 import { getRentalSearchOptions } from '@/features/rental-search/queries';
-import { CarsRail } from '@/features/cars';
+import { CarsRail, getOffices } from '@/features/cars';
 import { getHandpickedCars, getOfferCars } from '@/features/cars/queries';
 import { PopularCities } from '@/features/cities';
 import { getCities } from '@/features/cities/queries';
@@ -9,13 +9,14 @@ import { getFaqs } from '@/features/home/queries';
 import { getTranslations } from 'next-intl/server';
 
 export default async function HomePage() {
-  const [t, searchOptions, cities, offerCars, handpickedCars, faqs] = await Promise.all([
+  const [t, searchOptions, cities, offerCars, handpickedCars, faqs, offices] = await Promise.all([
     getTranslations('carSections'),
     getRentalSearchOptions(),
     getCities(),
     getOfferCars(),
     getHandpickedCars(),
     getFaqs(),
+    getOffices(),
   ]);
 
   return (
@@ -34,7 +35,7 @@ export default async function HomePage() {
         subtitle={t('selectedForYouSubtitle')}
         cars={handpickedCars}
       />
-      <Partners />
+      <Partners offices={offices} />
       <WhyChooseUs />
       <FAQ faqs={faqs} />
       <DownloadApp />

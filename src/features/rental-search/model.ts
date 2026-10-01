@@ -1,4 +1,3 @@
-import type { StaticImageData } from 'next/image';
 
 export type RentalType = 'daily' | 'monthly' | 'airport' | 'station' | 'international';
 
@@ -35,7 +34,7 @@ export interface Country {
   id: number;
   code?: string;
   name: string;
-  flag: string | StaticImageData;
+  flag: string;
 }
 
 /** The choices the search dialogs offer, loaded once for the hero. */

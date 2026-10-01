@@ -1,10 +1,8 @@
-import type { StaticImageData } from 'next/image';
-
 export interface Car {
   id: string;
   name: string;
   brand: string;
-  image: string | StaticImageData;
+  image: string;
   pricePerDay: number;
   seats: number;
   transmission: 'Automatic' | 'Manual';
@@ -36,7 +34,7 @@ export interface Office {
   name: string;
   /** Value matched against `CarListing.showroom` to bucket cars into this office. */
   showroom: string;
-  logo: string | StaticImageData;
+  logo: string;
 }
 
 export interface OfficeCarGroup {

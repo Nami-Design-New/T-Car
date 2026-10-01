@@ -6,7 +6,6 @@ import { FiX, FiStar, FiArrowLeft } from 'react-icons/fi';
 import { formatCurrency } from '@/shared/lib/format';
 import { Dialog } from '@/shared/ui/Dialog';
 import type { BookingDetails } from '../model';
-import type { StaticImageData } from 'next/image';
 import Image from 'next/image';
 
 interface Props {
@@ -16,7 +15,7 @@ interface Props {
   onContinue: () => void;
   carName: string;
   carBrand: string;
-  carImage: string | StaticImageData;
+  carImage: string;
   showroom: string;
   rating: number;
   booking: BookingDetails;

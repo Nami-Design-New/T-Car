@@ -9,28 +9,11 @@ import { Autoplay } from 'swiper/modules';
 import 'swiper/css';
 
 import SectionTitle from '@/shared/ui/SectionTitle';
+import type { Office } from '@/features/cars';
 
-import b1 from '@assets/images/b1.webp';
-import b2 from '@assets/images/b2.webp';
-import b3 from '@assets/images/b3.webp';
-import b4 from '@assets/images/b4.webp';
-import b5 from '@assets/images/b5.webp';
-import b6 from '@assets/images/b6.webp';
-import b7 from '@assets/images/b7.webp';
-import b8 from '@assets/images/b8.webp';
+interface Props { offices: Office[]; }
 
-const logos = [
-  { image: b1, name: 'Toyota' },
-  { image: b2, name: 'BMW' },
-  { image: b3, name: 'Audi' },
-  { image: b4, name: 'Mercedes' },
-  { image: b5, name: 'KIA' },
-  { image: b6, name: 'Hyundai' },
-  { image: b7, name: 'Nissan' },
-  { image: b8, name: 'Lexus' },
-];
-
-export default function Partners() {
+export default function Partners({ offices }: Props) {
   const t = useTranslations();
 
 
@@ -72,10 +55,10 @@ export default function Partners() {
           }}
           className="partners_swiper"
         >
-          {logos.map((logo) => (
-            <SwiperSlide key={logo.name}>
+          {offices.map((office) => (
+            <SwiperSlide key={office.id}>
               <div className="partner_logo">
-                <Image src={logo.image} alt={logo.name} width={140} height={70} />
+                <Image src={office.logo} alt={office.name} width={140} height={70} />
               </div>
             </SwiperSlide>
           ))}

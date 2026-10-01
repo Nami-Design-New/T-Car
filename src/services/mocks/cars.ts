@@ -1,7 +1,7 @@
 import type { CarListing } from '@/features/cars/model';
 import type { CarsApi } from '../cars.api';
 import { MOCK_OFFICES } from './offices';
-import carImage from '@assets/images/car1.jpg';
+const carImage = '/mock/cars/creta.jpg';
 
 export const MOCK_CARS: CarListing[] = [
   {

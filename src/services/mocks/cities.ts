@@ -1,12 +1,12 @@
 import type { City } from '@/features/cities/model';
 import { AppError } from '@/shared/lib/errors';
 import type { CitiesApi } from '../cities.api';
-import c1 from '@assets/images/c1.jpg';
-import c2 from '@assets/images/c2.jpg';
-import c3 from '@assets/images/c3.jpg';
-import c4 from '@assets/images/c4.jpg';
-import c5 from '@assets/images/c5.jpg';
-import c6 from '@assets/images/c6.jpg';
+const c1 = '/mock/cities/city-1.jpg';
+const c2 = '/mock/cities/city-2.jpg';
+const c3 = '/mock/cities/city-3.jpg';
+const c4 = '/mock/cities/city-4.jpg';
+const c5 = '/mock/cities/city-5.jpg';
+const c6 = '/mock/cities/city-6.jpg';
 
 export const MOCK_CITIES: City[] = [
   {

@@ -1,8 +1,7 @@
 import Image from 'next/image';
-import type { StaticImageData } from 'next/image';
 
 interface Props {
-  image: string | StaticImageData;
+  image: string;
   alt: string;
 }
 

@@ -2,13 +2,12 @@ import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { FiMapPin } from 'react-icons/fi';
 import { formatCurrency } from '@/shared/lib/format';
-import type { StaticImageData } from 'next/image';
 import type { BookingStatus } from '../model';
 
 interface Props {
   carName: string;
   carBrand: string;
-  carImage: string | StaticImageData;
+  carImage: string;
   showroom: string;
 
   pricePerDay: number;

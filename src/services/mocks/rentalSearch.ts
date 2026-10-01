@@ -1,10 +1,10 @@
 import type { RentalSearchOptions } from '@/features/rental-search/model';
 import type { RentalSearchApi } from '../rentalSearch.api';
-import flag1 from '@/assets/images/flages/flag1.png';
-import flag2 from '@/assets/images/flages/flag2.png';
-import flag3 from '@/assets/images/flages/flag3.png';
-import flag4 from '@/assets/images/flages/flag4.png';
-import flag5 from '@/assets/images/flages/flag5.png';
+const flag1 = '/mock/flags/flag-1.png';
+const flag2 = '/mock/flags/flag-2.png';
+const flag3 = '/mock/flags/flag-3.png';
+const flag4 = '/mock/flags/flag-4.png';
+const flag5 = '/mock/flags/flag-5.png';
 
 const MOCK_OPTIONS: RentalSearchOptions = {
   branches: [
