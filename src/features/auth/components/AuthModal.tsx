@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 
 import { useRouter } from '@/i18n/navigation';
 import { useErrorMessage } from '@/shared/hooks/useErrorMessage';
@@ -45,6 +46,7 @@ type Props = {
 type Step = 'login' | 'otp' | 'register' | 'success';
 
 export default function AuthModal({ show, onHide, next }: Props) {
+  const t = useTranslations('authSuccess');
   const router = useRouter();
   const errorMessage = useErrorMessage();
 
@@ -154,9 +156,9 @@ export default function AuthModal({ show, onHide, next }: Props) {
         return (
           <SuccessModal
             open={true}
-            title="تم إنشاء الحساب بنجاح"
-            description="يمكنك الآن الاستمتاع بجميع خدمات T-Car."
-            buttonText="ابدأ الآن"
+            title={t('title')}
+            description={t('description')}
+            buttonText={t('button')}
             onDone={finish}
           />
         );

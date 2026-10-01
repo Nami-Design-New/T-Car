@@ -94,13 +94,13 @@ export default function CarCard({
             <span className="car-card__price">
               <span className="car-card__current-price">
                 <strong>{priceFormatter.format(car.pricePerDay)}</strong>
-                <Image src={RiyalIcon} alt="ريال" className="car-card__riyal-icon" />
+                <Image src={RiyalIcon} alt={t('currency')} className="car-card__riyal-icon" />
                 <small>{t('perDay')}</small>
               </span>
               {car.originalPrice ? (
                 <del className="car-card__old-price">
                   <span>{priceFormatter.format(car.originalPrice)}</span>
-                  <Image src={RiyalIcon} alt="ريال" className="car-card__riyal-icon" />
+                  <Image src={RiyalIcon} alt={t('currency')} className="car-card__riyal-icon" />
                 </del>
               ) : null}
             </span>

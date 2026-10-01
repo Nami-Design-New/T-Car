@@ -372,6 +372,11 @@
       "registrationRequired": "This number has no account yet. Finish creating your account."
     }
   },
+  "legalContent": { "terms": [{ "title": "Acceptance of terms", "content": "By using T-Car, you agree to the terms and conditions on this page and to comply with applicable rules." }, { "title": "Bookings and rental", "content": "Bookings depend on vehicle availability. Provide accurate information; inaccurate bookings may be cancelled." }, { "title": "Payment and refunds", "content": "Payments follow the prices shown during booking and the refund policy for each booking." }, { "title": "Renter responsibilities", "content": "Renters must care for the vehicle and use it legally and safely." }, { "title": "Changes to terms", "content": "T-Car may change these terms at any time; continued use means acceptance." }], "privacy": [{ "title": "Information we collect", "content": "We collect account and booking details to provide our services." }, { "title": "How we use information", "content": "We use data to manage bookings, confirm operations, communicate, and improve services." }, { "title": "Protecting your data", "content": "We take appropriate security measures to protect your personal data." }, { "title": "Sharing information", "content": "We do not share data except when necessary to provide the service or required by law." }, { "title": "Your rights", "content": "You can request that your personal data be updated, changed, or deleted." }] },
+  "citiesPage": { "title": "Available cities", "subtitle": "Choose your city and start your journey with us" },
+  "common": { "selectPlaceholder": "Choose..." },
+  "dateTimePicker": { "previousMonth": "Previous month", "nextMonth": "Next month", "time": "Time", "done": "Done", "weekdays": ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"], "months": ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"] },
+  "authSuccess": { "title": "Account created successfully", "description": "You can now enjoy all T-Car services.", "button": "Get started" },
   "states": {
     "loading": "Loading…",
     "retry": "Try again",
