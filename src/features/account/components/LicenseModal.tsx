@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { useTranslations } from 'next-intl';
 import { FiX, FiUploadCloud } from 'react-icons/fi';
 
 interface Props {
@@ -19,6 +20,7 @@ export default function LicenseModal({
   loading = false,
   error,
 }: Props) {
+  const t = useTranslations('account.license');
   const [mounted, setMounted] = useState(false);
   const [file, setFile] = useState<File | null>(null);
 
@@ -87,13 +89,13 @@ export default function LicenseModal({
       >
         {/* Header */}
         <div className="modal_header">
-          <h3>رخصة القيادة</h3>
+          <h3>{t('title')}</h3>
 
        <button
           type="button"
           className="close_btn"
           onClick={onClose}
-          aria-label="إغلاق"
+          aria-label={t('close')}
         >
           <FiX />
         </button>
@@ -119,11 +121,11 @@ export default function LicenseModal({
             ) : (
               <>
                 <span>
-                  اضغط هنا لرفع صورة رخصة القيادة
+                  {t('uploadPrompt')}
                 </span>
 
                 <small>
-                  JPG أو PNG
+                  {t('fileTypes')}
                 </small>
               </>
             )}
@@ -144,7 +146,7 @@ export default function LicenseModal({
             aria-busy={loading}
             onClick={handleSubmit}
           >
-            إرسال
+            {t('submit')}
           </button>
 
           {error && (

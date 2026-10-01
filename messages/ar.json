@@ -20,6 +20,61 @@
       "toggle": "فتح القائمة"
     }
   },
+  "account": {
+    "title": "حسابي",
+    "nav": {
+      "account": "حسابي",
+      "profile": "تعديل الحساب",
+      "bookings": "حجوزاتي",
+      "wallet": "المحفظة",
+      "bankAccounts": "الحسابات البنكية",
+      "notifications": "الإشعارات"
+    },
+    "profile": {
+      "fullName": "الاسم بالكامل",
+      "email": "البريد الإلكتروني",
+      "birthDate": "تاريخ الميلاد",
+      "phone": "رقم الجوال",
+      "license": "رخصة القيادة",
+      "licenseRequired": "يرجى إرفاق رخصة لكي نتمكن من التحقق من الحجز",
+      "licenseVerified": "تم التحقق من الرخصة",
+      "deleteAccount": "حذف الحساب",
+      "save": "حفظ",
+      "saved": "تم حفظ التعديلات",
+      "deleteConfirmTitle": "نأسف لرغبتك في المغادرة.",
+      "deleteConfirmDescription": "عند حذف الحساب سيتم إزالة بياناتك الشخصية وسجل حجوزاتك بشكل نهائي ولن يكون بإمكانك استرجاعها لاحقاً. هل أنت متأكد من رغبتك بالمتابعة؟",
+      "keepAccount": "الاحتفاظ بالحساب"
+    },
+    "editPhone": {
+      "title": "تعديل رقم الجوال",
+      "close": "إغلاق",
+      "phone": "رقم الجوال",
+      "sendCode": "إرسال كود التحقق"
+    },
+    "license": {
+      "title": "رخصة القيادة",
+      "close": "إغلاق",
+      "uploadPrompt": "اضغط هنا لرفع صورة رخصة القيادة",
+      "fileTypes": "JPG أو PNG",
+      "submit": "إرسال"
+    },
+    "verifyPhone": {
+      "title": "رمز التحقق",
+      "close": "إغلاق",
+      "sentTo": "تم إرسال رمز التحقق إلى",
+      "editPhone": "تعديل الرقم",
+      "digitLabel": "الرقم {index}",
+      "resendIn": "إعادة الإرسال خلال {seconds} ثانية",
+      "resend": "إعادة إرسال الرمز",
+      "verify": "تحقق",
+      "successTitle": "تم التحقق",
+      "successDescription": "تم التحقق من رقم الجوال بنجاح"
+    },
+    "notifications": {
+      "title": "الإشعارات",
+      "markAllRead": "تحديد الكل كمقروء"
+    }
+  },
   "auth": {
     "login": {
       "logoAlt": "تي كار",

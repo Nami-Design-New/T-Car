@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import dynamic from 'next/dynamic';
 import { useRouter } from '@/i18n/navigation';
 import {
@@ -35,6 +36,7 @@ type PhoneStep = 'edit' | 'verify' | null;
 type PendingAction = 'save' | 'send' | 'resend' | 'verify' | 'license' | 'delete' | null;
 
 export default function ProfileTab({ profile }: Props) {
+  const t = useTranslations('account.profile');
   const errorMessage = useErrorMessage();
   const router = useRouter();
   const [form, setForm] = useState(profile);
@@ -215,7 +217,7 @@ export default function ProfileTab({ profile }: Props) {
 
       <div className="form_field">
         <label>
-          الاسم بالكامل
+          {t('fullName')}
         </label>
 
         <input
@@ -234,7 +236,7 @@ export default function ProfileTab({ profile }: Props) {
 
       <div className="form_field">
         <label>
-          البريد الإلكتروني
+          {t('email')}
         </label>
 
         <input
@@ -253,7 +255,7 @@ export default function ProfileTab({ profile }: Props) {
 
       <div className="form_field">
         <label>
-          تاريخ الميلاد
+          {t('birthDate')}
         </label>
 
         <div className="input_wrapper">
@@ -287,7 +289,7 @@ export default function ProfileTab({ profile }: Props) {
           <div className="profile_action_content">
 
             <span className="profile_action_title">
-              رقم الجوال
+              {t('phone')}
             </span>
 
             <div className="profile_action_value">
@@ -318,15 +320,14 @@ export default function ProfileTab({ profile }: Props) {
           <div className="profile_action_content">
 
             <span className="profile_action_title">
-              رخصة القيادة
+              {t('license')}
             </span>
 
             <div className="profile_action_value">
               <FiAlertCircle />
 
               <span>
-                يرجى إرفاق رخصة لكي نتمكن من
-                التحقق من الحجز
+                {t('licenseRequired')}
               </span>
             </div>
 
@@ -350,14 +351,14 @@ export default function ProfileTab({ profile }: Props) {
           <div className="profile_action_content">
 
             <span className="profile_action_title">
-              رخصة القيادة
+              {t('license')}
             </span>
 
             <div className="profile_action_value verified">
               <FiCheck />
 
               <span>
-                تم التحقق من الرخصة
+                {t('licenseVerified')}
               </span>
             </div>
 
@@ -380,7 +381,7 @@ export default function ProfileTab({ profile }: Props) {
         <FiTrash2 />
 
         <span>
-          حذف الحساب
+          {t('deleteAccount')}
         </span>
       </button>
 
@@ -393,7 +394,7 @@ export default function ProfileTab({ profile }: Props) {
         aria-busy={pendingAction === 'save'}
         onClick={handleSaveProfile}
       >
-        حفظ
+        {t('save')}
       </button>
 
       {saveError && (
@@ -403,7 +404,7 @@ export default function ProfileTab({ profile }: Props) {
       )}
       {saved && (
         <p className="text-success small mt-2 mb-0" role="status">
-          تم حفظ التعديلات
+          {t('saved')}
         </p>
       )}
 
@@ -457,10 +458,10 @@ export default function ProfileTab({ profile }: Props) {
 
       <FailedModal
         open={showDeleteModal}
-        title="تأسف لرغبتك في المغادرة."
-        description="عند حذف الحساب سيتم إزالة بياناتك الشخصية وسجل حجوزاتك بشكل نهائي ولن يكون بإمكانك استرجاعها لاحقاً. هل أنت متأكد من رغبتك بالمتابعة؟"
-        primaryButtonText="حذف الحساب"
-        secondaryButtonText="الاحتفاظ بالحساب"
+        title={t('deleteConfirmTitle')}
+        description={t('deleteConfirmDescription')}
+        primaryButtonText={t('deleteAccount')}
+        secondaryButtonText={t('keepAccount')}
         showButtons
         loading={pendingAction === 'delete'}
         error={deleteError ?? undefined}

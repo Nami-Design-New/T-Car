@@ -20,6 +20,61 @@
       "toggle": "Toggle menu"
     }
   },
+  "account": {
+    "title": "My account",
+    "nav": {
+      "account": "My account",
+      "profile": "Edit profile",
+      "bookings": "My bookings",
+      "wallet": "Wallet",
+      "bankAccounts": "Bank accounts",
+      "notifications": "Notifications"
+    },
+    "profile": {
+      "fullName": "Full name",
+      "email": "Email address",
+      "birthDate": "Date of birth",
+      "phone": "Mobile number",
+      "license": "Driving license",
+      "licenseRequired": "Please attach a license so we can verify the booking",
+      "licenseVerified": "License verified",
+      "deleteAccount": "Delete account",
+      "save": "Save",
+      "saved": "Changes saved",
+      "deleteConfirmTitle": "Sorry to see you go.",
+      "deleteConfirmDescription": "Deleting your account will permanently remove your personal data and booking history, and you will not be able to recover it. Are you sure you want to continue?",
+      "keepAccount": "Keep account"
+    },
+    "editPhone": {
+      "title": "Edit mobile number",
+      "close": "Close",
+      "phone": "Mobile number",
+      "sendCode": "Send verification code"
+    },
+    "license": {
+      "title": "Driving license",
+      "close": "Close",
+      "uploadPrompt": "Click here to upload a photo of your driving license",
+      "fileTypes": "JPG or PNG",
+      "submit": "Upload"
+    },
+    "verifyPhone": {
+      "title": "Verification code",
+      "close": "Close",
+      "sentTo": "We sent a verification code to",
+      "editPhone": "Edit number",
+      "digitLabel": "Digit {index}",
+      "resendIn": "Resend in {seconds}s",
+      "resend": "Resend code",
+      "verify": "Verify",
+      "successTitle": "Verified",
+      "successDescription": "Your mobile number was verified successfully"
+    },
+    "notifications": {
+      "title": "Notifications",
+      "markAllRead": "Mark all as read"
+    }
+  },
   "auth": {
     "login": {
       "logoAlt": "T-Car",

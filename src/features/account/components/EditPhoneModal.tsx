@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { useTranslations } from 'next-intl';
 import { FiX } from 'react-icons/fi';
 
 import PhoneField from '@/shared/ui/PhoneField';
@@ -24,6 +25,7 @@ export default function EditPhoneModal({
   loading = false,
   error,
 }: Props) {
+  const t = useTranslations('account.editPhone');
   const [mounted, setMounted] = useState(false);
   const [phone, setPhone] = useState('');
 
@@ -77,13 +79,13 @@ export default function EditPhoneModal({
       >
         {/* Header */}
         <div className="phone_modal_header">
-          <h3>تعديل رقم الجوال</h3>
+          <h3>{t('title')}</h3>
 
           <button
             type="button"
             className="icon_btn"
             onClick={onClose}
-            aria-label="إغلاق"
+            aria-label={t('close')}
           >
             <FiX />
           </button>
@@ -92,7 +94,7 @@ export default function EditPhoneModal({
         {/* Body */}
         <div className="phone_modal_body">
           <label className="field_label">
-            رقم الجوال
+            {t('phone')}
           </label>
 
           <div className="phone_wrapper">
@@ -115,7 +117,7 @@ export default function EditPhoneModal({
             disabled={loading}
             aria-busy={loading}
           >
-            إرسال كود التحقق
+            {t('sendCode')}
           </button>
         </div>
       </div>

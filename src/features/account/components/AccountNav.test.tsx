@@ -1,4 +1,6 @@
 import { render, screen } from '@testing-library/react';
+import { NextIntlClientProvider } from 'next-intl';
+import messages from '../../../../messages/en.json';
 import { describe, expect, it, vi } from 'vitest';
 import AccountNav from './AccountNav';
 
@@ -15,7 +17,7 @@ vi.mock('@/i18n/navigation', () => ({
 
 describe('AccountNav', () => {
   it('links every account section', () => {
-    render(<AccountNav />);
+    render(<NextIntlClientProvider locale="en" messages={messages}><AccountNav /></NextIntlClientProvider>);
     expect(screen.getAllByRole('link').map((link) => link.getAttribute('href'))).toEqual([
       '/account/profile',
       '/account/bookings',
@@ -27,16 +29,16 @@ describe('AccountNav', () => {
 
   it('marks the current section', () => {
     pathname = '/account/wallet';
-    render(<AccountNav />);
-    const wallet = screen.getByRole('link', { name: 'المحفظة' });
+    render(<NextIntlClientProvider locale="en" messages={messages}><AccountNav /></NextIntlClientProvider>);
+    const wallet = screen.getByRole('link', { name: 'Wallet' });
     expect(wallet).toHaveAttribute('aria-current', 'page');
     expect(wallet).toHaveClass('active');
-    expect(screen.getByRole('link', { name: 'تعديل الحساب' })).not.toHaveAttribute('aria-current');
+    expect(screen.getByRole('link', { name: 'Edit profile' })).not.toHaveAttribute('aria-current');
   });
 
   it('keeps a section active on its sub-pages', () => {
     pathname = '/account/bookings/3';
-    render(<AccountNav />);
-    expect(screen.getByRole('link', { name: 'حجوزاتي' })).toHaveAttribute('aria-current', 'page');
+    render(<NextIntlClientProvider locale="en" messages={messages}><AccountNav /></NextIntlClientProvider>);
+    expect(screen.getByRole('link', { name: 'My bookings' })).toHaveAttribute('aria-current', 'page');
   });
 });

@@ -1,15 +1,18 @@
 import type { AppNotification } from '../model';
+import { useTranslations } from 'next-intl';
 
 interface Props {
   notifications: AppNotification[];
 }
 
 export default function NotificationsTab({ notifications }: Props) {
+  const t = useTranslations('account.notifications');
+
   return (
     <div className="account-panel">
       <div className="notifications_header">
-        <h3>الإشعارات</h3>
-        <button type="button" className="mark_read_btn">تحديد الكل كمقروء</button>
+        <h3>{t('title')}</h3>
+        <button type="button" className="mark_read_btn">{t('markAllRead')}</button>
       </div>
 
       <div className="notifications_list">

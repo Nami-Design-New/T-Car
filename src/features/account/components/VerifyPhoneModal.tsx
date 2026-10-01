@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
+import { useTranslations } from 'next-intl';
 
 import { createPortal } from 'react-dom';
 import { FiX } from 'react-icons/fi';
@@ -33,6 +34,7 @@ export default function VerifyPhoneModal({
   loading = false,
   error,
 }: Props) {
+  const t = useTranslations('account.verifyPhone');
   const [mounted, setMounted] = useState(false);
 
   const [successOpen, setSuccessOpen] = useState(false);
@@ -275,7 +277,7 @@ export default function VerifyPhoneModal({
         {/* Header */}
 
         <div className="verify_modal_header">
-          <button type="button" className="icon_btn" onClick={onClose} aria-label="إغلاق">
+          <button type="button" className="icon_btn" onClick={onClose} aria-label={t('close')}>
             <FiX />
           </button>
         </div>
@@ -283,9 +285,9 @@ export default function VerifyPhoneModal({
         {/* OTP Form */}
 
         <div className="otp_form">
-          <h2>رمز التحقق</h2>
+          <h2>{t('title')}</h2>
 
-          <p>تم إرسال رمز التحقق إلى</p>
+          <p>{t('sentTo')}</p>
 
           <span className="phone">{phone}</span>
 
@@ -296,7 +298,7 @@ export default function VerifyPhoneModal({
             className="edit_phone_btn"
             onClick={() => (onEditPhone ? onEditPhone() : onClose())}
           >
-            تعديل الرقم
+            {t('editPhone')}
           </button>
 
           {/* OTP */}
@@ -315,7 +317,7 @@ export default function VerifyPhoneModal({
                 value={digit}
                 onChange={(e) => handleChange(e.target.value, index)}
                 onKeyDown={(e) => handleKeyDown(e, index)}
-                aria-label={`الرقم ${index + 1}`}
+                aria-label={t('digitLabel', { index: index + 1 })}
               />
             ))}
           </div>
@@ -323,10 +325,10 @@ export default function VerifyPhoneModal({
           {/* Timer */}
 
           {timer > 0 ? (
-            <p className="timer">إعادة الإرسال خلال {timer}s</p>
+            <p className="timer">{t('resendIn', { seconds: timer })}</p>
           ) : (
             <button type="button" className="resend" onClick={handleResend} disabled={loading}>
-              إعادة إرسال الرمز
+              {t('resend')}
             </button>
           )}
 
@@ -345,7 +347,7 @@ export default function VerifyPhoneModal({
             disabled={otp.join('').length !== OTP_LENGTH || loading}
             aria-busy={loading}
           >
-            تحقق
+            {t('verify')}
           </button>
         </div>
       </div>
@@ -363,8 +365,8 @@ export default function VerifyPhoneModal({
 
       <SuccessModal
         open={successOpen}
-        title="تم التحقق"
-        description="تم التحقق من رقم الجوال بنجاح"
+        title={t('successTitle')}
+        description={t('successDescription')}
         onDone={handleSuccessDone}
       />
     </>
