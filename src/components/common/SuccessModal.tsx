@@ -5,7 +5,7 @@ import { createPortal } from 'react-dom';
 import { useRouter } from '@/i18n/navigation';
 import Lottie from 'lottie-react';
 
-import successAnimation from '@assets/images/successful_login.json';
+import successAnimation from '@/assets/animations/successful_login.json';
 
 interface Props {
   open: boolean;

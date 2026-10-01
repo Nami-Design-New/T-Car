@@ -7,8 +7,8 @@ export const ICONS = {
   branchCar: { src: '/icons/branch-car.svg', width: 24, height: 24 },
   deliveryCar: { src: '/icons/delivery-car.svg', width: 24, height: 24 },
   money: { src: '/icons/money.svg', width: 24, height: 24 },
-  coin: { src: '/icons/coin.svg', width: 24, height: 24 },
-  balance: { src: '/icons/balance.svg', width: 24, height: 24 },
+  coin: { src: '/icons/coin.webp', width: 24, height: 24 },
+  balance: { src: '/icons/balance.webp', width: 24, height: 24 },
   riyal: { src: '/icons/sar.svg', width: 16, height: 16 },
   riyalAlt: { src: '/icons/ryal.svg', width: 16, height: 16 },
   whatsapp: { src: '/icons/whatsapp.svg', width: 24, height: 24 },
@@ -40,6 +40,6 @@ export const IMAGES = {
   appPhone: { src: '/images/app/app-phone.png', width: 360, height: 720 },
   appStore: { src: '/images/app/app-store.webp', width: 160, height: 48 },
   googlePlay: { src: '/images/app/google-play.webp', width: 160, height: 48 },
-  gift: { src: '/images/illustrations/gift.svg', width: 48, height: 48 },
+  gift: { src: '/images/illustrations/gift.webp', width: 48, height: 48 },
   cancelBooking: { src: '/images/illustrations/cancel-booking.svg', width: 140, height: 110 },
 } as const;

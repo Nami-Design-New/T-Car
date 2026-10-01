@@ -8,8 +8,8 @@ import { cn } from '@/shared/lib/cn';
 const Lottie = dynamic(() => import('lottie-react'), { ssr: false });
 
 const ANIMATIONS = {
-  empty: () => import('@assets/images/non_data.json'),
-  success: () => import('@assets/images/successful_login.json'),
+  empty: () => import('@/assets/animations/non_data.json'),
+  success: () => import('@/assets/animations/successful_login.json'),
 } as const;
 
 export type IllustrationName = keyof typeof ANIMATIONS;

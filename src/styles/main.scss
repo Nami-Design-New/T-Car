@@ -2676,7 +2676,7 @@ img {
   overflow: hidden;
   background:
     linear-gradient(rgba($ds-shadow-color, 0.72), rgba($ds-shadow-color, 0.72)),
-    url('../assets/images/hero2.png');
+    url('/images/hero/hero-2.png');
 
   background-size: cover;
   background-position: center;
@@ -3333,7 +3333,7 @@ img {
       width: 320px;
       height: 320px;
 
-      background: url('../assets/images/fav.svg') no-repeat center;
+      background: url('/images/brand/fav.svg') no-repeat center;
       background-size: contain;
 
       opacity: 0.09;
