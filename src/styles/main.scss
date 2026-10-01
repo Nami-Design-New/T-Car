@@ -10140,6 +10140,8 @@ img {
 
   &__slide {
     flex: 0 0 89%;
+    width: 89%;
+    min-width: 0;
     height: auto;
     scroll-snap-align: start;
 
@@ -10155,6 +10157,7 @@ img {
 
     &__slide {
       flex-basis: calc((100% - 18px) / 2);
+      width: calc((100% - 18px) / 2);
     }
   }
 
@@ -10165,6 +10168,7 @@ img {
 
     &__slide {
       flex-basis: calc((100% - 40px) / 3);
+      width: calc((100% - 40px) / 3);
     }
   }
 
