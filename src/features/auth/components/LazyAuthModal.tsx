@@ -10,7 +10,7 @@ interface Props {
   next?: string;
 }
 
-/** Keeps the Bootstrap dialog and phone-input bundle out of the initial shell. */
+/** Keeps the auth dialog and phone-input bundle out of the initial shell. */
 export default function LazyAuthModal(props: Props) {
   return <AuthModal {...props} />;
 }

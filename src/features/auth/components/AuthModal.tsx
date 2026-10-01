@@ -1,18 +1,39 @@
 'use client';
 
-import Modal from 'react-bootstrap/Modal';
 import { useState } from 'react';
 
-import SuccessModal from '@/components/common/SuccessModal';
 import { useRouter } from '@/i18n/navigation';
 import { useErrorMessage } from '@/shared/hooks/useErrorMessage';
 import type { AppError } from '@/shared/lib/errors';
 import { fromActionResult } from '@/shared/lib/result';
+import { Dialog } from '@/shared/ui/Dialog';
+import { ResultDialog } from '@/shared/ui/ResultDialog';
 import { registerAction, requestOtpAction, verifyOtpAction } from '../actions';
 import type { RegistrationInput } from '../model';
 import LoginForm from './LoginForm';
 import OtpForm from './OtpForm';
 import RegisterForm, { type RegisterValues } from './RegisterForm';
+
+interface SuccessProps {
+  open: boolean;
+  title: string;
+  description: string;
+  buttonText: string;
+  onDone: () => void;
+}
+
+function SuccessModal({ open, title, description, buttonText, onDone }: SuccessProps) {
+  return (
+    <ResultDialog
+      open={open}
+      status="success"
+      title={title}
+      description={description}
+      action={{ label: buttonText, onClick: onDone }}
+      onClose={onDone}
+    />
+  );
+}
 
 type Props = {
   show: boolean;
@@ -143,16 +164,18 @@ export default function AuthModal({ show, onHide, next }: Props) {
   };
 
   return (
-    <Modal
-      show={show}
-      onHide={close}
-      centered
-      backdrop="static"
+    <Dialog
+      open={show}
+      onClose={close}
       className="auth_modal_wrapper"
+      closeOnEscape={!pending}
+      closeOnBackdrop={!pending}
+      label="Authentication"
     >
-      <Modal.Header closeButton className="auth_modal_header" />
-
-      <Modal.Body className="auth_modal">{renderStep()}</Modal.Body>
-    </Modal>
+      <Dialog.Header className="auth_modal_header">
+        <Dialog.Close />
+      </Dialog.Header>
+      <Dialog.Body className="auth_modal">{renderStep()}</Dialog.Body>
+    </Dialog>
   );
 }
