@@ -385,6 +385,102 @@
       "cta": "Start a new booking"
     }
   },
+  "myBookings": {
+    "modelYear": "Model {year}",
+    "perDay": "/ day",
+    "countdown": {
+      "expired": "The booking period has ended",
+      "remaining": "Time remaining on booking",
+      "days": "days",
+      "hours": "hours",
+      "minutes": "minutes"
+    },
+    "dates": {
+      "location": "Location",
+      "pickupAddress": "Pickup address",
+      "dropoffAddress": "Drop-off address",
+      "date": "Date",
+      "pickupTime": "Pickup time",
+      "dropoffTime": "Drop-off time",
+      "additionalDetails": "Additional details"
+    },
+    "tabs": {
+      "title": "My bookings",
+      "active": "Current",
+      "past": "Past"
+    },
+    "sidebar": {
+      "priceDetails": "Price details",
+      "price": "Price",
+      "subtotal": "Subtotal",
+      "vat": "VAT",
+      "points": "Points used",
+      "total": "Total",
+      "review": "We value your review"
+    },
+    "review": {
+      "dialogLabel": "Booking review",
+      "close": "Close",
+      "title": "We value your review",
+      "subtitle": "Share your experience with this booking",
+      "stars": "{count} stars",
+      "placeholder": "Write about your experience with the car and showroom...",
+      "sending": "Sending...",
+      "submit": "Send"
+    },
+    "cancel": {
+      "dialogLabel": "Cancel booking",
+      "close": "Close",
+      "title": "Cancel booking",
+      "question": "Are you sure you want to cancel the booking?",
+      "warning": "{percent}% of the booking value will be deducted as a cancellation fee, and the remaining amount will be refunded.",
+      "amountDetails": "Amount details",
+      "paid": "Amount paid",
+      "discountPercent": "Discount percentage",
+      "cancellationFee": "Cancellation fee",
+      "refunded": "Refunded amount",
+      "refundedToYou": "Amount refunded to you",
+      "cancelling": "Cancelling...",
+      "confirm": "Confirm cancellation",
+      "back": "Back",
+      "currency": "SAR"
+    },
+    "extend": {
+      "close": "Close",
+      "title": "Extend booking",
+      "selectDays": "Select number of days",
+      "increase": "Increase days",
+      "decrease": "Decrease days",
+      "note": "The booking will end on January 1, 2025",
+      "priceDetails": "Price details",
+      "price": "Price",
+      "subtotal": "Subtotal",
+      "lateFee": "Late fee",
+      "oneDay": "1 day",
+      "vat": "VAT",
+      "total": "Total",
+      "extending": "Extending...",
+      "confirm": "Confirm",
+      "currency": "SAR"
+    },
+    "details": {
+      "empty": "",
+      "back": "Back",
+      "title": "Booking details",
+      "actions": "Booking actions",
+      "requestEdit": "Request change",
+      "extend": "Extend booking",
+      "cancel": "Cancel",
+      "ok": "Okay",
+      "extendedTitle": "Booking extended successfully",
+      "extendedFailure": "Failed to extend booking",
+      "editRequestedTitle": "Change request sent",
+      "editRequestedDescription": "Your request was sent to the showroom. Customer service will contact you.",
+      "editRequestedFailure": "Failed to send change request",
+      "cancelledTitle": "Booking cancelled successfully",
+      "cancelledFailure": "Failed to cancel booking"
+    }
+  },
   "wallet": {
     "topUpTitle": "Top up wallet",
     "topUp": "Top up",

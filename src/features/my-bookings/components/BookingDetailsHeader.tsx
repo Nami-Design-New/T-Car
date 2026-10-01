@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import dynamic from 'next/dynamic';
 import { Link } from '@/i18n/navigation';
 import { FiArrowRight, FiMoreVertical, FiEdit2, FiCalendar, FiX } from 'react-icons/fi';
@@ -52,17 +53,14 @@ type HeaderFlow =
   | { step: 'cancel'; error?: AppError }
   | { step: 'result'; kind: ResultKind; error?: AppError }; // no error means success
 
-const RESULTS: Record<ResultKind, { title: string; description: string; failure: string }> = {
-  extended: { title: 'تم تمديد الحجز بنجاح', description: '', failure: 'فشل في تمديد الحجز' },
-  editRequested: {
-    title: 'تم إرسال طلب التعديل',
-    description: 'تم إرسال طلبك إلى المعرض وسيتم التواصل معك من قبل خدمة العملاء',
-    failure: 'فشل في إرسال طلب التعديل',
-  },
-  cancelled: { title: 'تم إلغاء الحجز', description: '', failure: 'فشل في إلغاء الحجز' },
+const RESULT_KEYS: Record<ResultKind, { title: string; description: string; failure: string }> = {
+  extended: { title: 'extendedTitle', description: 'empty', failure: 'extendedFailure' },
+  editRequested: { title: 'editRequestedTitle', description: 'editRequestedDescription', failure: 'editRequestedFailure' },
+  cancelled: { title: 'cancelledTitle', description: 'empty', failure: 'cancelledFailure' },
 };
 
 export default function BookingDetailsHeader({ booking }: Props) {
+  const t = useTranslations('myBookings.details');
   const [showActions, setShowActions] = useState(false);
   const [flow, setFlow] = useState<HeaderFlow>({ step: 'idle' });
   const { submitting, extend, requestEdit, cancel } = useBookingActions(booking.id);
@@ -102,13 +100,13 @@ export default function BookingDetailsHeader({ booking }: Props) {
   return (
     <div className="booking-details-header">
       {/* Back */}
-      <Link href={bookingsListPath(bookingTabFor(booking.status))} className="back_link" aria-label="رجوع">
+      <Link href={bookingsListPath(bookingTabFor(booking.status))} className="back_link" aria-label={t('back')}>
         <FiArrowRight />
       </Link>
 
       {/* Title */}
       <div className="booking-details-header-title">
-        <h1>تفاصيل الحجز</h1>
+        <h1>{t('title')}</h1>
 
         <span className="reference">#{booking.reference}</span>
       </div>
@@ -121,7 +119,7 @@ export default function BookingDetailsHeader({ booking }: Props) {
             type="button"
             className="booking-actions-trigger"
             onClick={() => setShowActions((prev) => !prev)}
-            aria-label="إجراءات الحجز"
+            aria-label={t('actions')}
             aria-expanded={showActions}
           >
             <FiMoreVertical />
@@ -132,17 +130,17 @@ export default function BookingDetailsHeader({ booking }: Props) {
             <div className="booking-actions-menu">
               <button type="button" onClick={() => open('edit')}>
                 <FiEdit2 />
-                <span>طلب تعديل</span>
+                <span>{t('requestEdit')}</span>
               </button>
 
               <button type="button" onClick={() => open('extend')}>
                 <FiCalendar />
-                <span>تمديد المدة</span>
+                <span>{t('extend')}</span>
               </button>
 
               <button type="button" className="danger" onClick={() => open('cancel')}>
                 <FiX />
-                <span>إلغاء</span>
+                <span>{t('cancel')}</span>
               </button>
             </div>
           )}
@@ -185,16 +183,16 @@ export default function BookingDetailsHeader({ booking }: Props) {
       {flow.step === 'result' && !flow.error && (
         <SuccessModal
           open
-          title={RESULTS[flow.kind].title}
-          description={RESULTS[flow.kind].description}
-          buttonText="حسناً"
+          title={t(RESULT_KEYS[flow.kind].title)}
+          description={t(RESULT_KEYS[flow.kind].description)}
+          buttonText={t('ok')}
           onDone={close}
         />
       )}
 
       <FailedModal
         open={flow.step === 'result' && Boolean(flow.error)}
-        title={flow.step === 'result' ? RESULTS[flow.kind].failure : undefined}
+        title={flow.step === 'result' ? t(RESULT_KEYS[flow.kind].failure) : undefined}
         description={flow.step === 'result' && flow.error ? errorMessage(flow.error) : undefined}
         onDone={close}
       />

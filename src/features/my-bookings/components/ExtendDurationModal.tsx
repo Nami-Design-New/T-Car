@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { FiX } from 'react-icons/fi';
 import { Dialog } from '@/shared/ui/Dialog';
 
@@ -25,6 +26,7 @@ export default function ExtendDurationModal({
   error,
 }: Props) {
   const [days, setDays] = useState(currentDays);
+  const t = useTranslations('myBookings.extend');
 
   useEffect(() => {
     setDays(currentDays);
@@ -51,21 +53,21 @@ export default function ExtendDurationModal({
           type="button"
           className="close_btn"
           onClick={onClose}
-          aria-label="إغلاق"
+          aria-label={t('close')}
         >
           <FiX />
         </button>
 
         {/* Header */}
         <div className="modal_header">
-          <h2>تمديد المدة</h2>
+          <h2>{t('title')}</h2>
         </div>
 
         {/* Duration */}
         <div className="duration_picker">
 
           <p className="label">
-            حدد عدد الأيام
+            {t('selectDays')}
           </p>
 
           <div className="picker_controls">
@@ -74,7 +76,7 @@ export default function ExtendDurationModal({
               type="button"
               className="plus"
               onClick={increment}
-              aria-label="زيادة الأيام"
+              aria-label={t('increase')}
             >
               +
             </button>
@@ -87,7 +89,7 @@ export default function ExtendDurationModal({
               type="button"
               className="minus"
               onClick={decrement}
-              aria-label="تقليل الأيام"
+              aria-label={t('decrease')}
             >
               −
             </button>
@@ -95,7 +97,7 @@ export default function ExtendDurationModal({
           </div>
 
           <p className="note">
-            تمديد ينتهي الحجز في 1 يناير 2025
+            {t('note')}
           </p>
 
         </div>
@@ -104,27 +106,27 @@ export default function ExtendDurationModal({
         <div className="price_details">
 
           <h3 className="details_title">
-            تفاصيل السعر
+            {t('priceDetails')}
           </h3>
 
           {/* السعر */}
           <div className="row">
             <span className="label">
-              السعر
+              {t('price')}
             </span>
 
             <span className="calculation">
             </span>
 
             <strong>
-              {pricePerDay} ر.س
+              {pricePerDay} {t('currency')}
             </strong>
           </div>
 
           {/* المجموع الفرعي */}
           <div className="row">
             <span className="label">
-              المجموع الفرعي
+              {t('subtotal')}
             </span>
 
             <span className="calculation">
@@ -132,29 +134,29 @@ export default function ExtendDurationModal({
             </span>
 
             <strong>
-              {subtotal} ر.س
+              {subtotal} {t('currency')}
             </strong>
           </div>
 
           {/* غرامة التأخير */}
           <div className="row late_fee">
             <span className="label">
-              غرامة التأخير
+              {t('lateFee')}
             </span>
 
             <span className="calculation">
-              1 يوم
+              {t('oneDay')}
             </span>
 
             <strong>
-              0 ر.س
+              0 {t('currency')}
             </strong>
           </div>
 
           {/* الضريبة */}
           <div className="row">
             <span className="label">
-              ضريبة القيمة المضافة
+              {t('vat')}
             </span>
 
             <span className="calculation">
@@ -162,21 +164,21 @@ export default function ExtendDurationModal({
             </span>
 
             <strong>
-              {vat} ر.س
+              {vat} {t('currency')}
             </strong>
           </div>
 
           {/* الإجمالي */}
           <div className="row total">
             <span className="label">
-              الإجمالي
+              {t('total')}
             </span>
 
             <span className="calculation">
             </span>
 
             <strong>
-              {total} ر.س
+              {total} {t('currency')}
             </strong>
           </div>
 
@@ -195,7 +197,7 @@ export default function ExtendDurationModal({
           onClick={() => onConfirm(days)}
           disabled={loading}
         >
-          {loading ? 'جاري التمديد...' : 'تأكيد'}
+          {loading ? t('extending') : t('confirm')}
         </button>
 
       </div>

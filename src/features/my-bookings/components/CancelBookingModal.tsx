@@ -2,6 +2,7 @@
 
 import { FiX } from 'react-icons/fi';
 import Image from 'next/image';
+import { useTranslations } from 'next-intl';
 import { Dialog } from '@/shared/ui/Dialog';
 
 import cancelBookingImage from '@/assets/icons/cancel_booking.svg';
@@ -30,67 +31,65 @@ export default function CancelBookingModal({
   error,
 }: Props) {
   const refundedAmount = bookingAmount - cancellationFee;
+  const t = useTranslations('myBookings.cancel');
 
   return (
   
-    <Dialog open={open} onClose={onClose} placement="bottom-sheet" label="Cancel booking">
+    <Dialog open={open} onClose={onClose} placement="bottom-sheet" label={t('dialogLabel')}>
       <div className=" selection_modal cancel_booking_modal">
          {/* Close */}
         <button
           type="button"
           className="close_btn"
           onClick={onClose}
-          aria-label="إغلاق"
+          aria-label={t('close')}
         >
           <FiX />
         </button>
 
         <div className="cancel_booking_modal_header">
-          <h2>إلغاء الحجز</h2>
+          <h2>{t('title')}</h2>
         </div>
 
         <div className="cancel_booking_modal_illustration">
-          <Image src={cancelBookingImage} alt="إلغاء الحجز" width={140} height={110} />
+          <Image src={cancelBookingImage} alt={t('title')} width={140} height={110} />
         </div>
 
         <div className="cancel_booking_modal_question">
-          <h3>هل أنت متأكد أنك تريد إلغاء الحجز؟</h3>
+          <h3>{t('question')}</h3>
         </div>
 
         <div className="cancel_booking_modal_warning">
-          <p>
-            سوف يتم خصم {cancellationPercent}% من قيمة الحجز كرسوم للإلغاء،
-            ويتم إعادة المبلغ المتبقي إليك.
-          </p>
+          <p>{t('warning', { percent: cancellationPercent })}</p>
         </div>
 
         <div className="cancel_booking_modal_price_details">
-          <h3 className="cancel_booking_modal_details_title">تفاصيل المبلغ</h3>
+          <h3 className="cancel_booking_modal_details_title">{t('amountDetails')}</h3>
 
           <div className="cancel_booking_modal_row">
-            <span>المبلغ المدفوع</span>
-            <strong>{bookingAmount} ر.س</strong>
+            <span>{t('paid')}</span>
+            <strong>{bookingAmount} {t('currency')}</strong>
           </div>
 
           <div className="cancel_booking_modal_row cancel_booking_modal_row--danger">
-            <span>نسبة الخصم</span>
+            <span>{t('discountPercent')}</span>
             <strong>{cancellationPercent}%</strong>
           </div>
 
           <div className="cancel_booking_modal_row cancel_booking_modal_row--danger">
-            <span>رسوم الإلغاء</span>
-            <strong>-{cancellationFee} ر.س</strong>
+            <span>{t('cancellationFee')}</span>
+            <strong>-{cancellationFee} {t('currency')}</strong>
           </div>
 
           <div className="cancel_booking_modal_row cancel_booking_modal_row--strong">
-            <span>المبلغ المسترد</span>
-            <strong>{refundedAmount} ر.س</strong>
+            <span>{t('refunded')}</span>
+            <strong>{refundedAmount} {t('currency')}</strong>
           </div>
         </div>
 
         <div className="cancel_booking_modal_refund_box">
-          <span>المبلغ المسترد إليك</span>
-          <strong>{refundedAmount} ر.س</strong>
+          <span>{t('refundedToYou')}</span>
+          <strong>{refundedAmount} {t('currency')}</strong>
         </div>
 
         {error && (
@@ -106,11 +105,11 @@ export default function CancelBookingModal({
             onClick={onConfirm}
             disabled={loading}
           >
-            {loading ? 'جاري الإلغاء...' : 'تأكيد الإلغاء'}
+            {loading ? t('cancelling') : t('confirm')}
           </button>
 
           <button type="button" className="cancel_booking_modal_back_btn" onClick={onClose}>
-            تراجع
+            {t('back')}
           </button>
         </div>
       </div>

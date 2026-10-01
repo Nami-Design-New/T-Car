@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import { useTranslations } from 'next-intl';
 import { FiMapPin } from 'react-icons/fi';
 import { formatCurrency } from '@/shared/lib/format';
 import type { StaticImageData } from 'next/image';
@@ -44,6 +45,7 @@ export default function BookingHero({
   statusLabel,
   dropoffDateTime,
 }: Props) {
+  const t = useTranslations('myBookings');
   const bookingDate = formatDateTime(dropoffDateTime);
 
   return (
@@ -86,7 +88,7 @@ export default function BookingHero({
 
           <span className="current">
             {formatCurrency(pricePerDay)}
-            <small>/يوم</small>
+            <small>{t('perDay')}</small>
           </span>
         </div>
       </div>

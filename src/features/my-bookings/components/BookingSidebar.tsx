@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import dynamic from 'next/dynamic';
 import { FiStar } from 'react-icons/fi';
 import { formatCurrency } from '@/shared/lib/format';
@@ -27,16 +28,17 @@ export default function BookingSidebar({
   pointsUsed,
   total,
 }: Props) {
+  const t = useTranslations('myBookings.sidebar');
   const [showReview, setShowReview] = useState(false);
   const { submitting, review } = useBookingActions(bookingId);
 
   return (
     <aside className="booking-sidebar">
-      <h3>تفاصيل السعر</h3>
+      <h3>{t('priceDetails')}</h3>
 
       <div className="price-row">
         <span className="value">{formatCurrency(pricePerDay)}</span>
-        <span className="label">السعر</span>
+        <span className="label">{t('price')}</span>
       </div>
 
       <div className="price-row">
@@ -46,29 +48,29 @@ export default function BookingSidebar({
             {days} × {formatCurrency(pricePerDay)}
           </small>
         </span>
-        <span className="label">المجموع الفرعي</span>
+        <span className="label">{t('subtotal')}</span>
       </div>
 
       <div className="price-row">
         <span className="value">
           {formatCurrency(vat)} <small>{vatRate}%</small>
         </span>
-        <span className="label">ضريبة القيمة المضافة</span>
+        <span className="label">{t('vat')}</span>
       </div>
       <div className="price-row points">
         <span className="value">-{formatCurrency(pointsUsed)}</span>
 
-        <span className="label">استخدام النقاط</span>
+        <span className="label">{t('points')}</span>
       </div>
       <div className="price-row total">
         <span className="value">{formatCurrency(total)}</span>
-        <span className="label">الإجمالي</span>
+        <span className="label">{t('total')}</span>
       </div>
 
       <div className="sidebar-actions">
         <button className="primary-action" onClick={() => setShowReview(true)}>
           <FiStar size={16} />
-          تقييمك يهمنا
+          {t('review')}
         </button>
       </div>
 

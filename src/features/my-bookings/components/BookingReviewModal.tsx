@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { FiStar, FiX } from 'react-icons/fi';
 import { Dialog } from '@/shared/ui/Dialog';
 import { useErrorMessage } from '@/shared/hooks/useErrorMessage';
@@ -15,6 +16,7 @@ interface Props {
 }
 
 export default function BookingReviewModal({ submitting = false, onSubmit, onClose }: Props) {
+  const t = useTranslations('myBookings.review');
   const [rating, setRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
   const [review, setReview] = useState('');
@@ -32,14 +34,14 @@ export default function BookingReviewModal({ submitting = false, onSubmit, onClo
   }
 
   return (
-    <Dialog open onClose={onClose} label="Booking review">
+    <Dialog open onClose={onClose} label={t('dialogLabel')}>
       <div className="review-modal" onClick={(e) => e.stopPropagation()}>
-        <button className="close_btn" onClick={onClose} aria-label="إغلاق">
+        <button className="close_btn" onClick={onClose} aria-label={t('close')}>
           <FiX />
         </button>
 
-        <h3>تقييمك يهمنا</h3>
-        <p className="review-modal-subtitle">شاركنا تجربتك مع هذا الحجز</p>
+        <h3>{t('title')}</h3>
+        <p className="review-modal-subtitle">{t('subtitle')}</p>
 
         <div className="review-modal-stars">
           {[1, 2, 3, 4, 5].map((star) => (
@@ -50,7 +52,7 @@ export default function BookingReviewModal({ submitting = false, onSubmit, onClo
               onMouseEnter={() => setHoverRating(star)}
               onMouseLeave={() => setHoverRating(0)}
               onClick={() => setRating(star)}
-              aria-label={`${star} نجوم`}
+              aria-label={t('stars', { count: star })}
             >
               <FiStar />
             </button>
@@ -58,7 +60,7 @@ export default function BookingReviewModal({ submitting = false, onSubmit, onClo
         </div>
 
         <textarea
-          placeholder="اكتب تجربتك مع السيارة والمعرض..."
+          placeholder={t('placeholder')}
           value={review}
           onChange={(e) => setReview(e.target.value)}
           rows={4}
@@ -75,7 +77,7 @@ export default function BookingReviewModal({ submitting = false, onSubmit, onClo
           onClick={handleSubmit}
           disabled={!rating || submitting}
         >
-          {submitting ? 'جارٍ الإرسال...' : 'إرسال'}
+          {submitting ? t('sending') : t('submit')}
         </button>
       </div>
     </Dialog>

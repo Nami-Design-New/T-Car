@@ -1,4 +1,5 @@
 import { Link } from '@/i18n/navigation';
+import { useTranslations } from 'next-intl';
 import { bookingsListPath, type BookingTab } from '../model';
 import './BookingsTabs.scss';
 
@@ -9,8 +10,8 @@ interface Props {
 }
 
 const TABS: { id: BookingTab; label: string }[] = [
-  { id: 'active', label: 'حالية' },
-  { id: 'past', label: 'سابقة' },
+  { id: 'active', label: 'active' },
+  { id: 'past', label: 'past' },
 ];
 
 /**
@@ -19,10 +20,11 @@ const TABS: { id: BookingTab; label: string }[] = [
  * page can link back to the right list.
  */
 export default function BookingsTabs({ active, activeCount, pastCount }: Props) {
+  const t = useTranslations('myBookings.tabs');
   const counts: Record<BookingTab, number> = { active: activeCount, past: pastCount };
 
   return (
-    <nav className="bookings-tabs" aria-label="حجوزاتي">
+    <nav className="bookings-tabs" aria-label={t('title')}>
       {TABS.map(({ id, label }) => (
         <Link
           key={id}
@@ -32,7 +34,7 @@ export default function BookingsTabs({ active, activeCount, pastCount }: Props) 
           // A filter of the same page: no new scroll position.
           scroll={false}
         >
-          {label}
+          {t(label)}
           <span className="count">{counts[id]}</span>
         </Link>
       ))}

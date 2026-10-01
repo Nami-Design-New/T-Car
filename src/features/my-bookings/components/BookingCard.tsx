@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import { FiStar, FiHome, FiCalendar } from 'react-icons/fi';
 import type { UserBooking } from '../model';
@@ -8,6 +9,7 @@ interface Props {
 }
 
 export default function BookingCard({ booking }: Props) {
+  const t = useTranslations('myBookings');
   return (
     <Link href={`/account/bookings/${booking.id}`} className="booking-card">
       <div className="booking-card-image">
@@ -26,7 +28,7 @@ export default function BookingCard({ booking }: Props) {
           </span>
         </div>
 
-        <span className="booking-card-year">موديل {booking.year}</span>
+        <span className="booking-card-year">{t('modelYear', { year: booking.year })}</span>
 
         <div className="booking-card-meta">
           <span>

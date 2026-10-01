@@ -3,6 +3,7 @@ import {
   FiMapPin,
   FiInfo,
 } from 'react-icons/fi';
+import { useTranslations } from 'next-intl';
 
 interface Props {
   pickupLocation: string;
@@ -38,12 +39,13 @@ export default function BookingDatesInfo({
   dropoffDateTime,
   warrantyNote,
 }: Props) {
+  const t = useTranslations('myBookings.dates');
   return (
     <div className="booking-dates-info">
 
       {/* Location */}
       <div className="info-section">
-        <h3>الموقع</h3>
+        <h3>{t('location')}</h3>
 
         <div className="info-row">
           <span className="icon">
@@ -52,7 +54,7 @@ export default function BookingDatesInfo({
 
           <div>
             <span className="label">
-              عنوان الاستلام
+              {t('pickupAddress')}
             </span>
 
             <span className="value">
@@ -68,7 +70,7 @@ export default function BookingDatesInfo({
 
           <div>
             <span className="label">
-              عنوان التسليم
+              {t('dropoffAddress')}
             </span>
 
             <span className="value">
@@ -80,7 +82,7 @@ export default function BookingDatesInfo({
 
       {/* Date */}
       <div className="info-section">
-        <h3>التاريخ</h3>
+        <h3>{t('date')}</h3>
 
         <div className="info-row">
           <span className="icon">
@@ -89,7 +91,7 @@ export default function BookingDatesInfo({
 
           <div>
             <span className="label">
-              موعد الاستلام
+              {t('pickupTime')}
             </span>
 
             <span className="value">
@@ -105,7 +107,7 @@ export default function BookingDatesInfo({
 
           <div>
             <span className="label">
-              موعد التسليم
+              {t('dropoffTime')}
             </span>
 
             <span className="value">
@@ -120,7 +122,7 @@ export default function BookingDatesInfo({
         <FiInfo />
         <div>
           <span className="label">
-            تفاصيل إضافية
+            {t('additionalDetails')}
           </span>
 
           <span>

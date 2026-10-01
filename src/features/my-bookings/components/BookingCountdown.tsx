@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useTranslations } from 'next-intl';
 
 interface Props {
   pickupDateTime: string;
@@ -30,6 +31,7 @@ export default function BookingCountdown({
   pickupDateTime,
   targetDateTime,
 }: Props) {
+  const t = useTranslations('myBookings.countdown');
   const start = new Date(pickupDateTime);
   const target = new Date(targetDateTime);
 
@@ -48,14 +50,14 @@ export default function BookingCountdown({
   if (state.expired) {
     return (
       <div className="booking-countdown expired">
-        <p>انتهت مدة الحجز</p>
+        <p>{t('expired')}</p>
       </div>
     );
   }
 
   return (
     <div className="booking-countdown">
-      <h3>الوقت المتبقي لإنهاء الحجز</h3>
+      <h3>{t('remaining')}</h3>
 
       <div className="countdown-units">
         <div className="unit">
@@ -63,7 +65,7 @@ export default function BookingCountdown({
             {String(state.days).padStart(2, '0')}
           </span>
 
-          <span className="label">يوم</span>
+          <span className="label">{t('days')}</span>
         </div>
 
         <span className="separator">:</span>
@@ -73,7 +75,7 @@ export default function BookingCountdown({
             {String(state.hours).padStart(2, '0')}
           </span>
 
-          <span className="label">ساعة</span>
+          <span className="label">{t('hours')}</span>
         </div>
 
         <span className="separator">:</span>
@@ -83,7 +85,7 @@ export default function BookingCountdown({
             {String(state.minutes).padStart(2, '0')}
           </span>
 
-          <span className="label">دقيقة</span>
+          <span className="label">{t('minutes')}</span>
         </div>
       </div>
     </div>

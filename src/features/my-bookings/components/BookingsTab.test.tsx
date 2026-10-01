@@ -30,7 +30,7 @@ const BOOKINGS = [booking('1', 'current'), booking('2', 'upcoming'), booking('3'
 describe('BookingsTab', () => {
   it('shows the active list with its link marked current', () => {
     renderWithIntl(<BookingsTab bookings={BOOKINGS} status="active" />);
-    const nav = screen.getByRole('navigation', { name: 'حجوزاتي' });
+    const nav = screen.getByRole('navigation', { name: 'My bookings' });
     const [activeLink, pastLink] = within(nav).getAllByRole('link');
     expect(activeLink).toHaveAttribute('href', '/account/bookings');
     expect(activeLink).toHaveAttribute('aria-current', 'page');
@@ -43,7 +43,7 @@ describe('BookingsTab', () => {
 
   it('shows the past list for status=past', () => {
     renderWithIntl(<BookingsTab bookings={BOOKINGS} status="past" />);
-    expect(screen.getByRole('link', { name: /سابقة/ })).toHaveAttribute('aria-current', 'page');
+    expect(screen.getByRole('link', { name: /Past/ })).toHaveAttribute('aria-current', 'page');
     expect(screen.getByText('Brand Car 3')).toBeInTheDocument();
     expect(screen.queryByText('Brand Car 1')).not.toBeInTheDocument();
   });

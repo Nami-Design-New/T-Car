@@ -385,6 +385,102 @@
       "cta": "ابدأ حجزًا جديدًا"
     }
   },
+  "myBookings": {
+    "modelYear": "موديل {year}",
+    "perDay": "/يوم",
+    "countdown": {
+      "expired": "انتهت مدة الحجز",
+      "remaining": "الوقت المتبقي لإنهاء الحجز",
+      "days": "يوم",
+      "hours": "ساعة",
+      "minutes": "دقيقة"
+    },
+    "dates": {
+      "location": "الموقع",
+      "pickupAddress": "عنوان الاستلام",
+      "dropoffAddress": "عنوان التسليم",
+      "date": "التاريخ",
+      "pickupTime": "موعد الاستلام",
+      "dropoffTime": "موعد التسليم",
+      "additionalDetails": "تفاصيل إضافية"
+    },
+    "tabs": {
+      "title": "حجوزاتي",
+      "active": "حالية",
+      "past": "سابقة"
+    },
+    "sidebar": {
+      "priceDetails": "تفاصيل السعر",
+      "price": "السعر",
+      "subtotal": "المجموع الفرعي",
+      "vat": "ضريبة القيمة المضافة",
+      "points": "استخدام النقاط",
+      "total": "الإجمالي",
+      "review": "تقييمك يهمنا"
+    },
+    "review": {
+      "dialogLabel": "تقييم الحجز",
+      "close": "إغلاق",
+      "title": "تقييمك يهمنا",
+      "subtitle": "شاركنا تجربتك مع هذا الحجز",
+      "stars": "{count} نجوم",
+      "placeholder": "اكتب تجربتك مع السيارة والمعرض...",
+      "sending": "جارٍ الإرسال...",
+      "submit": "إرسال"
+    },
+    "cancel": {
+      "dialogLabel": "إلغاء الحجز",
+      "close": "إغلاق",
+      "title": "إلغاء الحجز",
+      "question": "هل أنت متأكد أنك تريد إلغاء الحجز؟",
+      "warning": "سوف يتم خصم {percent}% من قيمة الحجز كرسوم للإلغاء، ويتم إعادة المبلغ المتبقي إليك.",
+      "amountDetails": "تفاصيل المبلغ",
+      "paid": "المبلغ المدفوع",
+      "discountPercent": "نسبة الخصم",
+      "cancellationFee": "رسوم الإلغاء",
+      "refunded": "المبلغ المسترد",
+      "refundedToYou": "المبلغ المسترد إليك",
+      "cancelling": "جاري الإلغاء...",
+      "confirm": "تأكيد الإلغاء",
+      "back": "تراجع",
+      "currency": "ر.س"
+    },
+    "extend": {
+      "close": "إغلاق",
+      "title": "تمديد المدة",
+      "selectDays": "حدد عدد الأيام",
+      "increase": "زيادة الأيام",
+      "decrease": "تقليل الأيام",
+      "note": "تمديد ينتهي الحجز في 1 يناير 2025",
+      "priceDetails": "تفاصيل السعر",
+      "price": "السعر",
+      "subtotal": "المجموع الفرعي",
+      "lateFee": "غرامة التأخير",
+      "oneDay": "1 يوم",
+      "vat": "ضريبة القيمة المضافة",
+      "total": "الإجمالي",
+      "extending": "جاري التمديد...",
+      "confirm": "تأكيد",
+      "currency": "ر.س"
+    },
+    "details": {
+      "empty": "",
+      "back": "رجوع",
+      "title": "تفاصيل الحجز",
+      "actions": "إجراءات الحجز",
+      "requestEdit": "طلب تعديل",
+      "extend": "تمديد المدة",
+      "cancel": "إلغاء",
+      "ok": "حسناً",
+      "extendedTitle": "تم تمديد الحجز بنجاح",
+      "extendedFailure": "فشل في تمديد الحجز",
+      "editRequestedTitle": "تم إرسال طلب التعديل",
+      "editRequestedDescription": "تم إرسال طلبك إلى المعرض وسيتم التواصل معك من قبل خدمة العملاء",
+      "editRequestedFailure": "فشل في إرسال طلب التعديل",
+      "cancelledTitle": "تم إلغاء الحجز",
+      "cancelledFailure": "فشل في إلغاء الحجز"
+    }
+  },
   "wallet": {
     "topUpTitle": "اشحن المحفظة",
     "topUp": "شحن",
