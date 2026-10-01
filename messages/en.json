@@ -11,6 +11,15 @@
     "login": "Login",
     "faqs": "FAQs"
   },
+  "layout": {
+    "userMenu": {
+      "account": "Account",
+      "logout": "Sign out"
+    },
+    "mobileNav": {
+      "toggle": "Toggle menu"
+    }
+  },
   "auth": {
     "login": {
       "logoAlt": "T-Car",
@@ -214,6 +223,10 @@
     "rights": "All rights reserved.",
     "quickLinks": "Quick Links",
     "contactUs": "Contact Us",
+    "emailValue": "info@tcar.com",
+    "phoneValue": "+966 500000000",
+    "addressValue": "Riyadh, Saudi Arabia",
+    "downloadApp": "Download the app",
     "terms": "Terms & Conditions",
     "privacy": "Privacy Policy"
   },

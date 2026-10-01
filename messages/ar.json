@@ -11,6 +11,15 @@
     "login": "تسجيل الدخول",
     "faqs": "الأسئلة الشائعة"
   },
+  "layout": {
+    "userMenu": {
+      "account": "حسابي",
+      "logout": "تسجيل الخروج"
+    },
+    "mobileNav": {
+      "toggle": "فتح القائمة"
+    }
+  },
   "auth": {
     "login": {
       "logoAlt": "تي كار",
@@ -214,6 +223,10 @@
     "rights": "جميع الحقوق محفوظة.",
     "quickLinks": "روابط سريعة",
     "contactUs": "اتصل بنا",
+    "emailValue": "info@tcar.com",
+    "phoneValue": "+966 500000000",
+    "addressValue": "الرياض، المملكة العربية السعودية",
+    "downloadApp": "حمّل التطبيق",
     "terms": "الشروط والأحكام",
     "privacy": "سياسة الخصوصية"
   },

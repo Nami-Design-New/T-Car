@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, type MouseEvent, type ReactNode } from 'react';
+import { useTranslations } from 'next-intl';
 import { FiMenu, FiX } from 'react-icons/fi';
 
 interface Props {
@@ -8,6 +9,7 @@ interface Props {
 }
 
 export default function MobileNav({ children }: Props) {
+  const t = useTranslations('layout.mobileNav');
   const [isOpen, setIsOpen] = useState(false);
 
   const handleNavClick = (event: MouseEvent<HTMLElement>) => {
@@ -28,7 +30,7 @@ export default function MobileNav({ children }: Props) {
       <button
         type="button"
         className="header-toggle"
-        aria-label="Toggle menu"
+        aria-label={t('toggle')}
         aria-expanded={isOpen}
         onClick={() => setIsOpen((open) => !open)}
       >

@@ -20,14 +20,14 @@ describe('UserMenu', () => {
     const user = setup();
     renderWithIntl(<UserMenu onLogout={onLogout} />);
 
-    const trigger = screen.getByRole('button', { name: 'حسابي' });
+    const trigger = screen.getByRole('button', { name: 'Account' });
     expect(trigger.querySelector('.user-menu-chevron')).not.toHaveClass('open');
 
     await user.click(trigger);
     expect(trigger.querySelector('.user-menu-chevron')).toHaveClass('open');
-    expect(screen.getByRole('menuitem', { name: 'حسابي' })).toHaveAttribute('href', '/en/account/profile');
+    expect(screen.getByRole('menuitem', { name: 'Account' })).toHaveAttribute('href', '/en/account/profile');
 
-    await user.click(screen.getByRole('menuitem', { name: 'تسجيل الخروج' }));
+    await user.click(screen.getByRole('menuitem', { name: 'Sign out' }));
     expect(onLogout).toHaveBeenCalledTimes(1);
   });
 });

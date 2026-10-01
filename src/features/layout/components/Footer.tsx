@@ -64,12 +64,12 @@ export default async function Footer() {
 
           <div className="contact_item">
             <FiMail />
-            <a href="mailto:info@tcar.com">info@tcar.com</a>
+            <a href="mailto:info@tcar.com">{t('footer.emailValue')}</a>
           </div>
 
           <div className="contact_item">
             <FiPhone />
-            <a href="tel:+966500000000">+966 500000000</a>
+            <a href="tel:+966500000000">{t('footer.phoneValue')}</a>
           </div>
 
           <div className="contact_item">
@@ -79,7 +79,7 @@ export default async function Footer() {
               target="_blank"
               rel="noopener noreferrer"
             >
-              Riyadh, Saudi Arabia
+              {t('footer.addressValue')}
             </a>
           </div>
         </div>
@@ -87,15 +87,15 @@ export default async function Footer() {
         <div className="footer_apps">
           <h4>
             <FiDownload />
-            حمل التطبيق
+            {t('footer.downloadApp')}
           </h4>
 
           <a href="#">
-            <Image src={appStore} alt="App Store" width={170} />
+            <Image src={appStore} alt={t('downloadApp.appStoreAlt')} width={170} />
           </a>
 
           <a href="#">
-            <Image src={googlePlay} alt="Google Play" width={170} />
+            <Image src={googlePlay} alt={t('downloadApp.playStoreAlt')} width={170} />
           </a>
         </div>
       </div>
