@@ -15,8 +15,10 @@
 >   `.webp`, …) in every folder. It replaced a `no-restricted-imports` pattern
 >   list that the per-folder `overrides` silently replaced in `app/`,
 >   `features/`, `shared/`, and `services/`.
-> - Pending: re-export `icons/payment/wallet.svg` (PNG inside) and
->   `icons/payment/tamara.svg` (JPEG inside), the same problem as step 5.
+> - Not pursued (user decision, 2026-10-04): `icons/payment/wallet.svg`
+>   (62 KB, PNG inside) and `icons/payment/tamara.svg` (259 KB, JPEG inside)
+>   stay as SVG; they are not converted to WebP. They load only inside the
+>   on-demand payment dialog.
 
 ## 7.1 Current state
 

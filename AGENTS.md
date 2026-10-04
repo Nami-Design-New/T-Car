@@ -22,12 +22,15 @@ conventions are in `docs/01-architecture-layers.md` §1.5.
    `npx next build`, then `npx next start -p 3123` and `curl` the affected
    pages (HTML contains the expected markup; unknown ids carry
    `NEXT_NOT_FOUND`). Stop the server afterwards.
-4. Run `git checkout tsconfig.tsbuildinfo` (tracked build cache), then commit on
-   the branch. Keep commits local; the user pushes.
+4. Run `git checkout tsconfig.tsbuildinfo` (tracked build cache), report the
+   verified fraction, and **wait for the user's approval before committing**.
+   No commit without explicit approval, every time; approval for one commit
+   does not cover the next. Commit on the branch, keep commits local; the user
+   pushes.
 5. Done when the fraction is committed, verified, and the status tables in
    `docs/README.md` reflect it.
 
-Ask the user before: deleting `BookingModal`, `BookingMonthlyModal`,
+Ask the user before: any `git commit`; deleting `BookingModal`, `BookingMonthlyModal`,
 `InsufficientBalanceModal` (waiting on product); choosing a backend contract
 (no real endpoints exist); anything that contradicts a doc.
 
