@@ -1,0 +1,780 @@
+@use 'tokens/tokens' as *;
+
+// Styles used only by the old src/components/* (doc 8 step 6 plan, step 4).
+// Each goes away with its component.
+
+// --- components/modals/InsufficientBalanceModal
+.insufficient_balance_modal {
+  width: min(430px, calc(100% - 32px));
+  padding: 20px 18px 26px;
+  border-radius: $ds-radius-2xl;
+  background: $ds-surface-elevated;
+  overflow: hidden;
+}
+
+.insufficient_balance_drag_handle {
+  display: block;
+  width: 86px;
+  height: 8px;
+  margin: 0 auto 18px;
+  border-radius: $ds-radius-full;
+  background: $ds-surface-disabled;
+}
+
+.insufficient_balance_header h3 {
+  color: $ds-text-primary;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.insufficient_balance_close {
+  width: 48px;
+  height: 48px;
+  place-items: center;
+  border: 1px solid $ds-stroke-light;
+  border-radius: $ds-radius-md;
+  color: $ds-text-primary;
+  font-size: 27px;
+}
+
+.insufficient_balance_illustration {
+  height: 205px;
+  margin-top: 4px;
+}
+
+.insufficient_balance_illustration img {
+  width: 150px;
+  height: 150px;
+  object-fit: contain;
+  image-rendering: auto;
+}
+
+.insufficient_balance_content h2 {
+  margin: 0 0 8px;
+  color: $ds-text-primary;
+  font-size: 25px;
+  font-weight: 700;
+}
+
+.insufficient_balance_content p {
+  margin: 0 auto 18px;
+  color: $ds-text-primary;
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+.insufficient_balance_topup_btn {
+  height: 58px;
+  border: 0;
+  border-radius: $ds-radius-md;
+  background: $ds-action-primary;
+  color: $ds-text-on-action;
+  font-size: 17px;
+}
+
+.insufficient_balance_topup_btn:hover,
+.insufficient_balance_topup_btn:focus {
+  background: darken($ds-action-primary, 5%);
+  color: $ds-text-on-action;
+}
+
+// --- components/common/FailedModal (wallet result + delete account), incl. unused duplicate blocks, and InsufficientBalanceModal on small screens
+.wallet_result_modal {
+  display: flex;
+  width: min(420px, calc(100% - 30px));
+  min-height: 276px;
+  padding: 36px 28px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: $ds-radius-xl;
+  background: $ds-surface-elevated;
+}
+
+.wallet_result_drag_handle {
+  display: block;
+  width: 68px;
+  height: 7px;
+  margin-bottom: 4px;
+  border-radius: $ds-radius-full;
+  background: $ds-surface-disabled;
+}
+
+.wallet_result_icon {
+  position: relative;
+  display: grid;
+  width: 94px;
+  height: 94px;
+  place-items: center;
+  border-radius: $ds-radius-full;
+}
+
+.wallet_result_animation {
+  width: 150px;
+  height: 150px;
+  flex-shrink: 0;
+}
+.delete_account_modal {
+  padding: 24px 20px 20px;
+  border-radius: $ds-radius-xl;
+  width: min(100% - 32px, 440px);
+  text-align: center;
+
+  .wallet_result_drag_handle {
+    display: block;
+    width: 28px;
+    height: 4px;
+    border-radius: $ds-radius-sm;
+    background: $ds-surface-disabled;
+    margin: 0 auto 18px;
+  }
+
+  .wallet_result_icon {
+    margin: 0 auto 16px;
+  }
+
+  .delete_account_content {
+    h2 {
+      margin: 0 0 10px;
+      font-size: 16px;
+      font-weight: 700;
+      color: $ds-text-primary;
+    }
+
+    p {
+      margin: 0 auto;
+      max-width: 390px;
+      font-size: 13px;
+      line-height: 1.8;
+      color: $ds-text-subtle;
+    }
+  }
+
+  .delete_account_actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 22px;
+
+    button {
+      flex: 1;
+      height: 42px;
+      border-radius: $ds-radius-sm;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+
+    .delete_account_confirm {
+      border: 1px solid $ds-status-error;
+      background: $ds-status-error;
+      color: $ds-text-on-action;
+
+      &:hover {
+        background: darken($ds-status-error, 5%);
+      }
+    }
+
+    .delete_account_cancel {
+      border: 1px solid $ds-action-primary;
+      background: $ds-surface-elevated;
+      color: $ds-action-primary;
+
+      &:hover {
+        background: $ds-surface-card-primary;
+      }
+    }
+  }
+}
+.failed_result_animation {
+  position: relative;
+  width: 150px;
+  height: 150px;
+  flex-shrink: 0;
+}
+
+.failed_result_animation .wallet_result_animation {
+  position: absolute;
+  inset: 0;
+}
+
+.failed_result_cross {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 1;
+  width: 88px;
+  height: 13px;
+  border-radius: $ds-radius-full;
+  background: $ds-text-on-action;
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.failed_result_cross:last-child {
+  transform: translate(-50%, -50%) rotate(-45deg);
+}
+
+.wallet_result_icon_success {
+  background: $ds-status-success;
+}
+
+.wallet_result_icon_success span {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-radius: $ds-radius-full;
+  background: $ds-text-on-action;
+}
+
+.wallet_result_icon_success span:first-child {
+  top: 12px;
+}
+
+.wallet_result_icon_success span:last-child {
+  bottom: 12px;
+}
+
+.wallet_result_icon_failed {
+  background: $ds-status-error;
+}
+
+.wallet_result_icon_failed span {
+  position: absolute;
+  width: 72px;
+  height: 11px;
+  border-radius: $ds-radius-full;
+  background: $ds-text-on-action;
+  transform: rotate(45deg);
+}
+
+.wallet_result_icon_failed span:last-child {
+  transform: rotate(-45deg);
+}
+
+.wallet_result_modal h2 {
+  margin: 0;
+  color: $ds-text-primary;
+  font-size: 17px;
+  font-weight: 700;
+}
+.wallet_result_modal {
+  display: flex;
+  width: min(420px, calc(100% - 30px));
+  min-height: 276px;
+  padding: 36px 28px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: $ds-radius-xl;
+  background: $ds-surface-elevated;
+}
+
+.wallet_result_drag_handle {
+  display: block;
+  width: 68px;
+  height: 7px;
+  margin-bottom: 4px;
+  border-radius: $ds-radius-full;
+  background: $ds-surface-disabled;
+}
+
+.wallet_result_icon {
+  position: relative;
+  display: grid;
+  width: 94px;
+  height: 94px;
+  place-items: center;
+  border-radius: $ds-radius-full;
+}
+
+.wallet_result_animation {
+  width: 150px;
+  height: 150px;
+  flex-shrink: 0;
+}
+
+.failed_result_animation {
+  position: relative;
+  width: 150px;
+  height: 150px;
+  flex-shrink: 0;
+}
+
+.failed_result_animation .wallet_result_animation {
+  position: absolute;
+  inset: 0;
+}
+
+.failed_result_cross {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 1;
+  width: 88px;
+  height: 13px;
+  border-radius: $ds-radius-full;
+  background: $ds-text-on-action;
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.failed_result_cross:last-child {
+  transform: translate(-50%, -50%) rotate(-45deg);
+}
+
+.wallet_result_icon_success {
+  background: $ds-status-success;
+}
+
+.wallet_result_icon_success span {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-radius: $ds-radius-full;
+  background: $ds-text-on-action;
+}
+
+.wallet_result_icon_success span:first-child {
+  top: 12px;
+}
+
+.wallet_result_icon_success span:last-child {
+  bottom: 12px;
+}
+
+.wallet_result_icon_failed {
+  background: $ds-status-error;
+}
+
+.wallet_result_icon_failed span {
+  position: absolute;
+  width: 72px;
+  height: 11px;
+  border-radius: $ds-radius-full;
+  background: $ds-text-on-action;
+  transform: rotate(45deg);
+}
+
+.wallet_result_icon_failed span:last-child {
+  transform: rotate(-45deg);
+}
+
+.wallet_result_modal h2 {
+  margin: 0;
+  color: $ds-text-primary;
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.wallet_result_modal {
+  display: flex;
+  width: min(420px, calc(100% - 30px));
+  min-height: 276px;
+  padding: 36px 28px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: $ds-radius-xl;
+  background: $ds-surface-elevated;
+}
+
+.wallet_result_drag_handle {
+  display: block;
+  width: 68px;
+  height: 7px;
+  margin-bottom: 4px;
+  border-radius: $ds-radius-full;
+  background: $ds-surface-disabled;
+}
+
+.wallet_result_icon {
+  position: relative;
+  display: grid;
+  width: 94px;
+  height: 94px;
+  place-items: center;
+  border-radius: $ds-radius-full;
+}
+
+.wallet_result_animation {
+  width: 150px;
+  height: 150px;
+  flex-shrink: 0;
+}
+
+/* ================================================= */
+/* Delete Account Modal */
+/* ================================================= */
+
+.delete_account_modal {
+  padding: 24px 20px 20px;
+  border-radius: $ds-radius-xl;
+  width: min(100% - 32px, 440px);
+  min-height: auto;
+  text-align: center;
+
+  .wallet_result_drag_handle {
+    display: block;
+    width: 28px;
+    height: 4px;
+    border-radius: $ds-radius-sm;
+    background: $ds-surface-disabled;
+    margin: 0 auto 18px;
+  }
+
+  .wallet_result_icon {
+    margin: 0 auto 16px;
+  }
+
+  .delete_account_content {
+    h2 {
+      margin: 0 0 10px;
+      font-size: 16px;
+      font-weight: 700;
+      color: $ds-text-primary;
+    }
+
+    p {
+      margin: 0 auto;
+      max-width: 390px;
+      font-size: 13px;
+      line-height: 1.8;
+      color: $ds-text-subtle;
+    }
+  }
+
+  .delete_account_actions {
+    display: flex;
+    width: 100%;
+    gap: 10px;
+    margin-top: 22px;
+
+    button {
+      flex: 1;
+      height: 42px;
+      border-radius: $ds-radius-sm;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+
+    .delete_account_confirm {
+      border: 1px solid $ds-status-error;
+      background: $ds-status-error;
+      color: $ds-text-on-action;
+
+      &:hover {
+        background: darken($ds-status-error, 5%);
+      }
+    }
+
+    .delete_account_cancel {
+      border: 1px solid $ds-action-primary;
+      background: $ds-surface-elevated;
+      color: $ds-action-primary;
+
+      &:hover {
+        background: $ds-surface-card-primary;
+      }
+    }
+  }
+}
+
+.failed_result_animation {
+  position: relative;
+  width: 150px;
+  height: 150px;
+  flex-shrink: 0;
+}
+
+.failed_result_animation .wallet_result_animation {
+  position: absolute;
+  inset: 0;
+}
+
+.failed_result_cross {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 1;
+  width: 88px;
+  height: 13px;
+  border-radius: $ds-radius-full;
+  background: $ds-text-on-action;
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.failed_result_cross:last-child {
+  transform: translate(-50%, -50%) rotate(-45deg);
+}
+
+/* ================================================= */
+/* Result Icons */
+/* ================================================= */
+
+.wallet_result_icon_success {
+  background: $ds-status-success;
+}
+
+.wallet_result_icon_success span {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-radius: $ds-radius-full;
+  background: $ds-text-on-action;
+}
+
+.wallet_result_icon_success span:first-child {
+  top: 12px;
+}
+
+.wallet_result_icon_success span:last-child {
+  bottom: 12px;
+}
+
+.wallet_result_icon_failed {
+  background: $ds-status-error;
+}
+
+.wallet_result_icon_failed span {
+  position: absolute;
+  width: 72px;
+  height: 11px;
+  border-radius: $ds-radius-full;
+  background: $ds-text-on-action;
+  transform: rotate(45deg);
+}
+
+.wallet_result_icon_failed span:last-child {
+  transform: rotate(-45deg);
+}
+
+.wallet_result_modal h2 {
+  margin: 0;
+  color: $ds-text-primary;
+  font-size: 17px;
+  font-weight: 700;
+}
+@media (max-width: 576px) {
+  .insufficient_balance_modal {
+    padding-inline: 16px;
+  }
+
+  .insufficient_balance_header h3 {
+    font-size: 21px;
+  }
+
+  .insufficient_balance_illustration {
+    height: 180px;
+  }
+
+  .insufficient_balance_illustration img {
+    width: 132px;
+    height: 132px;
+  }
+
+  .insufficient_balance_content h2 {
+    font-size: 22px;
+  }
+}
+
+// --- components/common/SuccessModal
+.success_modal {
+  width: min(420px, calc(100% - 30px));
+
+  background: $ds-surface-elevated;
+
+  border-radius: $ds-radius-xl;
+
+  padding: 36px 28px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  text-align: center;
+
+  animation: popup 0.35s ease;
+
+  .success_animation {
+    width: 170px;
+    height: 170px;
+
+    margin-bottom: 12px;
+
+    flex-shrink: 0;
+
+    @media (max-width: 576px) {
+      width: 140px;
+      height: 140px;
+    }
+  }
+
+  h2 {
+    margin: 0 0 10px;
+
+    color: $ds-text-primary;
+
+    font-size: 1.45rem;
+    font-weight: 800;
+    line-height: 1.4;
+
+    @media (max-width: 576px) {
+      font-size: 1.2rem;
+    }
+  }
+
+  p {
+    margin: 0 0 28px;
+
+    color: $ds-text-subtle;
+
+    font-size: 0.92rem;
+    line-height: 1.9;
+
+    max-width: 300px;
+
+    @media (max-width: 576px) {
+      font-size: 0.85rem;
+    }
+  }
+
+  .auth_btn {
+    width: 100%;
+    height: 52px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: none;
+    border-radius: $ds-radius-md;
+    background: $ds-action-primary;
+    color: $ds-text-on-action;
+    font-size: 0.95rem;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition: 0.3s;
+
+    &:hover {
+      transform: translateY(-2px);
+
+      box-shadow: 0 12px 25px rgba($ds-action-primary, 0.28);
+    }
+
+    &:active {
+      transform: scale(0.98);
+    }
+  }
+
+  @media (max-width: 576px) {
+    padding: 28px 20px;
+    border-radius: $ds-radius-xl;
+  }
+}
+
+// --- components/join/JoinUsForm
+.upload_field {
+  margin-top: 24px;
+
+  label {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-weight: 600;
+    margin-bottom: 10px;
+
+    span {
+      color: $ds-status-error;
+    }
+  }
+
+  input[type='file'] {
+    width: 100%;
+    padding: 14px;
+    border: 1px dashed $ds-stroke-heavy;
+    border-radius: $ds-radius-md;
+    background: $ds-surface-on-background;
+    cursor: pointer;
+    transition: 0.25s;
+
+    &:hover {
+      border-color: $ds-action-primary;
+      background: $ds-surface-card-primary;
+    }
+
+    &::file-selector-button {
+      margin-inline-end: 12px;
+      border: none;
+      background: $ds-action-primary;
+      color: $ds-text-on-action;
+      padding: 10px 16px;
+      border-radius: $ds-radius-sm;
+      cursor: pointer;
+      font-weight: 600;
+    }
+  }
+
+  small {
+    display: block;
+    margin-top: 8px;
+    color: $ds-text-subtle;
+    font-size: 0.85rem;
+  }
+}
+.register_showroom {
+  .section_heading {
+    text-align: center;
+    margin-bottom: 40px;
+
+    h2 {
+      color: $ds-text-primary;
+      font-size: 32px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    p {
+      color: $ds-text-subtle;
+      max-width: 650px;
+      margin: auto;
+      line-height: 1.8;
+    }
+    span {
+      color: $ds-action-primary;
+      font-weight: 700;
+    }
+  }
+
+  .register_form {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+  }
+
+  .form_grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 22px;
+  }
+
+  .submit_area {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+  }
+
+  @media (max-width: 768px) {
+    .register_card {
+      padding: 24px;
+    }
+
+    .form_grid {
+      grid-template-columns: 1fr;
+    }
+
+    .section_heading h2 {
+      font-size: 26px;
+    }
+  }
+}

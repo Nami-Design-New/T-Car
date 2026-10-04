@@ -225,6 +225,16 @@ outside `base/`; breakpoints and colors from tokens; nothing new in `main.scss`.
 | Plan step 1 (2026-10-04) | `shared/ui` normalized: `Button`, `Loader`, `SectionTitle`, `DirectionProvider` out of `index.tsx`; `DateTimePicker`, `PhoneField` into folders; `FormInput` / `FormSelect` / `FormTextarea` into `Form/`; named exports everywhere (18 importers updated); every `index.ts` exports `<Name>Props` | CSS content identical; 64 tests pass |
 | Plan step 2 (2026-10-04) | Tests for the 11 `shared/ui` components that had none: `Form`, `PhoneField`, `DateTimePicker`, `SectionTitle`, `Loader`, `ErrorState`, `RouteError`, `ResourceNotFound`, `Skeleton` / `PageSkeleton`, `Illustration`, `DirectionProvider` (43 tests). Every `shared/ui` folder now has a test | 107 tests pass; three deliberate component bugs were each caught |
 | Plan step 3 (2026-10-04) | Component styles next to their component, imported by it: `Form.scss` (`.form_*`, from `main.scss`), `DateTimePicker.scss` (`.dt-picker*`), `PhoneField.scss` (`.phone_field`), `Loader.scss` (was `base/_loader`), `SectionTitle.scss` (`.section-title*`, was `base/_typography`). `_typography` stays as its own file for element-level text styles. Feature overrides stay with the feature (`.cars-rail-header .section-title-*`, `.contact … .react-tel-input`). `ResourceNotFound` had no rules of its own | Same 1,726 rules before and after; computed styles of 904 elements in headless Chrome (6 pages incl. the open date picker, en/ar, 1280/360 px) identical |
+| Plan step 4 (2026-10-04) | `styles/legacy/_dialogs.scss`: `.modal_overlay`, `@keyframes popup`, `.close_btn`, `.selection_modal` (shared by account, booking, car-details, my-bookings, rental-search and the old components). `styles/legacy/_components.scss`: styles used only by `src/components/*` (`InsufficientBalanceModal`, `FailedModal`'s `.wallet_result_*` / `.delete_account_modal`, `SuccessModal`, `JoinUsForm`), each section labelled with its component. `main.scss` 11,970 → 10,781 lines | Same 1,656 rules; computed styles of 2,104 elements identical (pickup-type, branch, airport and station dialogs; car reviews and branches dialogs; `/join-us`; the five old modals rendered open on a probe page; en/ar; 1280/360 px) |
+
+**Ownership map (from step 4 on):** each top-level block of `main.scss` is traced
+to its source with a source map and assigned an owner from the root class of
+its selector (which code areas use that class). It decides where each block
+moves. About 780 lines have no user at all (e.g. the old `booking_daily_*`
+dialog, `.booking-footer`, `.payment_methods`, `.bookings-empty`,
+`.review-modal-overlay`, and the `failed_result_*` / `wallet_result_*` blocks
+that appear three times); they move unchanged and are removed in a separate
+dead-CSS fraction.
 
 **Cascade check (used from step 3 on):** a moved rule can change load order, so
 each move is checked with headless Chrome (`playwright-core`, outside the
