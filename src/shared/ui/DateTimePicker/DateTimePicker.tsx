@@ -2,6 +2,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { FiChevronRight, FiChevronLeft, FiClock } from 'react-icons/fi';
 import { useTranslations } from 'next-intl';
+import './DateTimePicker.scss';
 interface DateTimeValue {
   date: string;
   time: string;

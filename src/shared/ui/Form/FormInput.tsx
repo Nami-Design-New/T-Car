@@ -2,6 +2,7 @@
 
 import { InputHTMLAttributes } from 'react';
 import { cn } from '@/shared/lib/cn';
+import './Form.scss';
 
 export interface FormInputProps extends InputHTMLAttributes<HTMLInputElement> {
   label: string;

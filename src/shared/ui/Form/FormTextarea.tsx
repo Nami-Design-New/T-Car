@@ -2,6 +2,7 @@
 
 import { TextareaHTMLAttributes } from 'react';
 import { cn } from '@/shared/lib/cn';
+import './Form.scss';
 
 export interface FormTextareaProps
   extends TextareaHTMLAttributes<HTMLTextAreaElement> {

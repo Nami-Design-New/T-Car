@@ -224,6 +224,13 @@ outside `base/`; breakpoints and colors from tokens; nothing new in `main.scss`.
 
 | Plan step 1 (2026-10-04) | `shared/ui` normalized: `Button`, `Loader`, `SectionTitle`, `DirectionProvider` out of `index.tsx`; `DateTimePicker`, `PhoneField` into folders; `FormInput` / `FormSelect` / `FormTextarea` into `Form/`; named exports everywhere (18 importers updated); every `index.ts` exports `<Name>Props` | CSS content identical; 64 tests pass |
 | Plan step 2 (2026-10-04) | Tests for the 11 `shared/ui` components that had none: `Form`, `PhoneField`, `DateTimePicker`, `SectionTitle`, `Loader`, `ErrorState`, `RouteError`, `ResourceNotFound`, `Skeleton` / `PageSkeleton`, `Illustration`, `DirectionProvider` (43 tests). Every `shared/ui` folder now has a test | 107 tests pass; three deliberate component bugs were each caught |
+| Plan step 3 (2026-10-04) | Component styles next to their component, imported by it: `Form.scss` (`.form_*`, from `main.scss`), `DateTimePicker.scss` (`.dt-picker*`), `PhoneField.scss` (`.phone_field`), `Loader.scss` (was `base/_loader`), `SectionTitle.scss` (`.section-title*`, was `base/_typography`). `_typography` stays as its own file for element-level text styles. Feature overrides stay with the feature (`.cars-rail-header .section-title-*`, `.contact … .react-tel-input`). `ResourceNotFound` had no rules of its own | Same 1,726 rules before and after; computed styles of 904 elements in headless Chrome (6 pages incl. the open date picker, en/ar, 1280/360 px) identical |
+
+**Cascade check (used from step 3 on):** a moved rule can change load order, so
+each move is checked with headless Chrome (`playwright-core`, outside the
+project) comparing the computed style of every element inside the affected
+components before and after, at two widths and both locales; the harness is run
+twice on the baseline first to prove it is deterministic.
 
 Still in `base/_reset` but owned by features, to move with them: the
 `nfSwing` keyframes (not-found page) and `body:dir(ltr) .download_app` (home).

@@ -1,4 +1,5 @@
 import { ReactNode } from 'react';
+import './SectionTitle.scss';
 
 export interface SectionTitleProps {
   smallTitle?: ReactNode;

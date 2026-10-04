@@ -1,0 +1,36 @@
+@use 'tokens/tokens' as *;
+
+.phone_field {
+  direction: ltr;
+
+  .react-tel-input {
+    direction: ltr;
+    width: 100%;
+  }
+
+  .country_selector_btn {
+    left: 0 !important;
+    right: auto !important;
+
+    height: 56px !important;
+
+    border: 1px solid $ds-stroke-light !important;
+    border-right: none !important;
+    border-radius: $ds-radius-md 0 0 $ds-radius-md !important;
+
+    background: $ds-surface-on-background !important;
+  }
+
+  .phone_input {
+    width: 100% !important;
+    height: 56px !important;
+
+    padding-right: 16px !important;
+
+    direction: ltr !important;
+    text-align: left !important;
+
+    border: 1px solid $ds-stroke-light !important;
+    border-radius: $ds-radius-md !important;
+  }
+}

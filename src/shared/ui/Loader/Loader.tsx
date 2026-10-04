@@ -3,6 +3,7 @@ export interface LoaderProps {
 }
 
 import Image from "next/image";
+import './Loader.scss';
 
 import { IMAGES } from '@/shared/config/assets';
 const logoText = IMAGES.brandText;

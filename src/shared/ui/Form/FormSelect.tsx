@@ -1,5 +1,6 @@
 'use client';
 import { useTranslations } from 'next-intl';
+import './Form.scss';
 interface Option {
   value: string;
   label: string;
