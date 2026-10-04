@@ -3,7 +3,7 @@
 Status: **in progress** on branch `refactor/architecture-layers` (not merged). See
 [Migration status](#migration-status) for what is done and where the code
 deliberately differs from these documents.
-Last reviewed against the code: 2026-10-01. Status updated: 2026-10-01.
+Last reviewed against the code: 2026-10-04. Status updated: 2026-10-04.
 
 This folder reviews the current front end and sets out the target design and the
 migration path for six areas. Each document stands on its own: it covers the
@@ -215,7 +215,7 @@ merged or pushed yet.
 | 4. Feature migration | Done (8 of 8 fractions) | Wallet, bank-account, my-bookings, booking-flow, rental-search, cars/cities filters, and auth dialog migration are complete. Remaining performance, i18n, image, and SCSS work is tracked in phases 5–8 |
 | 5. Performance | Started (fraction 5 of 8) | Done: the Maps script loads only when a map dialog opens; the auth dialog loads on first open; booking-flow, rental-search, wallet, profile, booking-details, and booking-review dialogs load on demand and mount only for their active step; Lottie animations load on first use through `Illustration` (`SuccessModal` still imports Lottie directly); the header and footer render on the server; the FAQ ships no client JavaScript; hero slides use `next/image` with `fill`, `sizes="100vw"`, and first-slide priority; WOFF2 font files are used for all four active Expo Arabic weights. Decision: retain Swiper for the car rails, hero, and partners; the planned carousel replacement is not being pursued because the measured bundle trade-off does not justify the design and behavior changes. Remaining: the Bootstrap and SCSS items are phase 8 |
 | 6. i18n extraction | Complete (10 fractions) | Extracted home, rental-search, layout, account, wallet, bank accounts, my-bookings, car-details, booking flow, cars/cities, legal pages, common controls, date picker, city index, and auth success copy into both locale files. The global error remains intentionally fixed and bilingual because it renders outside the locale layout. |
-| 7. Images and assets | Complete (4 fractions) | [Doc 7](07-images-and-assets.md): UI icons, static images, API-bound mock URLs, animations, cleanup, and image-weight reductions are complete. `cta.png` and `notlogin.png` are retained under `public/images/unused/`, excluded from the registry, pending design confirmation before deletion. |
+| 7. Images and assets | In progress (follow-up fraction 5 of 7) | [Doc 7](07-images-and-assets.md): UI icons, static images, API-bound mock URLs, animations, cleanup, and image-weight reductions are complete (fractions 1–4). `cta.png` and `notlogin.png` are retained under `public/images/unused/`, excluded from the registry, pending design confirmation before deletion. **Audit follow-ups (2026-10-04):** (5) ✅ brand filter options come from `carsApi.listBrands()` via `getCarBrands()` instead of `/mock/` paths in `CarFilters` / `CityFilters`, and a lint rule keeps `/mock/…` literals inside `services/mocks`. (6) Pending: remove the duplicate `src/assets/images/logo.png` and unused `brand/logo.svg`; make the asset import ban survive the per-folder lint overrides. (7) Pending: re-export the raster-in-SVG `payment/wallet.svg` (62 KB) and `payment/tamara.svg` (259 KB). Step 6 (narrow `remotePatterns`, delete `public/mock/`) waits for the API phase |
 | 8. Styles compiled from SCSS | Planned | [Doc 8](08-styles-and-scss.md): drift check done (0 rules differ in meaning between `main.scss` and the committed `main.css`); migration not started. Component styles from phase 1 already compile from SCSS |
 
 ### Features
@@ -225,7 +225,7 @@ merged or pushed yet.
 | `wallet`, `bank-accounts` | Yes | Client reads over `*.api.ts`; writes through Server Actions | Yes | Fractions 1–3 complete: wallet and bank-account form, confirmation, and result states use shared dialogs. Left: user-scoped reads/API and forms (doc 3 step 7) |
 | `my-bookings` | Yes | Yes | Yes (Server Actions) | Fraction 4 complete: extend, cancel, review, and result dialogs use shared Dialog primitives. Left: `router.refresh()` after an action once the API keeps state |
 | `car-details`, `booking` | Yes | Yes | Yes (checkout) | Fraction 5 complete: daily booking, confirmation, payment, and booking result dialogs use shared primitives. Left: keep a failed edit request open inside `BookingDailyModal` and migrate remaining booking-flow details |
-| `cars`, `cities` | Yes | Yes | n/a | Fraction 6 complete: search and price URL state is shared by `CarFilters` and `CityFilters`; sort and hero search context remain URL-backed. Left: consolidate option data (doc 4) |
+| `cars`, `cities` | Yes | Yes | n/a | Fraction 6 complete: search and price URL state is shared by `CarFilters` and `CityFilters`; sort and hero search context remain URL-backed. Brand options come from `getCarBrands()` (mocked `carsApi.listBrands()`). Left: consolidate the remaining option data (companies, types, services; doc 4) |
 | `home`, `rental-search` | Yes | Yes (FAQs, search options) | Yes (Server Action: contact form) | Fraction 7 complete: pickup type, branch, airport, station, map, and country dialogs use shared `Dialog`. The FAQ is native `<details>`; static home content remains component-local |
 | `auth` | Yes | NextAuth + mocked `authApi` | Yes (Server Actions) | Auth dialog uses shared `Dialog` and `ResultDialog`; real backend endpoints remain a later integration concern |
 | `account` (profile, notifications) | Yes | Yes (scoped to the session user) | Yes (Server Actions: save, phone change send and verify, license upload, delete) | Routes per section with a shared layout and `AccountNav`. Left: notification mark-all-read is still static; opening the license details is still a TODO; forms (doc 3 step 7) and dialogs |
@@ -246,12 +246,16 @@ extensions over 30 days, and so on) are documented in each `services/mocks/*.ts`
   Swiper is intentionally retained for the existing car rails, hero, and
   partners carousels.
 - Phase 6 is complete with ten fractions covering feature copy, static/legal pages, common controls, date picking, city index copy, and auth success copy. The global error remains intentionally fixed and bilingual because it renders outside the locale layout.
-- Phase 7 image/assets classification and all four migration fractions are
-    complete: UI icons, static images, API-bound mock images, animations,
-    cleanup, and image-weight reductions now follow doc 7. Mock image fixtures
-    are temporary and will be deleted after backend image URL integration.
-    `cta.png` and `notlogin.png` remain pending design confirmation. Phase 8
-    SCSS compilation migration has not started.
+- Phase 7: the four planned fractions are complete; an audit on 2026-10-04
+  added three follow-ups. Done: (5) brand filter logos behind the cars API, with
+  a lint guard for `/mock/` literals. Left: (6) delete the duplicate logo files
+  and fix the asset import ban under the lint overrides; (7) re-export the
+  `wallet` and `tamara` payment icons. Mock image fixtures are temporary and
+  will be deleted after backend image URL integration. `cta.png` and
+  `notlogin.png` remain pending design confirmation. Integration follow-up:
+  the brand filter's label comes from `cars.brands.<slug>`; the API will
+  probably send a localized name instead.
+- Phase 8 SCSS compilation migration has not started.
 - Product decisions are still needed before deleting `BookingModal`,
   `BookingMonthlyModal`, or `InsufficientBalanceModal`.
 

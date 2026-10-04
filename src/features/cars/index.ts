@@ -7,6 +7,7 @@ export { default as CarsRail } from './components/CarsRail';
 export { discountPercent, groupCarsByOffice } from './model';
 export type {
   Car,
+  CarBrand,
   CarListing,
   Office,
   OfficeCarGroup,

@@ -1,10 +1,11 @@
-import type { Car, CarListing, Office, SearchCarsParams } from '@/features/cars/model';
+import type { Car, CarBrand, CarListing, Office, SearchCarsParams } from '@/features/cars/model';
 import { http } from './http/client';
 import { carsMock } from './mocks/cars';
 
 export interface CarsApi {
   listCars(): Promise<CarListing[]>;
   listOffices(): Promise<Office[]>;
+  listBrands(): Promise<CarBrand[]>;
 }
 
 // The listing endpoints are not available yet, so the mock is the only

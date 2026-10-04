@@ -1,7 +1,18 @@
 # 7. Images and assets
 
-> **Status (2026-09-29):** planned, not started. Added to the migration at the
-> team's request.
+> **Status (2026-10-04):** steps 1–5 of §7.4 are done; step 6 waits for the API
+> phase. An audit on 2026-10-04 found leftovers, which are being closed in
+> follow-up fractions (tracked in [README → Migration status](README.md#migration-status)):
+>
+> - ✅ Brand filter logos came from `/mock/` inside `features/cars` components;
+>   they now come from `carsApi.listBrands()` through `getCarBrands()`, and a
+>   `no-restricted-syntax` lint rule rejects `/mock/…` string literals outside
+>   `src/services/mocks/` (rule 3).
+> - Pending: delete the duplicate `src/assets/images/logo.png` and the unused
+>   `public/images/brand/logo.svg`; make the rule 4 import ban apply in every
+>   folder (the per-folder `overrides` replace it today).
+> - Pending: re-export `icons/payment/wallet.svg` (PNG inside) and
+>   `icons/payment/tamara.svg` (JPEG inside), the same problem as step 5.
 
 ## 7.1 Current state
 

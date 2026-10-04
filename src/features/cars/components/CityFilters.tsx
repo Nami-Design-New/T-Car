@@ -1,7 +1,6 @@
 'use client';
 import { useState } from 'react';
 import { FiTruck, FiGrid, FiShield } from 'react-icons/fi';
-const nissanLogo = '/mock/brands/nissan.svg';
 import { useTranslations } from 'next-intl';
 import FilterPanel from './filters/FilterPanel';
 import PriceRangeSlider from './filters/PriceRangeSlider';
@@ -9,16 +8,16 @@ import CheckboxGroup from './filters/CheckboxGroup';
 import BrandGrid from './filters/BrandGrid';
 import { useToggleList } from '@/shared/hooks/useToggleList';
 import { PRICE_MAX, PRICE_MIN, useUrlCarFilters } from '../hooks/useUrlCarFilters';
+import type { CarBrand } from '../model';
 const COMPANIES = ['elite', 'elite', 'elite', 'elite', 'elite'];
 const TYPES = ['economy', 'sedan', 'suv', 'luxury'];
 const SERVICES = ['delivery', 'delivery', 'delivery', 'delivery'];
-const BRANDS = [
-  { name: 'nissan', logo: nissanLogo },
-  { name: 'nissan', logo: nissanLogo },
-  { name: 'nissan', logo: nissanLogo },
-  { name: 'nissan', logo: nissanLogo },
-];
-export default function CitiesFilters() {
+
+interface Props {
+  brands: CarBrand[];
+}
+
+export default function CitiesFilters({ brands }: Props) {
   const t = useTranslations('cars');
   const companies = useToggleList();
   const types = useToggleList();
@@ -90,7 +89,7 @@ export default function CitiesFilters() {
       <BrandGrid
         icon={<FiTruck />}
         title={t('filters.brand')}
-        brands={BRANDS.map((brand) => ({ ...brand, name: t(`brands.${brand.name}`) }))}
+        brands={brands.map(({ slug, logo }) => ({ logo, name: t(`brands.${slug}`) }))}
         selected={selectedBrand}
         onSelect={setSelectedBrand}
       />

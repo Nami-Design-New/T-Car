@@ -13,6 +13,17 @@
           "@assets/images/*"
         ]
       }
+    ],
+    "no-restricted-syntax": [
+      "error",
+      {
+        "selector": "Literal[value=/^[\\x2f]mock[\\x2f]/]",
+        "message": "Mock image URLs (/mock/...) belong in src/services/mocks only (doc 7 rule 3)."
+      },
+      {
+        "selector": "TemplateElement[value.raw=/^[\\x2f]mock[\\x2f]/]",
+        "message": "Mock image URLs (/mock/...) belong in src/services/mocks only (doc 7 rule 3)."
+      }
     ]
   },
   "overrides": [
@@ -55,6 +66,12 @@
             ]
           }
         ]
+      }
+    },
+    {
+      "files": ["src/services/mocks/**"],
+      "rules": {
+        "no-restricted-syntax": "off"
       }
     }
   ]

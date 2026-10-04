@@ -1,5 +1,5 @@
 import { CarFilters, CarOfficeRow, SortBar, parseCarSearchParams } from '@/features/cars';
-import { getOfficeCarGroups } from '@/features/cars/queries';
+import { getCarBrands, getOfficeCarGroups } from '@/features/cars/queries';
 import { Link } from '@/i18n/navigation';
 import { getTranslations } from 'next-intl/server';
 import { FiArrowLeft } from 'react-icons/fi';
@@ -11,7 +11,7 @@ interface Props {
 export default async function CarsPage({ searchParams }: Props) {
   const t = await getTranslations();
   const params = parseCarSearchParams(await searchParams);
-  const officeGroups = await getOfficeCarGroups(params);
+  const [officeGroups, brands] = await Promise.all([getOfficeCarGroups(params), getCarBrands()]);
 
   return (
     <section className="section city-listings car-page">
@@ -24,7 +24,7 @@ export default async function CarsPage({ searchParams }: Props) {
         </header>
 
         <div className="city-listings-grid">
-          <CarFilters />
+          <CarFilters brands={brands} />
           <div className="office-rows">
             <SortBar
               resultsCount={officeGroups.reduce((count, group) => count + group.cars.length, 0)}

@@ -4,6 +4,7 @@ import {
   groupCarsByOffice,
   selectHandpickedCars,
   selectOfferCars,
+  type CarBrand,
   type CarListing,
   type OfficeCarGroup,
 } from './model';
@@ -31,4 +32,9 @@ export async function getHandpickedCars(): Promise<CarListing[]> {
 
 export async function getOffices() {
   return carsApi.listOffices();
+}
+
+/** Brand options for the cars and city filters. */
+export async function getCarBrands(): Promise<CarBrand[]> {
+  return carsApi.listBrands();
 }

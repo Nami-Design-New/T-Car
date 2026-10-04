@@ -2,16 +2,15 @@
 import { FiShield, FiTruck, FiX } from 'react-icons/fi';
 import { TbCar, TbCar4Wd, TbCaravan, TbCarOffRoad, TbCarSuv, TbTruck } from 'react-icons/tb';
 import Image from 'next/image';
-const nissanLogo = '/mock/brands/nissan.svg';
 import { useTranslations } from 'next-intl';
 import FilterPanel from './filters/FilterPanel';
 import PriceRangeSlider from './filters/PriceRangeSlider';
 import CheckboxGroup from './filters/CheckboxGroup';
 import { useToggleList } from '@/shared/hooks/useToggleList';
 import { PRICE_MAX, PRICE_MIN, useUrlCarFilters } from '../hooks/useUrlCarFilters';
+import type { CarBrand } from '../model';
 const COMPANIES = ['elite', 'elite', 'elite', 'elite', 'elite'];
 const SERVICES = ['delivery', 'delivery', 'delivery', 'delivery'];
-const BRANDS = ['nissan-1', 'nissan-2', 'nissan-3', 'nissan-4'];
 const CAR_TYPES = [
   { id: 'family', key: 'family', icon: TbCarSuv },
   { id: 'convertible', key: 'convertible', icon: TbCar },
@@ -20,7 +19,11 @@ const CAR_TYPES = [
   { id: 'pickup', key: 'pickup', icon: TbTruck },
   { id: 'van', key: 'van', icon: TbCaravan },
 ];
-export default function CarFilters() {
+interface Props {
+  brands: CarBrand[];
+}
+
+export default function CarFilters({ brands: brandOptions }: Props) {
   const t = useTranslations('cars');
   const companies = useToggleList();
   const types = useToggleList();
@@ -71,7 +74,7 @@ export default function CarFilters() {
           </button>
         </div>
         <div className="filter_chip_list">
-          {BRANDS.map((id) => {
+          {brandOptions.map(({ id, slug, logo }) => {
             const selected = brands.selected.includes(id);
             return (
               <button
@@ -82,9 +85,9 @@ export default function CarFilters() {
                 onClick={() => brands.toggle(id)}
               >
                 <span className="filter_chip_visual brand_chip_logo">
-                  <Image src={nissanLogo} alt="" width={24} height={24} />
+                  <Image src={logo} alt="" width={24} height={24} />
                 </span>
-                <span className="filter_chip_label">{t('brands.nissan')}</span>
+                <span className="filter_chip_label">{t(`brands.${slug}`)}</span>
                 {selected && (
                   <span className="filter_chip_remove" aria-hidden="true">
                     <FiX />

@@ -1,4 +1,4 @@
-import type { CarListing } from '@/features/cars/model';
+import type { CarBrand, CarListing } from '@/features/cars/model';
 import type { CarsApi } from '../cars.api';
 import { MOCK_OFFICES } from './offices';
 const carImage = '/mock/cars/creta.jpg';
@@ -231,6 +231,14 @@ export const MOCK_CARS: CarListing[] = [
   },
 ];
 
+const brandLogo = '/mock/brands/nissan.svg';
+
+export const MOCK_BRANDS: CarBrand[] = [1, 2, 3, 4].map((n) => ({
+  id: `nissan-${n}`,
+  slug: 'nissan',
+  logo: brandLogo,
+}));
+
 export function getCarListingById(id: string): CarListing | undefined {
   return MOCK_CARS.find((car) => car.id === id);
 }
@@ -243,5 +251,9 @@ export const carsMock: CarsApi = {
 
   async listOffices() {
     return [...MOCK_OFFICES];
+  },
+
+  async listBrands() {
+    return [...MOCK_BRANDS];
   },
 };

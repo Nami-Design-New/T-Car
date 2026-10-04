@@ -37,6 +37,13 @@ export interface Office {
   logo: string;
 }
 
+/** A car brand offered as a filter option; `slug` picks the label from `cars.brands.*`. */
+export interface CarBrand {
+  id: string;
+  slug: string;
+  logo: string;
+}
+
 export interface OfficeCarGroup {
   office: Office;
   cars: CarListing[];
