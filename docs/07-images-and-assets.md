@@ -8,9 +8,13 @@
 >   they now come from `carsApi.listBrands()` through `getCarBrands()`, and a
 >   `no-restricted-syntax` lint rule rejects `/mock/…` string literals outside
 >   `src/services/mocks/` (rule 3).
-> - Pending: delete the duplicate `src/assets/images/logo.png` and the unused
->   `public/images/brand/logo.svg`; make the rule 4 import ban apply in every
->   folder (the per-folder `overrides` replace it today).
+> - ✅ Deleted the duplicate `src/assets/images/logo.png` and the unused
+>   `public/images/brand/logo.svg`; `src/assets/` now holds only `fonts/` and
+>   `animations/`. Rule 4 is enforced with `no-restricted-syntax`, which bans
+>   any static or dynamic import of an image file (`.svg`, `.png`, `.jpg`,
+>   `.webp`, …) in every folder. It replaced a `no-restricted-imports` pattern
+>   list that the per-folder `overrides` silently replaced in `app/`,
+>   `features/`, `shared/`, and `services/`.
 > - Pending: re-export `icons/payment/wallet.svg` (PNG inside) and
 >   `icons/payment/tamara.svg` (JPEG inside), the same problem as step 5.
 
@@ -97,9 +101,9 @@ Stays in `src/`, because these are not served as image URLs:
 3. **`public/mock/` is only for mocks.** Nothing outside `services/mocks/`
    references it; it is deleted once the API is wired in.
 
-4. **Lint.** `no-restricted-imports` blocks `@/assets/icons/*`,
-   `@/assets/images/*`, and the other image paths once the migration is done,
-   so new code goes through the registry or the model.
+4. **Lint.** `no-restricted-syntax` blocks importing any image file, so new
+   code goes through the registry or the model. (Not `no-restricted-imports`:
+   the per-folder layer rules in `.eslintrc.json` override that rule's options.)
 
 5. **Remote images (API phase).** Narrow `images.remotePatterns` to the
    backend's image host, read from `env.ts`, when the API is integrated.

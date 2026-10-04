@@ -3,19 +3,12 @@
   "rules": {
     "react/no-unescaped-entities": "off",
     "no-console": ["warn", { "allow": ["error"] }],
-    "no-restricted-imports": [
-      "error",
-      {
-        "patterns": [
-          "@/assets/icons/*",
-          "@/assets/images/*",
-          "@assets/icons/*",
-          "@assets/images/*"
-        ]
-      }
-    ],
     "no-restricted-syntax": [
       "error",
+      {
+        "selector": ":matches(ImportDeclaration, ImportExpression)[source.value=/\\.(svg|png|jpe?g|webp|gif|avif)$/i]",
+        "message": "Reference images through shared/config/assets.ts or a URL from the model, not an import (doc 7 rules 1, 2, 4)."
+      },
       {
         "selector": "Literal[value=/^[\\x2f]mock[\\x2f]/]",
         "message": "Mock image URLs (/mock/...) belong in src/services/mocks only (doc 7 rule 3)."
@@ -71,7 +64,13 @@
     {
       "files": ["src/services/mocks/**"],
       "rules": {
-        "no-restricted-syntax": "off"
+        "no-restricted-syntax": [
+          "error",
+          {
+            "selector": ":matches(ImportDeclaration, ImportExpression)[source.value=/\\.(svg|png|jpe?g|webp|gif|avif)$/i]",
+            "message": "Reference images through shared/config/assets.ts or a URL from the model, not an import (doc 7 rules 1, 2, 4)."
+          }
+        ]
       }
     }
   ]
