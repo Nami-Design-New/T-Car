@@ -1,9 +1,10 @@
 # 8. Styles: compile from SCSS, stop committing CSS
 
-> **Status (2026-10-04):** in progress, steps 1–2 of 7 done. Sass is pinned to
-> `1.105.0`, and the layout imports `main.scss`, so Next compiles every
-> stylesheet. `main.css` and `main.css.map` are still in the repo but nothing
-> loads them; step 3 deletes them. See [step 2 results](#step-2-results-2026-10-04).
+> **Status (2026-10-04):** in progress, steps 1–3 of 7 done. Sass is pinned to
+> `1.105.0`, the layout imports `main.scss`, so Next compiles every
+> stylesheet, and the generated `main.css`, `main.css.map`, and
+> `scripts/sync-office-css.mjs` are deleted; `.gitignore` ignores
+> `src/styles/**/*.css` and `*.css.map`. Next: step 4 (Bootstrap entry). See [step 2 results](#step-2-results-2026-10-04).
 
 ## 8.1 Current state
 

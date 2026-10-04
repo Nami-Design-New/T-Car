@@ -244,8 +244,8 @@ The shared module must enforce the following invariants.
 5. Keep legacy `.modal_overlay` and old surface selectors until their final consumer is migrated.
 6. Remove inline dialog layout styles, especially from `BookingMonthlyModal`, if that module is retained.
 7. Remove legacy selectors only after repository-wide searches confirm zero call sites.
-8. Establish a canonical SCSS build command. The current `css:sync-office` script only synchronizes the cars-page block and is not sufficient for dialog styles.
-9. Decide whether `main.css.map` remains committed. If it does, generate it from the same canonical command.
+8. ~~Establish a canonical SCSS build command.~~ Done (2026-10-04): Next compiles `main.scss` directly; `css:sync-office` was removed ([docs/08](docs/08-styles-and-scss.md)).
+9. ~~Decide whether `main.css.map` remains committed.~~ Done: `main.css` and `main.css.map` were deleted and are ignored.
 
 ## 9. State ownership and flow rules
 

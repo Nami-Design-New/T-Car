@@ -5074,7 +5074,6 @@ img {
 }
 
 // ============ Bank accounts ============
-// Kept inside the wallet-sheets range so `npm run css:sync-office` picks it up.
 .bank_accounts_panel {
   display: flex;
   flex-direction: column;

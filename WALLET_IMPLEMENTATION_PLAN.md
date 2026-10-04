@@ -22,7 +22,7 @@ Defaults used for the open questions in section 5 (revisit when product answers)
 - Amounts show no `+`/`-` sign; the row tint shows the direction.
 - The mock service rejects top-ups above 10,000 SAR so the failure state can be tested.
 
-The compiled CSS is updated with `npm run css:sync-office`. The script now splices a list of blocks: office rows, wallet sheets, and wallet panel.
+Styles are compiled by Next from `main.scss`; there is no committed CSS to update ([docs/08](docs/08-styles-and-scss.md)).
 
 ## 1. Target design
 
@@ -126,7 +126,6 @@ All wallet copy is hard-coded Arabic, like the rest of the account area. This pl
 6. Update the `.account-panel .wallet_*` rules in [main.scss](src/styles/main.scss) (around line 8164):
    - Add styles for the button row, breakdown row, and `withdraw` row.
    - Retint the rows (`topup` blue, `refund` neutral, `payment` red, `withdraw` green) using the `$ds-*` tokens, following [DESIGN_SYSTEM_MIGRATION.md](DESIGN_SYSTEM_MIGRATION.md).
-   - Run `npm run css:sync-office` if the compiled CSS must be updated.
 7. Add the missing icons to `src/assets/icons`.
 
 ### Phase 3 — Top-up flow hardening

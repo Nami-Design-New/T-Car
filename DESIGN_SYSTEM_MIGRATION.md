@@ -396,9 +396,7 @@ No full application build, lint run, or Sass compilation was performed during th
 
 ## Generated CSS note
 
-The application imports [`src/styles/main.css`](src/styles/main.css), while migration work is being made in `main.scss`. The generated CSS and source map do not contain any of these semantic changes yet.
-
-Do not manually maintain semantic changes in both SCSS and generated CSS. Treat `main.scss` as the source of truth and regenerate `main.css` through the project's normal Sass workflow now that the migration is ready for visual verification.
+Superseded (2026-10-04, [docs/08](docs/08-styles-and-scss.md)): the layout imports `main.scss` and Next compiles it. There is no generated `main.css` any more; edit the SCSS only.
 
 ## Recommended next step
 
