@@ -1,5 +1,58 @@
 // Bootstrap, compiled as its own stylesheet so editing main.scss does not
 // recompile it (docs/08 step 4). The layout imports this before main.scss,
-// which keeps Bootstrap first in the cascade. Trimmed to the partials in use
-// in step 5.
-@import 'bootstrap/scss/bootstrap';
+// which keeps Bootstrap first in the cascade.
+//
+// Trimmed to what the markup uses (docs/08 step 5). Before using another
+// Bootstrap class, add its partial or utility group here.
+@import 'bootstrap/scss/mixins/banner';
+@include bsBanner('');
+
+// Configuration (emits no CSS)
+@import 'bootstrap/scss/functions';
+@import 'bootstrap/scss/variables';
+@import 'bootstrap/scss/variables-dark';
+@import 'bootstrap/scss/maps';
+@import 'bootstrap/scss/mixins';
+@import 'bootstrap/scss/utilities';
+
+// Only the utility groups whose classes appear in the markup.
+$utilities: map-get-multiple(
+  $utilities,
+  (
+    'align-items',
+    'background-color',
+    'border',
+    'color',
+    'display',
+    'flex-direction',
+    'gap',
+    'justify-content',
+    'margin',
+    'margin-bottom',
+    'margin-top',
+    'padding',
+    'text-align',
+    'width'
+  )
+);
+
+// Base: --bs-* custom properties, element defaults, `.small`
+@import 'bootstrap/scss/root';
+@import 'bootstrap/scss/reboot';
+@import 'bootstrap/scss/type';
+
+// Layout: `.container` (footer), `.row` (contact and extend-duration forms)
+@import 'bootstrap/scss/containers';
+@import 'bootstrap/scss/grid';
+
+// Forms: `.form-control` (react-phone-input-2 renders it in PhoneField),
+// `.form-check` / `.form-switch` (payment method dialog)
+@import 'bootstrap/scss/forms/form-control';
+@import 'bootstrap/scss/forms/form-check';
+
+// Components: `.btn*` (shared/ui/Button builds btn-<variant> and btn-<size>),
+// `.spinner-border` (wallet and bank-account dialogs)
+@import 'bootstrap/scss/buttons';
+@import 'bootstrap/scss/spinners';
+
+@import 'bootstrap/scss/utilities/api';

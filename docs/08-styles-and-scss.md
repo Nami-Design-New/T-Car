@@ -1,12 +1,13 @@
 # 8. Styles: compile from SCSS, stop committing CSS
 
-> **Status (2026-10-04):** in progress, steps 1–4 of 7 done. Sass is pinned to
+> **Status (2026-10-04):** in progress, steps 1–5 of 7 done. Sass is pinned to
 > `1.105.0`, the layout imports `main.scss`, so Next compiles every
 > stylesheet, and the generated `main.css`, `main.css.map`, and
 > `scripts/sync-office-css.mjs` are deleted; `.gitignore` ignores
 > `src/styles/**/*.css` and `*.css.map`. Bootstrap is its own entry,
-> `styles/vendor/bootstrap.scss` (see [step 4 results](#step-4-results-2026-10-04)).
-> Next: step 5 (trim Bootstrap). See [step 2 results](#step-2-results-2026-10-04).
+> `styles/vendor/bootstrap.scss` (see [step 4 results](#step-4-results-2026-10-04)),
+> trimmed to the partials and utility groups the markup uses (see
+> [step 5 results](#step-5-results-2026-10-04)). Next: step 6 (split `main.scss`). See [step 2 results](#step-2-results-2026-10-04).
 
 ## 8.1 Current state
 
@@ -142,6 +143,40 @@ it before `main.scss`. `main.scss` used one Bootstrap Sass variable,
 Rule from this step: Bootstrap helper classes (`.h1`–`.h6`, `.small`, `.mark`)
 style only the element itself now. Styling them inside an app component needs
 an explicit selector in that component's SCSS.
+
+### Step 5 results (2026-10-04)
+
+Inventory: every word inside a string or template literal in `src/**/*.{ts,tsx}`
+(over-inclusive on purpose), matched against the classes each Bootstrap partial
+and each utility group generates when compiled alone. Runtime markup was
+checked too: `react-phone-input-2` renders `.form-control` in `PhoneField`, and
+`shared/ui/Button` builds `btn-<variant>` / `btn-<size>`.
+
+| Kept | Why |
+| --- | --- |
+| `root`, `reboot`, `type` | `--bs-*` properties, element defaults, `.small` (form messages) |
+| `containers`, `grid` | `.container` (footer), `.row` (contact and extend-duration forms) |
+| `forms/form-control`, `forms/form-check` | phone input; payment-method switch |
+| `buttons`, `spinners` | `Button`, wallet and bank-account dialogs |
+| 14 of 97 utility groups | align-items, background-color, border, color, display, flex-direction, gap, justify-content, margin, margin-bottom, margin-top, padding, text-align, width: the 24 utility classes in use |
+
+Dropped: images, tables, the other form partials, transitions, dropdown,
+button-group, nav, navbar, card, accordion, breadcrumb, pagination, badge,
+alert, progress, list-group, close, toasts, modal, tooltip, popover, carousel,
+offcanvas, placeholders, helpers, and 83 utility groups. Word matches that are
+not class uses: `fade` (Swiper's effect name), `alert` (`role="alert"`),
+`placeholder` (the input attribute); `shared/ui/Accordion`'s `.accordion` class
+only received unused `--bs-accordion-*` variables.
+
+| Check | Result |
+| --- | --- |
+| Rules that changed | 0: the new output is an ordered subset of the old one; `.btn-lg` / `.btn-sm` only lose their `.btn-group-lg>.btn` / `.btn-group-sm>.btn` selector parts |
+| Rules removed | 1,643, none for a class the markup uses |
+| Used Bootstrap classes present in the served CSS | all 39 checked |
+| Bootstrap CSS | 228,157 → 62,090 bytes (31.0 → 10.2 KB gzip). Next now merges it with the small `Menu` stylesheet before it; the order is unchanged |
+
+Rule from this step: `styles/vendor/bootstrap.scss` lists what is included.
+Before using another Bootstrap class, add its partial or utility group there.
 
 ## 8.4 Risks
 
