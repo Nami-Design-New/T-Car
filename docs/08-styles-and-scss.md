@@ -1,6 +1,7 @@
 # 8. Styles: compile from SCSS, stop committing CSS
 
-> **Status (2026-09-30):** planned, not started. The component styles added in
+> **Status (2026-10-04):** in progress, step 1 of 7 done (Sass pinned to
+> `1.105.0`). The component styles added in
 > phase 1 (`shared/ui/*/*.scss`, `features/*/components/*.scss`) already use the
 > target pipeline; the app-wide `main.scss` does not.
 

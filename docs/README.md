@@ -216,7 +216,7 @@ merged or pushed yet.
 | 5. Performance | Started (fraction 5 of 8) | Done: the Maps script loads only when a map dialog opens; the auth dialog loads on first open; booking-flow, rental-search, wallet, profile, booking-details, and booking-review dialogs load on demand and mount only for their active step; Lottie animations load on first use through `Illustration` (`SuccessModal` still imports Lottie directly); the header and footer render on the server; the FAQ ships no client JavaScript; hero slides use `next/image` with `fill`, `sizes="100vw"`, and first-slide priority; WOFF2 font files are used for all four active Expo Arabic weights. Decision: retain Swiper for the car rails, hero, and partners; the planned carousel replacement is not being pursued because the measured bundle trade-off does not justify the design and behavior changes. Remaining: the Bootstrap and SCSS items are phase 8 |
 | 6. i18n extraction | Complete (10 fractions) | Extracted home, rental-search, layout, account, wallet, bank accounts, my-bookings, car-details, booking flow, cars/cities, legal pages, common controls, date picker, city index, and auth success copy into both locale files. The global error remains intentionally fixed and bilingual because it renders outside the locale layout. |
 | 7. Images and assets | Complete (4 fractions + 2 audit follow-ups) | [Doc 7](07-images-and-assets.md): UI icons, static images, API-bound mock URLs, animations, cleanup, and image-weight reductions are complete (fractions 1–4). `cta.png` and `notlogin.png` are retained under `public/images/unused/`, excluded from the registry, pending design confirmation before deletion. **Audit follow-ups (2026-10-04):** (5) ✅ brand filter options come from `carsApi.listBrands()` via `getCarBrands()` instead of `/mock/` paths in `CarFilters` / `CityFilters`, and a lint rule keeps `/mock/…` literals inside `services/mocks`. (6) ✅ removed the duplicate `src/assets/images/logo.png` and unused `brand/logo.svg` (`src/assets/` is now `fonts/` + `animations/`); the image import ban moved to `no-restricted-syntax` so the per-folder lint overrides no longer drop it, and it now covers every image extension. (7) Not pursued (user decision): `payment/wallet.svg` (62 KB) and `payment/tamara.svg` (259 KB) wrap raster images but stay SVG, not WebP. Step 6 (narrow `remotePatterns`, delete `public/mock/`) waits for the API phase |
-| 8. Styles compiled from SCSS | Planned | [Doc 8](08-styles-and-scss.md): drift check done (0 rules differ in meaning between `main.scss` and the committed `main.css`); migration not started. Component styles from phase 1 already compile from SCSS |
+| 8. Styles compiled from SCSS | In progress (fraction 1 of 7) | [Doc 8](08-styles-and-scss.md): drift check done (0 rules differ in meaning between `main.scss` and the committed `main.css`). (1) ✅ Sass pinned to exactly `1.105.0` (the lockfile already resolved it; emitted CSS byte-identical). Next: (2) the layout imports `main.scss` instead of `main.css`. Component styles from phase 1 already compile from SCSS |
 
 ### Features
 
@@ -255,7 +255,10 @@ extensions over 30 days, and so on) are documented in each `services/mocks/*.ts`
   `notlogin.png` remain pending design confirmation. Integration follow-up:
   the brand filter's label comes from `cars.brands.<slug>`; the API will
   probably send a localized name instead.
-- Phase 8 SCSS compilation migration has not started.
+- Phase 8 is in progress: Sass is pinned (fraction 1 of 7). Next is switching
+  the layout from the committed `main.css` to `main.scss`. Known build warnings,
+  present before phase 8: autoprefixer flags `end` (use `flex-end`) in
+  `main.css`, and `jose` (NextAuth) uses Node streams in the Edge middleware.
 - Product decisions are still needed before deleting `BookingModal`,
   `BookingMonthlyModal`, or `InsufficientBalanceModal`.
 
