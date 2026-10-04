@@ -1,9 +1,9 @@
 # 8. Styles: compile from SCSS, stop committing CSS
 
-> **Status (2026-10-04):** in progress, step 1 of 7 done (Sass pinned to
-> `1.105.0`). The component styles added in
-> phase 1 (`shared/ui/*/*.scss`, `features/*/components/*.scss`) already use the
-> target pipeline; the app-wide `main.scss` does not.
+> **Status (2026-10-04):** in progress, steps 1–2 of 7 done. Sass is pinned to
+> `1.105.0`, and the layout imports `main.scss`, so Next compiles every
+> stylesheet. `main.css` and `main.css.map` are still in the repo but nothing
+> loads them; step 3 deletes them. See [step 2 results](#step-2-results-2026-10-04).
 
 ## 8.1 Current state
 
@@ -99,6 +99,25 @@ visual pass of the main screens in Arabic and English at 360 px and 1280 px.
    commit. Replace `@import` with `@use` / `@forward` as partials split out.
 7. **Guard it.** A check in `npm run check` (or CI) that fails if a `.css` file
    under `src/styles/` is committed again.
+
+### Step 2 results (2026-10-04)
+
+The CSS Next emits with `main.css` and with `main.scss` was compared rule by
+rule (PostCSS parse; vendor prefixes dropped; colours and numbers
+canonicalised). Every other CSS chunk is byte-identical.
+
+| Check | Result |
+| --- | --- |
+| Rules, in cascade order | 4,169 in both |
+| Rules that differ in meaning | **0** |
+| Rules that differ only in notation (all Bootstrap) | 60: minifier whitespace (`calc(-1 * x)` vs `calc(-1*x)`, `)and (`), colours 1/255 apart, `rgb()` in SVG data URIs written as percentages |
+| Prefixes only in the old file | `-moz-column-gap` (Firefox ≥ 52 needs none), 3 `.form-floating` `:-moz-placeholder` rules (Firefox ≤ 50), `-webkit-print-color-adjust` on `.form-check-input` (printing a checked payment radio in Chromium < 136 / Safari < 15.4 only) |
+| Main chunk size | 402,152 → 401,397 bytes |
+| Clean `next build` (one run each) | 106 s → 115 s (within run-to-run noise) |
+| Dev reload after a style edit (3 touches) | `main.css`: 1.8, 1.3, 1.1 s → `main.scss`: 5.7, 4.9, 13.9 s. Expected: every edit recompiles Bootstrap with the app styles; step 4 takes Bootstrap out of that loop. The old flow also needed a ~4 s Live Sass compile before Next reloaded |
+
+Not done: the visual pass at 360 px and 1280 px in a browser. With zero
+differences in meaning, the risk is limited to the print-only prefix above.
 
 ## 8.4 Risks
 
