@@ -2,7 +2,7 @@
 
 import { useTranslations } from 'next-intl';;
 
-import SectionTitle from '@/shared/ui/SectionTitle';
+import { SectionTitle } from '@/shared/ui/SectionTitle';
 import ContactInfo from './ContactInfo';
 import ContactForm from './ContactForm';
 

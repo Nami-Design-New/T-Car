@@ -14,7 +14,7 @@ const ANIMATIONS = {
 
 export type IllustrationName = keyof typeof ANIMATIONS;
 
-interface Props {
+export interface Props {
   name: IllustrationName;
   className?: string;
 }

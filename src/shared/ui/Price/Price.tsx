@@ -8,7 +8,7 @@ import './Price.scss';
 
 const ICON_SIZES = { sm: 14, md: 16, lg: 20, xl: 30 } as const;
 
-interface Props {
+export interface Props {
   amount: number;
   size?: keyof typeof ICON_SIZES;
   /** A crossed-out previous price, e.g. before a discount. */

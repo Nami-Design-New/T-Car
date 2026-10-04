@@ -9,7 +9,7 @@ import { toAppError } from '@/shared/lib/errors';
 import { Button } from '@/shared/ui/Button';
 import './ErrorState.scss';
 
-interface Props {
+export interface Props {
   /** Any error; an AppError picks its message from errors.<code|kind>. */
   error: unknown;
   /** Shows a "Try again" button when given. */

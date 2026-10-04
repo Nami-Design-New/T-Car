@@ -3,13 +3,13 @@
 import { InputHTMLAttributes } from 'react';
 import { cn } from '@/shared/lib/cn';
 
-interface FormInputProps extends InputHTMLAttributes<HTMLInputElement> {
+export interface FormInputProps extends InputHTMLAttributes<HTMLInputElement> {
   label: string;
   error?: string;
   required?: boolean;
 }
 
-export default function FormInput({
+export function FormInput({
   label,
   error,
   required,

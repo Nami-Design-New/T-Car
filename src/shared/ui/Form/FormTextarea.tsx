@@ -3,14 +3,14 @@
 import { TextareaHTMLAttributes } from 'react';
 import { cn } from '@/shared/lib/cn';
 
-interface FormTextareaProps
+export interface FormTextareaProps
   extends TextareaHTMLAttributes<HTMLTextAreaElement> {
   label: string;
   error?: string;
   required?: boolean;
 }
 
-export default function FormTextarea({
+export function FormTextarea({
   label,
   error,
   required,

@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
-import PhoneField from '@/shared/ui/PhoneField';
+import { PhoneField } from '@/shared/ui/PhoneField';
 import { IMAGES } from '@/shared/config/assets';
 const logo = IMAGES.brandMark;
 import { ICONS } from '@/shared/config/assets';

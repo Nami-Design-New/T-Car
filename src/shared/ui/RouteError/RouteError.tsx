@@ -5,7 +5,7 @@ import { useRouter } from '@/i18n/navigation';
 import { reportError } from '@/shared/lib/report';
 import { ErrorState } from '@/shared/ui/ErrorState';
 
-interface Props {
+export interface Props {
   error: Error & { digest?: string };
   reset: () => void;
   scope: string;

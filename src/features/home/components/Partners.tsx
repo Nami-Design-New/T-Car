@@ -8,7 +8,7 @@ import { Autoplay } from 'swiper/modules';
 
 import 'swiper/css';
 
-import SectionTitle from '@/shared/ui/SectionTitle';
+import { SectionTitle } from '@/shared/ui/SectionTitle';
 import type { Office } from '@/features/cars';
 
 interface Props { offices: Office[]; }

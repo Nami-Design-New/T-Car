@@ -1,4 +1,4 @@
-interface LoaderProps {
+export interface LoaderProps {
   fullScreen?: boolean;
 }
 
@@ -8,7 +8,7 @@ import { IMAGES } from '@/shared/config/assets';
 const logoText = IMAGES.brandText;
 const logoCar = IMAGES.brandCar;
 
-export default function Loader({
+export function Loader({
   fullScreen = true,
 }: LoaderProps) {
   return (

@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import { Dialog } from '@/shared/ui/Dialog';
 import './ResultDialog.scss';
 
-interface Props {
+export interface Props {
   open: boolean;
   status: 'success' | 'error';
   title: string;

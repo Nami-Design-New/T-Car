@@ -8,7 +8,7 @@ import { EmptyState } from '@/shared/ui/EmptyState';
 import { ErrorState } from '@/shared/ui/ErrorState';
 import { Price } from '@/shared/ui/Price';
 import type { WalletSummary, WalletTransaction } from '../model';
-import Loader from '@/shared/ui/Loader';
+import { Loader } from '@/shared/ui/Loader';
 
 import { ICONS } from '@/shared/config/assets';
 const walletIcon = ICONS.money;

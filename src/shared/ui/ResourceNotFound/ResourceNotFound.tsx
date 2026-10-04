@@ -6,7 +6,7 @@ import { Button } from '@/shared/ui/Button';
 
 type Resource = 'cars' | 'cities' | 'bookings';
 
-interface Props {
+export interface Props {
   resource: Resource;
   href: '/cars' | '/cities' | '/account/bookings';
 }

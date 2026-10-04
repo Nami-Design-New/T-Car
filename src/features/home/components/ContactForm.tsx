@@ -6,10 +6,10 @@ import { useTranslations } from 'next-intl';
 import { useErrorMessage } from '@/shared/hooks/useErrorMessage';
 import type { AppError } from '@/shared/lib/errors';
 
-import Button from '@/shared/ui/Button';
-import FormInput from '@/shared/ui/FormInput';
-import FormTextarea from '@/shared/ui/FormTextarea';
-import PhoneField from '@/shared/ui/PhoneField';
+import { Button } from '@/shared/ui/Button';
+import { FormInput } from '@/shared/ui/Form';
+import { FormTextarea } from '@/shared/ui/Form';
+import { PhoneField } from '@/shared/ui/PhoneField';
 import type { ContactMessage } from '../model';
 import { useSendContactMessage } from '../hooks/useSendContactMessage';
 

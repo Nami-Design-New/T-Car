@@ -1,13 +1,14 @@
 # 8. Styles: compile from SCSS, stop committing CSS
 
-> **Status (2026-10-04):** in progress, steps 1–5 of 7 done. Sass is pinned to
+> **Status (2026-10-04):** in progress, steps 1–5 of 7 done; step 6 started (6.1: base layer). Sass is pinned to
 > `1.105.0`, the layout imports `main.scss`, so Next compiles every
 > stylesheet, and the generated `main.css`, `main.css.map`, and
 > `scripts/sync-office-css.mjs` are deleted; `.gitignore` ignores
 > `src/styles/**/*.css` and `*.css.map`. Bootstrap is its own entry,
 > `styles/vendor/bootstrap.scss` (see [step 4 results](#step-4-results-2026-10-04)),
 > trimmed to the partials and utility groups the markup uses (see
-> [step 5 results](#step-5-results-2026-10-04)). Next: step 6 (split `main.scss`). See [step 2 results](#step-2-results-2026-10-04).
+> [step 5 results](#step-5-results-2026-10-04)). Step 6.1 moved the global
+> layer into `styles/base/` (see [step 6 progress](#step-6-progress)). See [step 2 results](#step-2-results-2026-10-04).
 
 ## 8.1 Current state
 
@@ -98,9 +99,9 @@ visual pass of the main screens in Arabic and English at 360 px and 1280 px.
    `d-*`, `gap-*`, `w-100`, `btn*`, `form-*`, `visually-hidden`, `text-*`,
    `mt-*`, …), import only those partials plus `reboot`, and compare the CSS size
    before and after. `react-bootstrap` leaves with the auth dialog (doc 4 step 9).
-6. **Split `main.scss`** alongside feature work: base styles to `styles/base/`,
-   and each feature's section to its components' `.scss`, one feature per
-   commit. Replace `@import` with `@use` / `@forward` as partials split out.
+6. **Split `main.scss`** (plan agreed 2026-10-04, replacing "each feature's
+   section to its components' `.scss`"; see [step 6 plan](#step-6-plan-agreed-2026-10-04)).
+   Replace `@import` with `@use` / `@forward` as partials split out.
 7. **Guard it.** A check in `npm run check` (or CI) that fails if a `.css` file
    under `src/styles/` is committed again.
 
@@ -177,6 +178,50 @@ only received unused `--bs-accordion-*` variables.
 
 Rule from this step: `styles/vendor/bootstrap.scss` lists what is included.
 Before using another Bootstrap class, add its partial or utility group there.
+
+### Step 6 plan (agreed 2026-10-04)
+
+Target:
+
+```
+styles/tokens/_tokens.scss       design tokens (no CSS output)
+styles/vendor/bootstrap.scss     trimmed Bootstrap
+styles/base/_reset _layout _typography _buttons   global layer, separate files
+styles/legacy/_dialogs _components                 shared legacy styles until doc 4 replaces them
+styles/main.scss                 only @use lines (base, legacy, then features)
+shared/ui/<Name>/<Name>.tsx <Name>.scss <Name>.test.tsx index.ts
+features/<x>/<x>.scss            one stylesheet per feature
+```
+
+| # | Step | Risk | Check |
+| --- | --- | --- | --- |
+| 1 | Normalize `shared/ui` folders: every component in `<Name>/<Name>.tsx` + `index.ts`, named exports, props types exported | none | typecheck, tests, CSS identical |
+| 2 | Add the missing `shared/ui` tests | none | tests |
+| 3 | Move UI component styles out of `main.scss` / `base/` into their component `.scss` (Form, DateTimePicker, PhoneField, Loader, SectionTitle, ResourceNotFound) | low | rule comparison, browser check of forms |
+| 4 | `styles/legacy/_dialogs.scss` (`.modal_overlay`, `.close_btn`, `.map_modal`, `.selection_modal`) and `_components.scss` (`src/components/*`) | low | rule comparison |
+| 5 | Features, stage 1: rules into `features/<x>/<x>.scss`, still `@use`d by `main.scss`; one feature per commit, smallest first; exact duplicates removed | low | rule comparison: no rule changes meaning |
+| 6 | `main.scss` is only `@use` lines; then step 7's guard | none | `npm run check` |
+| 7 | Stage 2, optional, per feature: the feature's components import its stylesheet instead of `main.scss` (CSS only where used) | medium | rule comparison + browser check |
+
+Rules for every stylesheet: `@use` only (Bootstrap in `vendor/` excepted); class
+names prefixed with the feature or component; no bare element selectors
+outside `base/`; breakpoints and colors from tokens; nothing new in `main.scss`.
+
+### Step 6 progress
+
+| Sub-step | What moved | Check |
+| --- | --- | --- |
+| 6.1 (2026-10-04) | The top 380 lines of `main.scss` into `styles/base/`: `_reset` (`:root` font properties, element defaults, `.mirror-in-rtl`, direction rules), `_layout` (`.section`, `.container-tcar`), `_buttons` (the app's `.btn` layer), `_loader`, `_typography` (`.section-title`). Each partial `@use`s the tokens; `main.scss` `@use`s them first, in the old order | Emitted CSS byte-identical |
+
+| Plan step 1 (2026-10-04) | `shared/ui` normalized: `Button`, `Loader`, `SectionTitle`, `DirectionProvider` out of `index.tsx`; `DateTimePicker`, `PhoneField` into folders; `FormInput` / `FormSelect` / `FormTextarea` into `Form/`; named exports everywhere (18 importers updated); every `index.ts` exports `<Name>Props` | CSS content identical; 64 tests pass |
+
+Still in `base/_reset` but owned by features, to move with them: the
+`nfSwing` keyframes (not-found page) and `body:dir(ltr) .download_app` (home).
+
+Feature sections are not contiguous in `main.scss` (`.account-panel` sits at two
+places; the wallet/failed result blocks appear three times), so gathering a
+feature's rules reorders them against other features. Each feature sub-step
+therefore gets the rule-by-rule comparison from step 2, not only a hash check.
 
 ## 8.4 Risks
 

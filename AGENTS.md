@@ -58,6 +58,12 @@ Ask the user before: any `git commit`; deleting `BookingModal`, `BookingMonthlyM
 - **Navigation**: `Link` and `useRouter` come from `@/i18n/navigation`, with
   locale-less paths.
 - **Props**: `interface Props` sits in the component file.
+- **`shared/ui`**: one folder per component: `<Name>.tsx`, `<Name>.scss` (if
+  styled), `<Name>.test.tsx`, `index.ts` exporting the component and
+  `<Name>Props`. Named exports; no root `shared/ui/index.ts`. See doc 4 §4.4.
+- **Styles**: no new rules in `main.scss`; feature styles go in
+  `features/<x>/<x>.scss`, component styles next to the component (doc 8
+  step 6 plan).
 - **API integration is a later, separate phase**: every `services/*.api.ts`
   stays on its mock; note integration needs as follow-ups instead of wiring
   endpoints.

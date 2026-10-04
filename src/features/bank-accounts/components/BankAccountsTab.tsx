@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { PiBank } from 'react-icons/pi';
 import type { BankAccount } from '../model';
-import Loader from '@/shared/ui/Loader';
+import { Loader } from '@/shared/ui/Loader';
 import { EmptyState } from '@/shared/ui/EmptyState';
 import { ErrorState } from '@/shared/ui/ErrorState';
 

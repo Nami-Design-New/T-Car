@@ -196,9 +196,9 @@ class markup provides.
 
 ```
 shared/ui/
-  Button/Button.tsx  Button.scss  index.ts
-  Dialog/Dialog.tsx  Dialog.scss  index.ts
-  index.ts                    // export * as Dialog from './Dialog'; export { Button } from './Button'
+  Button/Button.tsx  Button.scss  Button.test.tsx  index.ts
+  Dialog/Dialog.tsx  Dialog.scss  Dialog.test.tsx  index.ts
+  Form/FormInput.tsx  FormSelect.tsx  FormTextarea.tsx  Form.scss  Form.test.tsx  index.ts
 features/wallet/components/
   BalanceCard.tsx
   AmountDialog.tsx
@@ -212,6 +212,16 @@ features/wallet/components/
 - One exported component per file. Small private subcomponents can stay in the
   same file.
 - Named exports in `shared/ui`, default exports for pages only.
+- **`shared/ui` folder pattern** (as built, 2026-10-04): one folder per component
+  with `<Name>.tsx`, `<Name>.scss` (only if styled; starts with
+  `@use 'tokens/tokens' as *;`), `<Name>.test.tsx`, and `index.ts` exporting the
+  component and its props type (`export type { Props as <Name>Props }`). Closely
+  related components that share styles share a folder (`Form/`, `Skeleton/`).
+  Compound components (`Accordion`, `Menu`, `RadioCards`, `Tabs`: an object of
+  Radix parts) export only the object; their parts are typed by Radix.
+- **No root `shared/ui/index.ts`.** Each component imports its own SCSS, so a
+  barrel would pull every component's CSS and JS into any importer. Import
+  `@/shared/ui/<Name>`.
 
 ## 4.5 Styling
 

@@ -3,7 +3,7 @@ import { cn } from '@/shared/lib/cn';
 import { Skeleton } from './Skeleton';
 import './PageSkeleton.scss';
 
-interface Props {
+export interface Props {
   /**
    * `page`: a full content area (heading and a card grid) inside the site
    * layout. `section`: the inside of a layout that already draws its own

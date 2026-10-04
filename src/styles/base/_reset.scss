@@ -1,0 +1,101 @@
+@use 'tokens/tokens' as *;
+
+:root {
+  --font-primary: var(--font-expo);
+  --bs-body-font-family: var(--font-expo), sans-serif;
+}
+
+// ==========================================================================
+// Base / Reset
+// ==========================================================================
+html,
+body {
+  padding: 0;
+  margin: 0;
+  font-family: var(--font-primary), sans-serif !important;
+  color: $ds-text-primary;
+  background-color: $ds-surface-background;
+  scroll-behavior: smooth;
+}
+
+@keyframes nfSwing {
+  0%,
+  100% {
+    transform: rotate(-4deg);
+  }
+
+  50% {
+    transform: rotate(4deg);
+  }
+}
+
+@keyframes nfDrift {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+@keyframes nfFloat {
+  0%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.6;
+  }
+
+  50% {
+    transform: translateY(-8px);
+    opacity: 1;
+  }
+}
+//////////////////////////////////////////////////////
+// Direction-agnostic icon mirroring.
+//
+// Author directional glyphs (arrows, chevrons, carets) once in their LTR
+// form and add this class; it is mirrored when the document language is rtl.
+// This is the single source of truth for icon direction.
+//
+// The old `html[dir='rtl'] .x { transform: rotate(180deg) }` pattern forced
+// every icon to be hardcoded to one language and then corrected in CSS, so the
+// JSX and the stylesheet could silently disagree -- and did: Cities already
+// swapped the icon for rtl in JSX, so the CSS rotated it a second time and the
+// arabic cta arrow pointed backwards.
+//
+// Do not use for logos and brand marks, or for transforms that express state
+// rather than direction (an open/closed accordion chevron, for example).
+.mirror-in-rtl {
+  &:dir(rtl) {
+    transform: scaleX(-1);
+  }
+}
+
+body:dir(rtl) {
+  font-family: var(--bs-font-sans-serif);
+}
+
+body:dir(ltr) {
+  .download_app .download_app_card {
+    justify-content: flex-start;
+  }
+}
+* {
+  box-sizing: border-box;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+button {
+  font-family: inherit;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}

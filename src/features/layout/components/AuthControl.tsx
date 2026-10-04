@@ -4,7 +4,7 @@ import { Suspense, useCallback, useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { LazyAuthModal, signOutAction } from '@/features/auth';
 import { useRouter } from '@/i18n/navigation';
-import Button from '@/shared/ui/Button';
+import { Button } from '@/shared/ui/Button';
 import UserMenu from './UserMenu';
 
 interface Props {

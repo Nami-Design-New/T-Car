@@ -3,7 +3,7 @@
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
 
-interface PhoneFieldProps {
+export interface PhoneFieldProps {
   value: string;
   onChange: (phone: string) => void;
   defaultCountry?: string;
@@ -12,7 +12,7 @@ interface PhoneFieldProps {
   inputAriaLabel?: string;
 }
 
-export default function PhoneField({
+export function PhoneField({
   value,
   onChange,
   defaultCountry = 'sa',

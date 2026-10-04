@@ -3,7 +3,7 @@
 import { Dialog } from '@/shared/ui/Dialog';
 import './ConfirmDialog.scss';
 
-interface Props {
+export interface Props {
   open: boolean;
   title: string;
   description?: string;

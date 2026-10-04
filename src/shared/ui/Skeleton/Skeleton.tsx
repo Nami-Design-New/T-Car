@@ -2,7 +2,7 @@ import type { CSSProperties } from 'react';
 import { cn } from '@/shared/lib/cn';
 import './Skeleton.scss';
 
-interface Props {
+export interface Props {
   shape?: 'text' | 'rect' | 'circle';
   width?: CSSProperties['width'];
   height?: CSSProperties['height'];

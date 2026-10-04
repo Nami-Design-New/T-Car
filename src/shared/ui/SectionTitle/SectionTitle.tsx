@@ -1,13 +1,13 @@
 import { ReactNode } from 'react';
 
-interface SectionTitleProps {
+export interface SectionTitleProps {
   smallTitle?: ReactNode;
   title: ReactNode;
   subtitle?: ReactNode;
   align?: 'left' | 'center';
 }
 
-export default function SectionTitle({
+export function SectionTitle({
   smallTitle,
   title,
   subtitle,

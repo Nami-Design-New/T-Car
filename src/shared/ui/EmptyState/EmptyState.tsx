@@ -3,7 +3,7 @@ import { cn } from '@/shared/lib/cn';
 import { Illustration, type IllustrationName } from '@/shared/ui/Illustration';
 import './EmptyState.scss';
 
-interface Props {
+export interface Props {
   title: string;
   description?: string;
   /** e.g. <Button asChild><Link href="/cars">…</Link></Button> */
