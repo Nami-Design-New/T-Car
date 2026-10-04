@@ -223,6 +223,7 @@ outside `base/`; breakpoints and colors from tokens; nothing new in `main.scss`.
 | 6.1 (2026-10-04) | The top 380 lines of `main.scss` into `styles/base/`: `_reset` (`:root` font properties, element defaults, `.mirror-in-rtl`, direction rules), `_layout` (`.section`, `.container-tcar`), `_buttons` (the app's `.btn` layer), `_loader`, `_typography` (`.section-title`). Each partial `@use`s the tokens; `main.scss` `@use`s them first, in the old order | Emitted CSS byte-identical |
 
 | Plan step 1 (2026-10-04) | `shared/ui` normalized: `Button`, `Loader`, `SectionTitle`, `DirectionProvider` out of `index.tsx`; `DateTimePicker`, `PhoneField` into folders; `FormInput` / `FormSelect` / `FormTextarea` into `Form/`; named exports everywhere (18 importers updated); every `index.ts` exports `<Name>Props` | CSS content identical; 64 tests pass |
+| Plan step 2 (2026-10-04) | Tests for the 11 `shared/ui` components that had none: `Form`, `PhoneField`, `DateTimePicker`, `SectionTitle`, `Loader`, `ErrorState`, `RouteError`, `ResourceNotFound`, `Skeleton` / `PageSkeleton`, `Illustration`, `DirectionProvider` (43 tests). Every `shared/ui` folder now has a test | 107 tests pass; three deliberate component bugs were each caught |
 
 Still in `base/_reset` but owned by features, to move with them: the
 `nfSwing` keyframes (not-found page) and `body:dir(ltr) .download_app` (home).
