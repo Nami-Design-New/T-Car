@@ -176,6 +176,15 @@ only received unused `--bs-accordion-*` variables.
 | Used Bootstrap classes present in the served CSS | all 39 checked |
 | Bootstrap CSS | 228,157 → 62,090 bytes (31.0 → 10.2 KB gzip). Next now merges it with the small `Menu` stylesheet before it; the order is unchanged |
 
+**Correction (2026-10-04):** the inventory missed `.visually-hidden` (Bootstrap
+`helpers`), used by `PageSkeleton` for its screen-reader-only "Loading…" label,
+so loading screens showed that label after the trim. Cause: the scan read only
+quoted strings, and an apostrophe in a comment shifted the quote pairing. Fixed
+by importing `helpers/visually-hidden` (rules byte-identical to before the trim).
+A re-check that matches **every word** of every source file against each dropped
+partial and utility group found no other real use (`dropdown`, `nav`, `card`,
+`modal`, `carousel`, `visible` appear only as words, elements, or in comments).
+
 Rule from this step: `styles/vendor/bootstrap.scss` lists what is included.
 Before using another Bootstrap class, add its partial or utility group there.
 

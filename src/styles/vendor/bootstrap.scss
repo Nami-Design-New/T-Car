@@ -55,4 +55,7 @@ $utilities: map-get-multiple(
 @import 'bootstrap/scss/buttons';
 @import 'bootstrap/scss/spinners';
 
+// Helpers: `.visually-hidden` (the "Loading…" label in shared/ui/Skeleton/PageSkeleton)
+@import 'bootstrap/scss/helpers/visually-hidden';
+
 @import 'bootstrap/scss/utilities/api';
