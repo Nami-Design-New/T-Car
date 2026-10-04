@@ -1,0 +1,10 @@
+# Prettier also skips everything in .gitignore.
+
+# Generated or vendored
+package-lock.json
+next-env.d.ts
+public/
+src/assets/animations/
+
+# Prose: docs and plans are edited by hand; table re-alignment would only add noise
+*.md

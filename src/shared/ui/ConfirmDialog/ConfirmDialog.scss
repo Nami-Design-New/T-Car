@@ -9,9 +9,22 @@
     font-weight: 600;
   }
 
-  &__cancel { border: 1px solid $ds-stroke-light; background: $ds-surface-elevated; color: $ds-text-primary; }
-  &__confirm { border: 0; background: $ds-action-primary; color: $ds-text-on-action; }
-  &__confirm--danger { background: $ds-status-error; }
+  &__cancel {
+    border: 1px solid $ds-stroke-light;
+    background: $ds-surface-elevated;
+    color: $ds-text-primary;
+  }
+  &__confirm {
+    border: 0;
+    background: $ds-action-primary;
+    color: $ds-text-on-action;
+  }
+  &__confirm--danger {
+    background: $ds-status-error;
+  }
   &__cancel:disabled,
-  &__confirm:disabled { cursor: not-allowed; opacity: 0.55; }
+  &__confirm:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+  }
 }

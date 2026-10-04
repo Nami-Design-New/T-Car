@@ -42,7 +42,9 @@ export default function FilterPanel({
 
   useEffect(() => {
     document.body.style.overflow = isOpen ? 'hidden' : '';
-    return () => { document.body.style.overflow = ''; };
+    return () => {
+      document.body.style.overflow = '';
+    };
   }, [isOpen]);
 
   useEffect(() => {
@@ -57,9 +59,19 @@ export default function FilterPanel({
       <div className="filters_mobile_bar">
         <div className="filter_search">
           <FiSearch />
-          <input type="text" value={searchValue} onChange={(event) => onSearchChange?.(event.target.value)} placeholder={resolvedSearchPlaceholder} />
+          <input
+            type="text"
+            value={searchValue}
+            onChange={(event) => onSearchChange?.(event.target.value)}
+            placeholder={resolvedSearchPlaceholder}
+          />
         </div>
-        <button type="button" className="filters_toggle_btn" onClick={() => setIsOpen(true)} aria-label={t('open')}>
+        <button
+          type="button"
+          className="filters_toggle_btn"
+          onClick={() => setIsOpen(true)}
+          aria-label={t('open')}
+        >
           <FilterFunnelIcon />
           {hasActiveFilters && <span className="filters_toggle_dot" />}
         </button>
@@ -68,17 +80,45 @@ export default function FilterPanel({
       <aside className={`filters_panel${isOpen ? ' is-open' : ''}`}>
         <div className="filter_header">
           <h3>{resolvedTitle}</h3>
-          <button type="button" className="filters_close_btn" onClick={() => setIsOpen(false)} aria-label={t('close')}><FiX /></button>
+          <button
+            type="button"
+            className="filters_close_btn"
+            onClick={() => setIsOpen(false)}
+            aria-label={t('close')}
+          >
+            <FiX />
+          </button>
         </div>
         <div className="filter_search filter_search_desktop">
           <FiSearch />
-          <input type="text" value={searchValue} onChange={(event) => onSearchChange?.(event.target.value)} placeholder={resolvedSearchPlaceholder} />
+          <input
+            type="text"
+            value={searchValue}
+            onChange={(event) => onSearchChange?.(event.target.value)}
+            placeholder={resolvedSearchPlaceholder}
+          />
         </div>
         {children}
         {(onApply || onClearAll) && (
           <div className="filter_actions">
-            <button type="button" className="filter_action_btn filter_clear_all_btn" onClick={onClearAll} disabled={!hasActiveFilters}>{resolvedClearAllLabel}</button>
-            <button type="button" className="filter_action_btn filter_apply_btn" onClick={() => { onApply?.(); setIsOpen(false); }}>{resolvedApplyLabel}</button>
+            <button
+              type="button"
+              className="filter_action_btn filter_clear_all_btn"
+              onClick={onClearAll}
+              disabled={!hasActiveFilters}
+            >
+              {resolvedClearAllLabel}
+            </button>
+            <button
+              type="button"
+              className="filter_action_btn filter_apply_btn"
+              onClick={() => {
+                onApply?.();
+                setIsOpen(false);
+              }}
+            >
+              {resolvedApplyLabel}
+            </button>
           </div>
         )}
       </aside>

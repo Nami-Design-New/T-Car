@@ -1,3 +1,32 @@
 'use client';
-import { useTranslations } from 'next-intl'; import { SectionTitle } from '@/shared/ui/SectionTitle';
-export default function TermsPage() { const t = useTranslations(); const sections = Array.from({ length: 5 }, (_, index) => ({ title: t(`legalContent.terms.${index}.title`), content: t(`legalContent.terms.${index}.content`) })); return <section className="section legal-page"><div className="container-tcar"><SectionTitle smallTitle={t('terms.smallTitle')} title={t('terms.title')} subtitle={t('terms.subtitle')} /><div className="legal-content">{sections.map((section, index) => <article className="legal-card" key={index}><div className="legal-card-number">{String(index + 1).padStart(2, '0')}</div><div className="legal-card-content"><h3>{section.title}</h3><p>{section.content}</p></div></article>)}</div></div></section>; }
+import { useTranslations } from 'next-intl';
+import { SectionTitle } from '@/shared/ui/SectionTitle';
+export default function TermsPage() {
+  const t = useTranslations();
+  const sections = Array.from({ length: 5 }, (_, index) => ({
+    title: t(`legalContent.terms.${index}.title`),
+    content: t(`legalContent.terms.${index}.content`),
+  }));
+  return (
+    <section className="section legal-page">
+      <div className="container-tcar">
+        <SectionTitle
+          smallTitle={t('terms.smallTitle')}
+          title={t('terms.title')}
+          subtitle={t('terms.subtitle')}
+        />
+        <div className="legal-content">
+          {sections.map((section, index) => (
+            <article className="legal-card" key={index}>
+              <div className="legal-card-number">{String(index + 1).padStart(2, '0')}</div>
+              <div className="legal-card-content">
+                <h3>{section.title}</h3>
+                <p>{section.content}</p>
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}

@@ -61,6 +61,10 @@ Ask the user before: any `git commit`; deleting `BookingModal`, `BookingMonthlyM
 - **`shared/ui`**: one folder per component: `<Name>.tsx`, `<Name>.scss` (if
   styled), `<Name>.test.tsx`, `index.ts` exporting the component and
   `<Name>Props`. Named exports; no root `shared/ui/index.ts`. See doc 4 §4.4.
+- **Formatting**: keep the existing formatting; do not reformat whole files or
+  the repo. Prettier (`.prettierrc`) is only for files that are genuinely
+  unformatted (a component on one line, packed JSX) and for new files:
+  `npm run format -- <files>`.
 - **Styles**: no new rules in `main.scss`; feature styles go in
   `features/<x>/<x>.scss`, component styles next to the component (doc 8
   step 6 plan).

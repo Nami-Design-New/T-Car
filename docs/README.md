@@ -269,6 +269,15 @@ extensions over 30 days, and so on) are documented in each `services/mocks/*.ts`
   reads `addressValue` / `emailValue` from the root namespace, but the keys are
   `contact.addressValue` / `contact.emailValue`, so the home contact block throws
   `MISSING_MESSAGE` and shows the raw key in both locales.
+- Formatting (2026-10-04): the existing, consistent formatting is kept (no
+  repo-wide Prettier pass). Prettier formatted only the 8 genuinely unformatted
+  files: `CityHero`, `FormSelect`, the `cities` / `privacy` / `terms` pages
+  (components on one line), `CheckboxGroup` and `FilterPanel` (packed JSX), and
+  `ConfirmDialog.scss` (one-line rule blocks). Left as is: long translation
+  strings, SVG path data, a data URI, and `BookingMonthlyModal` (waiting on
+  product). `.prettierrc` gained `endOfLine: auto`; `.prettierignore` skips
+  markdown, Lottie JSON, `public/`, the lockfile, `next-env.d.ts`;
+  `npm run format -- <files>` formats only the files named.
 - Product decisions are still needed before deleting `BookingModal`,
   `BookingMonthlyModal`, or `InsufficientBalanceModal`.
 
