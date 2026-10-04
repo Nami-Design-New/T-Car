@@ -1,0 +1,5 @@
+// Bootstrap, compiled as its own stylesheet so editing main.scss does not
+// recompile it (docs/08 step 4). The layout imports this before main.scss,
+// which keeps Bootstrap first in the cascade. Trimmed to the partials in use
+// in step 5.
+@import 'bootstrap/scss/bootstrap';

@@ -1,4 +1,4 @@
-@import '../../node_modules/bootstrap/scss/bootstrap';
+// Bootstrap is its own stylesheet (styles/vendor/bootstrap.scss), loaded first by the layout.
 :root {
   --font-primary: var(--font-expo);
   --bs-body-font-family: var(--font-expo), sans-serif;
@@ -76,7 +76,7 @@ body {
 }
 
 body:dir(rtl) {
-  font-family: $font-family-base;
+  font-family: var(--bs-font-sans-serif);
 }
 
 body:dir(ltr) {

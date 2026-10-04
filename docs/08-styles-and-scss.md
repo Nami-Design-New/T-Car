@@ -1,10 +1,12 @@
 # 8. Styles: compile from SCSS, stop committing CSS
 
-> **Status (2026-10-04):** in progress, steps 1–3 of 7 done. Sass is pinned to
+> **Status (2026-10-04):** in progress, steps 1–4 of 7 done. Sass is pinned to
 > `1.105.0`, the layout imports `main.scss`, so Next compiles every
 > stylesheet, and the generated `main.css`, `main.css.map`, and
 > `scripts/sync-office-css.mjs` are deleted; `.gitignore` ignores
-> `src/styles/**/*.css` and `*.css.map`. Next: step 4 (Bootstrap entry). See [step 2 results](#step-2-results-2026-10-04).
+> `src/styles/**/*.css` and `*.css.map`. Bootstrap is its own entry,
+> `styles/vendor/bootstrap.scss` (see [step 4 results](#step-4-results-2026-10-04)).
+> Next: step 5 (trim Bootstrap). See [step 2 results](#step-2-results-2026-10-04).
 
 ## 8.1 Current state
 
@@ -119,6 +121,27 @@ canonicalised). Every other CSS chunk is byte-identical.
 
 Not done: the visual pass at 360 px and 1280 px in a browser. With zero
 differences in meaning, the risk is limited to the print-only prefix above.
+
+### Step 4 results (2026-10-04)
+
+`styles/vendor/bootstrap.scss` (a normal file, not a `_` partial, because the
+layout imports it directly) holds the Bootstrap `@import`; the layout imports
+it before `main.scss`. `main.scss` used one Bootstrap Sass variable,
+`$font-family-base` in `body:dir(rtl)`; it is now its compiled value,
+`var(--bs-font-sans-serif)`, so `main.scss` needs nothing from Bootstrap.
+
+| Check | Result |
+| --- | --- |
+| Stylesheet order on every page | Bootstrap, then the app styles, in the slot the single file had |
+| Rules (Bootstrap + app, concatenated) | 4,169 in both; 4,055 identical |
+| Rules that changed | 114, one cause: Bootstrap's `.h1`–`.h6` and `.small` rules use `@extend h1` / `@extend small`, which, in one compilation, also copied every app rule that styles `hN` or `small` (e.g. `.footer .h4, .footer h4`). Compiled apart, the app rules keep only the element selector |
+| Visible effect | None found: no `.h1`–`.h6` class is used; the 10 `.small` uses are form error/status paragraphs, none inside the containers those 20 rules target |
+| Size | 401,397 → 228,157 (Bootstrap) + 169,210 (app) bytes |
+| Dev reload after editing `main.scss` (3 touches) | 5.7, 4.9, 13.9 s → 2.1, 1.4, 1.4 s (the old `main.css` flow: 1.8, 1.3, 1.1 s) |
+
+Rule from this step: Bootstrap helper classes (`.h1`–`.h6`, `.small`, `.mark`)
+style only the element itself now. Styling them inside an app component needs
+an explicit selector in that component's SCSS.
 
 ## 8.4 Risks
 

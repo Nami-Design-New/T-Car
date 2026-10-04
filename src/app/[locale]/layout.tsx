@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import { NextIntlClientProvider } from 'next-intl';
 import { getDirection } from '@/shared/config/languages';
 import { DirectionProvider } from '@/shared/ui/DirectionProvider';
+import '../../styles/vendor/bootstrap.scss';
 import '../../styles/main.scss';
 import localFont from 'next/font/local'
 
