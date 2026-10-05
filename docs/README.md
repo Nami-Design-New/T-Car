@@ -287,8 +287,9 @@ extensions over 30 days, and so on) are documented in each `services/mocks/*.ts`
   formats the chosen date with a fixed `ar-SA` locale; `ResourceNotFound`'s
   `.not-found-eyebrow` is only styled inside `.not-found-page`, so its eyebrow
   is unstyled.
-- Dead CSS: about 780 lines of `main.scss` / `legacy/_components.scss` style
-  classes no code uses (doc 8, ownership map). Proposed as its own fraction.
+- Dead CSS (2026-10-05): removed 795 lines (57 blocks) whose classes no code
+  uses, after proving none can match (doc 8, ownership map). App stylesheet
+  −11.7 KB minified.
 - Product decisions are still needed before deleting `BookingModal`,
   `BookingMonthlyModal`, or `InsufficientBalanceModal`.
 

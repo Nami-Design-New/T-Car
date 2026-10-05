@@ -78,7 +78,7 @@
   color: $ds-text-on-action;
 }
 
-// --- components/common/FailedModal (wallet result + delete account), incl. unused duplicate blocks, and InsufficientBalanceModal on small screens
+// --- components/common/FailedModal (wallet result + delete account), and InsufficientBalanceModal on small screens
 .wallet_result_modal {
   display: flex;
   width: min(420px, calc(100% - 30px));
@@ -109,11 +109,6 @@
   border-radius: $ds-radius-full;
 }
 
-.wallet_result_animation {
-  width: 150px;
-  height: 150px;
-  flex-shrink: 0;
-}
 .delete_account_modal {
   padding: 24px 20px 20px;
   border-radius: $ds-radius-xl;
@@ -186,53 +181,6 @@
     }
   }
 }
-.failed_result_animation {
-  position: relative;
-  width: 150px;
-  height: 150px;
-  flex-shrink: 0;
-}
-
-.failed_result_animation .wallet_result_animation {
-  position: absolute;
-  inset: 0;
-}
-
-.failed_result_cross {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  z-index: 1;
-  width: 88px;
-  height: 13px;
-  border-radius: $ds-radius-full;
-  background: $ds-text-on-action;
-  transform: translate(-50%, -50%) rotate(45deg);
-}
-
-.failed_result_cross:last-child {
-  transform: translate(-50%, -50%) rotate(-45deg);
-}
-
-.wallet_result_icon_success {
-  background: $ds-status-success;
-}
-
-.wallet_result_icon_success span {
-  position: absolute;
-  width: 10px;
-  height: 10px;
-  border-radius: $ds-radius-full;
-  background: $ds-text-on-action;
-}
-
-.wallet_result_icon_success span:first-child {
-  top: 12px;
-}
-
-.wallet_result_icon_success span:last-child {
-  bottom: 12px;
-}
 
 .wallet_result_icon_failed {
   background: $ds-status-error;
@@ -287,60 +235,6 @@
   border-radius: $ds-radius-full;
 }
 
-.wallet_result_animation {
-  width: 150px;
-  height: 150px;
-  flex-shrink: 0;
-}
-
-.failed_result_animation {
-  position: relative;
-  width: 150px;
-  height: 150px;
-  flex-shrink: 0;
-}
-
-.failed_result_animation .wallet_result_animation {
-  position: absolute;
-  inset: 0;
-}
-
-.failed_result_cross {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  z-index: 1;
-  width: 88px;
-  height: 13px;
-  border-radius: $ds-radius-full;
-  background: $ds-text-on-action;
-  transform: translate(-50%, -50%) rotate(45deg);
-}
-
-.failed_result_cross:last-child {
-  transform: translate(-50%, -50%) rotate(-45deg);
-}
-
-.wallet_result_icon_success {
-  background: $ds-status-success;
-}
-
-.wallet_result_icon_success span {
-  position: absolute;
-  width: 10px;
-  height: 10px;
-  border-radius: $ds-radius-full;
-  background: $ds-text-on-action;
-}
-
-.wallet_result_icon_success span:first-child {
-  top: 12px;
-}
-
-.wallet_result_icon_success span:last-child {
-  bottom: 12px;
-}
-
 .wallet_result_icon_failed {
   background: $ds-status-error;
 }
@@ -393,12 +287,6 @@
   height: 94px;
   place-items: center;
   border-radius: $ds-radius-full;
-}
-
-.wallet_result_animation {
-  width: 150px;
-  height: 150px;
-  flex-shrink: 0;
 }
 
 /* ================================================= */
@@ -480,57 +368,9 @@
   }
 }
 
-.failed_result_animation {
-  position: relative;
-  width: 150px;
-  height: 150px;
-  flex-shrink: 0;
-}
-
-.failed_result_animation .wallet_result_animation {
-  position: absolute;
-  inset: 0;
-}
-
-.failed_result_cross {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  z-index: 1;
-  width: 88px;
-  height: 13px;
-  border-radius: $ds-radius-full;
-  background: $ds-text-on-action;
-  transform: translate(-50%, -50%) rotate(45deg);
-}
-
-.failed_result_cross:last-child {
-  transform: translate(-50%, -50%) rotate(-45deg);
-}
-
 /* ================================================= */
 /* Result Icons */
 /* ================================================= */
-
-.wallet_result_icon_success {
-  background: $ds-status-success;
-}
-
-.wallet_result_icon_success span {
-  position: absolute;
-  width: 10px;
-  height: 10px;
-  border-radius: $ds-radius-full;
-  background: $ds-text-on-action;
-}
-
-.wallet_result_icon_success span:first-child {
-  top: 12px;
-}
-
-.wallet_result_icon_success span:last-child {
-  bottom: 12px;
-}
 
 .wallet_result_icon_failed {
   background: $ds-status-error;

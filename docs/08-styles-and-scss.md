@@ -233,8 +233,18 @@ its selector (which code areas use that class). It decides where each block
 moves. About 780 lines have no user at all (e.g. the old `booking_daily_*`
 dialog, `.booking-footer`, `.payment_methods`, `.bookings-empty`,
 `.review-modal-overlay`, and the `failed_result_*` / `wallet_result_*` blocks
-that appear three times); they move unchanged and are removed in a separate
-dead-CSS fraction.
+that appear three times).
+
+**Dead CSS removed (2026-10-05):** 57 top-level blocks whose root classes no
+source file uses (795 lines: 660 in `main.scss`, 135 in
+`legacy/_components.scss`), 124 compiled rules. Checks: the files changed by
+deletion only; the compiled CSS is an ordered subset of the old one; every
+removed selector contains a class that appears nowhere in `src/` or the
+messages (dynamic prefixes such as `btn-${size}` included); none of the 100
+removed selectors matches an element on 28 page states in headless Chrome
+(dialogs opened, en/ar). App stylesheet 166,859 → 155,205 bytes minified
+(24.9 → 23.4 KB gzip). Kept: `booking_daily_address_*` (used by
+`BookingMonthlyModal`).
 
 **Cascade check (used from step 3 on):** a moved rule can change load order, so
 each move is checked with headless Chrome (`playwright-core`, outside the
