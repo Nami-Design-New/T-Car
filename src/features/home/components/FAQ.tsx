@@ -24,7 +24,7 @@ export default function FAQ({ faqs }: Props) {
     items.map((item) => (
       <details key={item.id} name="faq" className="faq-item" open={item.id === faqs[0]?.id}>
         <summary className="faq-question">
-          <span>{item.question}</span>
+          <span className="faq-question-text">{item.question}</span>
 
           <span className="faq-question-icon" aria-hidden="true">
             <FiChevronDown />

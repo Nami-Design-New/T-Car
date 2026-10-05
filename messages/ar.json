@@ -190,7 +190,8 @@
     "saveNow": "يوم مجاناً",
     "discount": "خصم",
     "rating": "التقييم {rating} من 5",
-    "perDay": "/ يوم"
+    "perDay": "/ يوم",
+    "currency": "ريال سعودي"
   },
   "officeRow": {
     "office": "مكتب",

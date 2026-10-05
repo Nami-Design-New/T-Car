@@ -190,7 +190,8 @@
     "saveNow": "Save when you book now",
     "discount": "off",
     "rating": "Rated {rating} out of 5",
-    "perDay": "/ day"
+    "perDay": "/ day",
+    "currency": "Saudi Riyal"
   },
   "officeRow": {
     "office": "Branch",
@@ -229,15 +230,61 @@
   },
   "cars": {
     "currency": "Saudi riyal",
-    "filters": { "title": "Filter results", "searchPlaceholder": "Search for a car or brand...", "apply": "Search", "clearAll": "Clear all", "open": "Open filters", "close": "Close filters", "clear": "Clear", "showLess": "Show less", "showAll": "Show all", "priceRange": "Price range", "minimum": "Minimum", "maximum": "Maximum", "brand": "Brand", "type": "Car type", "companies": "Companies", "services": "Additional services" },
+    "filters": {
+      "title": "Filter results",
+      "searchPlaceholder": "Search for a car or brand...",
+      "apply": "Search",
+      "clearAll": "Clear all",
+      "open": "Open filters",
+      "close": "Close filters",
+      "clear": "Clear",
+      "showLess": "Show less",
+      "showAll": "Show all",
+      "priceRange": "Price range",
+      "minimum": "Minimum",
+      "maximum": "Maximum",
+      "brand": "Brand",
+      "type": "Car type",
+      "companies": "Companies",
+      "services": "Additional services"
+    },
     "companies": { "elite": "Elite showroom" },
     "brands": { "nissan": "Nissan" },
-    "types": { "family": "Family", "convertible": "Convertible", "hatchback": "Hatchback", "sedan": "Sedan", "pickup": "Pickup", "van": "Van" },
+    "types": {
+      "family": "Family",
+      "convertible": "Convertible",
+      "hatchback": "Hatchback",
+      "sedan": "Sedan",
+      "pickup": "Pickup",
+      "van": "Van"
+    },
     "cityTypes": { "economy": "Economy", "sedan": "Sedan", "suv": "SUV", "luxury": "Luxury" },
-    "services": { "delivery": { "title": "Car delivery service", "description": "The car is delivered to your doorstep" } },
-    "sort": { "recommended": "Most relevant", "priceAsc": "Price: low to high", "priceDesc": "Price: high to low", "rating": "Top rated", "filter": "Filter", "results": "{count} results" }
+    "services": {
+      "delivery": {
+        "title": "Car delivery service",
+        "description": "The car is delivered to your doorstep"
+      }
+    },
+    "sort": {
+      "recommended": "Most relevant",
+      "priceAsc": "Price: low to high",
+      "priceDesc": "Price: high to low",
+      "rating": "Top rated",
+      "filter": "Filter",
+      "results": "{count} results"
+    }
   },
-  "cities": { "hero": { "title": "Car rental in {city}", "description": "Renting a car in the city is easy with T-Car, with excellent service and fast booking.", "pickup": "Pick-up", "pickupPlaceholder": "Choose pick-up date", "dropoff": "Drop-off", "dropoffPlaceholder": "Choose drop-off date", "search": "Search" } },
+  "cities": {
+    "hero": {
+      "title": "Car rental in {city}",
+      "description": "Renting a car in the city is easy with T-Car, with excellent service and fast booking.",
+      "pickup": "Pick-up",
+      "pickupPlaceholder": "Choose pick-up date",
+      "dropoff": "Drop-off",
+      "dropoffPlaceholder": "Choose drop-off date",
+      "search": "Search"
+    }
+  },
   "homeCta": {
     "title": "Join us as a partner",
     "description": "Join the T-Car platform, showcase your cars to thousands of customers, and receive booking requests with ease.",
@@ -372,11 +419,83 @@
       "registrationRequired": "This number has no account yet. Finish creating your account."
     }
   },
-  "legalContent": { "terms": [{ "title": "Acceptance of terms", "content": "By using T-Car, you agree to the terms and conditions on this page and to comply with applicable rules." }, { "title": "Bookings and rental", "content": "Bookings depend on vehicle availability. Provide accurate information; inaccurate bookings may be cancelled." }, { "title": "Payment and refunds", "content": "Payments follow the prices shown during booking and the refund policy for each booking." }, { "title": "Renter responsibilities", "content": "Renters must care for the vehicle and use it legally and safely." }, { "title": "Changes to terms", "content": "T-Car may change these terms at any time; continued use means acceptance." }], "privacy": [{ "title": "Information we collect", "content": "We collect account and booking details to provide our services." }, { "title": "How we use information", "content": "We use data to manage bookings, confirm operations, communicate, and improve services." }, { "title": "Protecting your data", "content": "We take appropriate security measures to protect your personal data." }, { "title": "Sharing information", "content": "We do not share data except when necessary to provide the service or required by law." }, { "title": "Your rights", "content": "You can request that your personal data be updated, changed, or deleted." }] },
-  "citiesPage": { "title": "Available cities", "subtitle": "Choose your city and start your journey with us" },
+  "legalContent": {
+    "terms": [
+      {
+        "title": "Acceptance of terms",
+        "content": "By using T-Car, you agree to the terms and conditions on this page and to comply with applicable rules."
+      },
+      {
+        "title": "Bookings and rental",
+        "content": "Bookings depend on vehicle availability. Provide accurate information; inaccurate bookings may be cancelled."
+      },
+      {
+        "title": "Payment and refunds",
+        "content": "Payments follow the prices shown during booking and the refund policy for each booking."
+      },
+      {
+        "title": "Renter responsibilities",
+        "content": "Renters must care for the vehicle and use it legally and safely."
+      },
+      {
+        "title": "Changes to terms",
+        "content": "T-Car may change these terms at any time; continued use means acceptance."
+      }
+    ],
+    "privacy": [
+      {
+        "title": "Information we collect",
+        "content": "We collect account and booking details to provide our services."
+      },
+      {
+        "title": "How we use information",
+        "content": "We use data to manage bookings, confirm operations, communicate, and improve services."
+      },
+      {
+        "title": "Protecting your data",
+        "content": "We take appropriate security measures to protect your personal data."
+      },
+      {
+        "title": "Sharing information",
+        "content": "We do not share data except when necessary to provide the service or required by law."
+      },
+      {
+        "title": "Your rights",
+        "content": "You can request that your personal data be updated, changed, or deleted."
+      }
+    ]
+  },
+  "citiesPage": {
+    "title": "Available cities",
+    "subtitle": "Choose your city and start your journey with us"
+  },
   "common": { "selectPlaceholder": "Choose..." },
-  "dateTimePicker": { "previousMonth": "Previous month", "nextMonth": "Next month", "time": "Time", "done": "Done", "weekdays": ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"], "months": ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"] },
-  "authSuccess": { "title": "Account created successfully", "description": "You can now enjoy all T-Car services.", "button": "Get started" },
+  "dateTimePicker": {
+    "previousMonth": "Previous month",
+    "nextMonth": "Next month",
+    "time": "Time",
+    "done": "Done",
+    "weekdays": ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+    "months": [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December"
+    ]
+  },
+  "authSuccess": {
+    "title": "Account created successfully",
+    "description": "You can now enjoy all T-Car services.",
+    "button": "Get started"
+  },
   "states": {
     "loading": "Loading…",
     "retry": "Try again",
@@ -501,19 +620,117 @@
     "daily": {
       "editBooking": "Edit booking",
       "newBooking": "New booking",
-      "weekdays": { "sun": "Sun", "mon": "Mon", "tue": "Tue", "wed": "Wed", "thu": "Thu", "fri": "Fri", "sat": "Sat" },
-      "months": { "jan": "January", "feb": "February", "mar": "March", "apr": "April", "may": "May", "jun": "June", "jul": "July", "aug": "August", "sep": "September", "oct": "October", "nov": "November", "dec": "December" },
-      "to": "to", "chooseEndDate": "Choose an end date", "pickupDropoffTime": "Pickup and drop-off time", "pickupAddress": "Pickup address", "dropoffAddress": "Drop-off address", "chooseFromMap": "Choose from map", "changePickup": "Change pickup address", "changeDropoff": "Change drop-off address", "pickupLocation": "Pickup location", "dropoffLocation": "Drop-off location", "selected": "Selected", "enterAddress": "Enter your address", "distanceHint": "The location must be within 20 km of the showroom", "additionalDetails": "Additional details", "notesPlaceholder": "Write any notes or special requests...", "submitEdit": "Send change request", "continue": "Continue booking", "total": "Total", "selectPickup": "Set pickup location", "selectDropoff": "Set drop-off location"
+      "weekdays": {
+        "sun": "Sun",
+        "mon": "Mon",
+        "tue": "Tue",
+        "wed": "Wed",
+        "thu": "Thu",
+        "fri": "Fri",
+        "sat": "Sat"
+      },
+      "months": {
+        "jan": "January",
+        "feb": "February",
+        "mar": "March",
+        "apr": "April",
+        "may": "May",
+        "jun": "June",
+        "jul": "July",
+        "aug": "August",
+        "sep": "September",
+        "oct": "October",
+        "nov": "November",
+        "dec": "December"
+      },
+      "to": "to",
+      "chooseEndDate": "Choose an end date",
+      "pickupDropoffTime": "Pickup and drop-off time",
+      "pickupAddress": "Pickup address",
+      "dropoffAddress": "Drop-off address",
+      "chooseFromMap": "Choose from map",
+      "changePickup": "Change pickup address",
+      "changeDropoff": "Change drop-off address",
+      "pickupLocation": "Pickup location",
+      "dropoffLocation": "Drop-off location",
+      "selected": "Selected",
+      "enterAddress": "Enter your address",
+      "distanceHint": "The location must be within 20 km of the showroom",
+      "additionalDetails": "Additional details",
+      "notesPlaceholder": "Write any notes or special requests...",
+      "submitEdit": "Send change request",
+      "continue": "Continue booking",
+      "total": "Total",
+      "selectPickup": "Set pickup location",
+      "selectDropoff": "Set drop-off location"
     },
     "confirm": {
-      "dialogLabel": "Confirm booking", "close": "Close", "back": "Back", "title": "Confirm booking", "perDay": "/ day", "pickupAddress": "Pickup address", "dropoffAddress": "Drop-off address", "pickupTime": "Pickup time", "dropoffTime": "Drop-off time", "insurance": "Insurance details", "insuranceValue": "The car will be ready before the appointment", "orderTime": "Order time", "priceDetails": "Price details", "dailyPrice": "Daily price", "days": "Number of days", "day": "days", "subtotal": "Subtotal", "tax": "Tax", "total": "Total", "termsTitle": "Terms and conditions", "eligibility": "I agree to all requirements and am eligible to book.", "continuePayment": "Continue to payment",
-      "terms": { "license": "I have a valid driving license.", "identity": "I have a valid national ID or residency permit.", "refundable": "Some rental locations or prepayments may require a refundable amount.", "agree": "I agree to all terms and conditions." }
+      "dialogLabel": "Confirm booking",
+      "close": "Close",
+      "back": "Back",
+      "title": "Confirm booking",
+      "perDay": "/ day",
+      "pickupAddress": "Pickup address",
+      "dropoffAddress": "Drop-off address",
+      "pickupTime": "Pickup time",
+      "dropoffTime": "Drop-off time",
+      "insurance": "Insurance details",
+      "insuranceValue": "The car will be ready before the appointment",
+      "orderTime": "Order time",
+      "priceDetails": "Price details",
+      "dailyPrice": "Daily price",
+      "days": "Number of days",
+      "day": "days",
+      "subtotal": "Subtotal",
+      "tax": "Tax",
+      "total": "Total",
+      "termsTitle": "Terms and conditions",
+      "eligibility": "I agree to all requirements and am eligible to book.",
+      "continuePayment": "Continue to payment",
+      "terms": {
+        "license": "I have a valid driving license.",
+        "identity": "I have a valid national ID or residency permit.",
+        "refundable": "Some rental locations or prepayments may require a refundable amount.",
+        "agree": "I agree to all terms and conditions."
+      }
     },
     "payment": {
-      "dialogLabel": "Payment method", "title": "Payment method", "close": "Close", "wallet": "Wallet", "walletDescription": "Pay from your wallet faster", "points": "Use points", "pointsDescription": "Save by paying with your points", "upTo": "Up to", "pointsUnit": "points", "currency": "SAR", "confirming": "Confirming booking...", "confirm": "Confirm",
-      "options": { "visa": { "title": "Electronic payment (Visa / Mastercard)", "description": "Mada, Visa, and Mastercard accepted worldwide" }, "tabby": { "title": "Pay later with Tabby", "description": "Split your bill into 4 interest-free payments" }, "tamara": { "title": "Pay later with Tamara", "description": "Pay in 3 comfortable, Sharia-compliant installments" } }
+      "dialogLabel": "Payment method",
+      "title": "Payment method",
+      "close": "Close",
+      "wallet": "Wallet",
+      "walletDescription": "Pay from your wallet faster",
+      "points": "Use points",
+      "pointsDescription": "Save by paying with your points",
+      "upTo": "Up to",
+      "pointsUnit": "points",
+      "currency": "SAR",
+      "confirming": "Confirming booking...",
+      "confirm": "Confirm",
+      "options": {
+        "visa": {
+          "title": "Electronic payment (Visa / Mastercard)",
+          "description": "Mada, Visa, and Mastercard accepted worldwide"
+        },
+        "tabby": {
+          "title": "Pay later with Tabby",
+          "description": "Split your bill into 4 interest-free payments"
+        },
+        "tamara": {
+          "title": "Pay later with Tamara",
+          "description": "Pay in 3 comfortable, Sharia-compliant installments"
+        }
+      }
     },
-    "card": { "currency": "SAR", "perDay": "/ day", "bookNow": "Book now", "paymentNote": "No amount will be charged now; pay on pickup", "successTitle": "Booking confirmed successfully!", "successDescription": "Redirecting to your bookings...", "goNow": "Go now" }
+    "card": {
+      "currency": "SAR",
+      "perDay": "/ day",
+      "bookNow": "Book now",
+      "paymentNote": "No amount will be charged now; pay on pickup",
+      "successTitle": "Booking confirmed successfully!",
+      "successDescription": "Redirecting to your bookings...",
+      "goNow": "Go now"
+    }
   },
   "carDetails": {
     "addons": "Additional services",

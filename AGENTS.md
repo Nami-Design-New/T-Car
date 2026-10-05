@@ -80,3 +80,8 @@ Ask the user before: any `git commit`; deleting `BookingModal`, `BookingMonthlyM
   throwaway probe routes normally and delete them after use.
 - `notFound()` under the root streaming `loading.tsx` returns HTTP 200; the
   404 page renders in the browser. Known, documented in doc 3.
+- Vitest sometimes fails every file at once in `vitest.setup.ts` with "failed to
+  find the current suite" ("no tests"), with jsdom setup taking most of the run.
+  Seen right after a build or a server stop; the cause is not established. It is
+  not a test failure: run `npm run test` again with nothing else running (tests
+  first, then build and start the server).
