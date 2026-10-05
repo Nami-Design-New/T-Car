@@ -1917,6 +1917,8 @@
     position: absolute;
 
     top: -100px;
+    // the phones sit on the inline-end side (left in Arabic, right in English)
+    inset-inline-end: 70px;
     width: 380px;
 
     z-index: 5;
@@ -1930,11 +1932,13 @@
 
   .download_app_content {
     width: 48%;
+    // the text sits on the inline-start side, clear of the phones
+    margin-inline-end: auto;
 
     position: relative;
     z-index: 10;
 
-    text-align: end;
+    text-align: start;
 
     .tag {
       display: inline-flex;
@@ -2003,6 +2007,7 @@
     .download_app_image {
       position: relative;
       left: auto;
+      inset-inline-end: auto;
       top: auto;
 
       width: 260px;

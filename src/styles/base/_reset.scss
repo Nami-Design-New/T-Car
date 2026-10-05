@@ -77,11 +77,6 @@ body:dir(rtl) {
   font-family: var(--bs-font-sans-serif);
 }
 
-body:dir(ltr) {
-  .download_app .download_app_card {
-    justify-content: flex-start;
-  }
-}
 * {
   box-sizing: border-box;
 }

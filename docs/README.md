@@ -287,6 +287,13 @@ extensions over 30 days, and so on) are documented in each `services/mocks/*.ts`
   formats the chosen date with a fixed `ar-SA` locale; `ResourceNotFound`'s
   `.not-found-eyebrow` is only styled inside `.not-found-page`, so its eyebrow
   is unstyled.
+- Download-app section fix (2026-10-05): the text column sat on top of the phone
+  image in both locales. Commit `d97439e` switched the section to logical
+  properties but dropped `margin-left: auto` on the text column, and a
+  `body:dir(ltr)` override in `base/_reset` could not help. The text now has
+  `margin-inline-end: auto` and `text-align: start`, the phones
+  `inset-inline-end: 70px`: Arabic matches the original design (phones left, text
+  right), English is its mirror; the stacked layout at ≤ 992 px is unchanged.
 - FAQ design fix (2026-10-05): the chevron of every FAQ item was stretched into
   a wide blue bar. Since the move to native `<details>` (commit `4a8d196`) the
   icon is a `<span>`, and the old `.faqs .faq-question span { flex: 1 }` rule
