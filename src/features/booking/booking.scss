@@ -1,0 +1,1073 @@
+@use 'tokens/tokens' as *;
+
+.car-booking-card {
+  background: $ds-surface-elevated;
+  border: 1px solid $ds-stroke-light;
+  border-radius: $ds-radius-xl;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba($ds-shadow-color, 0.06);
+
+  &-price {
+    margin-bottom: 18px;
+  }
+
+  &-old-price {
+    display: block;
+    font-size: 0.9rem;
+    color: $ds-text-placeholder;
+    text-decoration: line-through;
+    margin-bottom: 4px;
+  }
+
+  &-current {
+    display: flex;
+    align-items: end;
+    gap: 8px;
+
+    h2 {
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 2rem;
+      font-weight: 800;
+      color: $ds-text-primary;
+      line-height: 1;
+    }
+
+    .riyal-icon {
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
+    }
+
+    small {
+      color: $ds-text-subtle;
+      font-size: 0.9rem;
+    }
+  }
+
+  &-btn {
+    width: 100%;
+    height: 52px;
+    border: none;
+    border-radius: $ds-radius-md;
+    background: $ds-action-primary;
+    color: $ds-text-on-action;
+    font-weight: 700;
+    font-size: $font-size-base;
+    cursor: pointer;
+    transition: 0.25s;
+    margin-bottom: 14px;
+
+    &:hover {
+      background: darken($ds-action-primary, 6%);
+    }
+  }
+
+  &-note {
+    text-align: center;
+    font-size: 0.8rem;
+    color: $ds-text-subtle;
+    margin: 0;
+  }
+}
+
+// Payment method modal
+.payment_method_modal {
+  width: min(380px, calc(100% - 32px));
+  padding: 10px 12px 14px;
+  border: 1px solid $ds-action-primary;
+  border-radius: $ds-radius-lg $ds-radius-lg $ds-radius-md $ds-radius-md;
+  background: $ds-surface-elevated;
+  box-shadow: 0 14px 40px rgba($ds-shadow-color, 0.16);
+  animation: popup 0.35s ease;
+
+  .payment_drag_handle {
+    display: block;
+    width: 58px;
+    height: 5px;
+    margin: 0 auto 8px;
+    border-radius: $ds-radius-full;
+    background: $ds-surface-disabled;
+  }
+
+  .payment_modal_header {
+    h3 {
+      margin: 0;
+      color: $ds-text-primary;
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .payment_modal_close {
+      width: 36px;
+      height: 36px;
+      place-items: center;
+      border: 1px solid $ds-stroke-light;
+      border-radius: $ds-radius-sm;
+      color: $ds-text-disabled;
+    }
+  }
+
+  .payment_modal_option {
+    min-height: 58px;
+    padding: 10px 12px;
+    border: 1px solid $ds-stroke-light;
+    border-radius: $ds-radius-sm;
+    background: $ds-surface-elevated;
+    cursor: pointer;
+    transition:
+      border-color 0.2s,
+      background 0.2s;
+
+    &.selected {
+      border-color: rgba($ds-action-primary, 0.5);
+      background: $ds-surface-card-primary;
+    }
+  }
+
+  .payment_option_text {
+    gap: 4px;
+    min-width: 0;
+  }
+
+  .payment_option_title {
+    color: $ds-text-primary;
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  .payment_option_desc {
+    color: $ds-text-disabled;
+    font-size: 11px;
+  }
+
+  .payment_option_info,
+  .points_info {
+    flex-shrink: 0;
+    direction: ltr;
+  }
+
+  .payment_option_info strong {
+    color: $ds-text-primary;
+    font-size: 16px;
+    font-weight: 700;
+  }
+
+  .points_info {
+    .points_value {
+      gap: 2px;
+      align-items: flex-start;
+    }
+
+    small {
+      color: $ds-text-primary;
+      font-size: 10px;
+
+      strong {
+        color: $ds-status-error;
+        font-weight: 600;
+      }
+    }
+
+    .points_amount {
+      color: $ds-text-primary;
+      font-size: 11px;
+
+      strong {
+        font-size: 12px;
+        font-weight: 700;
+      }
+    }
+
+    .form-check-input {
+      float: none;
+      width: 40px;
+      height: 20px;
+      cursor: pointer;
+    }
+  }
+
+  .payment_confirm_btn {
+    height: 46px;
+    border: 0;
+    border-radius: $ds-radius-sm;
+    background: $ds-action-primary;
+    color: $ds-text-on-action;
+    font-size: 13px;
+    font-weight: 600;
+
+    &:hover,
+    &:focus {
+      background: darken($ds-action-primary, 6%);
+    }
+  }
+}
+
+.booking_modal {
+  position: relative;
+  width: min(600px, calc(100% - 32px));
+
+  max-height: 90vh;
+  overflow-y: auto;
+
+  background: $ds-surface-elevated;
+  border-radius: $ds-radius-xl;
+  padding: 24px;
+
+  animation: popup 0.35s ease;
+
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: rgba($ds-action-primary, 0.3);
+    border-radius: $ds-radius-full;
+  }
+
+  .booking_modal_calendar {
+    margin-bottom: 22px;
+
+    .calendar_header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+
+      span {
+        font-size: $font-size-base;
+        font-weight: 700;
+        color: $ds-text-primary;
+      }
+
+      button {
+        width: 32px;
+        height: 32px;
+
+        display: grid;
+        place-items: center;
+
+        border: none;
+        border-radius: $ds-radius-sm;
+
+        background: rgba($ds-shadow-color, 0.04);
+        color: $ds-text-primary;
+
+        cursor: pointer;
+        transition: 0.25s;
+
+        &:hover {
+          background: rgba($ds-action-primary, 0.1);
+          color: $ds-action-primary;
+        }
+      }
+    }
+
+    .calendar_weekdays {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      margin-bottom: 8px;
+
+      span {
+        text-align: center;
+        font-size: 0.72rem;
+        font-weight: 600;
+        color: $ds-text-subtle;
+      }
+    }
+
+    .calendar_days {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+
+      .cell {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        height: 40px;
+
+        &.in-range {
+          background: rgba($ds-action-primary, 0.08);
+        }
+
+        &.range-start {
+          background: linear-gradient(
+            to right,
+            rgba($ds-action-primary, 0.08) 50%,
+            transparent 50%
+          );
+        }
+
+        &.range-end {
+          background: linear-gradient(to left, rgba($ds-action-primary, 0.08) 50%, transparent 50%);
+        }
+
+        &.range-start.range-end {
+          background: transparent;
+        }
+
+        button {
+          width: 34px;
+          height: 34px;
+
+          border: none;
+          border-radius: $ds-radius-full;
+
+          background: transparent;
+          color: $ds-text-primary;
+
+          cursor: pointer;
+          transition: 0.2s;
+
+          &:hover:not(:disabled) {
+            background: $ds-surface-card-primary;
+          }
+
+          &.selected {
+            background: $ds-action-primary;
+            color: $ds-text-on-action;
+            font-weight: 700;
+          }
+
+          &:disabled {
+            color: $ds-text-placeholder;
+            cursor: not-allowed;
+          }
+        }
+      }
+    }
+
+    .range_display {
+      margin-top: 16px;
+      padding: 10px;
+
+      text-align: center;
+
+      border-radius: $ds-radius-sm;
+
+      background: $ds-surface-card-primary;
+
+      color: $ds-action-primary;
+      font-size: 0.82rem;
+      font-weight: 600;
+    }
+  }
+
+  .booking_field {
+    margin-bottom: 18px;
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+
+      color: $ds-text-subtle;
+      font-size: 0.82rem;
+      font-weight: 600;
+    }
+
+    .time_select {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+
+      height: 48px;
+      padding-inline: 14px;
+
+      border: 1px solid $ds-stroke-light;
+      border-radius: $ds-radius-md;
+
+      transition: 0.25s;
+
+      &:focus-within {
+        border-color: $ds-action-primary;
+      }
+
+      svg {
+        color: $ds-action-primary;
+        flex-shrink: 0;
+      }
+
+      select {
+        flex: 1;
+
+        border: none;
+        outline: none;
+        background: transparent;
+
+        color: $ds-text-primary;
+        font-size: 0.9rem;
+        cursor: pointer;
+      }
+    }
+
+    textarea {
+      width: 100%;
+
+      padding: 12px 14px;
+
+      border: 1px solid $ds-stroke-light;
+      border-radius: $ds-radius-md;
+
+      resize: none;
+      outline: none;
+
+      font-family: inherit;
+      font-size: 0.9rem;
+
+      transition: 0.25s;
+
+      &:focus {
+        border-color: $ds-action-primary;
+      }
+    }
+
+    &.booking_location_field {
+      .booking_location_label {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 8px;
+
+        label {
+          margin-bottom: 0;
+          color: $ds-text-primary;
+          font-weight: 700;
+        }
+
+        button {
+          display: inline-flex;
+          align-items: center;
+          gap: 4px;
+          padding: 0;
+          border: 0;
+          background: transparent;
+          color: $ds-action-primary;
+          cursor: pointer;
+          font-size: 0.75rem;
+          text-decoration: underline;
+          text-underline-offset: 2px;
+        }
+      }
+
+      input {
+        width: 100%;
+        height: 48px;
+        padding: 0 14px;
+        border: 1px solid $ds-stroke-light;
+        border-radius: $ds-radius-md;
+        outline: none;
+        color: $ds-text-primary;
+        font-family: inherit;
+        font-size: 0.9rem;
+        transition: 0.25s;
+
+        &:focus {
+          border-color: $ds-action-primary;
+        }
+
+        &::placeholder {
+          color: $ds-text-placeholder;
+        }
+      }
+
+      p {
+        margin: 6px 0 0;
+        color: $ds-text-subtle;
+        font-size: 0.7rem;
+
+        strong {
+          color: $ds-action-primary;
+          font-weight: 600;
+        }
+      }
+    }
+  }
+
+  .booking_modal_footer {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+
+    padding-top: 18px;
+    border-top: 1px solid $ds-stroke-light;
+
+    .confirm_booking_btn {
+      flex: 1;
+
+      height: 50px;
+
+      border: none;
+      border-radius: $ds-radius-md;
+
+      background: $ds-action-primary;
+      color: $ds-text-on-action;
+
+      font-weight: 700;
+      cursor: pointer;
+
+      transition: 0.25s;
+
+      &:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba($ds-action-primary, 0.3);
+      }
+
+      &:disabled {
+        background: $ds-surface-on-background;
+        color: $ds-text-placeholder;
+        cursor: not-allowed;
+      }
+    }
+
+    .booking_total {
+      flex-shrink: 0;
+      text-align: center;
+
+      span {
+        display: block;
+
+        color: $ds-text-subtle;
+        font-size: 0.75rem;
+      }
+
+      h3 {
+        margin: 0;
+
+        color: $ds-text-primary;
+        font-size: 1.15rem;
+        font-weight: 800;
+      }
+    }
+  }
+}
+.confirm_modal {
+  position: relative;
+  width: min(600px, calc(100% - 32px));
+  max-height: 90vh;
+
+  display: flex;
+  flex-direction: column;
+
+  background: $ds-surface-elevated;
+  border-radius: $ds-radius-xl;
+
+  animation: popup 0.35s ease;
+}
+
+.confirm_modal_scroll {
+  overflow-y: auto;
+  padding: 24px;
+  padding-top: 56px;
+
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: rgba($ds-action-primary, 0.3);
+    border-radius: $ds-radius-full;
+  }
+}
+.confirm_car_summary {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-bottom: 16px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid $ds-stroke-light;
+
+  &_image {
+    position: relative;
+    width: 60px;
+    height: 60px;
+    border-radius: $ds-radius-md;
+    overflow: hidden;
+    background: $ds-surface-on-background;
+    flex-shrink: 0;
+
+    img {
+      object-fit: cover;
+    }
+  }
+
+  &_body {
+    flex: 1;
+    min-width: 0;
+
+    h4 {
+      margin: 0 0 4px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: $ds-text-primary;
+    }
+
+    .showroom {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.78rem;
+      color: $ds-text-subtle;
+
+      svg {
+        color: $ds-status-warning;
+        font-size: 12px;
+      }
+    }
+  }
+
+  &_price {
+    text-align: end;
+    flex-shrink: 0;
+
+    .old {
+      display: block;
+      font-size: 0.72rem;
+      color: $ds-text-placeholder;
+      text-decoration: line-through;
+    }
+
+    .current {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: $ds-action-primary;
+    }
+  }
+}
+.confirm_dates {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-bottom: 16px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid $ds-stroke-light;
+
+  .confirm_date_row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .label {
+      font-size: 0.8rem;
+      color: $ds-text-subtle;
+    }
+
+    .value {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: $ds-text-primary;
+    }
+  }
+}
+.confirm_section {
+  margin-bottom: 20px;
+
+  h3 {
+    margin: 0 0 12px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: $ds-text-primary;
+  }
+}
+.price_breakdown {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+
+  .price_item {
+    padding: 14px 16px;
+
+    border: 1px solid $ds-stroke-light;
+    border-radius: $ds-radius-md;
+
+    background: $ds-surface-on-background;
+
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+
+    transition: 0.25s;
+
+    &:hover {
+      border-color: rgba($ds-action-primary, 0.25);
+    }
+
+    span {
+      font-size: 0.75rem;
+      color: $ds-text-subtle;
+    }
+
+    strong {
+      font-size: $font-size-base;
+      font-weight: 700;
+      color: $ds-text-primary;
+    }
+  }
+
+  .price_total {
+    grid-column: 1 / -1;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    margin-top: 4px;
+
+    padding: 18px;
+
+    border-radius: $ds-radius-lg;
+
+    background: $ds-surface-card-primary;
+    border: 1px solid rgba($ds-action-primary, 0.18);
+
+    span {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: $ds-action-primary;
+    }
+
+    h3 {
+      margin: 0;
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: $ds-action-primary;
+    }
+  }
+
+  @media (max-width: 576px) {
+    grid-template-columns: 1fr;
+  }
+}
+.confirm_modal_footer {
+  padding: 18px 24px;
+  border-top: 1px solid $ds-stroke-light;
+
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border-radius: $ds-radius-xl;
+
+  .pay_btn {
+    height: 52px;
+    border: none;
+    border-radius: $ds-radius-md;
+    background: $ds-action-primary;
+    color: $ds-text-on-action;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.25s;
+
+    &:hover {
+      background: darken($ds-action-primary, 6%);
+    }
+  }
+}
+
+// Booking confirmation sheet
+.confirm_booking_modal {
+  .confirm_modal_header {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: $ds-space-3;
+    padding: 14px 10px 6px;
+
+    h2 {
+      margin: 0;
+      color: $ds-text-primary;
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .back_btn {
+      display: block;
+      inset-inline-start: 10px;
+      inset-inline-end: auto;
+      width: 34px;
+      height: 34px;
+      font-size: 18px;
+      position: static;
+    }
+  }
+
+  .confirm_modal_scroll {
+    padding: 24px 10px;
+    background: $ds-surface-card-primary;
+    border-radius: $ds-radius-xl;
+  }
+
+  .confirm_car_summary {
+    margin-bottom: 12px;
+    padding: 10px;
+    border: 1px solid $ds-stroke-light;
+    border-radius: $ds-radius-md;
+    background: $ds-surface-elevated;
+  }
+
+  .confirm_dates,
+  .confirm_section {
+    margin-bottom: 12px;
+    padding: 14px 12px;
+    border: 1px solid $ds-stroke-light;
+    border-radius: $ds-radius-md;
+    background: $ds-surface-elevated;
+  }
+
+  .confirm_dates {
+    position: relative;
+    gap: 0;
+    padding-inline-end: 18px;
+    border-bottom: 1px solid $ds-stroke-light;
+
+    &::before {
+      position: absolute;
+      top: 18px;
+      inset-inline-end: 8px;
+      bottom: 18px;
+      width: 2px;
+      content: '';
+      // border-right: 2px dotted $ds-action-primary;
+    }
+
+    .confirm_date_row {
+      min-height: 42px;
+      padding: 6px 0;
+      border-bottom: 1px dotted $ds-stroke-light;
+      gap: 12px;
+
+      &:last-child {
+        border-bottom: 0;
+      }
+
+      .label {
+        flex: 0 0 auto;
+        color: $ds-text-subtle;
+        font-size: 13px;
+      }
+
+      .value {
+        overflow: hidden;
+        color: $ds-text-primary;
+        font-size: 14px;
+        font-weight: 500;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+    }
+  }
+
+  .confirm_section {
+    margin-bottom: 12px;
+
+    h3 {
+      margin-bottom: 10px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid $ds-stroke-light;
+      font-size: 16px;
+    }
+  }
+
+  .price_breakdown {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+
+    .price_item {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 32px;
+      padding: 4px 0;
+      border: 0;
+      border-bottom: 1px dotted $ds-stroke-light;
+      border-radius: $ds-radius-none;
+      background: transparent;
+
+      span {
+        color: $ds-text-subtle;
+        font-size: 13px;
+      }
+
+      strong {
+        color: $ds-text-primary;
+        font-size: 14px;
+      }
+    }
+
+    .price_total {
+      min-height: 42px;
+      margin-top: 4px;
+      padding: 4px 0;
+      border: 0;
+      border-radius: $ds-radius-none;
+      background: transparent;
+
+      span {
+        color: $ds-text-subtle;
+        font-size: 14px;
+      }
+
+      h3 {
+        margin: 0;
+        padding: 0;
+        border: 0;
+        color: $ds-action-primary;
+        font-size: 18px;
+      }
+    }
+  }
+
+  .confirm_section:last-child {
+    margin-bottom: 0;
+
+    ul {
+      margin: 0 0 12px;
+      padding-inline-start: 18px;
+      color: $ds-text-primary;
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: $ds-text-primary;
+      font-size: 13px;
+      line-height: 1.5;
+
+      input {
+        width: 15px;
+        height: 15px;
+        flex: 0 0 auto;
+        accent-color: $ds-action-primary;
+      }
+    }
+  }
+
+  .confirm_modal_footer {
+    padding: 10px;
+    border-top: 1px solid $ds-stroke-light;
+    background: $ds-surface-elevated;
+
+    .pay_btn {
+      height: 42px;
+      border-radius: $ds-radius-sm;
+      font-size: 13px;
+    }
+  }
+}
+
+////////////join us ////////////
+
+////////////////////// Daily booking modal //////////////////////
+
+.booking_daily_address_card {
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  min-height: 62px;
+  padding: 9px 10px;
+  border: 0;
+  border-radius: $ds-radius-sm;
+  background: $ds-surface-on-background;
+  color: $ds-text-primary;
+  cursor: pointer;
+  text-align: start;
+}
+
+.booking_daily_address_icon {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: $ds-radius-sm;
+  background: $ds-surface-elevated;
+
+  img {
+    width: 24px;
+    height: 24px;
+  }
+}
+
+.booking_daily_address_content {
+  min-width: 0;
+
+  strong,
+  small {
+    display: block;
+  }
+
+  strong {
+    margin-bottom: 3px;
+    font-size: 11px;
+  }
+
+  small {
+    overflow: hidden;
+    font-size: 9px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.booking_daily_address_distance {
+  color: $ds-text-subtle;
+  font-size: 9px;
+  white-space: nowrap;
+}
+
+.map_modal.booking_daily_map_modal {
+  width: min(390px, calc(100% - 32px));
+  max-height: calc(100dvh - 32px);
+  overflow: hidden;
+  padding: 0;
+  border-radius: $ds-radius-xl;
+
+  .close_btn {
+    top: 12px;
+    inset-inline-end: 12px;
+    z-index: 5;
+    width: 38px;
+    height: 38px;
+    border: 1px solid $ds-stroke-light;
+    border-radius: $ds-radius-sm;
+    background: $ds-surface-elevated;
+    font-size: 20px;
+  }
+
+  .modal_header {
+    min-height: 62px;
+    margin: 0;
+    padding: 20px 62px 12px 16px;
+
+    h2 {
+      margin: 0;
+      font-size: 15px;
+      text-align: center;
+    }
+  }
+
+  .search_box {
+    z-index: 4;
+    margin: 0 12px -48px;
+
+    input {
+      height: 42px;
+      border-radius: $ds-radius-sm;
+      background: rgba($ds-surface-elevated, 0.96);
+      font-size: 11px;
+    }
+  }
+
+  .map_placeholder {
+    position: relative;
+    height: 430px;
+    border: 0;
+    border-radius: 0;
+  }
+}
