@@ -1,6 +1,6 @@
 @use 'tokens/tokens' as *;
 
-// Legacy dialog chrome shared by several features (.modal_overlay, .close_btn, .selection_modal).
+// Legacy dialog chrome shared by several features (.modal_overlay, .close_btn, .back_btn, .selection_modal).
 // Goes away as dialogs move to shared/ui/Dialog (doc 4).
 
 // --- overlay, header and body of the legacy dialogs
@@ -430,5 +430,52 @@
     .confirm_btn {
       height: 44px;
     }
+  }
+}
+
+// Back button of the auth steps and the booking confirm dialog.
+.back_btn {
+  position: absolute;
+  top: 0;
+  inset-inline-end: 0;
+
+  width: 42px;
+  height: 42px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid $ds-stroke-light;
+  border-radius: $ds-radius-md;
+
+  background: $ds-surface-elevated;
+  color: $ds-text-primary;
+
+  cursor: pointer;
+
+  transition: all 0.25s ease;
+
+  svg {
+    font-size: 20px;
+    transition: transform 0.25s ease;
+  }
+
+  &:hover {
+    background: $ds-surface-card-primary;
+    border-color: $ds-action-primary;
+    color: $ds-action-primary;
+    box-shadow: 0 8px 20px rgba($ds-action-primary, 0.12);
+
+    svg {
+      // margin, not transform: the back arrow points inline-start, so a
+      // negative inline-start margin nudges it the right way in both
+      // directions, and cannot overwrite the transform from .mirror-in-rtl
+      margin-inline-start: -2px;
+    }
+  }
+
+  &:active {
+    transform: scale(0.96);
   }
 }
