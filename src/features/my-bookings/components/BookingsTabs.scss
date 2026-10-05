@@ -1,7 +1,7 @@
 @use 'tokens/tokens' as *;
 
-// The tabs are links now; main.scss styles `.bookings-tabs button`, so the
-// same look is applied to `a` here (the container rules still come from main.scss).
+// The tabs are links now; my-bookings.scss styles `.bookings-tabs button`, so the
+// same look is applied to `a` here (the container rules come from my-bookings.scss).
 .bookings-tabs a {
   flex: 1;
   height: 55px;
