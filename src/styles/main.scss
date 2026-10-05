@@ -21,9 +21,46 @@
 @use '../features/wallet/wallet';
 @use '../features/my-bookings/my-bookings';
 
-@import 'tokens/tokens';
+@use 'tokens/tokens' as *;
+// App pages without a feature of their own stay here (decided 2026-10-05): the not-found page
+// and the legal pages (privacy, terms).
 
 //////////not found page ///////////
+@keyframes nfSwing {
+  0%,
+  100% {
+    transform: rotate(-4deg);
+  }
+
+  50% {
+    transform: rotate(4deg);
+  }
+}
+
+@keyframes nfDrift {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+@keyframes nfFloat {
+  0%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.6;
+  }
+
+  50% {
+    transform: translateY(-8px);
+    opacity: 1;
+  }
+}
+
 .not-found-page {
   min-height: calc(100vh - 100px);
   display: flex;
@@ -246,12 +283,3 @@
     }
   }
 }
-
-
-
-
-
-
-
-
-// success modal

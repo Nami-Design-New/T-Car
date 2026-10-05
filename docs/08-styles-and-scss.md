@@ -197,7 +197,7 @@ styles/tokens/_tokens.scss       design tokens (no CSS output)
 styles/vendor/bootstrap.scss     trimmed Bootstrap
 styles/base/_reset _layout _typography _buttons   global layer, separate files
 styles/legacy/_dialogs _components                 shared legacy styles until doc 4 replaces them
-styles/main.scss                 only @use lines (base, legacy, then features)
+styles/main.scss                 @use lines (base, legacy, features, tokens) + the app pages without a feature (not-found, legal)
 shared/ui/<Name>/<Name>.tsx <Name>.scss <Name>.test.tsx index.ts
 features/<x>/<x>.scss            one stylesheet per feature
 ```
@@ -209,7 +209,7 @@ features/<x>/<x>.scss            one stylesheet per feature
 | 3 | Move UI component styles out of `main.scss` / `base/` into their component `.scss` (Form, DateTimePicker, PhoneField, Loader, SectionTitle, ResourceNotFound) | low | rule comparison, browser check of forms |
 | 4 | `styles/legacy/_dialogs.scss` (`.modal_overlay`, `.close_btn`, `.map_modal`, `.selection_modal`) and `_components.scss` (`src/components/*`) | low | rule comparison |
 | 5 | Features, stage 1: rules into `features/<x>/<x>.scss`, still `@use`d by `main.scss`; one feature per commit, smallest first; exact duplicates removed | low | rule comparison: no rule changes meaning |
-| 6 | `main.scss` is only `@use` lines; then step 7's guard | none | `npm run check` |
+| 6 | `main.scss` is `@use` lines plus the not-found and legal page styles (user decision 2026-10-05: these app pages have no feature and stay in the app stylesheet); then step 7's guard | none | `npm run check` |
 | 7 | Stage 2, optional, per feature: the feature's components import its stylesheet instead of `main.scss` (CSS only where used) | medium | rule comparison + browser check |
 
 Rules for every stylesheet: `@use` only (Bootstrap in `vendor/` excepted); class
@@ -238,6 +238,7 @@ outside `base/`; breakpoints and colors from tokens; nothing new in `main.scss`.
 | Plan step 5: `bank-accounts` (2026-10-05) | `features/bank-accounts/bank-accounts.scss`: the bank accounts section in one piece (`.bank_accounts_*`, `.bank_account_*`, `.bank_form_*`, incl. `.bank_accounts_add.wallet_topup_submit` and `.bank_form_modal .wallet_topup_*`). The `.wallet_topup_*` dialog chrome that the bank form reuses, and `.bank_select_*` (the wallet withdraw bank picker), stay for `wallet`. `main.scss` 2,496 → 2,261 lines | Same 1,523 rules. Reordered pairs that can style the same element: `.wallet_topup_submit:hover` / `:focus` / `:disabled` now follow `.bank_accounts_add.wallet_topup_submit` and `.bank_form_modal .wallet_topup_submit` at equal specificity, but they set different properties (`background`, `color` vs `height`, `border-radius`, `font-size`), so nothing changes. Computed styles of 4,812 elements identical (signed in: the list, add form with the bank picker closed and open, edit form, delete confirmation, wallet page; en/ar; 1280/360 px). The order check was found to look only at block edges; it now compares every pair of rules, and the `auth` and `account` rows were rechecked with it |
 | Plan step 5: `wallet` (2026-10-05) | `features/wallet/wallet.scss`, two ranges in their original order: the top-up / withdraw sheet (`.wallet_topup_*`, incl. `.wallet_topup_input_group .currency_icon` on `Price`; the bank-account form reuses its chrome) and the withdraw bank picker (`.bank_select_*`); the wallet page inside its `.account-panel` wrapper (`.wallet_amount`, `.wallet_balance_card`, `.wallet_history`). `main.scss` 2,261 → 1,834 lines | Same 1,523 rules; no reordered pair shares a class (all pairs compared); the 7 that share only an element (`svg`, `p`, `span`, `h3`) pair the not-found or legal page with wallet elements. Computed styles of 6,356 elements identical (signed in: wallet page, top-up empty / valid / failed result, withdraw bank picker, withdraw amount valid and above the balance, bank-account list and add form; en/ar; 1280/360 px) |
 | Plan step 5: `my-bookings` (2026-10-05) | `features/my-bookings/my-bookings.scss`: the bookings section in one piece, from `.bookings-tabs` (with its `@media` block) and `.booking-card` through the details page (`.booking-details-*`, `.booking-hero`, `.booking-grid`, `.booking-dates-info`, `.booking-countdown`, `.booking-sidebar`) to the review, extend and cancel dialogs. `BookingsTabs.scss` (next to its component) stays; its comment now points at this file. Every feature is out of `main.scss` (1,834 → 258 lines); what is left is `.not-found-page`, `.legal-page` and the `@import` of the tokens | Same 1,523 rules; no reordered pair shares a class (all pairs compared); the 26 that share only an element (`h1`, `p`, …) pair the not-found or legal page with booking elements. Computed styles of 7,792 elements identical (signed in: both list tabs, the details page for all five statuses, the actions menu, the edit, extend, cancel and review dialogs; en/ar; 1280/360 px) |
+| Plan step 6 (2026-10-05) | `main.scss` is the `@use` lines plus the not-found and legal page styles, which stay there by decision. `@import 'tokens/tokens'` became `@use 'tokens/tokens' as *` (tokens emit no CSS), so no stylesheet uses `@import` any more. The `nfSwing` / `nfDrift` / `nfFloat` keyframes moved from `base/_reset` to just above `.not-found-page`; the trailing blank lines and the orphan `// success modal` comment went. `main.scss` 258 → 286 lines (the keyframes and a header comment), `base/_reset` 97 → 63 | Same 1,523 rules; without the three keyframes the order is identical, and their names are unique. Computed styles of 5,110 elements identical (the not-found page through a throwaway route that calls `notFound()`, a car not-found page, `/privacy`, `/terms`, home; en/ar; 1280/360 px); with motion allowed, the three keyframes load and the page runs four animations |
 
 **Ownership map (from step 4 on):** each top-level block of `main.scss` is traced
 to its source with a source map and assigned an owner from the root class of
@@ -264,8 +265,7 @@ project) comparing the computed style of every element inside the affected
 components before and after, at two widths and both locales; the harness is run
 twice on the baseline first to prove it is deterministic.
 
-Still in `base/_reset` but owned by features, to move with them: the
-`nfSwing` keyframes (not-found page) and `body:dir(ltr) .download_app` (home).
+Nothing in `base/` belongs to a feature any more: the not-found keyframes moved to `main.scss` with the page (plan step 6), and `body:dir(ltr) .download_app` had already been removed.
 
 Feature sections are not contiguous in `main.scss` (`.account-panel` sits at two
 places; the wallet/failed result blocks appear three times), so gathering a
