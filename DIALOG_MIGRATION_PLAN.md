@@ -336,7 +336,7 @@ Exit condition: dates → map → confirmation → payment → success and edit-
 
 - Replace the React-Bootstrap shell inside `AuthModal` while preserving its step state.
 - Remove direct React-Bootstrap dialog usage.
-- Review whether the `react-bootstrap` dependency can be removed.
+- Review whether the `react-bootstrap` dependency can be removed. (Removed 2026-10-05: nothing imported it.)
 - Remove remaining `createPortal`, body-overflow effects, Escape listeners, and overlay click handlers from domain dialogs.
 - Remove unused `.modal_overlay` and legacy surface styles.
 - Normalize filenames and exported names from inconsistent `*modal` casing to `*Dialog`.

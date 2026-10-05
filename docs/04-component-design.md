@@ -279,7 +279,7 @@ features/cars/components/CarCard.scss
 7. **Carousel:** a single `Carousel` on `useCarouselRail`, then remove Swiper.
 8. **Styles:** split `main.scss` alongside each component's migration, and
    switch the layout to import SCSS in the first styling PR.
-9. **Remove** `react-bootstrap` after `AuthModal` moves to `Dialog`.
+9. **Remove** `react-bootstrap` after `AuthModal` moves to `Dialog`. Done (2026-10-05).
 
 For every replaced component, check the same things: keyboard only (Tab,
 arrows, Escape), a screen reader label, RTL and LTR, a 360px viewport, and no
