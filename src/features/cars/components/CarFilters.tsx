@@ -3,11 +3,21 @@ import { FiShield, FiTruck, FiX } from 'react-icons/fi';
 import { TbCar, TbCar4Wd, TbCaravan, TbCarOffRoad, TbCarSuv, TbTruck } from 'react-icons/tb';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
+import { useRouter, usePathname } from '@/i18n/navigation';
+import { useSearchParams } from 'next/navigation';
 import FilterPanel from './filters/FilterPanel';
 import PriceRangeSlider from './filters/PriceRangeSlider';
 import CheckboxGroup from './filters/CheckboxGroup';
-import { useToggleList } from '@/shared/hooks/useToggleList';
-import { PRICE_MAX, PRICE_MIN, useUrlCarFilters } from '../hooks/useUrlCarFilters';
+import {
+  DEFAULT_CAR_FILTERS,
+  PRICE_MAX,
+  PRICE_MIN,
+  applyCarFilterDraft,
+  parseCarFilterDraft,
+  type CarFilterDraft,
+} from '../searchParams';
+import { useEffect } from 'react';
+import { useForm, useWatch } from 'react-hook-form';
 import type { CarBrand } from '../model';
 const COMPANIES = ['elite', 'elite', 'elite', 'elite', 'elite'];
 const SERVICES = ['delivery', 'delivery', 'delivery', 'delivery'];
@@ -21,45 +31,71 @@ const CAR_TYPES = [
 ];
 interface Props {
   brands: CarBrand[];
+  onApply?: (filters: CarFilterDraft) => void;
 }
 
-export default function CarFilters({ brands: brandOptions }: Props) {
+export default function CarFilters({ brands: brandOptions, onApply }: Props) {
   const t = useTranslations('cars');
-  const companies = useToggleList();
-  const types = useToggleList();
-  const services = useToggleList();
-  const brands = useToggleList();
-  const {
-    search,
-    minPrice,
-    maxPrice,
-    updateSearch,
-    handleMinChange,
-    handleMaxChange,
-    clearPriceRange,
-    clearUrlFilters,
-  } = useUrlCarFilters({
-    onClear: () => {
-      companies.clear();
-      types.clear();
-      services.clear();
-      brands.clear();
-    },
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const { control, handleSubmit, reset, setValue } = useForm<CarFilterDraft>({
+    defaultValues: DEFAULT_CAR_FILTERS,
   });
+  const watchedFilters = useWatch({ control, defaultValue: DEFAULT_CAR_FILTERS });
+  const filters: CarFilterDraft = {
+    query: watchedFilters.query ?? '',
+    minPrice: watchedFilters.minPrice ?? PRICE_MIN,
+    maxPrice: watchedFilters.maxPrice ?? PRICE_MAX,
+    brandIds: watchedFilters.brandIds ?? [],
+    types: watchedFilters.types ?? [],
+    companyIds: watchedFilters.companyIds ?? [],
+    serviceIds: watchedFilters.serviceIds ?? [],
+  };
+  useEffect(() => {
+    reset(parseCarFilterDraft(Object.fromEntries(searchParams.entries())));
+  }, [reset, searchParams]);
+
+  const submit = (values: CarFilterDraft) => {
+    if (onApply) {
+      onApply(values);
+      return;
+    }
+    const params = applyCarFilterDraft(new URLSearchParams(searchParams.toString()), values);
+    router.replace(`${pathname}${params.toString() ? `?${params}` : ''}`, { scroll: false });
+  };
+
+  const apply = () => {
+    void handleSubmit(submit)();
+  };
+
+  const toggle = (name: 'brandIds' | 'types' | 'companyIds' | 'serviceIds', value: string) => {
+    const values = filters[name] ?? [];
+    setValue(name, values.includes(value) ? values.filter((item) => item !== value) : [...values, value], {
+      shouldDirty: true,
+    });
+  };
+
+  const clear = (name: 'brandIds' | 'types' | 'companyIds' | 'serviceIds') => {
+    setValue(name, [], { shouldDirty: true });
+  };
+
+  const clearAll = () => reset(DEFAULT_CAR_FILTERS);
   const active =
-    search.trim() !== '' ||
-    minPrice !== PRICE_MIN ||
-    maxPrice !== PRICE_MAX ||
-    companies.selected.length > 0 ||
-    types.selected.length > 0 ||
-    services.selected.length > 0 ||
-    brands.selected.length > 0;
+    filters.query.trim() !== '' ||
+    filters.minPrice !== PRICE_MIN ||
+    filters.maxPrice !== PRICE_MAX ||
+    filters.brandIds.length > 0 ||
+    filters.types.length > 0 ||
+    filters.companyIds.length > 0 ||
+    filters.serviceIds.length > 0;
   return (
     <FilterPanel
-      searchValue={search}
-      onSearchChange={updateSearch}
+      searchValue={filters.query}
+      onSearchChange={(value) => setValue('query', value, { shouldDirty: true })}
       hasActiveFilters={active}
-      onClearAll={clearUrlFilters}
+      onClearAll={clearAll}
+      onApply={apply}
     >
       <section className="filter_group chip_filter_group">
         <div className="filter_title">
@@ -67,22 +103,22 @@ export default function CarFilters({ brands: brandOptions }: Props) {
           <button
             type="button"
             className="view_all"
-            onClick={brands.clear}
-            disabled={!brands.selected.length}
+            onClick={() => clear('brandIds')}
+            disabled={!filters.brandIds.length}
           >
             {t('filters.clear')}
           </button>
         </div>
         <div className="filter_chip_list">
           {brandOptions.map(({ id, slug, logo }) => {
-            const selected = brands.selected.includes(id);
+            const selected = filters.brandIds.includes(id);
             return (
               <button
                 type="button"
                 key={id}
                 className={`filter_chip brand_filter_chip${selected ? ' is-selected' : ''}`}
                 aria-pressed={selected}
-                onClick={() => brands.toggle(id)}
+                onClick={() => toggle('brandIds', id)}
               >
                 <span className="filter_chip_visual brand_chip_logo">
                   <Image src={logo} alt="" width={24} height={24} />
@@ -104,22 +140,22 @@ export default function CarFilters({ brands: brandOptions }: Props) {
           <button
             type="button"
             className="view_all"
-            onClick={types.clear}
-            disabled={!types.selected.length}
+            onClick={() => clear('types')}
+            disabled={!filters.types.length}
           >
             {t('filters.clear')}
           </button>
         </div>
         <div className="filter_chip_list car_type_chip_list">
           {CAR_TYPES.map(({ id, key, icon: Icon }) => {
-            const selected = types.selected.includes(id);
+            const selected = filters.types.includes(id);
             return (
               <button
                 type="button"
                 key={id}
                 className={`filter_chip car_type_filter_chip${selected ? ' is-selected' : ''}`}
                 aria-pressed={selected}
-                onClick={() => types.toggle(id)}
+                onClick={() => toggle('types', id)}
               >
                 <span className="filter_chip_visual car_type_icon" aria-hidden="true">
                   <Icon />
@@ -138,29 +174,32 @@ export default function CarFilters({ brands: brandOptions }: Props) {
       <PriceRangeSlider
         min={PRICE_MIN}
         max={PRICE_MAX}
-        minValue={minPrice}
-        maxValue={maxPrice}
-        onMinChange={handleMinChange}
-        onMaxChange={handleMaxChange}
-        onClear={clearPriceRange}
+        minValue={filters.minPrice}
+        maxValue={filters.maxPrice}
+        onMinChange={(value) => setValue('minPrice', Math.min(Math.max(value, PRICE_MIN), filters.maxPrice - 1), { shouldDirty: true })}
+        onMaxChange={(value) => setValue('maxPrice', Math.max(Math.min(value, PRICE_MAX), filters.minPrice + 1), { shouldDirty: true })}
+        onClear={() => {
+          setValue('minPrice', PRICE_MIN, { shouldDirty: true });
+          setValue('maxPrice', PRICE_MAX, { shouldDirty: true });
+        }}
       />
       <CheckboxGroup
         icon={<FiTruck />}
         title={t('filters.companies')}
         items={COMPANIES}
         getLabel={() => t('companies.elite')}
-        selected={companies.selected}
-        onToggle={companies.toggle}
-        onClear={companies.clear}
+        selected={filters.companyIds}
+        onToggle={(value) => toggle('companyIds', value)}
+        onClear={() => clear('companyIds')}
         visibleCount={3}
       />
       <CheckboxGroup
         icon={<FiShield />}
         title={t('filters.services')}
         items={SERVICES}
-        selected={services.selected}
-        onToggle={services.toggle}
-        onClear={services.clear}
+        selected={filters.serviceIds}
+        onToggle={(value) => toggle('serviceIds', value)}
+        onClear={() => clear('serviceIds')}
         visibleCount={2}
         itemClassName="check_item service_item"
         renderExtra={() => (

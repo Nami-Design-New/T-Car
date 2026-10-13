@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { filterAndSortCars, parseCarSearchParams } from './searchParams';
+import {
+  applyCarFilterDraft,
+  filterAndSortCars,
+  parseCarFilterDraft,
+  parseCarSearchParams,
+} from './searchParams';
 import type { CarListing } from './model';
 
 const cars: CarListing[] = [
@@ -35,10 +40,16 @@ const cars: CarListing[] = [
 
 describe('car search params', () => {
   it('parses and clamps URL values', () => {
-    expect(parseCarSearchParams({ q: ' sedan ', priceMin: '0', priceMax: '99999', sort: 'price_asc' })).toEqual({
+    expect(
+      parseCarSearchParams({ q: ' sedan ', priceMin: '0', priceMax: '99999', sort: 'price_asc' })
+    ).toEqual({
       query: 'sedan',
       minPrice: 100,
       maxPrice: 30000,
+      brandIds: [],
+      types: [],
+      companyIds: [],
+      serviceIds: [],
       sort: 'price_asc',
       context: {},
     });
@@ -47,5 +58,22 @@ describe('car search params', () => {
   it('filters by query and sorts by price', () => {
     const params = parseCarSearchParams({ q: 'road', sort: 'price_desc' });
     expect(filterAndSortCars(cars, params).map((car) => car.id)).toEqual(['b']);
+  });
+
+  it('round-trips the complete filter draft through URL parameters', () => {
+    const draft = parseCarFilterDraft({
+      q: ' suv ',
+      priceMin: '500',
+      brands: 'toyota,nissan,toyota',
+      types: ['suv', 'sedan'],
+      companies: 'elite',
+      services: 'delivery',
+    });
+    const params = applyCarFilterDraft(new URLSearchParams(), draft);
+
+    expect(params.toString()).toBe(
+      'q=suv&priceMin=500&brands=toyota%2Cnissan&types=suv%2Csedan&companies=elite&services=delivery'
+    );
+    expect(parseCarFilterDraft(Object.fromEntries(params.entries()))).toEqual(draft);
   });
 });

@@ -247,6 +247,7 @@ extensions over 30 days, and so on) are documented in each `services/mocks/*.ts`
   partners carousels.
 - Phase 6 is complete with ten fractions covering feature copy, static/legal pages, common controls, date picking, city index copy, and auth success copy. The global error remains intentionally fixed and bilingual because it renders outside the locale layout.
 - Follow-up decision (2026-10-13): audit and fix remaining user-facing messages across the application as ongoing i18n cleanup; this is separate from the completed Phase 6 fractions. Fraction 1 (`contact` and `join-us`) is complete: contact-us uses localized full name, email, contact reason, optional booking number, and message fields; join-us is a localized shared dialog opened by the home CTA, with first name, phone, company name, company size, and email. There is no standalone `/join-us` page.
+- Rental-search follow-up (2026-10-13): the home hero now has a localized car search field and a filter action that opens the shared details-page car filters in a responsive drawer; submitting the search or filters navigates to `/cars` with URL-backed criteria.
 - Phase 8 decision (2026-10-13): the optional stage 2 component-level SCSS import split will not be pursued.
 - Phase 7 is complete: the four planned fractions plus two follow-ups from an
   audit on 2026-10-04. Done: (5) brand filter logos behind the cars API, with
