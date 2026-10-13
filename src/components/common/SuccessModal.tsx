@@ -86,7 +86,6 @@ export default function SuccessModal({
     >
       <Dialog.Header>
         <Dialog.Title>{title}</Dialog.Title>
-        <Dialog.Close />
       </Dialog.Header>
       <Lottie animationData={successAnimation} loop={false} className="success_animation" />
 

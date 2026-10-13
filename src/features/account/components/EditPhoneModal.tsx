@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 
 import { PhoneField } from '@/shared/ui/PhoneField';
 import { Dialog } from '@/shared/ui/Dialog';
+import { Button } from '@/shared/ui/Button/Button';
 
 interface Props {
   open: boolean;
@@ -44,16 +45,16 @@ export default function EditPhoneModal({
     <Dialog
       open={open}
       onClose={onClose}
-      className="auth_modal phone_modal"
+      className="auth_modal"
       closeOnEscape={!loading}
       closeOnBackdrop={!loading}
     >
-      <Dialog.Header className="phone_modal_header">
+      <Dialog.Header className="">
         <Dialog.Title>{t('title')}</Dialog.Title>
         <Dialog.Close />
       </Dialog.Header>
 
-      <Dialog.Body className="phone_modal_body">
+      <Dialog.Body className="">
         <label className="field_label">{t('phone')}</label>
 
         <div className="phone_wrapper">
@@ -66,15 +67,17 @@ export default function EditPhoneModal({
           </p>
         )}
 
-        <button
+        <Button
           type="button"
-          className="auth_btn"
+          className="mt-2 w-100"
+          size="lg"
+
           onClick={handleSend}
           disabled={loading}
           aria-busy={loading}
         >
           {t('sendCode')}
-        </button>
+        </Button>
       </Dialog.Body>
     </Dialog>
   );

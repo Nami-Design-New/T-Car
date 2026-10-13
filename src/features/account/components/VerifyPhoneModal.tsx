@@ -238,7 +238,7 @@ export default function VerifyPhoneModal({
       <Dialog
         open={open}
         onClose={onClose}
-        className="auth_modal verify_modal"
+        className="verify_modal"
         closeOnEscape={!loading}
         closeOnBackdrop={!loading}
       >

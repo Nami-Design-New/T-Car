@@ -93,7 +93,9 @@
   }
 }
 // ============ Login form ============
-.auth_modal {
+.auth_modal,
+.phone_modal,
+.verify_modal {
   padding: 40px;
   border-radius: $ds-radius-xl;
 
@@ -204,7 +206,6 @@
   &.phone_modal.dialog {
     width: min(460px, calc(100% - 32px));
     background: $ds-surface-elevated;
-    position: relative;
     display: flex;
     visibility: visible;
     opacity: 1;
@@ -294,7 +295,6 @@
     &.phone_modal.dialog {
       width: calc(100% - 30px);
       max-width: 420px;
-
     }
 
     .phone_modal_header {
@@ -324,8 +324,6 @@
 
   &.verify_modal.dialog {
     width: min(460px, calc(100% - 32px));
-
-    position: relative;
 
     background: $ds-surface-elevated;
 
@@ -418,7 +416,6 @@
       width: calc(100% - 30px);
 
       max-width: 420px;
-
     }
 
     .otp_form {
