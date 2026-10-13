@@ -1,131 +1,140 @@
 'use client';
 
-import { FormInput, FormSelect, FormTextarea } from '@/shared/ui/Form';
+import { useState } from 'react';
+import { useTranslations } from 'next-intl';
+
 import { Button } from '@/shared/ui/Button';
+import { Dialog } from '@/shared/ui/Dialog';
+import { FormInput, FormSelect } from '@/shared/ui/Form';
+import { PhoneField } from '@/shared/ui/PhoneField';
 
-export default function JoinusForm() {
+interface JoinUsFormState {
+  firstName: string;
+  phone: string;
+  companyName: string;
+  companySize: string;
+  email: string;
+}
+
+const EMPTY_FORM: JoinUsFormState = {
+  firstName: '',
+  phone: '+966',
+  companyName: '',
+  companySize: '',
+  email: '',
+};
+
+interface Props {
+  open: boolean;
+  onClose: () => void;
+}
+
+export default function JoinusForm({ open, onClose }: Props) {
+  const t = useTranslations('joinUs');
+  const [form, setForm] = useState<JoinUsFormState>(EMPTY_FORM);
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    setForm((previous) => ({
+      ...previous,
+      [event.target.name]: event.target.value,
+    }));
+  };
+
   return (
-    <section id="register-form" className="register_showroom section">
-      <div className="container-tcar">
-        <div className="register_card">
-          <div className="section_heading">
-            <h2>معلومات الشركة</h2>
-            <p>
-              يرجى تعبئة البيانات التالية وسيتواصل معك فريق
-              <span> تي كار </span>
-              في أقرب وقت.
-            </p>
-          </div>
+    <Dialog
+      open={open}
+      onClose={onClose}
+      size="lg"
+      className="register_showroom join_us_dialog"
+      label={t('title')}
+    >
+      <Dialog.Header className="join_us_dialog_header">
+        <div className="section_heading">
+          <Dialog.Title>{t('title')}</Dialog.Title>
+          <Dialog.Description>
+            {t('descriptionBeforeBrand')}
+            <span> {t('brand')} </span>
+            {t('descriptionAfterBrand')}
+          </Dialog.Description>
+        </div>
+        <Dialog.Close />
+      </Dialog.Header>
 
-          <form className="register_form">
-            <div className="form_grid">
-              <FormInput
-                id="companyName"
-                label="اسم الشركة"
-                placeholder="اكتب اسم الشركة"
-                required
-              />
+      <Dialog.Body>
+        <form
+          id="join-us-form"
+          className="register_form"
+          onSubmit={(event) => event.preventDefault()}
+        >
+          <div className="form_grid">
+            <FormInput
+              id="firstName"
+              name="firstName"
+              label={t('fields.firstName.label')}
+              placeholder={t('fields.firstName.placeholder')}
+              value={form.firstName}
+              onChange={handleChange}
+              required
+            />
 
-              <FormInput
-                id="headOffice"
-                label="المقر الرئيسي"
-                placeholder="المدينة أو الدولة"
-                required
-              />
-
-              <FormInput
-                id="contactPerson"
-                label="اسم المسؤول للتواصل"
-                placeholder="الاسم الكامل"
-                required
-              />
-
-              <FormInput
-                id="phone"
-                type="tel"
-                label="رقم التواصل"
-                placeholder="05xxxxxxxx"
-                required
-              />
-
-              <FormInput
-                id="email"
-                type="email"
-                label="البريد الإلكتروني"
-                placeholder="company@email.com"
-                required
-              />
-
-              <FormInput id="managerName" label="اسم مدير الشركة" placeholder="الاسم" required />
-
-              <FormInput
-                id="managerEmail"
-                type="email"
-                label="إيميل مدير الشركة"
-                placeholder="manager@email.com"
-                required
-              />
-
-              <FormInput
-                id="managerPhone"
-                type="tel"
-                label="رقم تواصل مدير الشركة"
-                placeholder="05xxxxxxxx"
-                required
-              />
-
-              <FormInput id="branches" type="number" label="عدد الفروع" placeholder="3" />
-
-              <FormInput id="fleet" type="number" label="إجمالي أسطول السيارات" placeholder="122" />
-            </div>
-
-            <div className="form_grid mt-4">
-              <FormSelect
-                id="locations"
-                label="مناطق تواجد الفروع"
-                options={[
-                  { value: 'riyadh', label: 'الرياض' },
-                  { value: 'jeddah', label: 'جدة' },
-                  { value: 'dammam', label: 'الدمام' },
-                  { value: 'makkah', label: 'مكة' },
-                  { value: 'madinah', label: 'المدينة' },
-                ]}
-              />
-
-              <FormSelect
-                id="fleetTypes"
-                label="أنواع الأسطول"
-                options={[
-                  { value: 'economy', label: 'اقتصادية' },
-                  { value: 'sedan', label: 'سيدان' },
-                  { value: 'suv', label: 'SUV' },
-                  { value: 'luxury', label: 'فاخرة' },
-                  { value: 'pickup', label: 'بيك أب' },
-                ]}
-              />
-            </div>
-            <div className="upload_field">
-              <label htmlFor="commercialRegister">
-                السجل التجاري
+            <div className="form_group">
+              <label className="form_label">
+                {t('fields.phone.label')}
                 <span>*</span>
               </label>
-
-              <input
-                id="commercialRegister"
-                name="commercialRegister"
-                type="file"
-                accept=".pdf,.jpg,.jpeg,.png,.webp"
-                required
+              <PhoneField
+                value={form.phone}
+                onChange={(phone) => setForm((previous) => ({ ...previous, phone }))}
+                defaultCountry="sa"
+                searchPlaceholder={t('fields.phone.searchPlaceholder')}
+                inputAriaLabel={t('fields.phone.label')}
               />
+            </div>
 
-              <small>الصيغ المسموح بها: PDF, JPG, PNG, WEBP</small>
-            </div>
-            <div className="submit_area">
-              <Button size="lg">إرسال الطلب</Button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </section>
+            <FormInput
+              id="companyName"
+              name="companyName"
+              label={t('fields.companyName.label')}
+              placeholder={t('fields.companyName.placeholder')}
+              value={form.companyName}
+              onChange={handleChange}
+              required
+            />
+
+            <FormSelect
+              id="companySize"
+              name="companySize"
+              label={t('fields.companySize.label')}
+              options={[
+                { value: '1-10', label: t('companySizes.small') },
+                { value: '11-50', label: t('companySizes.medium') },
+                { value: '51-200', label: t('companySizes.large') },
+                { value: '201+', label: t('companySizes.enterprise') },
+              ]}
+              value={form.companySize}
+              onChange={handleChange}
+              required
+            />
+
+            <FormInput
+              id="join-us-email"
+              name="email"
+              type="email"
+              label={t('fields.email.label')}
+              placeholder={t('fields.email.placeholder')}
+              value={form.email}
+              onChange={handleChange}
+              required
+            />
+          </div>
+        </form>
+      </Dialog.Body>
+
+      <Dialog.Footer>
+        <Button type="submit" form="join-us-form" size="lg">
+          {t('submit')}
+        </Button>
+      </Dialog.Footer>
+    </Dialog>
   );
 }

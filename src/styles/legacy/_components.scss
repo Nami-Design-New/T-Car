@@ -620,6 +620,64 @@
   }
 }
 
+.join_us_dialog {
+  padding: 0;
+
+  .join_us_dialog_header {
+    align-items: flex-start;
+    padding: 28px 32px 0;
+
+    .section_heading {
+      flex: 1;
+      margin: 0;
+      text-align: start;
+
+      h2 {
+        margin-bottom: 8px;
+      }
+
+      p {
+        margin: 0;
+      }
+    }
+  }
+
+  .dialog__body {
+    padding: 24px 32px;
+  }
+
+  .register_form {
+    gap: 0;
+  }
+
+  .form_grid {
+    gap: 18px;
+  }
+
+  .dialog__footer {
+    padding: 0 32px 28px;
+
+    button {
+      width: 100%;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .join_us_dialog_header,
+    .dialog__body {
+      padding-inline: 20px;
+    }
+
+    .dialog__footer {
+      padding-inline: 20px;
+    }
+
+    .form_grid {
+      grid-template-columns: 1fr;
+    }
+  }
+}
+
 // --- components/modals/BookingMonthlyModal: the month picker (was inline styles). The colours are
 // the component's own one-off values, kept as they were; --month-progress (0-100%) is set inline.
 .booking_modal .booking_monthly_picker {

@@ -238,11 +238,11 @@ export default function Hero({ options }: Props) {
       </Swiper>
 
       <div className="container-tcar">
-        <div className="hero_text">
+        {/* <div className="hero_text">
           <h1>{t('hero.title')}</h1>
 
           <p>{t('hero.subtitle')}</p>
-        </div>
+        </div> */}
 
         <div className="hero_filter">
           <RentalTabs onSelect={handleRentalSelect} />
@@ -291,7 +291,6 @@ export default function Hero({ options }: Props) {
           onConfirm={handleLocationConfirm}
         />
       )}
-
 
       {/* Branch */}
 

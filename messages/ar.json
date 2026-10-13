@@ -245,15 +245,17 @@
     "cta": "انضم الآن"
   },
   "joinUs": {
-    "title": "معلومات الشركة",
-    "descriptionBeforeBrand": "يرجى تعبئة البيانات التالية وسيتواصل معك فريق",
+    "title": "انضم كشريك معنا",
+    "descriptionBeforeBrand": "شارك بياناتك وسيتواصل معك فريق",
     "brand": "تي كار",
     "descriptionAfterBrand": "في أقرب وقت.",
     "fields": {
+      "firstName": { "label": "الاسم الأول", "placeholder": "اكتب اسمك الأول" },
       "companyName": { "label": "اسم الشركة", "placeholder": "اكتب اسم الشركة" },
       "headOffice": { "label": "المقر الرئيسي", "placeholder": "المدينة أو الدولة" },
       "contactPerson": { "label": "اسم المسؤول للتواصل", "placeholder": "الاسم الكامل" },
-      "phone": { "label": "رقم التواصل", "placeholder": "05xxxxxxxx" },
+      "phone": { "label": "رقم الجوال", "placeholder": "رقم الجوال", "searchPlaceholder": "ابحث عن دولة..." },
+      "companySize": { "label": "حجم الشركة" },
       "email": { "label": "البريد الإلكتروني", "placeholder": "company@email.com" },
       "managerName": { "label": "اسم مدير الشركة", "placeholder": "الاسم" },
       "managerEmail": { "label": "إيميل مدير الشركة", "placeholder": "manager@email.com" },
@@ -284,6 +286,12 @@
     "commercialRegister": {
       "label": "السجل التجاري",
       "allowedFormats": "الصيغ المسموح بها: PDF, JPG, PNG, WEBP"
+    },
+    "companySizes": {
+      "small": "من 1 إلى 10 موظفين",
+      "medium": "من 11 إلى 50 موظفًا",
+      "large": "من 51 إلى 200 موظف",
+      "enterprise": "201 موظف فأكثر"
     },
     "submit": "إرسال الطلب"
   },
@@ -324,6 +332,15 @@
     "emailValue": "info@tcar.com",
     "addressValue": "الرياض، المملكة العربية السعودية",
     "name": "الاسم الكامل",
+    "reason": "سبب التواصل",
+    "reasons": {
+      "booking": "حجز",
+      "carRental": "تأجير سيارة",
+      "payment": "الدفع",
+      "partnership": "شراكة",
+      "other": "أخرى"
+    },
+    "bookingNumber": "رقم الحجز (اختياري)",
     "message": "رسالتك",
     "send": "إرسال الرسالة",
     "sending": "جاري الإرسال...",
@@ -399,7 +416,8 @@
       "notFound": "المدينة غير متاحة حاليًا."
     },
     "contact": {
-      "phoneRequired": "أدخل رقم جوال صحيحًا."
+    "phoneRequired": "أدخل رقم جوال صحيحًا.",
+    "required": "أكمل جميع حقول التواصل المطلوبة."
     },
     "account": {
       "profileRejected": "تعذر حفظ الملف الشخصي. تحقق من البيانات وحاول مرة أخرى.",

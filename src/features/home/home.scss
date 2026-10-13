@@ -647,6 +647,10 @@
   }
 
   .contact_form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+
     background: $ds-surface-elevated;
     padding: 40px;
     border-radius: $ds-radius-xl;
@@ -656,29 +660,32 @@
       display: grid;
       grid-template-columns: repeat(2, 1fr);
       gap: 20px;
+      margin: 0;
+
+      > * {
+        min-width: 0;
+        padding: 0;
+      }
     }
 
-    .field {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      margin-bottom: 20px;
+    .form_group {
+      margin: 0;
 
-      label {
-        font-size: 0.9rem;
-        font-weight: 600;
-        color: $ds-text-primary;
+      .form_textarea {
+        min-height: 148px;
+        resize: vertical;
       }
+    }
 
-      .react-tel-input {
-        padding-left: 28px;
-      }
+    .form_textarea {
+      min-height: 148px;
+      resize: vertical;
     }
 
     .contact_btn {
-      height: 42px;
+      min-height: 46px;
       width: 100%;
-      margin-top: 12px;
+      margin-top: 4px;
     }
   }
 

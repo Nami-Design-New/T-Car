@@ -19,7 +19,6 @@ const STATIC_PAGES: Entry[] = [
   { path: '/cities', changeFrequency: 'weekly', priority: 0.8 },
   { path: '/why', changeFrequency: 'monthly', priority: 0.5 },
   { path: '/contact', changeFrequency: 'monthly', priority: 0.5 },
-  { path: '/join-us', changeFrequency: 'monthly', priority: 0.5 },
   { path: '/privacy', changeFrequency: 'yearly', priority: 0.3 },
   { path: '/terms', changeFrequency: 'yearly', priority: 0.3 },
 ];

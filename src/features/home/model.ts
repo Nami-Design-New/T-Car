@@ -7,6 +7,7 @@ export interface FAQItem {
 export interface ContactMessage {
   name: string;
   email: string;
-  phone: string;
+  contactReason: string;
+  bookingNumber?: string;
   message: string;
 }

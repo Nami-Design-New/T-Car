@@ -291,15 +291,17 @@
     "cta": "Join now"
   },
   "joinUs": {
-    "title": "Company information",
-    "descriptionBeforeBrand": "Please fill in the following information and the",
+    "title": "Join us as a partner",
+    "descriptionBeforeBrand": "Share your details and the",
     "brand": "T-Car team",
     "descriptionAfterBrand": "will contact you soon.",
     "fields": {
+      "firstName": { "label": "First name", "placeholder": "Enter your first name" },
       "companyName": { "label": "Company name", "placeholder": "Enter company name" },
       "headOffice": { "label": "Head office", "placeholder": "City or country" },
       "contactPerson": { "label": "Contact person", "placeholder": "Full name" },
-      "phone": { "label": "Contact number", "placeholder": "05xxxxxxxx" },
+      "phone": { "label": "Phone number", "placeholder": "Phone number", "searchPlaceholder": "Search countries..." },
+      "companySize": { "label": "Company size" },
       "email": { "label": "Email address", "placeholder": "company@email.com" },
       "managerName": { "label": "Company manager name", "placeholder": "Name" },
       "managerEmail": { "label": "Company manager email", "placeholder": "manager@email.com" },
@@ -330,6 +332,12 @@
     "commercialRegister": {
       "label": "Commercial registration",
       "allowedFormats": "Allowed formats: PDF, JPG, PNG, WEBP"
+    },
+    "companySizes": {
+      "small": "1–10 employees",
+      "medium": "11–50 employees",
+      "large": "51–200 employees",
+      "enterprise": "201+ employees"
     },
     "submit": "Submit request"
   },
@@ -370,6 +378,15 @@
     "emailValue": "info@tcar.com",
     "addressValue": "Riyadh, Saudi Arabia",
     "name": "Full Name",
+    "reason": "Contact reason",
+    "reasons": {
+      "booking": "Booking",
+      "carRental": "Car rental",
+      "payment": "Payment",
+      "partnership": "Partnership",
+      "other": "Other"
+    },
+    "bookingNumber": "Booking number (optional)",
     "message": "Your Message",
     "send": "Send Message",
     "sending": "Sending...",
@@ -445,7 +462,8 @@
       "notFound": "This city is not available."
     },
     "contact": {
-      "phoneRequired": "Enter a valid phone number."
+    "phoneRequired": "Enter a valid phone number.",
+    "required": "Complete all required contact fields."
     },
     "account": {
       "profileRejected": "The profile could not be saved. Check the details and try again.",

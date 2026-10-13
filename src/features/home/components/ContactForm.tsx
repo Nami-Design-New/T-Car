@@ -7,13 +7,17 @@ import { useErrorMessage } from '@/shared/hooks/useErrorMessage';
 import type { AppError } from '@/shared/lib/errors';
 
 import { Button } from '@/shared/ui/Button';
-import { FormInput } from '@/shared/ui/Form';
-import { FormTextarea } from '@/shared/ui/Form';
-import { PhoneField } from '@/shared/ui/PhoneField';
+import { FormInput, FormSelect, FormTextarea } from '@/shared/ui/Form';
 import type { ContactMessage } from '../model';
 import { useSendContactMessage } from '../hooks/useSendContactMessage';
 
-const EMPTY_FORM: ContactMessage = { name: '', email: '', phone: '', message: '' };
+const EMPTY_FORM: ContactMessage = {
+  name: '',
+  email: '',
+  contactReason: '',
+  bookingNumber: '',
+  message: '',
+};
 
 export default function ContactForm() {
   const t = useTranslations();
@@ -24,7 +28,7 @@ export default function ContactForm() {
   const [status, setStatus] = useState<{ sent: true } | { error: AppError } | null>(null);
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
     setForm((prev) => ({
       ...prev,
@@ -42,7 +46,6 @@ export default function ContactForm() {
       setForm(EMPTY_FORM);
       setStatus({ sent: true });
     } else {
-      // Keep what the user typed so they can fix it and resend.
       setStatus({ error: result.error });
     }
   };
@@ -72,21 +75,30 @@ export default function ContactForm() {
         />
       </div>
 
-      <div className="field mt-3">
-        <label className="form_label">
-          {t('contact.phone')}
-          <span>*</span>
-        </label>
+      <div className="row">
+        <FormSelect
+          id="contactReason"
+          name="contactReason"
+          label={t('contact.reason')}
+          options={[
+            { value: 'booking', label: t('contact.reasons.booking') },
+            { value: 'car-rental', label: t('contact.reasons.carRental') },
+            { value: 'payment', label: t('contact.reasons.payment') },
+            { value: 'partnership', label: t('contact.reasons.partnership') },
+            { value: 'other', label: t('contact.reasons.other') },
+          ]}
+          value={form.contactReason}
+          onChange={handleChange}
+          required
+        />
 
-        <PhoneField
-          value={form.phone}
-          onChange={(phone) =>
-            setForm((prev) => ({
-              ...prev,
-              phone,
-            }))
-          }
-          defaultCountry="sa"
+        <FormInput
+          id="bookingNumber"
+          name="bookingNumber"
+          label={t('contact.bookingNumber')}
+          placeholder={t('contact.bookingNumber')}
+          value={form.bookingNumber}
+          onChange={handleChange}
         />
       </div>
 

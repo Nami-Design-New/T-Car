@@ -1,9 +1,14 @@
-import { Button } from '@/shared/ui/Button';
-import { Link } from '@/i18n/navigation';
-import { getTranslations } from 'next-intl/server';
+'use client';
 
-export default async function CTA() {
-  const t = await getTranslations('homeCta');
+import { useState } from 'react';
+import { useTranslations } from 'next-intl';
+
+import JoinusForm from '@/components/join/JoinUsForm';
+import { Button } from '@/shared/ui/Button';
+
+export default function CTA() {
+  const t = useTranslations('homeCta');
+  const [joinUsOpen, setJoinUsOpen] = useState(false);
 
   return (
     <section className="cta">
@@ -16,14 +21,20 @@ export default async function CTA() {
 
             <p>{t('description')}</p>
 
-            <Link href="/join-us">
-              <Button size="lg" className="bg-white text-primary border-0">
-                {t('cta')}
-              </Button>
-            </Link>
+            <Button
+              type="button"
+              size="lg"
+              className="bg-white text-primary border-0"
+              aria-haspopup="dialog"
+              onClick={() => setJoinUsOpen(true)}
+            >
+              {t('cta')}
+            </Button>
           </div>
         </div>
       </div>
+
+      <JoinusForm open={joinUsOpen} onClose={() => setJoinUsOpen(false)} />
     </section>
   );
 }
