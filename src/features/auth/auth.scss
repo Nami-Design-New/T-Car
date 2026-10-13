@@ -201,10 +201,14 @@
   // Edit Phone Modal
   // =========================
 
-  &.phone_modal {
+  &.phone_modal.dialog {
     width: min(460px, calc(100% - 32px));
     background: $ds-surface-elevated;
     position: relative;
+    display: flex;
+    visibility: visible;
+    opacity: 1;
+    z-index: 10001;
   }
 
   .phone_modal_header {
@@ -287,7 +291,7 @@
 
   // Mobile
   @media (max-width: 768px) {
-    &.phone_modal {
+    &.phone_modal.dialog {
       width: calc(100% - 30px);
       max-width: 420px;
 
@@ -318,7 +322,7 @@
   // Verify Phone Modal
   // =========================
 
-  &.verify_modal {
+  &.verify_modal.dialog {
     width: min(460px, calc(100% - 32px));
 
     position: relative;
@@ -410,7 +414,7 @@
   // =========================
 
   @media (max-width: 768px) {
-    &.verify_modal {
+    &.verify_modal.dialog {
       width: calc(100% - 30px);
 
       max-width: 420px;

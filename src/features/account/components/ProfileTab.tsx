@@ -22,9 +22,9 @@ import {
   uploadLicenseAction,
   verifyPhoneAction,
 } from '../actions';
+import EditPhoneModal from './EditPhoneModal';
+import VerifyPhoneModal from './VerifyPhoneModal';
 
-const EditPhoneModal = dynamic(() => import('./EditPhoneModal'), { ssr: false });
-const VerifyPhoneModal = dynamic(() => import('./VerifyPhoneModal'), { ssr: false });
 const LicenseModal = dynamic(() => import('./LicenseModal'), { ssr: false });
 const FailedModal = dynamic(() => import('@components/common/FailedModal'), { ssr: false });
 

@@ -3,17 +3,12 @@
 import { useEffect, useRef } from 'react';
 import { Dialog } from '@/shared/ui/Dialog';
 import './FailedModal.scss';
-
 interface Props {
   open: boolean;
-
   title?: string;
   description?: string;
-
   onDone?: () => void;
-
   autoCloseDuration?: number;
-
   showButtons?: boolean;
   primaryButtonText?: string;
   secondaryButtonText?: string;
@@ -28,17 +23,13 @@ export default function FailedModal({
   open,
   title = 'فشل في عملية الشحن',
   description,
-
   onDone,
-
   autoCloseDuration = 2000,
-
   showButtons = false,
   primaryButtonText = 'تأكيد',
   secondaryButtonText = 'إلغاء',
   loading = false,
   error,
-
   onPrimary,
   onSecondary,
 }: Props) {
@@ -76,7 +67,6 @@ export default function FailedModal({
       size="sm"
       className={showButtons ? 'wallet_result_modal delete_account_modal' : 'wallet_result_modal'}
       closeOnEscape={!loading}
-      // closeOnBackdrop={!showButtons}
       initialFocusRef={showButtons ? cancelRef : undefined}
     >
       <div className="wallet_result_icon wallet_result_icon_failed" aria-hidden="true">
