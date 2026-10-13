@@ -1,6 +1,6 @@
 'use client';
 
-import { useTranslations } from 'next-intl';;
+import { useTranslations } from 'next-intl';
 import {
   FiFacebook,
   FiInstagram,
@@ -11,21 +11,20 @@ import {
 } from 'react-icons/fi';
 
 export default function ContactInfo() {
-  const t = useTranslations();
-
+  const t = useTranslations('contact');
 
   return (
     <div className="contact_info">
-      <h3>{t('contact.getInTouch')}</h3>
+      <h3>{t('getInTouch')}</h3>
 
-      <p>{t('contact.description')}</p>
+      <p>{t('description')}</p>
 
       <div className="info_list">
         <div className="info_item">
           <FiPhone />
 
           <div>
-            <span>{t('contact.phone')}</span>
+            <span>{t('phone')}</span>
             <strong>{t('phoneValue')}</strong>
           </div>
         </div>
@@ -34,7 +33,7 @@ export default function ContactInfo() {
           <FiMail />
 
           <div>
-            <span>{t('contact.email')}</span>
+            <span>{t('email')}</span>
             <strong>{t('emailValue')}</strong>
           </div>
         </div>
@@ -43,7 +42,7 @@ export default function ContactInfo() {
           <FiMapPin />
 
           <div>
-            <span>{t('contact.address')}</span>
+            <span>{t('address')}</span>
             <strong>{t('addressValue')}</strong>
           </div>
         </div>

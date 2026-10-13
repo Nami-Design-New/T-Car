@@ -290,6 +290,49 @@
     "description": "Join the T-Car platform, showcase your cars to thousands of customers, and receive booking requests with ease.",
     "cta": "Join now"
   },
+  "joinUs": {
+    "title": "Company information",
+    "descriptionBeforeBrand": "Please fill in the following information and the",
+    "brand": "T-Car team",
+    "descriptionAfterBrand": "will contact you soon.",
+    "fields": {
+      "companyName": { "label": "Company name", "placeholder": "Enter company name" },
+      "headOffice": { "label": "Head office", "placeholder": "City or country" },
+      "contactPerson": { "label": "Contact person", "placeholder": "Full name" },
+      "phone": { "label": "Contact number", "placeholder": "05xxxxxxxx" },
+      "email": { "label": "Email address", "placeholder": "company@email.com" },
+      "managerName": { "label": "Company manager name", "placeholder": "Name" },
+      "managerEmail": { "label": "Company manager email", "placeholder": "manager@email.com" },
+      "managerPhone": { "label": "Company manager contact number", "placeholder": "05xxxxxxxx" },
+      "branches": { "label": "Number of branches", "placeholder": "3" },
+      "fleet": { "label": "Total vehicle fleet", "placeholder": "122" }
+    },
+    "locations": {
+      "label": "Branch locations",
+      "options": {
+        "riyadh": "Riyadh",
+        "jeddah": "Jeddah",
+        "dammam": "Dammam",
+        "makkah": "Makkah",
+        "madinah": "Madinah"
+      }
+    },
+    "fleetTypes": {
+      "label": "Fleet types",
+      "options": {
+        "economy": "Economy",
+        "sedan": "Sedan",
+        "suv": "SUV",
+        "luxury": "Luxury",
+        "pickup": "Pickup"
+      }
+    },
+    "commercialRegister": {
+      "label": "Commercial registration",
+      "allowedFormats": "Allowed formats: PDF, JPG, PNG, WEBP"
+    },
+    "submit": "Submit request"
+  },
   "downloadApp": {
     "imageAlt": "T-Car app",
     "tag": "T-Car app",

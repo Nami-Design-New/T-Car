@@ -244,6 +244,49 @@
     "description": "انضم إلى منصة تي كار واعرض سياراتك أمام آلاف العملاء، واستقبل طلبات الحجز بكل سهولة.",
     "cta": "انضم الآن"
   },
+  "joinUs": {
+    "title": "معلومات الشركة",
+    "descriptionBeforeBrand": "يرجى تعبئة البيانات التالية وسيتواصل معك فريق",
+    "brand": "تي كار",
+    "descriptionAfterBrand": "في أقرب وقت.",
+    "fields": {
+      "companyName": { "label": "اسم الشركة", "placeholder": "اكتب اسم الشركة" },
+      "headOffice": { "label": "المقر الرئيسي", "placeholder": "المدينة أو الدولة" },
+      "contactPerson": { "label": "اسم المسؤول للتواصل", "placeholder": "الاسم الكامل" },
+      "phone": { "label": "رقم التواصل", "placeholder": "05xxxxxxxx" },
+      "email": { "label": "البريد الإلكتروني", "placeholder": "company@email.com" },
+      "managerName": { "label": "اسم مدير الشركة", "placeholder": "الاسم" },
+      "managerEmail": { "label": "إيميل مدير الشركة", "placeholder": "manager@email.com" },
+      "managerPhone": { "label": "رقم تواصل مدير الشركة", "placeholder": "05xxxxxxxx" },
+      "branches": { "label": "عدد الفروع", "placeholder": "3" },
+      "fleet": { "label": "إجمالي أسطول السيارات", "placeholder": "122" }
+    },
+    "locations": {
+      "label": "مناطق تواجد الفروع",
+      "options": {
+        "riyadh": "الرياض",
+        "jeddah": "جدة",
+        "dammam": "الدمام",
+        "makkah": "مكة",
+        "madinah": "المدينة"
+      }
+    },
+    "fleetTypes": {
+      "label": "أنواع الأسطول",
+      "options": {
+        "economy": "اقتصادية",
+        "sedan": "سيدان",
+        "suv": "SUV",
+        "luxury": "فاخرة",
+        "pickup": "بيك أب"
+      }
+    },
+    "commercialRegister": {
+      "label": "السجل التجاري",
+      "allowedFormats": "الصيغ المسموح بها: PDF, JPG, PNG, WEBP"
+    },
+    "submit": "إرسال الطلب"
+  },
   "downloadApp": {
     "imageAlt": "تطبيق تي كار",
     "tag": "تطبيق T-Car",

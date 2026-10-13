@@ -246,6 +246,8 @@ extensions over 30 days, and so on) are documented in each `services/mocks/*.ts`
   Swiper is intentionally retained for the existing car rails, hero, and
   partners carousels.
 - Phase 6 is complete with ten fractions covering feature copy, static/legal pages, common controls, date picking, city index copy, and auth success copy. The global error remains intentionally fixed and bilingual because it renders outside the locale layout.
+- Follow-up decision (2026-10-13): audit and fix remaining user-facing messages across the application as ongoing i18n cleanup; this is separate from the completed Phase 6 fractions. Fraction 1 (`join-us`) is complete: all form copy and select options now come from the `joinUs` namespace in both locales.
+- Phase 8 decision (2026-10-13): the optional stage 2 component-level SCSS import split will not be pursued.
 - Phase 7 is complete: the four planned fractions plus two follow-ups from an
   audit on 2026-10-04. Done: (5) brand filter logos behind the cars API, with
   a lint guard for `/mock/` literals; (6) duplicate logo files deleted and the
@@ -262,17 +264,16 @@ extensions over 30 days, and so on) are documented in each `services/mocks/*.ts`
   group added to `vendor/bootstrap.scss`. `react-bootstrap` was removed
   from `package.json` (nothing imported it; 2026-10-05). Turn off any
   editor Sass watcher (Live Sass Compiler): its output is git-ignored and
-  unused. `npm run check:css` fails if compiled CSS is committed again. Optional next: stage 2 (doc 8 step 6 plan, row 7). Known build warnings,
+  unused. `npm run check:css` fails if compiled CSS is committed again. The optional stage 2 component-level SCSS import split is intentionally not pursued. Known build warnings,
   present before phase 8: autoprefixer flags `end` (use `flex-end`) in
   `main.scss`, and `jose` (NextAuth) uses Node streams in the Edge middleware.
 - Bug found during phase 8 (not fixed): `app/[locale]/not-found.tsx` (`.not-found-page`) is
   practically unreachable. The cars, cities and booking segments have their own not-found
   screens, and an unknown URL such as `/en/no-such-page` gets Next's default 404 without the
   app layout (there is no root `app/not-found.tsx` and no catch-all route).
-- Bug found during phase 8 (not fixed): `features/home/components/ContactInfo.tsx`
-  reads `addressValue` / `emailValue` from the root namespace, but the keys are
-  `contact.addressValue` / `contact.emailValue`, so the home contact block throws
-  `MISSING_MESSAGE` and shows the raw key in both locales.
+ - Fixed (2026-10-13): `features/home/components/ContactInfo.tsx` now uses the
+   `contact` namespace for its labels and values; the home contact block no longer
+   throws `MISSING_MESSAGE` for `phoneValue`, `emailValue`, or `addressValue`.
 - Formatting (2026-10-04): the existing, consistent formatting is kept (no
   repo-wide Prettier pass). Prettier formatted only the 8 genuinely unformatted
   files: `CityHero`, `FormSelect`, the `cities` / `privacy` / `terms` pages
