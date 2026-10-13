@@ -1,25 +1,19 @@
 'use client';
 
-import {useState, useRef, useEffect} from 'react';
-import {useLocale} from 'next-intl';
-import {usePathname} from 'next/navigation';
-import {FiGlobe, FiCheck} from 'react-icons/fi';
+import { useLocale } from 'next-intl';
+import { usePathname } from 'next/navigation';
+import { FiGlobe, FiCheck, FiChevronDown } from 'react-icons/fi';
 import { SUPPORTED_LANGUAGES } from '@/shared/config/languages';
+import { Menu } from '@/shared/ui/Menu';
 
 export default function LanguageSwitcher() {
   const locale = useLocale();
   const pathname = usePathname();
 
-  const [open, setOpen] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
-
   const current =
-    SUPPORTED_LANGUAGES.find((lang) => lang.code === locale) ??
-    SUPPORTED_LANGUAGES[0];
+    SUPPORTED_LANGUAGES.find((lang) => lang.code === locale) ?? SUPPORTED_LANGUAGES[0];
 
   const handleSelect = (code: string) => {
-    setOpen(false);
-
     if (code === locale) return;
 
     const segments = pathname.split('/');
@@ -36,75 +30,33 @@ export default function LanguageSwitcher() {
     // different language, so a client-side switch would leave the map stuck
     // in the previous language. Reloading is what lets it load the new one.
     // Query string and hash are carried over; usePathname() omits both.
-    window.location.assign(
-      segments.join('/') + window.location.search + window.location.hash
-    );
+    window.location.assign(segments.join('/') + window.location.search + window.location.hash);
   };
 
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        ref.current &&
-        !ref.current.contains(event.target as Node)
-      ) {
-        setOpen(false);
-      }
-    };
-
-    document.addEventListener(
-      'mousedown',
-      handleClickOutside
-    );
-
-    return () => {
-      document.removeEventListener(
-        'mousedown',
-        handleClickOutside
-      );
-    };
-  }, []);
-
   return (
-    <div className="lang-switcher" ref={ref}>
-      <button
-        type="button"
-        className="lang-switcher-trigger"
-        onClick={() => setOpen((prev) => !prev)}
-        aria-haspopup="listbox"
-        aria-expanded={open}
-      >
-        <FiGlobe
-          className="lang-switcher-icon"
-          aria-hidden="true"
-        />
+    <div className="lang-switcher">
+      <Menu.Root>
+        <Menu.Trigger asChild>
+          <button type="button" className="lang-switcher-trigger">
+            <FiGlobe className="lang-switcher-icon" aria-hidden="true" />
+            <span className="lang-switcher-code">{current.code.toUpperCase()}</span>
+            <FiChevronDown className="lang-switcher-chevron" aria-hidden="true" />
+          </button>
+        </Menu.Trigger>
 
-        <span>{current.label}</span>
-      </button>
-
-      {open && (
-        <ul
-          className="lang-switcher-list"
-          role="listbox"
-        >
+        <Menu.Content className="lang-switcher-list" align="end">
           {SUPPORTED_LANGUAGES.map((lang) => (
-            <li
+            <Menu.Item
               key={lang.code}
-              role="option"
-              aria-selected={lang.code === locale}
-              className={
-                lang.code === locale ? 'active' : ''
-              }
-              onClick={() => handleSelect(lang.code)}
+              className={lang.code === locale ? 'active' : ''}
+              onSelect={() => handleSelect(lang.code)}
             >
               <span>{lang.label}</span>
-
-              {lang.code === locale && (
-                <FiCheck className="check_icon" />
-              )}
-            </li>
+              {lang.code === locale && <FiCheck className="check_icon" aria-hidden="true" />}
+            </Menu.Item>
           ))}
-        </ul>
-      )}
+        </Menu.Content>
+      </Menu.Root>
     </div>
   );
 }

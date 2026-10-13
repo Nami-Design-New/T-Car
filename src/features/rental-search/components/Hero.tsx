@@ -282,7 +282,14 @@ export default function Hero({ options, brands }: Props) {
         ))}
       </Swiper>
 
-      {/* <div className="container-tcar absolute"> */}
+      <div className="hero_overlay" aria-hidden="true" />
+
+      <div className="hero_content">
+        <span className="hero_eyebrow">{t('rentalSearch.hero.eyebrow')}</span>
+        <h1>{t('rentalSearch.hero.title')}</h1>
+        <p>{t('rentalSearch.hero.subtitle')}</p>
+      </div>
+
       <div className="hero_filter">
         <form className="hero_search" onSubmit={handleSearch}>
           <div className="hero_search_field">
@@ -311,8 +318,6 @@ export default function Hero({ options, brands }: Props) {
         </form>
         <RentalTabs onSelect={handleRentalSelect} />
       </div>
-      {/* </div> */}
-
       {showFilters && (
         <>
           <button

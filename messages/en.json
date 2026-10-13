@@ -18,6 +18,10 @@
     },
     "mobileNav": {
       "toggle": "Toggle menu"
+    },
+    "location": {
+      "choose": "Choose your location",
+      "default": "Riyadh, Al Hurriya Street"
     }
   },
   "account": {
@@ -72,7 +76,8 @@
     },
     "notifications": {
       "title": "Notifications",
-      "markAllRead": "Mark all as read"
+      "markAllRead": "Mark all as read",
+      "unreadCount": "{count, plural, =0 {No unread notifications} one {# unread notification} other {# unread notifications}}"
     }
   },
   "auth": {
@@ -121,6 +126,11 @@
     "international": "International Rental"
   },
   "rentalSearch": {
+    "hero": {
+      "eyebrow": "T-CAR PREMIUM RENTALS",
+      "title": "Your next journey starts here",
+      "subtitle": "A distinctive fleet, ready for every destination"
+    },
     "airport": {
       "title": "Choose an airport",
       "description": "Choose the airport where you would like to pick up the car.",

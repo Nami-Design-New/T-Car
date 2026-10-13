@@ -3,7 +3,7 @@
 // Layout / Language Switcher
 .lang-switcher {
   position: relative;
-  width: 130px;
+  width: 62px;
 
   &-trigger {
     display: flex;
@@ -13,7 +13,8 @@
     width: 100%;
     height: 44px;
 
-    padding-inline: 14px;
+    gap: 6px;
+    padding-inline: 10px;
 
     border: 1px solid $ds-stroke-light;
     border-radius: $ds-radius-md;
@@ -30,66 +31,31 @@
     &:hover {
       border-color: $ds-action-primary;
     }
-
-    span {
-      flex: 1;
-      text-align: start;
-    }
-
-    &::after {
-      content: '';
-      width: 7px;
-      height: 7px;
-      border-right: 2px solid $ds-text-primary;
-      border-bottom: 2px solid $ds-text-primary;
-      transform: rotate(45deg);
-      flex-shrink: 0;
-      margin-inline-start: 8px;
-    }
   }
 
   &-icon {
     color: $ds-text-primary;
     font-size: 18px;
-    margin-inline-end: 8px;
+    margin-inline-end: 0;
     flex-shrink: 0;
   }
 
+  &-code {
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+  }
+
+  &-chevron {
+    flex-shrink: 0;
+    font-size: 13px;
+  }
+
   &-list {
-    position: absolute;
-    top: calc(100% + 6px);
-    inset-inline-start: 0;
-    width: 100%;
+    min-width: 120px;
 
-    list-style: none;
-    margin: 0;
-    padding: 6px;
-
-    background: $ds-surface-elevated;
-    border: 1px solid $ds-stroke-light;
-    border-radius: $ds-radius-md;
-    box-shadow: 0 10px 30px rgba($ds-shadow-color, 0.1);
-
-    z-index: 50;
-
-    li {
-      display: flex;
-      align-items: center;
+    .menu__item {
       justify-content: space-between;
-
-      padding: 10px 12px;
-      border-radius: $ds-radius-sm;
-
-      font-size: 14px;
-      font-weight: 600;
-      color: $ds-text-primary;
-
-      cursor: pointer;
-      transition: 0.2s;
-
-      &:hover {
-        background: $ds-surface-card-primary;
-      }
 
       &.active {
         color: $ds-action-primary;
@@ -122,13 +88,22 @@
     height: 80px;
   }
 
+  &-brand {
+    display: flex;
+    align-items: center;
+    gap: clamp(12px, 2vw, 24px);
+    min-width: 0;
+  }
+
   &-logo {
     display: flex;
     align-items: center;
+    flex: 0 1 clamp(108px, 13vw, 160px);
+    min-width: 0;
 
     img {
-      height: 48px;
-      width: auto;
+      width: 100%;
+      height: auto;
       transition: transform 0.3s;
     }
 
@@ -140,7 +115,7 @@
   &-nav {
     display: flex;
     align-items: center;
-    gap: 10rem;
+    gap: clamp(2rem, 7vw, 10rem);
 
     @media (max-width: $breakpoint-lg) {
       position: fixed;
@@ -211,8 +186,11 @@
       .lang-switcher,
       .btn,
       .user-menu {
-        min-width: 130px;
         height: 44px;
+      }
+
+      .lang-switcher {
+        min-width: 62px;
       }
 
       @media (max-width: $breakpoint-lg) {
@@ -250,6 +228,153 @@
       display: grid;
       place-items: center;
     }
+  }
+}
+
+.location-picker {
+  flex: 0 1 300px;
+  min-width: 0;
+
+  &-trigger {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    width: min(300px, 100%);
+    height: 52px;
+    padding: 0 16px;
+
+    border: 0;
+    border-radius: $ds-radius-full;
+    background: $ds-surface-card-primary;
+    color: $ds-text-primary;
+
+    cursor: pointer;
+    transition: background 0.25s, color 0.25s, transform 0.25s;
+
+    &:hover {
+      background: rgba($ds-primary-100, 0.8);
+      color: $ds-action-primary;
+    }
+
+    &:focus-visible {
+      outline: 3px solid rgba($ds-action-primary, 0.2);
+      outline-offset: 3px;
+    }
+
+    &:active {
+      transform: scale(0.98);
+    }
+  }
+
+  &-icon {
+    flex-shrink: 0;
+    color: $ds-action-primary;
+    font-size: 28px;
+    stroke-width: 1.8;
+  }
+
+  &-address {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 16px;
+    font-weight: 600;
+  }
+
+  &-chevron {
+    flex-shrink: 0;
+    margin-inline-start: auto;
+    color: $ds-text-subtle;
+    font-size: 20px;
+  }
+}
+
+@media (max-width: $breakpoint-xl) {
+  .location-picker {
+    flex-basis: 230px;
+
+    &-trigger {
+      width: 230px;
+    }
+  }
+}
+
+@media (max-width: $breakpoint-md) {
+  .header-brand {
+    flex: 1;
+  }
+
+  .location-picker {
+    flex: 1;
+
+    &-trigger {
+      width: 100%;
+      max-width: 230px;
+      height: 46px;
+      padding-inline: 12px;
+    }
+
+    &-icon {
+      font-size: 24px;
+    }
+
+    &-address {
+      font-size: 14px;
+    }
+  }
+}
+
+.header-notifications {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid $ds-stroke-light;
+  border-radius: $ds-radius-md;
+  color: $ds-text-primary;
+  transition: 0.25s;
+
+  svg {
+    font-size: 19px;
+  }
+
+  &-count {
+    position: absolute;
+    top: -6px;
+    inset-inline-end: -6px;
+    display: grid;
+    min-width: 19px;
+    height: 19px;
+    padding-inline: 4px;
+    place-items: center;
+    border: 2px solid $ds-surface-background;
+    border-radius: $ds-radius-full;
+    background: $ds-status-error;
+    color: $ds-text-on-action;
+    font-size: 10px;
+    font-weight: 800;
+    line-height: 1;
+  }
+
+  &:hover {
+    border-color: $ds-action-primary;
+    background: $ds-surface-card-primary;
+    color: $ds-action-primary;
+  }
+
+  &:focus-visible {
+    outline: 3px solid rgba($ds-action-primary, 0.18);
+    outline-offset: 2px;
+  }
+
+  @media (max-width: $breakpoint-lg) {
+    width: 100%;
+    justify-content: flex-start;
+    gap: 10px;
+    padding-inline: 12px;
   }
 }
 // Layout / user-menu
