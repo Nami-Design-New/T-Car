@@ -662,7 +662,17 @@
       "continue": "Continue booking",
       "total": "Total",
       "selectPickup": "Set pickup location",
-      "selectDropoff": "Set drop-off location"
+      "selectDropoff": "Set drop-off location",
+      "pickupTime": "Pickup time"
+    },
+    "monthly": {
+      "title": "Monthly booking",
+      "monthsCount": "Number of months",
+      "increase": "Add a month",
+      "decrease": "Remove a month",
+      "months": "{count, plural, =1 {# month} other {# months}}",
+      "sliderLabel": "Booking length in months",
+      "distanceHint": "The location must be within <strong>20 km</strong> of the showroom"
     },
     "confirm": {
       "dialogLabel": "Confirm booking",
@@ -800,6 +810,12 @@
     },
     "empty": {
       "history": "No wallet activity yet"
+    },
+    "insufficient": {
+      "title": "Insufficient balance",
+      "heading": "Your balance is too low",
+      "description": "Top up your wallet to pay with it",
+      "topUp": "Top up now"
     }
   },
   "bankAccounts": {

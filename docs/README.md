@@ -208,7 +208,7 @@ merged or pushed yet.
 
 | Phase | Status | Notes |
 | ----- | ------ | ----- |
-| 0. Bug fixes and dead code | Done (one item waiting on product) | All 10 bugs above fixed. Dead code deleted: `bookings/BookingsTab`, `BookingCarSummary`, `BookingPriceDetails`, `RateBookingButton`, `CityCarCard`, `CitiesGrid`, `lib/i18n.ts`, `layout/I18nProvider.tsx`, and 8 unused path aliases. `npm run typecheck` and `npm run check` (typecheck + lint) added; there is no CI config yet to run them in. React 19.3 (verified with the build and server rendering of every route; not yet checked in a browser). Also fixed on the way: a duplicated mock car id. **Waiting on product:** `BookingModal`, `BookingMonthlyModal`, `InsufficientBalanceModal` (unused, kept). Optional: a designed Open Graph image (`src/app/opengraph-image.jpg`) |
+| 0. Bug fixes and dead code | Done (one item waiting on product) | All 10 bugs above fixed. Dead code deleted: `bookings/BookingsTab`, `BookingCarSummary`, `BookingPriceDetails`, `RateBookingButton`, `CityCarCard`, `CitiesGrid`, `lib/i18n.ts`, `layout/I18nProvider.tsx`, and 8 unused path aliases. `npm run typecheck` and `npm run check` (typecheck + lint) added; there is no CI config yet to run them in. React 19.3 (verified with the build and server rendering of every route; not yet checked in a browser). Also fixed on the way: a duplicated mock car id. **Kept by product decision (2026-10-13):** `BookingModal`, `BookingMonthlyModal`, `InsufficientBalanceModal` (unused for now). Optional: a designed Open Graph image (`src/app/opengraph-image.jpg`) |
 | 1. Foundations | Done | `features/`, `shared/{ui,lib,hooks,config}`, `services/http`, the import rules (as warnings), `AppError` / `Result` / `reportError`, the `errors` and `states` messages, root `error.tsx` and `global-error.tsx`, a non-blocking root `loading.tsx` with `Skeleton`, and the first Radix `shared/ui` set, each tested and with at least one production caller: `Dialog` (`CountryModal`, `WalletAmountModal`, `BankSelectModal`), `ConfirmDialog`, `ResultDialog`, `Tabs` (insurance terms), `Accordion` (warranties), `RadioCards` (payment method), `Menu` (user menu), `Button` with `loading` / `asChild`, `Price` (wallet), `EmptyState` + lazy `Illustration` and `ErrorState` (bookings, wallet, bank accounts). The FAQ became native `<details>` rather than `Accordion` (answers stay in the server HTML). Vitest + Testing Library (`npm run test`, 64 tests). Moved to phase 2: per-segment `loading.tsx`, which real 404 status codes need. Replacing the remaining dialogs and menus is doc 4 / phase 4 work |
 | 2. Routing | Done (5 of 5 fractions) | **Done:** (1) the account sections are routes: `/account/{profile,bookings,wallet,bank-accounts,notifications}` in a `(sections)` route group with one layout (title + link sidebar with `aria-current`); each loads only its own data and JS (e.g. notifications 101 kB vs the single 334 kB page before); `/account` and old `/account?tab=<section>` links are real HTTP redirects (`next.config.mjs`). (2) Booking details moved to `/account/bookings/[id]` (outside the group, so the page keeps its full-width layout), with its own title and a permanent redirect from `/my-bookings/[id]`; all of `/account/**` is `noindex`. (3) The bookings list reads `?status=active|past` (links with `aria-current`, rendered on the server, no client state); the details back link returns to the booking's own list. (4) Route-level loading and error boundaries now cover home, account sections, car details, city details, and booking details; car, city, and booking resources have segment-specific not-found screens. **Complete:** filters, sorting, and hero search context are now read from URL parameters by `/cars` and `/cities/[slug]`. |
 | 3. Server-first data and auth | Done (4 of 4 fractions) | Reads go through `features/*/queries.ts` for cars, cities, car details, bookings, home, rental search, account profile, and notifications (car and city pages also set their own `<title>`). Auth is NextAuth v5 with the backend token in its `httpOnly` session cookie and a middleware guard ([doc 2](02-server-client-boundary.md#23-auth-across-the-boundary)). Wallet, bank-account, booking, checkout, and contact writes now cross Server Actions and use `fromActionResult`; wallet and bank-account reads remain on browser-only stateful mocks until a user-scoped persistence contract exists. |
@@ -316,12 +316,14 @@ extensions over 30 days, and so on) are documented in each `services/mocks/*.ts`
 - Dead CSS (2026-10-05): removed 795 lines (57 blocks) whose classes no code
   uses, after proving none can match (doc 8, ownership map). App stylesheet
   −11.7 KB minified.
-- Product decisions are still needed before deleting `BookingModal`,
-  `BookingMonthlyModal`, or `InsufficientBalanceModal`. Since 2026-10-13 they
-  render in the shared `Dialog` (role, accessible name, focus trap, scroll lock,
-  Escape and backdrop dismissal; the monthly map dialog mounts only while open).
-  Still unused, with hard-coded Arabic copy outside `messages/` and the monthly
-  modal's inline layout styles.
+- `BookingModal`, `BookingMonthlyModal` and `InsufficientBalanceModal` are kept
+  (product decision, 2026-10-13), though nothing imports them yet. They render in
+  the shared `Dialog` (role, accessible name, focus trap, scroll lock, Escape and
+  backdrop dismissal; the monthly map dialog mounts only while open), and their
+  copy is in both locale files: `booking.daily` (shared with `BookingDailyModal`,
+  plus `pickupTime`), `booking.monthly`, `wallet.insufficient`. Left: the monthly
+  modal's inline layout styles, and the calendar chevrons, which assume RTL (also
+  in `BookingDailyModal`).
 
 ### Where the code differs from these documents
 

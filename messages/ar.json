@@ -544,7 +544,17 @@
       "continue": "متابعة الحجز",
       "total": "الإجمالي",
       "selectPickup": "حدد موقع الاستلام",
-      "selectDropoff": "حدد موقع التسليم"
+      "selectDropoff": "حدد موقع التسليم",
+      "pickupTime": "حدد وقت الاستلام"
+    },
+    "monthly": {
+      "title": "حجز شهري",
+      "monthsCount": "عدد الشهور",
+      "increase": "زيادة عدد الشهور",
+      "decrease": "تقليل عدد الشهور",
+      "months": "{count, plural, =1 {# شهر} other {# شهور}}",
+      "sliderLabel": "عدد شهور الحجز",
+      "distanceHint": "يجب أن يكون الموقع في حدود <strong>20 كم</strong> من موقع المعرض"
     },
     "confirm": {
       "dialogLabel": "تأكيد الحجز",
@@ -682,6 +692,12 @@
     },
     "empty": {
       "history": "لا توجد عمليات على المحفظة بعد"
+    },
+    "insufficient": {
+      "title": "رصيدك غير كافي",
+      "heading": "الرصيد منخفض للغاية",
+      "description": "يرجى شحن رصيد محفظتك لكي تتمكن من الدفع بالمحفظة",
+      "topUp": "اشحن الآن"
     }
   },
   "bankAccounts": {

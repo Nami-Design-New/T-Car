@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import { FiClock, FiMapPin } from 'react-icons/fi';
 import { formatCurrency } from '@/shared/lib/format';
@@ -25,26 +26,11 @@ interface DateRange {
 type MapField = 'pickup' | 'dropoff';
 
 const MONTHS = [
-  'يناير',
-  'فبراير',
-  'مارس',
-  'أبريل',
-  'مايو',
-  'يونيو',
-  'يوليو',
-  'أغسطس',
-  'سبتمبر',
-  'أكتوبر',
-  'نوفمبر',
-  'ديسمبر',
+  'jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec',
 ];
 
 const TIME_SLOTS = ['8:00 AM', '9:00 AM', '10:00 AM', '11:00 AM', '12:00 PM', '1:00 PM', '2:00 PM'];
 const VAT_RATE = 0.15;
-
-function formatShort(d: Date) {
-  return `${d.getDate()} ${MONTHS[d.getMonth()]} ${d.getFullYear()}`;
-}
 
 function getMonthlyRange(months: number): DateRange {
   const start = new Date();
@@ -61,6 +47,11 @@ function getAddressTitle(address: string, fallback: string) {
 }
 
 export default function BookingMonthlyModal({ open, onClose, pricePerDay, onConfirm }: Props) {
+  const t = useTranslations('booking.daily');
+  const tm = useTranslations('booking.monthly');
+  const formatShort = (d: Date) => `${d.getDate()} ${t(`months.${MONTHS[d.getMonth()]}`)} ${d.getFullYear()}`;
+  const distanceHint = tm.rich('distanceHint', { strong: (chunks) => <strong>{chunks}</strong> });
+
   const [rentalMonths, setRentalMonths] = useState(1);
   const [range, setRange] = useState<DateRange>(() => getMonthlyRange(1));
   const [time, setTime] = useState('9:00 AM');
@@ -122,16 +113,16 @@ export default function BookingMonthlyModal({ open, onClose, pricePerDay, onConf
   const monthProgress = (rentalMonths / 12) * 100;
 
   return (
-    <Dialog open={open} onClose={onClose} size="xl" label="حجز شهري">
+    <Dialog open={open} onClose={onClose} size="xl" label={tm('title')}>
       <div className="booking_modal">
         <div className="booking_modal_calendar">
           <div style={{ padding: '20px 22px', borderRadius: 14, background: '#eaf3ff', textAlign: 'center' }}>
-            <div style={{ marginBottom: 8, color: '#101820', fontSize: 14 }}>عدد الشهور</div>
+            <div style={{ marginBottom: 8, color: '#101820', fontSize: 14 }}>{tm('monthsCount')}</div>
 
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', maxWidth: 225, margin: '0 auto 18px' }}>
               <button
                 type="button"
-                aria-label="زيادة عدد الشهور"
+                aria-label={tm('increase')}
                 onClick={() => changeRentalMonths(rentalMonths + 1)}
                 disabled={rentalMonths === 12}
                 style={{ width: 28, height: 28, border: 0, borderRadius: 6, background: '#fff', color: '#101820', fontSize: 22, lineHeight: 1, cursor: rentalMonths === 12 ? 'not-allowed' : 'pointer', opacity: rentalMonths === 12 ? 0.5 : 1 }}
@@ -143,7 +134,7 @@ export default function BookingMonthlyModal({ open, onClose, pricePerDay, onConf
 
               <button
                 type="button"
-                aria-label="تقليل عدد الشهور"
+                aria-label={tm('decrease')}
                 onClick={() => changeRentalMonths(rentalMonths - 1)}
                 disabled={rentalMonths === 1}
                 style={{ width: 28, height: 28, border: 0, borderRadius: 6, background: '#fff', color: '#101820', fontSize: 22, lineHeight: 1, cursor: rentalMonths === 1 ? 'not-allowed' : 'pointer', opacity: rentalMonths === 1 ? 0.5 : 1 }}
@@ -155,7 +146,7 @@ export default function BookingMonthlyModal({ open, onClose, pricePerDay, onConf
             <div style={{ position: 'relative', height: 60, marginBottom: 14, overflow: 'hidden', borderRadius: 13, background: '#a4a4a4', color: '#fff' }}>
               <span style={{ position: 'absolute', top: 0, insetInlineStart: 0, width: `${monthProgress}%`, height: '100%', borderRadius: 13, background: '#287ff0', transition: 'width 0.2s ease' }} />
               <span style={{ position: 'absolute', inset: 0, display: 'grid', placeItems: 'center', fontSize: 14, pointerEvents: 'none' }}>
-                {rentalMonths} {rentalMonths === 1 ? 'شهر' : 'شهور'}
+                {tm('months', { count: rentalMonths })}
               </span>
               <span style={{ position: 'absolute', insetInlineStart: `calc(${monthProgress}% - 28px)`, top: '50%', display: 'flex', alignItems: 'center', gap: 3, transform: 'translateY(-50%)', color: '#fff', fontSize: 15, transition: 'inset-inline-start 0.2s ease', pointerEvents: 'none' }}>
                 <span>▶</span>
@@ -168,20 +159,20 @@ export default function BookingMonthlyModal({ open, onClose, pricePerDay, onConf
                 max="12"
                 step="1"
                 value={rentalMonths}
-                aria-label="عدد شهور الحجز"
+                aria-label={tm('sliderLabel')}
                 onChange={(e) => changeRentalMonths(Number(e.target.value))}
                 style={{ position: 'absolute', inset: 0, zIndex: 2, width: '100%', height: '100%', margin: 0, opacity: 0, cursor: 'pointer' }}
               />
             </div>
 
             <div style={{ color: '#101820', fontSize: 13 }}>
-              {formatShort(range.start!)} <strong>الى</strong> {formatShort(range.end!)}
+              {formatShort(range.start!)} <strong>{t('to')}</strong> {formatShort(range.end!)}
             </div>
           </div>
         </div>
 
         <div className="booking_field">
-          <label>حدد وقت الاستلام والتسليم</label>
+          <label>{t('pickupDropoffTime')}</label>
           <div className="time_select">
             <FiClock />
             <select value={time} onChange={(e) => setTime(e.target.value)}>
@@ -192,10 +183,10 @@ export default function BookingMonthlyModal({ open, onClose, pricePerDay, onConf
 
         <div className="booking_field booking_location_field">
           <div className="booking_location_label">
-            <label htmlFor="pickup-address">عنوان الاستلام</label>
+            <label htmlFor="pickup-address">{t('pickupAddress')}</label>
             <button type="button" onClick={() => setMapField('pickup')}>
               <FiMapPin />
-              اختر من الخريطة
+              {t('chooseFromMap')}
             </button>
           </div>
           {pickupLocation ? (
@@ -203,22 +194,22 @@ export default function BookingMonthlyModal({ open, onClose, pricePerDay, onConf
               type="button"
               className="booking_daily_address_card"
               onClick={() => setMapField('pickup')}
-              aria-label="تغيير عنوان الاستلام"
+              aria-label={t('changePickup')}
             >
               <span className="booking_daily_address_icon">
                 <Image src={deliveryCarIcon} alt="" width={24} height={24} />
               </span>
               <span className="booking_daily_address_content">
-                <strong>{getAddressTitle(pickupAddress, 'موقع الاستلام')}</strong>
+                <strong>{getAddressTitle(pickupAddress, t('pickupLocation'))}</strong>
                 <small>{pickupAddress}</small>
               </span>
-              <span className="booking_daily_address_distance">تم التحديد</span>
+              <span className="booking_daily_address_distance">{t('selected')}</span>
             </button>
           ) : (
             <input
               id="pickup-address"
               type="text"
-              placeholder="ادخل عنوانك"
+              placeholder={t('enterAddress')}
               value={pickupAddress}
               onChange={(e) => {
                 setPickupAddress(e.target.value);
@@ -226,15 +217,15 @@ export default function BookingMonthlyModal({ open, onClose, pricePerDay, onConf
               }}
             />
           )}
-          <p>يجب أن يكون الموقع في حدود <strong>20 كم</strong> من موقع المعرض</p>
+          <p>{distanceHint}</p>
         </div>
 
         <div className="booking_field booking_location_field">
           <div className="booking_location_label">
-            <label htmlFor="dropoff-address">عنوان التسليم</label>
+            <label htmlFor="dropoff-address">{t('dropoffAddress')}</label>
             <button type="button" onClick={() => setMapField('dropoff')}>
               <FiMapPin />
-              اختر من الخريطة
+              {t('chooseFromMap')}
             </button>
           </div>
           {dropoffLocation ? (
@@ -242,22 +233,22 @@ export default function BookingMonthlyModal({ open, onClose, pricePerDay, onConf
               type="button"
               className="booking_daily_address_card"
               onClick={() => setMapField('dropoff')}
-              aria-label="تغيير عنوان التسليم"
+              aria-label={t('changeDropoff')}
             >
               <span className="booking_daily_address_icon">
                 <Image src={deliveryCarIcon} alt="" width={24} height={24} />
               </span>
               <span className="booking_daily_address_content">
-                <strong>{getAddressTitle(dropoffAddress, 'موقع التسليم')}</strong>
+                <strong>{getAddressTitle(dropoffAddress, t('dropoffLocation'))}</strong>
                 <small>{dropoffAddress}</small>
               </span>
-              <span className="booking_daily_address_distance">تم التحديد</span>
+              <span className="booking_daily_address_distance">{t('selected')}</span>
             </button>
           ) : (
             <input
               id="dropoff-address"
               type="text"
-              placeholder="ادخل عنوانك"
+              placeholder={t('enterAddress')}
               value={dropoffAddress}
               onChange={(e) => {
                 setDropoffAddress(e.target.value);
@@ -265,14 +256,14 @@ export default function BookingMonthlyModal({ open, onClose, pricePerDay, onConf
               }}
             />
           )}
-          <p>يجب أن يكون الموقع في حدود <strong>20 كم</strong> من موقع المعرض</p>
+          <p>{distanceHint}</p>
         </div>
 
         <div className="booking_field">
-          <label>تفاصيل إضافية</label>
+          <label>{t('additionalDetails')}</label>
           <textarea
             rows={4}
-            placeholder="اكتب أي ملاحظات أو طلبات خاصة..."
+            placeholder={t('notesPlaceholder')}
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
           />
@@ -285,11 +276,11 @@ export default function BookingMonthlyModal({ open, onClose, pricePerDay, onConf
             disabled={!range.start || !range.end}
             onClick={handleConfirmClick}
           >
-            متابعة الحجز
+            {t('continue')}
           </button>
 
           <div className="booking_total">
-            <span>الإجمالي</span>
+            <span>{t('total')}</span>
             <h3>{formatCurrency(total)}</h3>
           </div>
         </div>
@@ -301,7 +292,7 @@ export default function BookingMonthlyModal({ open, onClose, pricePerDay, onConf
           open
           onClose={() => setMapField(null)}
           onConfirm={handleLocationConfirm}
-          title={mapField === 'dropoff' ? 'حدد موقع التسليم' : 'حدد موقع الاستلام'}
+          title={mapField === 'dropoff' ? t('selectDropoff') : t('selectPickup')}
           initialLocation={mapField === 'dropoff' ? dropoffLocation : pickupLocation}
         />
       )}

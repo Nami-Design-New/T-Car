@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { FiChevronRight, FiChevronLeft, FiClock } from 'react-icons/fi';
 import { formatCurrency } from '@/shared/lib/format';
 import { Dialog } from '@/shared/ui/Dialog';
@@ -21,21 +22,10 @@ interface DateRange {
 // Sunday-first, matching Date#getDay() (0 = Sunday) used by startOffset below.
 // Column order is then handled by the inherited `dir`, not by reversing this
 // array -- reversing it silently mislabels every column.
-const WEEKDAYS = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+const WEEKDAYS = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
 
 const MONTHS = [
-  'يناير',
-  'فبراير',
-  'مارس',
-  'أبريل',
-  'مايو',
-  'يونيو',
-  'يوليو',
-  'أغسطس',
-  'سبتمبر',
-  'أكتوبر',
-  'نوفمبر',
-  'ديسمبر',
+  'jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec',
 ];
 
 const TIME_SLOTS = ['8:00 AM', '9:00 AM', '10:00 AM', '11:00 AM', '12:00 PM', '1:00 PM', '2:00 PM'];
@@ -46,11 +36,10 @@ function sameDay(a: Date, b: Date) {
   return a.toDateString() === b.toDateString();
 }
 
-function formatShort(d: Date) {
-  return `${d.getDate()} ${MONTHS[d.getMonth()]} ${d.getFullYear()}`;
-}
-
 export default function BookingModal({ open, onClose, pricePerDay, onConfirm }: Props) {
+  const t = useTranslations('booking.daily');
+  const formatShort = (d: Date) => `${d.getDate()} ${t(`months.${MONTHS[d.getMonth()]}`)} ${d.getFullYear()}`;
+
   const [cursor, setCursor] = useState(new Date());
 
   const [range, setRange] = useState<DateRange>({
@@ -124,7 +113,7 @@ export default function BookingModal({ open, onClose, pricePerDay, onConfirm }: 
   };
 
   return (
-    <Dialog open={open} onClose={onClose} size="xl" label="حجز جديد">
+    <Dialog open={open} onClose={onClose} size="xl" label={t('newBooking')}>
       <div className="booking_modal">
         <div className="booking_modal_calendar">
           <div className="calendar_header">
@@ -133,7 +122,7 @@ export default function BookingModal({ open, onClose, pricePerDay, onConfirm }: 
             </button>
 
             <span>
-              {MONTHS[month]} {year}
+              {t(`months.${MONTHS[month]}`)} {year}
             </span>
 
             <button type="button" onClick={() => setCursor(new Date(year, month + 1, 1))}>
@@ -143,7 +132,7 @@ export default function BookingModal({ open, onClose, pricePerDay, onConfirm }: 
 
           <div className="calendar_weekdays">
             {WEEKDAYS.map((day) => (
-              <span key={day}>{day}</span>
+              <span key={day}>{t(`weekdays.${day}`)}</span>
             ))}
           </div>
 
@@ -186,14 +175,14 @@ export default function BookingModal({ open, onClose, pricePerDay, onConfirm }: 
           {range.start && (
             <div className="range_display">
               {range.end
-                ? `${formatShort(range.start)} إلى ${formatShort(range.end)}`
-                : `${formatShort(range.start)} — اختر تاريخ النهاية`}
+                ? `${formatShort(range.start)} ${t('to')} ${formatShort(range.end)}`
+                : `${formatShort(range.start)} — ${t('chooseEndDate')}`}
             </div>
           )}
         </div>
 
         <div className="booking_field">
-          <label>حدد وقت الاستلام</label>
+          <label>{t('pickupTime')}</label>
 
           <div className="time_select">
             <FiClock />
@@ -209,11 +198,11 @@ export default function BookingModal({ open, onClose, pricePerDay, onConfirm }: 
         </div>
 
         <div className="booking_field">
-          <label>تفاصيل إضافية</label>
+          <label>{t('additionalDetails')}</label>
 
           <textarea
             rows={4}
-            placeholder="اكتب أي ملاحظات أو طلبات خاصة..."
+            placeholder={t('notesPlaceholder')}
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
           />
@@ -226,11 +215,11 @@ export default function BookingModal({ open, onClose, pricePerDay, onConfirm }: 
             disabled={!range.start || !range.end}
             onClick={handleConfirmClick}
           >
-            متابعة الحجز
+            {t('continue')}
           </button>
 
           <div className="booking_total">
-            <span>الإجمالي</span>
+            <span>{t('total')}</span>
             <h3>{formatCurrency(total)}</h3>
           </div>
         </div>

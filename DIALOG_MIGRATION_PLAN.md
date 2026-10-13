@@ -112,7 +112,7 @@ Current implementations include:
 | `components/modals/Verifyphonemodal.tsx`           | OTP verification and nested success state                |             Yes | Rename and migrate after status-dialog support                               |
 | `components/modals/LicenseModal.tsx`               | License upload form                                      |             Yes | Migrate to standard form dialog                                              |
 | `components/modals/PaymentMethodModal.tsx`         | Payment selection                                        |             Yes | Migrate to standard selection dialog/mobile sheet                            |
-| `components/modals/InsufficientBalanceModal.tsx`   | Low-balance alert                                        | No import found | Migrated to `Dialog` (2026-10-13); unused, deletion waits on product         |
+| `components/modals/InsufficientBalanceModal.tsx`   | Low-balance alert                                        | No import found | Migrated to `Dialog`; kept by product (2026-10-13), copy in messages         |
 | `components/modals/PickupTypeModal.tsx`            | Pickup mode selection                                    |             Yes | Migrate with the selection-dialog wave                                       |
 | `components/modals/CountryModal.tsx`               | Searchable country selection                             |             Yes | Pilot migration candidate                                                    |
 | `components/modals/BranchModal.tsx`                | Searchable branch selection                              |             Yes | Migrate with the selection-dialog wave                                       |
@@ -122,8 +122,8 @@ Current implementations include:
 | `components/modals/BookingDailyModal.tsx`          | Daily booking form and nested map flow                   |             Yes | Migrate after the base module and map dialog are stable                      |
 | `components/modals/EditDailyBookingModal.tsx`      | Thin edit-mode adapter for daily booking                 |             Yes | Keep temporarily; reassess after booking migration                           |
 | `components/modals/BookingConfirmModal.tsx`        | Booking review/terms step                                |             Yes | Migrate as a large scrollable dialog                                         |
-| `components/modals/BookingModal.tsx`               | Older booking form                                       | No import found | Migrated to `Dialog` (2026-10-13); unused, deletion waits on product         |
-| `components/modals/BookingMonthlyModal.tsx`        | Monthly booking form                                     | No import found | Migrated to `Dialog` (2026-10-13); unused, deletion waits on product         |
+| `components/modals/BookingModal.tsx`               | Older booking form                                       | No import found | Migrated to `Dialog`; kept by product (2026-10-13), copy in messages         |
+| `components/modals/BookingMonthlyModal.tsx`        | Monthly booking form                                     | No import found | Migrated to `Dialog`; kept by product (2026-10-13), copy in messages         |
 | `components/modals/ExtendDurationModal.tsx`        | Booking-duration editor                                  |             Yes | Migrate to standard form dialog                                              |
 | `components/modals/CancelBookingModal.tsx`         | Destructive booking confirmation                         |             Yes | Migrate to `AlertDialog` with explicit destructive action                    |
 | `components/modals/Bookingreviewmodal.tsx`         | Submit booking rating/review                             |             Yes | Rename and migrate to standard form dialog                                   |
