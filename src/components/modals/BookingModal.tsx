@@ -117,16 +117,16 @@ export default function BookingModal({ open, onClose, pricePerDay, onConfirm }: 
       <div className="booking_modal">
         <div className="booking_modal_calendar">
           <div className="calendar_header">
-            <button type="button" onClick={() => setCursor(new Date(year, month - 1, 1))}>
-              <FiChevronRight />
+            <button type="button" aria-label={t('previousMonth')} onClick={() => setCursor(new Date(year, month - 1, 1))}>
+              <FiChevronLeft className="mirror-in-rtl" aria-hidden="true" />
             </button>
 
             <span>
               {t(`months.${MONTHS[month]}`)} {year}
             </span>
 
-            <button type="button" onClick={() => setCursor(new Date(year, month + 1, 1))}>
-              <FiChevronLeft />
+            <button type="button" aria-label={t('nextMonth')} onClick={() => setCursor(new Date(year, month + 1, 1))}>
+              <FiChevronRight className="mirror-in-rtl" aria-hidden="true" />
             </button>
           </div>
 

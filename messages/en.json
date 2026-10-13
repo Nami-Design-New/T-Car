@@ -663,7 +663,9 @@
       "total": "Total",
       "selectPickup": "Set pickup location",
       "selectDropoff": "Set drop-off location",
-      "pickupTime": "Pickup time"
+      "pickupTime": "Pickup time",
+      "previousMonth": "Previous month",
+      "nextMonth": "Next month"
     },
     "monthly": {
       "title": "Monthly booking",

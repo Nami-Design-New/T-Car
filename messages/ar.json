@@ -545,7 +545,9 @@
       "total": "الإجمالي",
       "selectPickup": "حدد موقع الاستلام",
       "selectDropoff": "حدد موقع التسليم",
-      "pickupTime": "حدد وقت الاستلام"
+      "pickupTime": "حدد وقت الاستلام",
+      "previousMonth": "الشهر السابق",
+      "nextMonth": "الشهر التالي"
     },
     "monthly": {
       "title": "حجز شهري",
