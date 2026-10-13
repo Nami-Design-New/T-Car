@@ -113,7 +113,7 @@ export default function BookingModal({ open, onClose, pricePerDay, onConfirm }: 
   };
 
   return (
-    <Dialog open={open} onClose={onClose} size="xl" label={t('newBooking')}>
+    <Dialog open={open} onClose={onClose} size="xl" className="booking_dialog" label={t('newBooking')}>
       <div className="booking_modal">
         <div className="booking_modal_calendar">
           <div className="calendar_header">

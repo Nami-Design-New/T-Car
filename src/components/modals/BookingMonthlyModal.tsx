@@ -113,7 +113,7 @@ export default function BookingMonthlyModal({ open, onClose, pricePerDay, onConf
   const monthProgress = (rentalMonths / 12) * 100;
 
   return (
-    <Dialog open={open} onClose={onClose} size="xl" label={tm('title')}>
+    <Dialog open={open} onClose={onClose} size="xl" className="booking_dialog" label={tm('title')}>
       <div className="booking_modal">
         <div className="booking_modal_calendar">
           <div style={{ padding: '20px 22px', borderRadius: 14, background: '#eaf3ff', textAlign: 'center' }}>

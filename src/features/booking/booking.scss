@@ -205,11 +205,18 @@
   }
 }
 
+// The Dialog surface of the booking forms (BookingDailyModal, BookingModal, BookingMonthlyModal)
+// is as wide as the form; two classes so it wins over Dialog.scss's size whatever the load order.
+.dialog.booking_dialog {
+  max-width: 600px;
+}
+
+// Fills the Dialog surface and scrolls inside its height, so the footer is reachable.
 .booking_modal {
   position: relative;
-  width: min(600px, calc(100% - 32px));
-
-  max-height: 90vh;
+  flex: 1 1 auto;
+  width: 100%;
+  min-height: 0;
   overflow-y: auto;
 
   background: $ds-surface-elevated;
@@ -493,6 +500,15 @@
 
     padding-top: 18px;
     border-top: 1px solid $ds-stroke-light;
+
+    // Stays visible at the bottom of the scrolling form; -24px and the padding cover
+    // the form's bottom padding so the content scrolls behind it, not below it.
+    position: sticky;
+    bottom: -24px;
+    z-index: 1;
+    margin-bottom: -24px;
+    padding-bottom: 24px;
+    background: $ds-surface-elevated;
 
     .confirm_booking_btn {
       flex: 1;
