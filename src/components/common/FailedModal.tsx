@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { createPortal } from 'react-dom';
+import { useEffect, useRef } from 'react';
+import { Dialog } from '@/shared/ui/Dialog';
 
 interface Props {
   open: boolean;
@@ -41,115 +41,97 @@ export default function FailedModal({
   onPrimary,
   onSecondary,
 }: Props) {
-  const [mounted, setMounted] = useState(false);
+  // The confirmation opens on its safe choice, so Enter does not run the destructive one.
+  const cancelRef = useRef<HTMLButtonElement>(null);
 
+  // The latest onDone, so a caller that passes a new function on every render does not restart
+  // the auto-close timer.
+  const onDoneRef = useRef(onDone);
+  onDoneRef.current = onDone;
+  const hasOnDone = !!onDone;
+
+  // A plain result closes itself; the confirmation (showButtons) waits for a choice.
   useEffect(() => {
-    setMounted(true);
-  }, []);
+    if (!open || showButtons || !hasOnDone) return;
 
-  useEffect(() => {
-    if (!open) return;
+    const timer = setTimeout(() => onDoneRef.current?.(), autoCloseDuration);
+    return () => clearTimeout(timer);
+  }, [open, hasOnDone, autoCloseDuration, showButtons]);
 
-    document.body.style.overflow = 'hidden';
-
-    // الـ Modal العادي بتاع المحفظة يقفل تلقائي
-    // لكن حذف الحساب لا يقفل تلقائياً
-    if (!showButtons && onDone) {
-      const timer = setTimeout(
-        onDone,
-        autoCloseDuration
-      );
-
-      return () => {
-        document.body.style.overflow = '';
-        clearTimeout(timer);
-      };
+  // Escape (and, for a plain result, the backdrop) means "done" or "cancel".
+  const handleClose = () => {
+    if (showButtons) {
+      if (!loading) onSecondary?.();
+      return;
     }
-
-    return () => {
-      document.body.style.overflow = '';
-    };
-  }, [
-    open,
-    onDone,
-    autoCloseDuration,
-    showButtons,
-  ]);
-
-  if (!open || !mounted) return null;
-
-  const handleOverlayClick = () => {
-    if (showButtons) return;
 
     onDone?.();
   };
 
-  return createPortal(
-    <div
-      className="modal_overlay"
-      onClick={handleOverlayClick}
+  return (
+    <Dialog
+      open={open}
+      onClose={handleClose}
+      size="sm"
+      className={
+        showButtons
+          ? 'wallet_result_modal delete_account_modal'
+          : 'wallet_result_modal'
+      }
+      closeOnEscape={!loading}
+      closeOnBackdrop={!showButtons}
+      initialFocusRef={showButtons ? cancelRef : undefined}
     >
+      <span
+        className="wallet_result_drag_handle"
+        aria-hidden="true"
+      />
+
       <div
-        className={
-          showButtons
-            ? 'wallet_result_modal delete_account_modal'
-            : 'wallet_result_modal'
-        }
-        onClick={(event) =>
-          event.stopPropagation()
-        }
+        className="wallet_result_icon wallet_result_icon_failed"
+        aria-hidden="true"
       >
-        <span
-          className="wallet_result_drag_handle"
-          aria-hidden="true"
-        />
+        <span />
+        <span />
+      </div>
 
-        <div
-          className="wallet_result_icon wallet_result_icon_failed"
-          aria-hidden="true"
-        >
-          <span />
-          <span />
-        </div>
+      <div className="delete_account_content">
+        <Dialog.Title>{title}</Dialog.Title>
 
-        <div className="delete_account_content">
-          <h2>{title}</h2>
+        {description && (
+          <Dialog.Description>{description}</Dialog.Description>
+        )}
 
-          {description && (
-            <p>{description}</p>
-          )}
-
-          {error && (
-            <p className="text-danger small mt-2 mb-0" role="alert">
-              {error}
-            </p>
-          )}
-        </div>
-
-        {showButtons && (
-          <div className="delete_account_actions">
-            <button
-              type="button"
-              className="delete_account_confirm"
-              disabled={loading}
-              aria-busy={loading}
-              onClick={onPrimary}
-            >
-              {primaryButtonText}
-            </button>
-
-            <button
-              type="button"
-              className="delete_account_cancel"
-              disabled={loading}
-              onClick={onSecondary}
-            >
-              {secondaryButtonText}
-            </button>
-          </div>
+        {error && (
+          <p className="text-danger small mt-2 mb-0" role="alert">
+            {error}
+          </p>
         )}
       </div>
-    </div>,
-    document.body
+
+      {showButtons && (
+        <div className="delete_account_actions">
+          <button
+            type="button"
+            className="delete_account_confirm"
+            disabled={loading}
+            aria-busy={loading}
+            onClick={onPrimary}
+          >
+            {primaryButtonText}
+          </button>
+
+          <button
+            ref={cancelRef}
+            type="button"
+            className="delete_account_cancel"
+            disabled={loading}
+            onClick={onSecondary}
+          >
+            {secondaryButtonText}
+          </button>
+        </div>
+      )}
+    </Dialog>
   );
 }

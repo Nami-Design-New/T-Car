@@ -39,51 +39,29 @@ export default function PopularCities({ cities }: Props) {
       className="section popular-cities"
       id="cities"
     >
-
       <div className="container-tcar">
-
-
         <div className="popular-cities-header">
-
-
           <SectionTitle
             title={t('popularCities.title')}
             subtitle={t('popularCities.subtitle')}
           />
-
-
           <div className="slider-controls">
-
-
             <button
               type="button"
               aria-label="previous"
               onClick={scrollPrev}
             >
               <FiArrowLeft className="mirror-in-rtl" />
-
             </button>
-
-
-
             <button
               type="button"
               aria-label="next"
               onClick={scrollNext}
             >
-
               <FiArrowRight className="mirror-in-rtl" />
-
             </button>
-
-
           </div>
-
-
         </div>
-
-
-
         <div
           className="cities-track"
           ref={trackRef}
@@ -91,8 +69,6 @@ export default function PopularCities({ cities }: Props) {
           onMouseLeave={startAutoplay}
           dir={isRTL ? 'rtl' : 'ltr'}
         >
-
-
           {cities.map((city) => (
 
             <Link

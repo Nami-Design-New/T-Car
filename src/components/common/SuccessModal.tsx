@@ -1,9 +1,9 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { createPortal } from 'react-dom';
+import { useEffect, useRef } from 'react';
 import { useRouter } from '@/i18n/navigation';
 import Lottie from 'lottie-react';
+import { Dialog } from '@/shared/ui/Dialog';
 
 import successAnimation from '@/assets/animations/successful_login.json';
 
@@ -38,16 +38,14 @@ export default function SuccessModal({
   autoCloseDuration = 2000,
 }: Props) {
   const router = useRouter();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  // The latest onDone, so a caller that re-renders (e.g. a ticking countdown) and passes a new
+  // function each time does not restart the auto-close timer.
+  const onDoneRef = useRef(onDone);
+  onDoneRef.current = onDone;
+  const hasOnDone = !!onDone;
 
   useEffect(() => {
     if (!open) return;
-
-    document.body.style.overflow = 'hidden';
 
     let timer: NodeJS.Timeout;
     let closeTimer: NodeJS.Timeout;
@@ -58,17 +56,13 @@ export default function SuccessModal({
       }, duration);
     }
 
-    if (onDone) closeTimer = setTimeout(onDone, autoCloseDuration);
+    if (hasOnDone) closeTimer = setTimeout(() => onDoneRef.current?.(), autoCloseDuration);
 
     return () => {
-      document.body.style.overflow = '';
-
       if (timer) clearTimeout(timer);
       if (closeTimer) clearTimeout(closeTimer);
     };
-  }, [open, autoRedirect, redirectTo, duration, router, onDone, autoCloseDuration]);
-
-  if (!open || !mounted) return null;
+  }, [open, autoRedirect, redirectTo, duration, router, hasOnDone, autoCloseDuration]);
 
   const handleClick = () => {
     if (onDone) {
@@ -81,21 +75,25 @@ export default function SuccessModal({
     }
   };
 
-  return createPortal(
-    <div className="modal_overlay">
-      <div className="success_modal">
-        <Lottie animationData={successAnimation} loop={false} className="success_animation" />
+  return (
+    <Dialog
+      open={open}
+      onClose={() => onDone?.()}
+      size="sm"
+      className="success_modal"
+      closeOnEscape={!!onDone}
+      closeOnBackdrop={false}
+    >
+      <Lottie animationData={successAnimation} loop={false} className="success_animation" />
 
-        <h2>{title}</h2>
+      <Dialog.Title>{title}</Dialog.Title>
 
-        <p>{description}</p>
-        {appearButton && (
-          <button className="auth_btn" onClick={handleClick}>
-            {buttonText}
-          </button>
-        )}
-      </div>
-    </div>,
-    document.body
+      <Dialog.Description>{description}</Dialog.Description>
+      {appearButton && (
+        <button className="auth_btn" onClick={handleClick}>
+          {buttonText}
+        </button>
+      )}
+    </Dialog>
   );
 }
