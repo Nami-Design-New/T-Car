@@ -317,7 +317,11 @@ extensions over 30 days, and so on) are documented in each `services/mocks/*.ts`
   uses, after proving none can match (doc 8, ownership map). App stylesheet
   −11.7 KB minified.
 - Product decisions are still needed before deleting `BookingModal`,
-  `BookingMonthlyModal`, or `InsufficientBalanceModal`.
+  `BookingMonthlyModal`, or `InsufficientBalanceModal`. Since 2026-10-13 they
+  render in the shared `Dialog` (role, accessible name, focus trap, scroll lock,
+  Escape and backdrop dismissal; the monthly map dialog mounts only while open).
+  Still unused, with hard-coded Arabic copy outside `messages/` and the monthly
+  modal's inline layout styles.
 
 ### Where the code differs from these documents
 

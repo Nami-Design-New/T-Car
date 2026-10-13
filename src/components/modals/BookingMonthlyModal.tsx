@@ -1,10 +1,10 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import Image from 'next/image';
-import { createPortal } from 'react-dom';
 import { FiClock, FiMapPin } from 'react-icons/fi';
 import { formatCurrency } from '@/shared/lib/format';
+import { Dialog } from '@/shared/ui/Dialog';
 import { MapLocationModal, type LocationData } from '@/features/rental-search';
 import type { BookingDetails } from '@/features/booking';
 import { ICONS } from '@/shared/config/assets';
@@ -70,31 +70,6 @@ export default function BookingMonthlyModal({ open, onClose, pricePerDay, onConf
   const [pickupLocation, setPickupLocation] = useState<LocationData | null>(null);
   const [dropoffLocation, setDropoffLocation] = useState<LocationData | null>(null);
   const [mapField, setMapField] = useState<MapField | null>(null);
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => setMounted(true), []);
-
-  useEffect(() => {
-    document.body.style.overflow = open ? 'hidden' : '';
-    return () => {
-      document.body.style.overflow = '';
-    };
-  }, [open]);
-
-  useEffect(() => {
-    if (!open) return;
-
-    const handleKey = (e: KeyboardEvent) => {
-      if (e.key !== 'Escape') return;
-      if (mapField) setMapField(null);
-      else onClose();
-    };
-
-    document.addEventListener('keydown', handleKey);
-    return () => document.removeEventListener('keydown', handleKey);
-  }, [mapField, onClose, open]);
-
-  if (!open || !mounted) return null;
 
   const changeRentalMonths = (months: number) => {
     const nextMonths = Math.min(12, Math.max(1, months));
@@ -146,9 +121,9 @@ export default function BookingMonthlyModal({ open, onClose, pricePerDay, onConf
 
   const monthProgress = (rentalMonths / 12) * 100;
 
-  const content = (
-    <div className="modal_overlay" onClick={onClose}>
-      <div className="booking_modal" onClick={(e) => e.stopPropagation()}>
+  return (
+    <Dialog open={open} onClose={onClose} size="xl" label="حجز شهري">
+      <div className="booking_modal">
         <div className="booking_modal_calendar">
           <div style={{ padding: '20px 22px', borderRadius: 14, background: '#eaf3ff', textAlign: 'center' }}>
             <div style={{ marginBottom: 8, color: '#101820', fontSize: 14 }}>عدد الشهور</div>
@@ -321,15 +296,15 @@ export default function BookingMonthlyModal({ open, onClose, pricePerDay, onConf
 
       </div>
 
-      <MapLocationModal
-        open={mapField !== null}
-        onClose={() => setMapField(null)}
-        onConfirm={handleLocationConfirm}
-        title={mapField === 'dropoff' ? 'حدد موقع التسليم' : 'حدد موقع الاستلام'}
-        initialLocation={mapField === 'dropoff' ? dropoffLocation : pickupLocation}
-      />
-    </div>
+      {mapField !== null && (
+        <MapLocationModal
+          open
+          onClose={() => setMapField(null)}
+          onConfirm={handleLocationConfirm}
+          title={mapField === 'dropoff' ? 'حدد موقع التسليم' : 'حدد موقع الاستلام'}
+          initialLocation={mapField === 'dropoff' ? dropoffLocation : pickupLocation}
+        />
+      )}
+    </Dialog>
   );
-
-  return createPortal(content, document.body);
 }

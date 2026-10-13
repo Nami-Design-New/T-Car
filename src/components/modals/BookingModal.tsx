@@ -1,9 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { createPortal } from 'react-dom';
+import { useState } from 'react';
 import { FiChevronRight, FiChevronLeft, FiClock } from 'react-icons/fi';
 import { formatCurrency } from '@/shared/lib/format';
+import { Dialog } from '@/shared/ui/Dialog';
 import type { BookingDetails } from '@/features/booking';
 
 interface Props {
@@ -60,36 +60,6 @@ export default function BookingModal({ open, onClose, pricePerDay, onConfirm }: 
 
   const [time, setTime] = useState('9:00 AM');
   const [notes, setNotes] = useState('');
-
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => setMounted(true), []);
-
-  useEffect(() => {
-    document.body.style.overflow = open ? 'hidden' : '';
-
-    return () => {
-      document.body.style.overflow = '';
-    };
-  }, [open]);
-
-  useEffect(() => {
-    if (!open) return;
-
-    const handleKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        onClose();
-      }
-    };
-
-    document.addEventListener('keydown', handleKey);
-
-    return () => {
-      document.removeEventListener('keydown', handleKey);
-    };
-  }, [open, onClose]);
-
-  if (!open || !mounted) return null;
 
   const year = cursor.getFullYear();
   const month = cursor.getMonth();
@@ -153,9 +123,9 @@ export default function BookingModal({ open, onClose, pricePerDay, onConfirm }: 
     });
   };
 
-  const content = (
-    <div className="modal_overlay" onClick={onClose}>
-      <div className="booking_modal" onClick={(e) => e.stopPropagation()}>
+  return (
+    <Dialog open={open} onClose={onClose} size="xl" label="حجز جديد">
+      <div className="booking_modal">
         <div className="booking_modal_calendar">
           <div className="calendar_header">
             <button type="button" onClick={() => setCursor(new Date(year, month - 1, 1))}>
@@ -265,8 +235,6 @@ export default function BookingModal({ open, onClose, pricePerDay, onConfirm }: 
           </div>
         </div>
       </div>
-    </div>
+    </Dialog>
   );
-
-  return createPortal(content, document.body);
 }
