@@ -7,6 +7,7 @@ export interface UserProfile {
   email: string;
   birthDate: string;
   phone: string;
+  licenseUploaded: boolean;
 }
 
 export interface LicenseUpload {

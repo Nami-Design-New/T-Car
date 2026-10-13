@@ -216,7 +216,7 @@
 
     margin-bottom: 28px;
 
-    h3 {
+    .dialog__title {
       margin: 0;
 
       color: $ds-text-primary;
@@ -225,7 +225,7 @@
       text-align: center;
     }
 
-    .icon_btn {
+    .dialog__close {
       position: absolute;
       inset-inline-start: 0;
 
@@ -291,17 +291,16 @@
       width: calc(100% - 30px);
       max-width: 420px;
 
-      padding: 28px 18px;
     }
 
     .phone_modal_header {
       margin-bottom: 22px;
 
-      h3 {
+      .dialog__title {
         font-size: 18px;
       }
 
-      .icon_btn {
+      .dialog__close {
         width: 30px;
         height: 30px;
 
@@ -326,8 +325,6 @@
 
     background: $ds-surface-elevated;
 
-    padding: 32px 40px 40px;
-
     border-radius: $ds-radius-xl;
   }
 
@@ -335,11 +332,11 @@
     width: 100%;
 
     display: flex;
-    justify-content: flex-start;
+    justify-content: space-between;
 
     margin-bottom: 4px;
 
-    .icon_btn {
+    .dialog__close {
       width: 34px;
       height: 34px;
 
@@ -418,7 +415,6 @@
 
       max-width: 420px;
 
-      padding: 28px 20px;
     }
 
     .otp_form {

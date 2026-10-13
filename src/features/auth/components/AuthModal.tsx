@@ -30,7 +30,7 @@ function SuccessModal({ open, title, description, buttonText, onDone }: SuccessP
       status="success"
       title={title}
       description={description}
-      action={{ label: buttonText, onClick: onDone }}
+      // action={{ label: buttonText, onClick: onDone }}
       onClose={onDone}
     />
   );

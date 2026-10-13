@@ -8,6 +8,7 @@ const MOCK_PROFILE: UserProfile = {
   email: 'ahmed@domain.com',
   birthDate: '1993-03-15',
   phone: '+966 45 67 89',
+  licenseUploaded: false,
 };
 
 // Stateless, so it is safe to run on the server. Writes validate and return

@@ -93,7 +93,11 @@ export default function ProfileTab({ profile }: Props) {
       setPendingPhone(phone);
       setResendError(null);
       setVerifyError(null);
-      setPhoneStep('verify');
+      // Let the edit dialog unmount before opening the verification dialog.
+      // Radix restores focus when a dialog closes; opening both in one render
+      // can otherwise leave the verification step behind the closing portal.
+      setPhoneStep(null);
+      window.setTimeout(() => setPhoneStep('verify'), 0);
     } catch (error) {
       setSendError(errorMessage(error));
     } finally {
@@ -161,6 +165,7 @@ export default function ProfileTab({ profile }: Props) {
         setLicenseError(errorMessage(result.error));
         return;
       }
+      setForm((previous) => ({ ...previous, licenseUploaded: true }));
       setShowLicenseModal(false);
     } catch (error) {
       setLicenseError(errorMessage(error));
@@ -306,67 +311,44 @@ export default function ProfileTab({ profile }: Props) {
         </button>
       </div>
 
-      {/* ==================== License Not Verified ==================== */}
+      {/* ==================== License ==================== */}
 
-      <div className="profile_action_field warning">
-        <button
-          type="button"
-          className="profile_action_btn"
-          onClick={() => {
-            setLicenseError(null);
-            setShowLicenseModal(true);
-          }}
-        >
-          <div className="profile_action_content">
+      {form.licenseUploaded ? (
+        <div className="profile_action_field">
+          <div className="profile_action_btn" role="status">
+            <div className="profile_action_content">
+              <span className="profile_action_title">{t('license')}</span>
 
-            <span className="profile_action_title">
-              {t('license')}
-            </span>
+              <div className="profile_action_value verified">
+                <FiCheck />
+                <span>{t('licenseVerified')}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div className="profile_action_field warning">
+          <button
+            type="button"
+            className="profile_action_btn"
+            onClick={() => {
+              setLicenseError(null);
+              setShowLicenseModal(true);
+            }}
+          >
+            <div className="profile_action_content">
+              <span className="profile_action_title">{t('license')}</span>
 
-            <div className="profile_action_value">
-              <FiAlertCircle />
-
-              <span>
-                {t('licenseRequired')}
-              </span>
+              <div className="profile_action_value">
+                <FiAlertCircle />
+                <span>{t('licenseRequired')}</span>
+              </div>
             </div>
 
-          </div>
-
-          <FiChevronLeft className="arrow" />
-        </button>
-      </div>
-
-      {/* ==================== License Verified ==================== */}
-
-      <div className="profile_action_field">
-        <button
-          type="button"
-          className="profile_action_btn"
-          onClick={() => {
-            // TODO:
-            // فتح تفاصيل الرخصة
-          }}
-        >
-          <div className="profile_action_content">
-
-            <span className="profile_action_title">
-              {t('license')}
-            </span>
-
-            <div className="profile_action_value verified">
-              <FiCheck />
-
-              <span>
-                {t('licenseVerified')}
-              </span>
-            </div>
-
-          </div>
-
-          <FiChevronLeft className="arrow" />
-        </button>
-      </div>
+            <FiChevronLeft className="arrow" />
+          </button>
+        </div>
+      )}
 
       {/* ==================== Delete Account ==================== */}
 

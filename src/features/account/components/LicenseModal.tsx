@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { FiUploadCloud } from 'react-icons/fi';
 import { Dialog } from '@/shared/ui/Dialog';
+import { Button } from '@/shared/ui/Button';
 
 interface Props {
   open: boolean;
@@ -47,7 +48,7 @@ export default function LicenseModal({ open, onClose, onSubmit, loading = false,
       closeOnEscape={!loading}
       closeOnBackdrop={!loading}
     >
-      <Dialog.Header className="modal_header">
+      <Dialog.Header>
         <Dialog.Title>{t('title')}</Dialog.Title>
         <Dialog.Close />
       </Dialog.Header>
@@ -79,15 +80,16 @@ export default function LicenseModal({ open, onClose, onSubmit, loading = false,
           onChange={handleFileChange}
         />
 
-        <button
+        <Button
           type="button"
-          className="primary_btn wide"
+          className="mt-2"
+
           disabled={!file || loading}
           aria-busy={loading}
           onClick={handleSubmit}
         >
           {t('submit')}
-        </button>
+        </Button>
 
         {error && (
           <p className="text-danger small mt-2 mb-0" role="alert">

@@ -33,10 +33,11 @@ export default function EditPhoneModal({
     setPhone(currentPhone || '');
   }, [open, currentPhone]);
 
-  const handleSend = () => {
-    if (!phone.trim() || loading) return;
+  const handleSend = async () => {
+    const fullNumber = phone.trim();
+    if (!fullNumber || loading) return;
 
-    onSendCode?.(phone);
+    await onSendCode?.(fullNumber);
   };
 
   return (

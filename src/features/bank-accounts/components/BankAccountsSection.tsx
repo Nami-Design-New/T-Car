@@ -141,7 +141,13 @@ export default function BankAccountsSection() {
         title={t('deleteConfirmTitle')}
         description={t('deleteConfirmDescription')}
         showButtons
-        primaryButtonText={submitting ? t('deleting') : t('delete')}
+        primaryButtonText={
+          submitting
+            ? t('deleting')
+            : t('delete', {
+                bank: flow.step === 'confirm-delete' ? flow.account.bankName : '',
+              })
+        }
         secondaryButtonText={t('cancel')}
         onPrimary={handleDelete}
         onSecondary={() => {

@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 import { Dialog } from '@/shared/ui/Dialog';
+import './FailedModal.scss';
 
 interface Props {
   open: boolean;
@@ -75,21 +76,16 @@ export default function FailedModal({
       size="sm"
       className={showButtons ? 'wallet_result_modal delete_account_modal' : 'wallet_result_modal'}
       closeOnEscape={!loading}
-      closeOnBackdrop={!showButtons}
+      // closeOnBackdrop={!showButtons}
       initialFocusRef={showButtons ? cancelRef : undefined}
     >
-      <Dialog.Header>
-        <Dialog.Title>{title}</Dialog.Title>
-        <Dialog.Close />
-      </Dialog.Header>
-      <span className="wallet_result_drag_handle" aria-hidden="true" />
-
       <div className="wallet_result_icon wallet_result_icon_failed" aria-hidden="true">
         <span />
         <span />
       </div>
 
       <div className="delete_account_content">
+        {title && <Dialog.Title>{title}</Dialog.Title>}
         {description && <Dialog.Description>{description}</Dialog.Description>}
 
         {error && (
