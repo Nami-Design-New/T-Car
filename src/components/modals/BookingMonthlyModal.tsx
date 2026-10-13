@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, type CSSProperties } from 'react';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import { FiClock, FiMapPin } from 'react-icons/fi';
@@ -116,56 +116,56 @@ export default function BookingMonthlyModal({ open, onClose, pricePerDay, onConf
     <Dialog open={open} onClose={onClose} size="xl" className="booking_dialog" label={tm('title')}>
       <div className="booking_modal">
         <div className="booking_modal_calendar">
-          <div style={{ padding: '20px 22px', borderRadius: 14, background: '#eaf3ff', textAlign: 'center' }}>
-            <div style={{ marginBottom: 8, color: '#101820', fontSize: 14 }}>{tm('monthsCount')}</div>
+          <div className="booking_monthly_picker" style={{ '--month-progress': `${monthProgress}%` } as CSSProperties}>
+            <div className="booking_monthly_label">{tm('monthsCount')}</div>
 
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', maxWidth: 225, margin: '0 auto 18px' }}>
+            <div className="booking_monthly_stepper">
               <button
                 type="button"
+                className="booking_monthly_step"
                 aria-label={tm('increase')}
                 onClick={() => changeRentalMonths(rentalMonths + 1)}
                 disabled={rentalMonths === 12}
-                style={{ width: 28, height: 28, border: 0, borderRadius: 6, background: '#fff', color: '#101820', fontSize: 22, lineHeight: 1, cursor: rentalMonths === 12 ? 'not-allowed' : 'pointer', opacity: rentalMonths === 12 ? 0.5 : 1 }}
               >
                 +
               </button>
 
-              <strong style={{ color: '#101820', fontSize: 32, lineHeight: 1 }}>{rentalMonths}</strong>
+              <strong className="booking_monthly_count">{rentalMonths}</strong>
 
               <button
                 type="button"
+                className="booking_monthly_step"
                 aria-label={tm('decrease')}
                 onClick={() => changeRentalMonths(rentalMonths - 1)}
                 disabled={rentalMonths === 1}
-                style={{ width: 28, height: 28, border: 0, borderRadius: 6, background: '#fff', color: '#101820', fontSize: 22, lineHeight: 1, cursor: rentalMonths === 1 ? 'not-allowed' : 'pointer', opacity: rentalMonths === 1 ? 0.5 : 1 }}
               >
                 −
               </button>
             </div>
 
-            <div style={{ position: 'relative', height: 60, marginBottom: 14, overflow: 'hidden', borderRadius: 13, background: '#a4a4a4', color: '#fff' }}>
-              <span style={{ position: 'absolute', top: 0, insetInlineStart: 0, width: `${monthProgress}%`, height: '100%', borderRadius: 13, background: '#287ff0', transition: 'width 0.2s ease' }} />
-              <span style={{ position: 'absolute', inset: 0, display: 'grid', placeItems: 'center', fontSize: 14, pointerEvents: 'none' }}>
+            <div className="booking_monthly_track">
+              <span className="booking_monthly_fill" />
+              <span className="booking_monthly_value">
                 {tm('months', { count: rentalMonths })}
               </span>
-              <span style={{ position: 'absolute', insetInlineStart: `calc(${monthProgress}% - 28px)`, top: '50%', display: 'flex', alignItems: 'center', gap: 3, transform: 'translateY(-50%)', color: '#fff', fontSize: 15, transition: 'inset-inline-start 0.2s ease', pointerEvents: 'none' }}>
+              <span className="booking_monthly_thumb">
                 <span>▶</span>
-                <span style={{ width: 24, height: 24, border: '2px solid #fff', borderRadius: '50%', background: '#287ff0', boxShadow: '0 1px 2px rgba(0, 0, 0, 0.18)' }} />
+                <span className="booking_monthly_knob" />
                 <span>◀</span>
               </span>
               <input
                 type="range"
+                className="booking_monthly_range"
                 min="0"
                 max="12"
                 step="1"
                 value={rentalMonths}
                 aria-label={tm('sliderLabel')}
                 onChange={(e) => changeRentalMonths(Number(e.target.value))}
-                style={{ position: 'absolute', inset: 0, zIndex: 2, width: '100%', height: '100%', margin: 0, opacity: 0, cursor: 'pointer' }}
               />
             </div>
 
-            <div style={{ color: '#101820', fontSize: 13 }}>
+            <div className="booking_monthly_dates">
               {formatShort(range.start!)} <strong>{t('to')}</strong> {formatShort(range.end!)}
             </div>
           </div>

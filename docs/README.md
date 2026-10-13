@@ -321,9 +321,11 @@ extensions over 30 days, and so on) are documented in each `services/mocks/*.ts`
   the shared `Dialog` (role, accessible name, focus trap, scroll lock, Escape and
   backdrop dismissal; the monthly map dialog mounts only while open), and their
   copy is in both locale files: `booking.daily` (shared with `BookingDailyModal`,
-  plus `pickupTime`), `booking.monthly`, `wallet.insufficient`. Left: the monthly
-  modal's inline layout styles, and the calendar chevrons, which assume RTL (also
-  in `BookingDailyModal`).
+  plus `pickupTime`), `booking.monthly`, `wallet.insufficient`. The booking
+  dialogs are as wide as their form with a sticky footer, the calendar month
+  arrows follow the reading direction, and the monthly picker's styles live in
+  `styles/legacy/_components.scss` (all 2026-10-13). Left: at 12 months the
+  picker's slider thumb is partly clipped at the end of the track.
 
 ### Where the code differs from these documents
 
