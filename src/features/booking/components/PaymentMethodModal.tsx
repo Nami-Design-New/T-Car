@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
-import { FiX } from 'react-icons/fi';
 import { RadioCards } from '@/shared/ui/RadioCards';
 import { Dialog } from '@/shared/ui/Dialog';
 import type { PaymentMethod } from '../model';
@@ -78,17 +77,10 @@ export default function PaymentMethodModal({
       <div className="payment_method_modal bg-white">
         <span className="payment_drag_handle" />
 
-        <div className="payment_modal_header d-flex align-items-center justify-content-between mb-3">
-          <h3>{t('title')}</h3>
-          <button
-            type="button"
-            className="payment_modal_close btn btn-light d-grid p-0"
-            onClick={onClose}
-            aria-label={t('close')}
-          >
-            <FiX />
-          </button>
-        </div>
+        <Dialog.Header className="payment_modal_header d-flex align-items-center justify-content-between mb-3">
+          <Dialog.Title>{t('title')}</Dialog.Title>
+          <Dialog.Close className="payment_modal_close btn btn-light d-grid p-0" />
+        </Dialog.Header>
 
         <div className="payment_modal_options d-flex flex-column gap-3">
           <RadioCards.Root
@@ -121,8 +113,10 @@ export default function PaymentMethodModal({
                 className={`payment_modal_option d-flex align-items-center justify-content-between gap-3 ${method === option.id ? 'selected' : ''}`}
               >
                 <span className="payment_option_text d-flex flex-column">
-                <span className="payment_option_title">{t(`options.${option.id}.title`)}</span>
-                <span className="payment_option_desc">{t(`options.${option.id}.description`)}</span>
+                  <span className="payment_option_title">{t(`options.${option.id}.title`)}</span>
+                  <span className="payment_option_desc">
+                    {t(`options.${option.id}.description`)}
+                  </span>
                 </span>
                 <span className="payment_option_info d-flex align-items-center">
                   <Image

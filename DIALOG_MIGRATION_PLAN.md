@@ -1,6 +1,6 @@
 # Dialog Module Implementation and Migration Plan
 
-Status: in progress — the shared Dialog foundation plus the CountryModal, WalletAmountModal, and BankSelectModal pilots are implemented; other dialog migrations remain planned.
+Status: complete — all retained modal surfaces use the shared Dialog module. The responsive filter drawers remain intentionally outside this interface.
 
 ## 1. Purpose
 

@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { FiX, FiStar, FiArrowLeft } from 'react-icons/fi';
+import { FiStar, FiArrowLeft } from 'react-icons/fi';
 import { formatCurrency } from '@/shared/lib/format';
 import { Dialog } from '@/shared/ui/Dialog';
 import type { BookingDetails } from '../model';
@@ -39,15 +39,12 @@ export default function BookingConfirmModal({
   return (
     <Dialog open={open} onClose={onClose} size="xl" label={t('dialogLabel')}>
       <div className="confirm_modal confirm_booking_modal">
-        <button className="close_btn" onClick={onClose} aria-label={t('close')}>
-          <FiX />
-        </button>
-
         <div className="confirm_modal_header">
           <button type="button" className="back_btn" onClick={onBack} aria-label={t('back')}>
             <FiArrowLeft className="mirror-in-rtl" />
           </button>
-          <h2>{t('title')}</h2>
+          <Dialog.Title>{t('title')}</Dialog.Title>
+          <Dialog.Close className="close_btn" />
         </div>
 
         <div className="confirm_modal_scroll">
@@ -67,7 +64,10 @@ export default function BookingConfirmModal({
 
             <div className="confirm_car_summary_price">
               <span className="old">{formatCurrency(booking.pricePerDay + 100)}</span>
-              <span className="current">{formatCurrency(booking.pricePerDay)}{t('perDay')}</span>
+              <span className="current">
+                {formatCurrency(booking.pricePerDay)}
+                {t('perDay')}
+              </span>
             </div>
           </div>
 
@@ -122,7 +122,9 @@ export default function BookingConfirmModal({
 
               <div className="price_item">
                 <span>{t('days')}</span>
-                <strong>{booking.days} {t('day')}</strong>
+                <strong>
+                  {booking.days} {t('day')}
+                </strong>
               </div>
 
               <div className="price_item">

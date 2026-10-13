@@ -3,8 +3,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
 
-import { createPortal } from 'react-dom';
-import { FiX } from 'react-icons/fi';
+import { Dialog } from '@/shared/ui/Dialog';
 import SuccessModal from '@components/common/SuccessModal';
 
 interface Props {
@@ -35,8 +34,6 @@ export default function VerifyPhoneModal({
   error,
 }: Props) {
   const t = useTranslations('account.verifyPhone');
-  const [mounted, setMounted] = useState(false);
-
   const [successOpen, setSuccessOpen] = useState(false);
 
   const [otp, setOtp] = useState<string[]>(Array(OTP_LENGTH).fill(''));
@@ -44,26 +41,6 @@ export default function VerifyPhoneModal({
   const [timer, setTimer] = useState(INITIAL_SECONDS);
 
   const inputs = useRef<Array<HTMLInputElement | null>>([]);
-
-  /* =========================
-     Mount
-  ========================= */
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  /* =========================
-     Body Scroll
-  ========================= */
-
-  useEffect(() => {
-    document.body.style.overflow = open ? 'hidden' : '';
-
-    return () => {
-      document.body.style.overflow = '';
-    };
-  }, [open]);
 
   /* =========================
      Reset Modal
@@ -100,30 +77,6 @@ export default function VerifyPhoneModal({
 
     return () => clearInterval(interval);
   }, [open, timer]);
-
-  /* =========================
-     Escape
-  ========================= */
-
-  useEffect(() => {
-    if (!open) return;
-
-    const handleKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        onClose();
-      }
-    };
-
-    document.addEventListener('keydown', handleKey);
-
-    return () => {
-      document.removeEventListener('keydown', handleKey);
-    };
-  }, [open, onClose]);
-
-  if (!open || !mounted) {
-    return null;
-  }
 
   /* =========================
      Focus Input
@@ -271,22 +224,30 @@ export default function VerifyPhoneModal({
      Content
   ========================= */
 
-  const content = (
-    <div className="modal_overlay" onClick={onClose}>
-      <div className="auth_modal verify_modal" onClick={(e) => e.stopPropagation()}>
-        {/* Header */}
+  const firstInputRef = (element: HTMLInputElement | null) => {
+    inputs.current[0] = element;
+  };
 
-        <div className="verify_modal_header">
-          <button type="button" className="icon_btn" onClick={onClose} aria-label={t('close')}>
-            <FiX />
-          </button>
-        </div>
+  const handleSuccessDone = () => {
+    setSuccessOpen(false);
+    onVerified?.(phone);
+  };
 
-        {/* OTP Form */}
+  return (
+    <>
+      <Dialog
+        open={open}
+        onClose={onClose}
+        className="auth_modal verify_modal"
+        closeOnEscape={!loading}
+        closeOnBackdrop={!loading}
+      >
+        <Dialog.Header className="verify_modal_header">
+          <Dialog.Title>{t('title')}</Dialog.Title>
+          <Dialog.Close />
+        </Dialog.Header>
 
-        <div className="otp_form">
-          <h2>{t('title')}</h2>
-
+        <Dialog.Body className="otp_form">
           <p>{t('sentTo')}</p>
 
           <span className="phone">{phone}</span>
@@ -308,7 +269,8 @@ export default function VerifyPhoneModal({
               <input
                 key={index}
                 ref={(element) => {
-                  inputs.current[index] = element;
+                  if (index === 0) firstInputRef(element);
+                  else inputs.current[index] = element;
                 }}
                 type="text"
                 inputMode="numeric"
@@ -349,19 +311,8 @@ export default function VerifyPhoneModal({
           >
             {t('verify')}
           </button>
-        </div>
-      </div>
-    </div>
-  );
-
-  const handleSuccessDone = () => {
-    setSuccessOpen(false);
-    onVerified?.(phone);
-  };
-
-  return (
-    <>
-      {createPortal(content, document.body)}
+        </Dialog.Body>
+      </Dialog>
 
       <SuccessModal
         open={successOpen}

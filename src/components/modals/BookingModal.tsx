@@ -24,9 +24,7 @@ interface DateRange {
 // array -- reversing it silently mislabels every column.
 const WEEKDAYS = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
 
-const MONTHS = [
-  'jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec',
-];
+const MONTHS = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'];
 
 const TIME_SLOTS = ['8:00 AM', '9:00 AM', '10:00 AM', '11:00 AM', '12:00 PM', '1:00 PM', '2:00 PM'];
 
@@ -38,7 +36,8 @@ function sameDay(a: Date, b: Date) {
 
 export default function BookingModal({ open, onClose, pricePerDay, onConfirm }: Props) {
   const t = useTranslations('booking.daily');
-  const formatShort = (d: Date) => `${d.getDate()} ${t(`months.${MONTHS[d.getMonth()]}`)} ${d.getFullYear()}`;
+  const formatShort = (d: Date) =>
+    `${d.getDate()} ${t(`months.${MONTHS[d.getMonth()]}`)} ${d.getFullYear()}`;
 
   const [cursor, setCursor] = useState(new Date());
 
@@ -113,11 +112,25 @@ export default function BookingModal({ open, onClose, pricePerDay, onConfirm }: 
   };
 
   return (
-    <Dialog open={open} onClose={onClose} size="xl" className="booking_dialog" label={t('newBooking')}>
+    <Dialog
+      open={open}
+      onClose={onClose}
+      size="xl"
+      className="booking_dialog"
+      label={t('newBooking')}
+    >
+      <Dialog.Header className="booking_dialog_header">
+        <Dialog.Title>{t('newBooking')}</Dialog.Title>
+        <Dialog.Close />
+      </Dialog.Header>
       <div className="booking_modal">
         <div className="booking_modal_calendar">
           <div className="calendar_header">
-            <button type="button" aria-label={t('previousMonth')} onClick={() => setCursor(new Date(year, month - 1, 1))}>
+            <button
+              type="button"
+              aria-label={t('previousMonth')}
+              onClick={() => setCursor(new Date(year, month - 1, 1))}
+            >
               <FiChevronLeft className="mirror-in-rtl" aria-hidden="true" />
             </button>
 
@@ -125,7 +138,11 @@ export default function BookingModal({ open, onClose, pricePerDay, onConfirm }: 
               {t(`months.${MONTHS[month]}`)} {year}
             </span>
 
-            <button type="button" aria-label={t('nextMonth')} onClick={() => setCursor(new Date(year, month + 1, 1))}>
+            <button
+              type="button"
+              aria-label={t('nextMonth')}
+              onClick={() => setCursor(new Date(year, month + 1, 1))}
+            >
               <FiChevronRight className="mirror-in-rtl" aria-hidden="true" />
             </button>
           </div>

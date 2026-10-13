@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { FiStar, FiX } from 'react-icons/fi';
+import { FiStar } from 'react-icons/fi';
 import { Dialog } from '@/shared/ui/Dialog';
 import { useErrorMessage } from '@/shared/hooks/useErrorMessage';
 import type { AppError } from '@/shared/lib/errors';
@@ -36,11 +36,8 @@ export default function BookingReviewModal({ submitting = false, onSubmit, onClo
   return (
     <Dialog open onClose={onClose} label={t('dialogLabel')}>
       <div className="review-modal" onClick={(e) => e.stopPropagation()}>
-        <button className="close_btn" onClick={onClose} aria-label={t('close')}>
-          <FiX />
-        </button>
-
-        <h3>{t('title')}</h3>
+        <Dialog.Title>{t('title')}</Dialog.Title>
+        <Dialog.Close className="close_btn" />
         <p className="review-modal-subtitle">{t('subtitle')}</p>
 
         <div className="review-modal-stars">

@@ -32,11 +32,14 @@ export function ResultDialog({
 
   return (
     <Dialog open={open} onClose={onClose} className="result-dialog" placement="bottom-sheet">
+      <Dialog.Header>
+        <Dialog.Title>{title}</Dialog.Title>
+        <Dialog.Close />
+      </Dialog.Header>
       <Dialog.Body className="result-dialog__body">
         <span className={`result-dialog__icon result-dialog__icon--${status}`} aria-hidden="true">
           {status === 'success' ? '✓' : '×'}
         </span>
-        <Dialog.Title>{title}</Dialog.Title>
         {description && <Dialog.Description>{description}</Dialog.Description>}
         {action && (
           <button type="button" className="result-dialog__action" onClick={action.onClick}>

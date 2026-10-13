@@ -286,6 +286,10 @@
   animation: hero-drawer-fade-in 0.24s ease-out;
 }
 
+.hero_section.has-filter-drawer {
+  z-index: 1100;
+}
+
 .hero_filter_drawer {
   position: fixed;
   inset-block: 0;

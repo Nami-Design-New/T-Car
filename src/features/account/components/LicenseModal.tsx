@@ -1,9 +1,9 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { createPortal } from 'react-dom';
 import { useTranslations } from 'next-intl';
-import { FiX, FiUploadCloud } from 'react-icons/fi';
+import { FiUploadCloud } from 'react-icons/fi';
+import { Dialog } from '@/shared/ui/Dialog';
 
 interface Props {
   open: boolean;
@@ -13,46 +13,11 @@ interface Props {
   error?: string;
 }
 
-export default function LicenseModal({
-  open,
-  onClose,
-  onSubmit,
-  loading = false,
-  error,
-}: Props) {
+export default function LicenseModal({ open, onClose, onSubmit, loading = false, error }: Props) {
   const t = useTranslations('account.license');
-  const [mounted, setMounted] = useState(false);
   const [file, setFile] = useState<File | null>(null);
 
   const inputRef = useRef<HTMLInputElement | null>(null);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  useEffect(() => {
-    document.body.style.overflow = open ? 'hidden' : '';
-
-    return () => {
-      document.body.style.overflow = '';
-    };
-  }, [open]);
-
-  useEffect(() => {
-    if (!open) return;
-
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        onClose();
-      }
-    };
-
-    document.addEventListener('keydown', handleKeyDown);
-
-    return () => {
-      document.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [open, onClose]);
 
   useEffect(() => {
     if (!open) {
@@ -60,11 +25,7 @@ export default function LicenseModal({
     }
   }, [open]);
 
-  if (!open || !mounted) return null;
-
-  const handleFileChange = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = event.target.files?.[0];
 
     if (!selectedFile) return;
@@ -78,87 +39,62 @@ export default function LicenseModal({
     await onSubmit(file);
   };
 
-  const content = (
-    <div
-      className="modal_overlay"
-      onClick={onClose}
+  return (
+    <Dialog
+      open={open}
+      onClose={onClose}
+      className="selection_modal license_modal"
+      closeOnEscape={!loading}
+      closeOnBackdrop={!loading}
     >
-      <div
-        className="selection_modal license_modal"
-        onClick={(event) => event.stopPropagation()}
-      >
-        {/* Header */}
-        <div className="modal_header">
-          <h3>{t('title')}</h3>
+      <Dialog.Header className="modal_header">
+        <Dialog.Title>{t('title')}</Dialog.Title>
+        <Dialog.Close />
+      </Dialog.Header>
 
-       <button
+      <Dialog.Body className="modal_body">
+        <button
           type="button"
-          className="close_btn"
-          onClick={onClose}
-          aria-label={t('close')}
+          className={`license_upload_area ${file ? 'has_file' : ''}`}
+          onClick={() => inputRef.current?.click()}
         >
-          <FiX />
+          <FiUploadCloud />
+
+          {file ? (
+            <span className="file_name">{file.name}</span>
+          ) : (
+            <>
+              <span>{t('uploadPrompt')}</span>
+
+              <small>{t('fileTypes')}</small>
+            </>
+          )}
         </button>
 
-        </div>
+        <input
+          ref={inputRef}
+          type="file"
+          accept="image/png,image/jpeg"
+          hidden
+          onChange={handleFileChange}
+        />
 
-        {/* Body */}
-        <div className="modal_body">
+        <button
+          type="button"
+          className="primary_btn wide"
+          disabled={!file || loading}
+          aria-busy={loading}
+          onClick={handleSubmit}
+        >
+          {t('submit')}
+        </button>
 
-          <button
-            type="button"
-            className={`license_upload_area ${
-              file ? 'has_file' : ''
-            }`}
-            onClick={() => inputRef.current?.click()}
-          >
-            <FiUploadCloud />
-
-            {file ? (
-              <span className="file_name">
-                {file.name}
-              </span>
-            ) : (
-              <>
-                <span>
-                  {t('uploadPrompt')}
-                </span>
-
-                <small>
-                  {t('fileTypes')}
-                </small>
-              </>
-            )}
-          </button>
-
-          <input
-            ref={inputRef}
-            type="file"
-            accept="image/png,image/jpeg"
-            hidden
-            onChange={handleFileChange}
-          />
-
-          <button
-            type="button"
-            className="primary_btn wide"
-            disabled={!file || loading}
-            aria-busy={loading}
-            onClick={handleSubmit}
-          >
-            {t('submit')}
-          </button>
-
-          {error && (
-            <p className="text-danger small mt-2 mb-0" role="alert">
-              {error}
-            </p>
-          )}
-
-        </div>
-      </div>
-    </div>
+        {error && (
+          <p className="text-danger small mt-2 mb-0" role="alert">
+            {error}
+          </p>
+        )}
+      </Dialog.Body>
+    </Dialog>
   );
-
-  return createPortal(content, document.body);
 }

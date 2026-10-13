@@ -73,34 +73,24 @@ export default function FailedModal({
       open={open}
       onClose={handleClose}
       size="sm"
-      className={
-        showButtons
-          ? 'wallet_result_modal delete_account_modal'
-          : 'wallet_result_modal'
-      }
+      className={showButtons ? 'wallet_result_modal delete_account_modal' : 'wallet_result_modal'}
       closeOnEscape={!loading}
       closeOnBackdrop={!showButtons}
       initialFocusRef={showButtons ? cancelRef : undefined}
     >
-      <span
-        className="wallet_result_drag_handle"
-        aria-hidden="true"
-      />
+      <Dialog.Header>
+        <Dialog.Title>{title}</Dialog.Title>
+        <Dialog.Close />
+      </Dialog.Header>
+      <span className="wallet_result_drag_handle" aria-hidden="true" />
 
-      <div
-        className="wallet_result_icon wallet_result_icon_failed"
-        aria-hidden="true"
-      >
+      <div className="wallet_result_icon wallet_result_icon_failed" aria-hidden="true">
         <span />
         <span />
       </div>
 
       <div className="delete_account_content">
-        <Dialog.Title>{title}</Dialog.Title>
-
-        {description && (
-          <Dialog.Description>{description}</Dialog.Description>
-        )}
+        {description && <Dialog.Description>{description}</Dialog.Description>}
 
         {error && (
           <p className="text-danger small mt-2 mb-0" role="alert">

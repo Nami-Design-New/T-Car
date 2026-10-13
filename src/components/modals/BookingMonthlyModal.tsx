@@ -25,9 +25,7 @@ interface DateRange {
 
 type MapField = 'pickup' | 'dropoff';
 
-const MONTHS = [
-  'jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec',
-];
+const MONTHS = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'];
 
 const TIME_SLOTS = ['8:00 AM', '9:00 AM', '10:00 AM', '11:00 AM', '12:00 PM', '1:00 PM', '2:00 PM'];
 const VAT_RATE = 0.15;
@@ -49,7 +47,8 @@ function getAddressTitle(address: string, fallback: string) {
 export default function BookingMonthlyModal({ open, onClose, pricePerDay, onConfirm }: Props) {
   const t = useTranslations('booking.daily');
   const tm = useTranslations('booking.monthly');
-  const formatShort = (d: Date) => `${d.getDate()} ${t(`months.${MONTHS[d.getMonth()]}`)} ${d.getFullYear()}`;
+  const formatShort = (d: Date) =>
+    `${d.getDate()} ${t(`months.${MONTHS[d.getMonth()]}`)} ${d.getFullYear()}`;
   const distanceHint = tm.rich('distanceHint', { strong: (chunks) => <strong>{chunks}</strong> });
 
   const [rentalMonths, setRentalMonths] = useState(1);
@@ -68,9 +67,10 @@ export default function BookingMonthlyModal({ open, onClose, pricePerDay, onConf
     setRange(getMonthlyRange(nextMonths));
   };
 
-  const totalDays = range.start && range.end
-    ? Math.max(1, Math.round((range.end.getTime() - range.start.getTime()) / 86400000))
-    : 1;
+  const totalDays =
+    range.start && range.end
+      ? Math.max(1, Math.round((range.end.getTime() - range.start.getTime()) / 86400000))
+      : 1;
   const subtotal = pricePerDay * totalDays;
   const vat = Math.round(subtotal * VAT_RATE);
   const total = subtotal + vat;
@@ -114,9 +114,16 @@ export default function BookingMonthlyModal({ open, onClose, pricePerDay, onConf
 
   return (
     <Dialog open={open} onClose={onClose} size="xl" className="booking_dialog" label={tm('title')}>
+      <Dialog.Header className="booking_dialog_header">
+        <Dialog.Title>{tm('title')}</Dialog.Title>
+        <Dialog.Close />
+      </Dialog.Header>
       <div className="booking_modal">
         <div className="booking_modal_calendar">
-          <div className="booking_monthly_picker" style={{ '--month-progress': `${monthProgress}%` } as CSSProperties}>
+          <div
+            className="booking_monthly_picker"
+            style={{ '--month-progress': `${monthProgress}%` } as CSSProperties}
+          >
             <div className="booking_monthly_label">{tm('monthsCount')}</div>
 
             <div className="booking_monthly_stepper">
@@ -145,9 +152,7 @@ export default function BookingMonthlyModal({ open, onClose, pricePerDay, onConf
 
             <div className="booking_monthly_track">
               <span className="booking_monthly_fill" />
-              <span className="booking_monthly_value">
-                {tm('months', { count: rentalMonths })}
-              </span>
+              <span className="booking_monthly_value">{tm('months', { count: rentalMonths })}</span>
               <span className="booking_monthly_thumb">
                 <span>▶</span>
                 <span className="booking_monthly_knob" />
@@ -176,7 +181,11 @@ export default function BookingMonthlyModal({ open, onClose, pricePerDay, onConf
           <div className="time_select">
             <FiClock />
             <select value={time} onChange={(e) => setTime(e.target.value)}>
-              {TIME_SLOTS.map((slot) => <option key={slot} value={slot}>{slot}</option>)}
+              {TIME_SLOTS.map((slot) => (
+                <option key={slot} value={slot}>
+                  {slot}
+                </option>
+              ))}
             </select>
           </div>
         </div>
@@ -284,7 +293,6 @@ export default function BookingMonthlyModal({ open, onClose, pricePerDay, onConf
             <h3>{formatCurrency(total)}</h3>
           </div>
         </div>
-
       </div>
 
       {mapField !== null && (

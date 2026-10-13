@@ -78,15 +78,17 @@ export default function SuccessModal({
   return (
     <Dialog
       open={open}
-      onClose={() => onDone?.()}
+      onClose={handleClick}
       size="sm"
       className="success_modal"
-      closeOnEscape={!!onDone}
+      closeOnEscape={!!onDone || !!redirectTo}
       closeOnBackdrop={false}
     >
+      <Dialog.Header>
+        <Dialog.Title>{title}</Dialog.Title>
+        <Dialog.Close />
+      </Dialog.Header>
       <Lottie animationData={successAnimation} loop={false} className="success_animation" />
-
-      <Dialog.Title>{title}</Dialog.Title>
 
       <Dialog.Description>{description}</Dialog.Description>
       {appearButton && (

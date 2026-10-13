@@ -1,6 +1,5 @@
 'use client';
 
-import { FiX } from 'react-icons/fi';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { Dialog } from '@/shared/ui/Dialog';
@@ -35,21 +34,12 @@ export default function CancelBookingModal({
   const t = useTranslations('myBookings.cancel');
 
   return (
-  
     <Dialog open={open} onClose={onClose} placement="bottom-sheet" label={t('dialogLabel')}>
       <div className=" selection_modal cancel_booking_modal">
-         {/* Close */}
-        <button
-          type="button"
-          className="close_btn"
-          onClick={onClose}
-          aria-label={t('close')}
-        >
-          <FiX />
-        </button>
-
+        {/* Close */}
         <div className="cancel_booking_modal_header">
-          <h2>{t('title')}</h2>
+          <Dialog.Title>{t('title')}</Dialog.Title>
+          <Dialog.Close className="close_btn" />
         </div>
 
         <div className="cancel_booking_modal_illustration">
@@ -69,7 +59,9 @@ export default function CancelBookingModal({
 
           <div className="cancel_booking_modal_row">
             <span>{t('paid')}</span>
-            <strong>{bookingAmount} {t('currency')}</strong>
+            <strong>
+              {bookingAmount} {t('currency')}
+            </strong>
           </div>
 
           <div className="cancel_booking_modal_row cancel_booking_modal_row--danger">
@@ -79,18 +71,24 @@ export default function CancelBookingModal({
 
           <div className="cancel_booking_modal_row cancel_booking_modal_row--danger">
             <span>{t('cancellationFee')}</span>
-            <strong>-{cancellationFee} {t('currency')}</strong>
+            <strong>
+              -{cancellationFee} {t('currency')}
+            </strong>
           </div>
 
           <div className="cancel_booking_modal_row cancel_booking_modal_row--strong">
             <span>{t('refunded')}</span>
-            <strong>{refundedAmount} {t('currency')}</strong>
+            <strong>
+              {refundedAmount} {t('currency')}
+            </strong>
           </div>
         </div>
 
         <div className="cancel_booking_modal_refund_box">
           <span>{t('refundedToYou')}</span>
-          <strong>{refundedAmount} {t('currency')}</strong>
+          <strong>
+            {refundedAmount} {t('currency')}
+          </strong>
         </div>
 
         {error && (

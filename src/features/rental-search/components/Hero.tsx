@@ -254,7 +254,7 @@ export default function Hero({ options, brands }: Props) {
   };
 
   return (
-    <section className="hero_section">
+    <section className={`hero_section${showFilters ? ' has-filter-drawer' : ''}`}>
       <Swiper
         modules={[Autoplay, EffectFade]}
         effect="fade"
@@ -326,7 +326,12 @@ export default function Hero({ options, brands }: Props) {
             onClick={() => setShowFilters(false)}
             aria-label={t('cars.filters.close')}
           />
-          <aside className="hero_filter_drawer" aria-labelledby="hero-filter-title">
+          <aside
+            className="hero_filter_drawer"
+            aria-label={t('cars.filters.title')}
+            aria-modal="true"
+            role="dialog"
+          >
             <header className="hero_filter_drawer_header">
               <button
                 type="button"

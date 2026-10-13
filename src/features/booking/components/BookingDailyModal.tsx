@@ -32,9 +32,7 @@ type MapField = 'pickup' | 'dropoff';
 // array -- reversing it silently mislabels every column.
 const WEEKDAYS = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
 
-const MONTHS = [
-  'jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec',
-];
+const MONTHS = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'];
 
 const TIME_SLOTS = ['8:00 AM', '9:00 AM', '10:00 AM', '11:00 AM', '12:00 PM', '1:00 PM', '2:00 PM'];
 const VAT_RATE = 0.15;
@@ -47,7 +45,14 @@ function getAddressTitle(address: string, fallback: string) {
   return address.split(',')[0]?.trim() || fallback;
 }
 
-export default function BookingDailyModal({ open, onClose, pricePerDay, onConfirm, initialDetails = null, mode = 'create' }: Props) {
+export default function BookingDailyModal({
+  open,
+  onClose,
+  pricePerDay,
+  onConfirm,
+  initialDetails = null,
+  mode = 'create',
+}: Props) {
   const t = useTranslations('booking.daily');
   const [cursor, setCursor] = useState<Date>(new Date());
   const [range, setRange] = useState<DateRange>({ start: null, end: null });
@@ -75,24 +80,11 @@ export default function BookingDailyModal({ open, onClose, pricePerDay, onConfir
         if (initialDetails.pickupAddress) setPickupAddress(initialDetails.pickupAddress || '');
         if (initialDetails.dropoffAddress) setDropoffAddress(initialDetails.dropoffAddress || '');
         if (initialDetails.pickupLocation) setPickupLocation(initialDetails.pickupLocation || null);
-        if (initialDetails.dropoffLocation) setDropoffLocation(initialDetails.dropoffLocation || null);
-      } catch (e) {
-      }
+        if (initialDetails.dropoffLocation)
+          setDropoffLocation(initialDetails.dropoffLocation || null);
+      } catch (e) {}
     }
   }, [open, initialDetails]);
-
-  useEffect(() => {
-    if (!open) return;
-
-    const handleKey = (e: KeyboardEvent) => {
-      if (e.key !== 'Escape') return;
-      if (mapField) setMapField(null);
-      else onClose();
-    };
-
-    document.addEventListener('keydown', handleKey);
-    return () => document.removeEventListener('keydown', handleKey);
-  }, [mapField, onClose, open]);
 
   const year = cursor.getFullYear();
   const month = cursor.getMonth();
@@ -121,9 +113,10 @@ export default function BookingDailyModal({ open, onClose, pricePerDay, onConfir
     }
   };
 
-  const totalDays = range.start && range.end
-    ? Math.max(1, Math.round((range.end.getTime() - range.start.getTime()) / 86400000))
-    : 1;
+  const totalDays =
+    range.start && range.end
+      ? Math.max(1, Math.round((range.end.getTime() - range.start.getTime()) / 86400000))
+      : 1;
   const subtotal = pricePerDay * totalDays;
   const vat = Math.round(subtotal * VAT_RATE);
   const total = subtotal + vat;
@@ -164,23 +157,45 @@ export default function BookingDailyModal({ open, onClose, pricePerDay, onConfir
   };
 
   return (
-    <Dialog open={open} onClose={onClose} size="xl" className="booking_dialog" label={mode === 'edit' ? t('editBooking') : t('newBooking')}>
+    <Dialog
+      open={open}
+      onClose={onClose}
+      size="xl"
+      className="booking_dialog"
+      label={mode === 'edit' ? t('editBooking') : t('newBooking')}
+    >
+      <Dialog.Header className="booking_dialog_header">
+        <Dialog.Title>{mode === 'edit' ? t('editBooking') : t('newBooking')}</Dialog.Title>
+        <Dialog.Close />
+      </Dialog.Header>
       <div className="booking_modal">
         <div className="booking_modal_calendar">
           <div className="calendar_header">
-            <button type="button" aria-label={t('previousMonth')} onClick={() => setCursor(new Date(year, month - 1, 1))}>
+            <button
+              type="button"
+              aria-label={t('previousMonth')}
+              onClick={() => setCursor(new Date(year, month - 1, 1))}
+            >
               <FiChevronLeft className="mirror-in-rtl" aria-hidden="true" />
             </button>
 
-            <span>{t(`months.${MONTHS[month]}`)} {year}</span>
+            <span>
+              {t(`months.${MONTHS[month]}`)} {year}
+            </span>
 
-            <button type="button" aria-label={t('nextMonth')} onClick={() => setCursor(new Date(year, month + 1, 1))}>
+            <button
+              type="button"
+              aria-label={t('nextMonth')}
+              onClick={() => setCursor(new Date(year, month + 1, 1))}
+            >
               <FiChevronRight className="mirror-in-rtl" aria-hidden="true" />
             </button>
           </div>
 
           <div className="calendar_weekdays">
-            {WEEKDAYS.map((day) => <span key={day}>{t(`weekdays.${day}`)}</span>)}
+            {WEEKDAYS.map((day) => (
+              <span key={day}>{t(`weekdays.${day}`)}</span>
+            ))}
           </div>
 
           <div className="calendar_days">
@@ -224,7 +239,11 @@ export default function BookingDailyModal({ open, onClose, pricePerDay, onConfir
           <div className="time_select">
             <FiClock />
             <select value={time} onChange={(e) => setTime(e.target.value)}>
-              {TIME_SLOTS.map((slot) => <option key={slot} value={slot}>{slot}</option>)}
+              {TIME_SLOTS.map((slot) => (
+                <option key={slot} value={slot}>
+                  {slot}
+                </option>
+              ))}
             </select>
           </div>
         </div>
@@ -332,7 +351,6 @@ export default function BookingDailyModal({ open, onClose, pricePerDay, onConfir
             <h3>{formatCurrency(total)}</h3>
           </div>
         </div>
-
       </div>
 
       {mapField !== null && (
