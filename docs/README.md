@@ -3,7 +3,7 @@
 Status: **in progress** on branch `refactor/architecture-layers` (not merged). See
 [Migration status](#migration-status) for what is done and where the code
 deliberately differs from these documents.
-Last reviewed against the code: 2026-10-13. Status updated: 2026-10-13.
+Last reviewed against the code: 2026-10-14. Status updated: 2026-10-14.
 
 This folder reviews the current front end and sets out the target design and the
 migration path for six areas. Each document stands on its own: it covers the
@@ -277,6 +277,11 @@ extensions over 30 days, and so on) are documented in each `services/mocks/*.ts`
  - Fixed (2026-10-13): `features/home/components/ContactInfo.tsx` now uses the
    `contact` namespace for its labels and values; the home contact block no longer
    throws `MISSING_MESSAGE` for `phoneValue`, `emailValue`, or `addressValue`.
+ - Result dialog follow-up (2026-10-14): `shared/ui/ResultDialog` now uses the
+   success/error GIF animations, has an optional action, closes on backdrop or
+   after a default two-second delay, and has no close button. The GIFs are served
+   from `public/animations/`; the legacy `SuccessModal` and failure confirmation
+   remain separate until their remaining callers are migrated.
 - Formatting (2026-10-04): the existing, consistent formatting is kept (no
   repo-wide Prettier pass). Prettier formatted only the 8 genuinely unformatted
   files: `CityHero`, `FormSelect`, the `cities` / `privacy` / `terms` pages

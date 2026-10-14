@@ -43,3 +43,8 @@ export const IMAGES = {
   gift: { src: '/images/illustrations/gift.webp', width: 48, height: 48 },
   cancelBooking: { src: '/images/illustrations/cancel-booking.svg', width: 140, height: 110 },
 } as const;
+
+export const RESULT_ANIMATIONS = {
+  success: '/animations/success.gif',
+  error: '/animations/error.gif',
+} as const;

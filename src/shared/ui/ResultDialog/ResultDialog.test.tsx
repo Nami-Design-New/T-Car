@@ -21,17 +21,16 @@ describe('ResultDialog', () => {
       />
     );
     expect(screen.getByRole('dialog')).toHaveAccessibleName('Failed');
+    expect(screen.getByRole('presentation')).toHaveAttribute('src', '/animations/error.gif');
     await user.click(screen.getByRole('button', { name: 'Retry' }));
     expect(onAction).toHaveBeenCalledOnce();
   });
 
-  it('auto-closes when configured', () => {
+  it('auto-closes after the default duration', () => {
     vi.useFakeTimers();
     const onClose = vi.fn();
-    renderWithIntl(
-      <ResultDialog open status="success" title="Done" autoCloseMs={1000} onClose={onClose} />
-    );
-    vi.advanceTimersByTime(1000);
+    renderWithIntl(<ResultDialog open status="success" title="Done" onClose={onClose} />);
+    vi.advanceTimersByTime(2000);
     expect(onClose).toHaveBeenCalledOnce();
   });
 });
