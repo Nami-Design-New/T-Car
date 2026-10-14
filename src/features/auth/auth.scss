@@ -9,13 +9,10 @@
 }
 
 %auth_heading {
-  text-align: center;
   color: $ds-text-primary;
-  margin-bottom: 8px;
 }
 
 %auth_subtext {
-  text-align: center;
   color: $ds-text-subtle;
   margin-bottom: 4px;
 }
@@ -40,7 +37,7 @@
   border-radius: $ds-radius-md;
   background: $ds-action-primary;
   color: $ds-text-on-action;
-  font-weight: 600;
+  font-weight: 400;
   cursor: pointer;
   transition:
     transform 0.2s ease,
@@ -96,7 +93,7 @@
 .auth_modal,
 .phone_modal,
 .verify_modal {
-  padding: 40px;
+  padding: 0 40px 40px;
   border-radius: $ds-radius-xl;
 
   .login_form {
@@ -142,6 +139,7 @@
 
       .auth_btn_label {
         line-height: 1.4;
+        font-weight: 400;
       }
 
       .auth_btn_icon {
@@ -417,54 +415,44 @@
 
       max-width: 420px;
     }
+  }
+}
 
-    .otp_form {
-      .otp_inputs {
-        gap: 8px;
-
-        input {
-          width: 50px;
-          height: 50px;
-
-          font-size: 20px;
-        }
-      }
-    }
+.otp_header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  h2 {
+    @extend %auth_heading;
+    font-size: 1.25rem;
+    font-weight: 800;
+    line-height: 1.4;
+    margin-bottom: 0;
   }
 }
 // ============ OTP form ============
 .otp_form {
   width: 100%;
-
   display: flex;
   flex-direction: column;
-  align-items: center;
   position: relative;
-
   text-align: center;
 
-  .otp_back_btn {
-    inset-inline-start: 0;
-    inset-inline-end: auto;
+  h3 {
+    @extend %auth_subtext;
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: $ds-black;
+    text-align: start;
   }
-
-  h2 {
-    @extend %auth_heading;
-
-    padding-inline: 48px;
-
-    font-size: clamp(1.35rem, 4vw, 1.65rem);
-    font-weight: 800;
-    line-height: 1.4;
-  }
-
   .otp_description {
     @extend %auth_subtext;
-
     margin: 0;
-
-    font-size: 0.92rem;
+    margin-bottom: 1rem;
+    font-size: 1rem;
     line-height: 1.8;
+    text-align: start;
   }
 
   .phone {
@@ -486,89 +474,30 @@
     unicode-bidi: isolate;
   }
 
-  .otp_inputs {
-    display: flex;
-    gap: 12px;
-    direction: ltr;
-    margin-bottom: 24px;
-
-    input {
-      @extend %auth_input;
-
-      width: 56px;
-      height: 56px;
-
-      padding-inline: 0;
-
-      border-color: $ds-stroke-light;
-      background: $ds-surface-card-primary;
-
-      color: $ds-text-primary;
-      text-align: center;
-      font-size: 22px;
-      font-weight: 700;
-      font-variant-numeric: tabular-nums;
-      caret-color: $ds-action-primary;
-
-      &.is-filled {
-        border-color: rgba($ds-action-primary, 0.45);
-        background: $ds-surface-card-primary;
-      }
-
-      &:focus {
-        background: $ds-surface-elevated;
-        @include focus-ring($opacity: 0.15);
-      }
-    }
-  }
-
   .otp_resend_status {
     min-height: 44px;
     margin-bottom: 12px;
-
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: space-between;
   }
 
   .timer {
     margin: 0;
-
-    color: $ds-text-subtle;
+    color: $ds-action-primary;
     font-size: 14px;
     line-height: 1.6;
   }
 
   .resend {
-    min-height: 40px;
-    padding-inline: 14px;
-
-    background: $ds-surface-card-primary;
+    text-decoration: underline;
+    color: $ds-black;
+    font-size: 12px;
+    font-weight: 700;
+    background: none;
     border: none;
-    border-radius: $ds-radius-sm;
-
-    color: $ds-action-primary;
-    font-size: 14px;
-    font-weight: 600;
-
+    outline: none;
     cursor: pointer;
-
-    transition:
-      background 0.2s ease,
-      transform 0.2s ease;
-
-    &:hover {
-      background: darken($ds-surface-card-primary, 3%);
-    }
-
-    &:focus-visible {
-      outline: 3px solid rgba($ds-action-primary, 0.18);
-      outline-offset: 2px;
-    }
-
-    &:active {
-      transform: scale(0.97);
-    }
   }
 }
 
@@ -577,10 +506,6 @@
   position: relative;
   display: flex;
   flex-direction: column;
-
-  h2 {
-    @extend %auth_heading;
-  }
 
   p {
     @extend %auth_subtext;
@@ -623,14 +548,6 @@
   .register_back_btn {
     inset-inline-start: 0;
     inset-inline-end: auto;
-  }
-
-  h2 {
-    padding-inline: 48px;
-
-    font-size: clamp(1.35rem, 4vw, 1.65rem);
-    font-weight: 800;
-    line-height: 1.4;
   }
 
   .register_description {
@@ -733,7 +650,7 @@
   .auth_btn {
     min-height: 54px;
     font-size: 0.95rem;
-    font-weight: 700;
+    font-weight: 400;
   }
 
   @media (max-width: 576px) {

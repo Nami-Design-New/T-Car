@@ -46,18 +46,18 @@ export default function RegisterForm({ onBack, onSubmit, loading = false, error 
 
   return (
     <form className="register_form auth_register_form" onSubmit={handleSubmit}>
-      <button
-        type="button"
-        className="back_btn register_back_btn"
-        onClick={onBack}
-        aria-label={t('auth.register.backLabel')}
-      >
-        <FiArrowLeft className="mirror-in-rtl" aria-hidden="true" />
-      </button>
+      <div className="otp_header">
+        <button
+          type="button"
+          className="back_btn"
+          onClick={onBack}
+          aria-label={t('auth.register.backLabel')}
+        >
+          <FiArrowLeft className="mirror-in-rtl" aria-hidden="true" />
+        </button>
 
-      <h2>{t('auth.register.title')}</h2>
-
-      <p className="register_description">{t('auth.register.description')}</p>
+        <h2>{t('auth.register.title')}</h2>
+      </div>
 
       <div className="inputs">
         <label className="form_field" htmlFor="register-name">

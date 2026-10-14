@@ -16,6 +16,7 @@
 @use '../features/car-details/car-details';
 @use '../features/booking/booking';
 @use '../features/auth/auth';
+@use '../shared/ui/OtpInput/OtpInput';
 @use '../features/account/account';
 @use '../features/bank-accounts/bank-accounts';
 @use '../features/wallet/wallet';

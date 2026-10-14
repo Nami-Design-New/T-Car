@@ -93,7 +93,8 @@
     },
     "otp": {
       "title": "Enter verification code",
-      "description": "We sent a 4-digit code to",
+      "subtitle": "Check your WhatsApp!",
+      "description": "We sent a verification code to WhatsApp at {phone}. Enter the code to complete sign in.",
       "backLabel": "Back to mobile number",
       "codeLabel": "Verification code",
       "digitLabel": "Digit {position} of {total}",
@@ -310,7 +311,11 @@
       "companyName": { "label": "Company name", "placeholder": "Enter company name" },
       "headOffice": { "label": "Head office", "placeholder": "City or country" },
       "contactPerson": { "label": "Contact person", "placeholder": "Full name" },
-      "phone": { "label": "Phone number", "placeholder": "Phone number", "searchPlaceholder": "Search countries..." },
+      "phone": {
+        "label": "Phone number",
+        "placeholder": "Phone number",
+        "searchPlaceholder": "Search countries..."
+      },
       "companySize": { "label": "Company size" },
       "email": { "label": "Email address", "placeholder": "company@email.com" },
       "managerName": { "label": "Company manager name", "placeholder": "Name" },
@@ -472,8 +477,8 @@
       "notFound": "This city is not available."
     },
     "contact": {
-    "phoneRequired": "Enter a valid phone number.",
-    "required": "Complete all required contact fields."
+      "phoneRequired": "Enter a valid phone number.",
+      "required": "Complete all required contact fields."
     },
     "account": {
       "profileRejected": "The profile could not be saved. Check the details and try again.",

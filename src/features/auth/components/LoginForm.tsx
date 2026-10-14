@@ -33,6 +33,7 @@ export default function LoginForm({ onNext, loading = false, error }: Props) {
 
       <div className="phone_wrapper">
         <PhoneField
+          label={t('auth.login.phoneLabel')}
           value={phone}
           onChange={setPhone}
           searchPlaceholder={t('auth.login.countrySearchPlaceholder')}
@@ -41,7 +42,7 @@ export default function LoginForm({ onNext, loading = false, error }: Props) {
       </div>
 
       {error && (
-        <p className="text-danger small mt-2 mb-0" role="alert">
+        <p className="text-danger small mt-1 mb-0" role="alert">
           {error}
         </p>
       )}
@@ -52,18 +53,11 @@ export default function LoginForm({ onNext, loading = false, error }: Props) {
         onClick={() => onNext(phone)}
         disabled={loading}
       >
-        <span className="auth_btn_label">{t('auth.login.sendViaWhatsApp')}</span>
         <span className="auth_btn_icon" aria-hidden="true">
           <Image src={whatsappIcon} alt="" width={18} height={18} />
         </span>
+        <span className="auth_btn_label">{t('auth.login.sendViaWhatsApp')}</span>
       </button>
-
-      <div className="bottom_text">
-        {t('auth.login.noAccount')}
-        <button type="button" onClick={() => onNext(phone)} disabled={loading}>
-          {t('auth.login.createAccount')}
-        </button>
-      </div>
     </div>
   );
 }

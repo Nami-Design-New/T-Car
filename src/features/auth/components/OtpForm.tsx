@@ -1,8 +1,9 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { FiArrowLeft } from 'react-icons/fi';
+import { OtpInput } from '@/shared/ui/OtpInput';
 
 type Props = {
   phone: string;
@@ -15,7 +16,7 @@ type Props = {
 };
 
 const OTP_LENGTH = 4;
-const OTP_RESEND_SECONDS = 60;
+const OTP_RESEND_SECONDS = 30;
 
 export default function OtpForm({
   phone,
@@ -27,10 +28,8 @@ export default function OtpForm({
 }: Props) {
   const t = useTranslations();
 
-  const [otp, setOtp] = useState<string[]>(Array(OTP_LENGTH).fill(''));
+  const [otp, setOtp] = useState('');
   const [timer, setTimer] = useState(OTP_RESEND_SECONDS);
-
-  const inputs = useRef<(HTMLInputElement | null)[]>([]);
 
   useEffect(() => {
     if (timer === 0) return;
@@ -38,108 +37,48 @@ export default function OtpForm({
     return () => clearInterval(interval);
   }, [timer]);
 
-  useEffect(() => {
-    inputs.current[0]?.focus();
-  }, []);
-
-  const focusInput = (index: number) => {
-    inputs.current[index]?.focus();
-    inputs.current[index]?.select();
-  };
-
-  const handleChange = (value: string, index: number) => {
-    if (!/^\d*$/.test(value)) return;
-
-    if (value.length > 1) {
-      const digits = value.slice(0, OTP_LENGTH).split('');
-      const next = Array(OTP_LENGTH).fill('');
-      digits.forEach((d, i) => (next[i] = d));
-      setOtp(next);
-
-      const lastFilledIndex = Math.min(digits.length, OTP_LENGTH) - 1;
-      focusInput(lastFilledIndex >= OTP_LENGTH - 1 ? OTP_LENGTH - 1 : lastFilledIndex + 1);
-      return;
-    }
-
-    const copy = [...otp];
-    copy[index] = value;
-    setOtp(copy);
-
-    if (value && index < OTP_LENGTH - 1) {
-      focusInput(index + 1);
-    }
-
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, index: number) => {
-    if (e.key === 'Backspace') {
-      if (otp[index]) {
-        const copy = [...otp];
-        copy[index] = '';
-        setOtp(copy);
-      } else if (index > 0) {
-        focusInput(index - 1);
-        const copy = [...otp];
-        copy[index - 1] = '';
-        setOtp(copy);
-      }
-    }
-  };
-
   const handleResend = () => {
-    setOtp(Array(OTP_LENGTH).fill(''));
+    setOtp('');
     setTimer(OTP_RESEND_SECONDS);
     onResend?.();
-    inputs.current[0]?.focus();
   };
 
-  const code = otp.join('');
+  const code = otp;
   const isComplete = code.length === OTP_LENGTH;
 
   return (
     <div className="otp_form">
-      <button
-        type="button"
-        className="back_btn otp_back_btn"
-        onClick={onBack}
-        aria-label={t('auth.otp.backLabel')}
-      >
-        <FiArrowLeft className="mirror-in-rtl" aria-hidden="true" />
-      </button>
+      <div className="otp_header">
+        <button
+          type="button"
+          className="back_btn"
+          onClick={onBack}
+          aria-label={t('auth.otp.backLabel')}
+        >
+          <FiArrowLeft className="mirror-in-rtl" aria-hidden="true" />
+        </button>
 
-      <h2>{t('auth.otp.title')}</h2>
-      <p className="otp_description">{t('auth.otp.description')}</p>
-      <bdi className="phone" dir="ltr">
-        {phone}
-      </bdi>
-
-      <div className="otp_inputs" dir="ltr" role="group" aria-label={t('auth.otp.codeLabel')}>
-        {otp.map((digit, index) => (
-          <input
-            key={index}
-            ref={(el) => {
-              inputs.current[index] = el;
-            }}
-            type="text"
-            inputMode="numeric"
-            autoComplete={index === 0 ? 'one-time-code' : 'off'}
-            pattern="[0-9]*"
-            maxLength={OTP_LENGTH}
-            value={digit}
-            className={digit ? 'is-filled' : ''}
-            aria-label={t('auth.otp.digitLabel', {
-              position: index + 1,
-              total: OTP_LENGTH,
-            })}
-            onChange={(e) => handleChange(e.target.value, index)}
-            onKeyDown={(e) => handleKeyDown(e, index)}
-          />
-        ))}
+        <h2>{t('auth.otp.title')}</h2>
+      </div>
+      <div className="">
+        <h3>{t('auth.otp.subtitle')}</h3>
+        <p className="otp_description">{t('auth.otp.description', { phone })}</p>
+      </div>
+      <div className={'d-flex align-items-center justify-content-center'}>
+        <OtpInput
+          value={otp}
+          onChange={setOtp}
+          length={OTP_LENGTH}
+          autoFocus
+          ariaLabel={t('auth.otp.codeLabel')}
+          digitAriaLabel={(position, total) => t('auth.otp.digitLabel', { position, total })}
+        />
       </div>
 
       <div className="otp_resend_status" aria-live="polite">
+        <p className="timer">{t('auth.otp.resendIn')}</p>
         {timer > 0 ? (
-          <p className="timer">{t('auth.otp.resendIn', { seconds: timer })}</p>
+          <span className="timer"> 00:{timer} </span>
         ) : (
           <button type="button" className="resend" onClick={handleResend}>
             {t('auth.otp.resend')}

@@ -1,0 +1,48 @@
+@use 'tokens/tokens' as *;
+
+.otp-inputs {
+  display: flex;
+  gap: 12px;
+  direction: ltr;
+  margin-bottom: 24px;
+
+  input {
+    width: 56px;
+    height: 56px;
+    padding-inline: 0;
+
+    border: 1px solid $ds-stroke-light;
+    border-radius: $ds-radius-md;
+    outline: none;
+    background: $ds-surface-card-primary;
+
+    color: $ds-text-primary;
+    text-align: center;
+    font-size: 22px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    caret-color: $ds-action-primary;
+    transition: 0.3s;
+
+    &:focus {
+      border-color: $ds-action-primary;
+      background: $ds-surface-elevated;
+      box-shadow: 0 0 0 3px rgba($ds-action-primary, 0.15);
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+  }
+
+  @media (max-width: $breakpoint-md) {
+    gap: 8px;
+
+    input {
+      width: 50px;
+      height: 50px;
+      font-size: 20px;
+    }
+  }
+}

@@ -11,6 +11,7 @@ export interface PhoneFieldProps {
   disabled?: boolean;
   searchPlaceholder?: string;
   inputAriaLabel?: string;
+  label?: string;
 }
 
 export function PhoneField({
@@ -20,27 +21,31 @@ export function PhoneField({
   disabled = false,
   searchPlaceholder = 'Search countries...',
   inputAriaLabel = 'Phone number',
+  label,
 }: PhoneFieldProps) {
   return (
-    <PhoneInput
-      country={defaultCountry}
-      value={value}
-      onChange={onChange}
-      disabled={disabled}
-      enableSearch
-      searchPlaceholder={searchPlaceholder}
-      disableSearchIcon
-      countryCodeEditable={false}
-      inputProps={{
-        name: 'phone',
-        autoComplete: 'tel',
-        'aria-label': inputAriaLabel,
-      }}
-      containerClass="phone_field"
-      inputClass="phone_input"
-      buttonClass="country_selector_btn"
-      dropdownClass="country_dropdown"
-      searchClass="country_search"
-    />
+    <div className="phone_field_wrapper">
+      {label && <label className="phone_field_label">{label}</label>}
+      <PhoneInput
+        country={defaultCountry}
+        value={value}
+        onChange={onChange}
+        disabled={disabled}
+        enableSearch
+        searchPlaceholder={searchPlaceholder}
+        disableSearchIcon
+        countryCodeEditable={false}
+        inputProps={{
+          name: 'phone',
+          autoComplete: 'tel',
+          'aria-label': inputAriaLabel,
+        }}
+        containerClass="phone_field"
+        inputClass="phone_input"
+        buttonClass="country_selector_btn"
+        dropdownClass="country_dropdown"
+        searchClass="country_search"
+      />
+    </div>
   );
 }
