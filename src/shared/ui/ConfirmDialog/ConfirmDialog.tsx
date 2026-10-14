@@ -9,6 +9,7 @@ export interface Props {
   description?: string;
   confirmLabel: string;
   cancelLabel: string;
+  error?: string;
   tone?: 'default' | 'danger';
   pending?: boolean;
   onConfirm: () => void;
@@ -22,6 +23,7 @@ export function ConfirmDialog({
   description,
   confirmLabel,
   cancelLabel,
+  error,
   tone = 'default',
   pending = false,
   onConfirm,
@@ -40,6 +42,11 @@ export function ConfirmDialog({
         <Dialog.Close />
       </Dialog.Header>
       {description && <Dialog.Description>{description}</Dialog.Description>}
+      {error && (
+        <p className="confirm-dialog__error" role="alert">
+          {error}
+        </p>
+      )}
       <Dialog.Footer>
         <button type="button" className="confirm-dialog__cancel" disabled={pending} onClick={onCancel}>
           {cancelLabel}

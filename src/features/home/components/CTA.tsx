@@ -3,8 +3,8 @@
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 
-import JoinusForm from '@/components/join/JoinUsForm';
 import { Button } from '@/shared/ui/Button';
+import JoinUsForm from './JoinUsForm';
 
 export default function CTA() {
   const t = useTranslations('homeCta');
@@ -34,7 +34,7 @@ export default function CTA() {
         </div>
       </div>
 
-      <JoinusForm open={joinUsOpen} onClose={() => setJoinUsOpen(false)} />
+      <JoinUsForm open={joinUsOpen} onClose={() => setJoinUsOpen(false)} />
     </section>
   );
 }

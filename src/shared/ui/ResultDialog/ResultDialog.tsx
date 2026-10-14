@@ -9,7 +9,6 @@ import './ResultDialog.scss';
 export interface Props {
   open: boolean;
   status: 'success' | 'error';
-  title: string;
   description?: string;
   action?: { label: string; onClick: () => void };
   autoCloseMs?: number;
@@ -20,7 +19,6 @@ export interface Props {
 export function ResultDialog({
   open,
   status,
-  title,
   description,
   action,
   autoCloseMs = 2000,
@@ -36,13 +34,12 @@ export function ResultDialog({
     <Dialog
       open={open}
       onClose={onClose}
+      size="sm"
       className="result-dialog"
       placement="bottom-sheet"
       closeOnBackdrop
+      label={description || status}
     >
-      <Dialog.Header>
-        <Dialog.Title>{title}</Dialog.Title>
-      </Dialog.Header>
       <Dialog.Body className="result-dialog__body">
         <Image
           className="result-dialog__animation"

@@ -29,7 +29,7 @@ interface Props {
   onClose: () => void;
 }
 
-export default function JoinusForm({ open, onClose }: Props) {
+export default function JoinUsForm({ open, onClose }: Props) {
   const t = useTranslations('joinUs');
   const [form, setForm] = useState<JoinUsFormState>(EMPTY_FORM);
 

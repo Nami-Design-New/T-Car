@@ -2,8 +2,9 @@
 
 import { useEffect, useRef } from 'react';
 import { Dialog } from '@/shared/ui/Dialog';
-import './FailedModal.scss';
-interface Props {
+import './AlertModal.scss';
+
+export interface Props {
   open: boolean;
   title?: string;
   description?: string;
@@ -14,35 +15,30 @@ interface Props {
   secondaryButtonText?: string;
   loading?: boolean;
   error?: string;
-
   onPrimary?: () => void | Promise<void>;
   onSecondary?: () => void;
 }
 
-export default function FailedModal({
+/** The failure/confirmation surface used for account deletion. */
+export function AlertModal({
   open,
-  title = 'فشل في عملية الشحن',
+  title,
   description,
   onDone,
   autoCloseDuration = 2000,
   showButtons = false,
-  primaryButtonText = 'تأكيد',
-  secondaryButtonText = 'إلغاء',
+  primaryButtonText = 'Confirm',
+  secondaryButtonText = 'Cancel',
   loading = false,
   error,
   onPrimary,
   onSecondary,
 }: Props) {
-  // The confirmation opens on its safe choice, so Enter does not run the destructive one.
   const cancelRef = useRef<HTMLButtonElement>(null);
-
-  // The latest onDone, so a caller that passes a new function on every render does not restart
-  // the auto-close timer.
   const onDoneRef = useRef(onDone);
   onDoneRef.current = onDone;
   const hasOnDone = !!onDone;
 
-  // A plain result closes itself; the confirmation (showButtons) waits for a choice.
   useEffect(() => {
     if (!open || showButtons || !hasOnDone) return;
 
@@ -50,7 +46,6 @@ export default function FailedModal({
     return () => clearTimeout(timer);
   }, [open, hasOnDone, autoCloseDuration, showButtons]);
 
-  // Escape (and, for a plain result, the backdrop) means "done" or "cancel".
   const handleClose = () => {
     if (showButtons) {
       if (!loading) onSecondary?.();
@@ -77,7 +72,6 @@ export default function FailedModal({
       <div className="delete_account_content">
         {title && <Dialog.Title>{title}</Dialog.Title>}
         {description && <Dialog.Description>{description}</Dialog.Description>}
-
         {error && (
           <p className="text-danger small mt-2 mb-0" role="alert">
             {error}
@@ -96,7 +90,6 @@ export default function FailedModal({
           >
             {primaryButtonText}
           </button>
-
           <button
             ref={cancelRef}
             type="button"

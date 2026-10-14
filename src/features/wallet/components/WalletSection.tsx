@@ -13,22 +13,6 @@ import WalletTab from './WalletTab';
 const WalletAmountModal = dynamic(() => import('./WalletAmountModal'), { ssr: false });
 const BankSelectModal = dynamic(() => import('./BankSelectModal'), { ssr: false });
 
-interface LegacyResultProps {
-  open: boolean;
-  title?: string;
-  description?: string;
-  onDone?: () => void;
-  appearButton?: boolean;
-}
-
-function SuccessModal({ open, title = '', onDone }: LegacyResultProps) {
-  return <ResultDialog open={open} status="success" title={title} autoCloseMs={2000} onClose={onDone ?? (() => undefined)} />;
-}
-
-function FailedModal({ open, title = '', description, onDone }: LegacyResultProps) {
-  return <ResultDialog open={open} status="error" title={title} description={description} onClose={onDone ?? (() => undefined)} />;
-}
-
 type ResultKind = 'topup' | 'withdraw';
 
 /** One step at a time, so two wallet sheets can never be open together. */
@@ -39,9 +23,9 @@ type WalletFlow =
   | { step: 'withdraw-amount'; account: BankAccount }
   | { step: 'result'; kind: ResultKind; error?: AppError }; // no error means success
 
-const RESULT_KEYS: Record<ResultKind, { success: string; failure: string }> = {
-  topup: { success: 'topUpSuccess', failure: 'topUpFailure' },
-  withdraw: { success: 'withdrawSuccess', failure: 'withdrawFailure' },
+const RESULT_KEYS: Record<ResultKind, { failure: string }> = {
+  topup: { failure: 'topUpFailure' },
+  withdraw: { failure: 'withdrawFailure' },
 };
 
 export default function WalletSection() {
@@ -105,22 +89,14 @@ export default function WalletSection() {
         }}
       />
 
-      {flow.step === 'result' && !flow.error && (
-        <SuccessModal
+      {flow.step === 'result' && (
+        <ResultDialog
           open
-          appearButton={false}
-          title={t(RESULT_KEYS[flow.kind].success)}
-          description=""
-          onDone={close}
+          status={flow.error ? 'error' : 'success'}
+          description={flow.error ? errorMessage(flow.error) : undefined}
+          onClose={close}
         />
       )}
-
-      <FailedModal
-        open={flow.step === 'result' && Boolean(flow.error)}
-        title={flow.step === 'result' ? t(RESULT_KEYS[flow.kind].failure) : undefined}
-        description={flow.step === 'result' && flow.error ? errorMessage(flow.error) : undefined}
-        onDone={close}
-      />
     </>
   );
 }

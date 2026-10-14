@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
 
 import { Dialog } from '@/shared/ui/Dialog';
-import SuccessModal from '@components/common/SuccessModal';
+import { ResultDialog } from '@/shared/ui/ResultDialog';
 
 interface Props {
   open: boolean;
@@ -314,11 +314,12 @@ export default function VerifyPhoneModal({
         </Dialog.Body>
       </Dialog>
 
-      <SuccessModal
+      <ResultDialog
         open={successOpen}
-        title={t('successTitle')}
+        status="success"
+
         description={t('successDescription')}
-        onDone={handleSuccessDone}
+        onClose={handleSuccessDone}
       />
     </>
   );

@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import dynamic from 'next/dynamic';
 import { useRouter } from '@/i18n/navigation';
+import { AlertModal } from '@/shared/ui/AlertModal';
 import {
   FiCalendar,
   FiChevronLeft,
@@ -26,7 +27,6 @@ import EditPhoneModal from './EditPhoneModal';
 import VerifyPhoneModal from './VerifyPhoneModal';
 
 const LicenseModal = dynamic(() => import('./LicenseModal'), { ssr: false });
-const FailedModal = dynamic(() => import('@components/common/FailedModal'), { ssr: false });
 
 interface Props {
   profile: UserProfile;
@@ -438,15 +438,15 @@ export default function ProfileTab({ profile }: Props) {
 
       {/* ==================== Delete Account Modal ==================== */}
 
-      <FailedModal
+      <AlertModal
         open={showDeleteModal}
         title={t('deleteConfirmTitle')}
         description={t('deleteConfirmDescription')}
         primaryButtonText={t('deleteAccount')}
         secondaryButtonText={t('keepAccount')}
         showButtons
-        loading={pendingAction === 'delete'}
         error={deleteError ?? undefined}
+        loading={pendingAction === 'delete'}
         onPrimary={handleDeleteAccount}
         onSecondary={() => {
           if (pendingAction !== 'delete') setShowDeleteModal(false);

@@ -23,8 +23,8 @@ export default async function Header() {
 
   return (
     <header className="header">
-      <div className="container-tcar header-inner">
-        <div className="header-brand">
+      <div className="container-tcar header-inner ">
+        <div className="header-brand ">
           <Link href="/" className="header-logo">
             <Image src={logo} alt="T-Car" width={160} height={48} priority />
           </Link>

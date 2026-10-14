@@ -23,22 +23,6 @@ const ExtendDurationModal = dynamic(() => import('./ExtendDurationModal'), { ssr
 const EditDailyBookingModal = dynamic(() => import('./EditDailyBookingModal'), { ssr: false });
 const CancelBookingModal = dynamic(() => import('./CancelBookingModal'), { ssr: false });
 
-interface LegacyResultProps {
-  open: boolean;
-  title?: string;
-  description?: string;
-  onDone?: () => void;
-  buttonText?: string;
-}
-
-function SuccessModal({ open, title = '', description, onDone }: LegacyResultProps) {
-  return <ResultDialog open={open} status="success" title={title} description={description} onClose={onDone ?? (() => undefined)} />;
-}
-
-function FailedModal({ open, title = '', description, onDone }: LegacyResultProps) {
-  return <ResultDialog open={open} status="error" title={title} description={description} onClose={onDone ?? (() => undefined)} />;
-}
-
 interface Props {
   booking: BookingDetailsView;
 }
@@ -53,10 +37,10 @@ type HeaderFlow =
   | { step: 'cancel'; error?: AppError }
   | { step: 'result'; kind: ResultKind; error?: AppError }; // no error means success
 
-const RESULT_KEYS: Record<ResultKind, { title: string; description: string; failure: string }> = {
-  extended: { title: 'extendedTitle', description: 'empty', failure: 'extendedFailure' },
-  editRequested: { title: 'editRequestedTitle', description: 'editRequestedDescription', failure: 'editRequestedFailure' },
-  cancelled: { title: 'cancelledTitle', description: 'empty', failure: 'cancelledFailure' },
+const RESULT_KEYS: Record<ResultKind, { description: string; failure: string }> = {
+  extended: { description: 'empty', failure: 'extendedFailure' },
+  editRequested: { description: 'editRequestedDescription', failure: 'editRequestedFailure' },
+  cancelled: { description: 'empty', failure: 'cancelledFailure' },
 };
 
 export default function BookingDetailsHeader({ booking }: Props) {
@@ -180,22 +164,16 @@ export default function BookingDetailsHeader({ booking }: Props) {
         error={flow.step === 'cancel' && flow.error ? errorMessage(flow.error) : undefined}
       />
 
-      {flow.step === 'result' && !flow.error && (
-        <SuccessModal
+      {flow.step === 'result' && (
+        <ResultDialog
           open
-          title={t(RESULT_KEYS[flow.kind].title)}
-          description={t(RESULT_KEYS[flow.kind].description)}
-          buttonText={t('ok')}
-          onDone={close}
+          status={flow.error ? 'error' : 'success'}
+          description={
+            flow.error ? errorMessage(flow.error) : t(RESULT_KEYS[flow.kind].description)
+          }
+          onClose={close}
         />
       )}
-
-      <FailedModal
-        open={flow.step === 'result' && Boolean(flow.error)}
-        title={flow.step === 'result' ? t(RESULT_KEYS[flow.kind].failure) : undefined}
-        description={flow.step === 'result' && flow.error ? errorMessage(flow.error) : undefined}
-        onDone={close}
-      />
     </div>
   );
 }

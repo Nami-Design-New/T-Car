@@ -15,27 +15,6 @@ import LoginForm from './LoginForm';
 import OtpForm from './OtpForm';
 import RegisterForm, { type RegisterValues } from './RegisterForm';
 
-interface SuccessProps {
-  open: boolean;
-  title: string;
-  description: string;
-  buttonText: string;
-  onDone: () => void;
-}
-
-function SuccessModal({ open, title, description, buttonText, onDone }: SuccessProps) {
-  return (
-    <ResultDialog
-      open={open}
-      status="success"
-      title={title}
-      description={description}
-      // action={{ label: buttonText, onClick: onDone }}
-      onClose={onDone}
-    />
-  );
-}
-
 type Props = {
   show: boolean;
   onHide: () => void;
@@ -154,12 +133,11 @@ export default function AuthModal({ show, onHide, next }: Props) {
 
       case 'success':
         return (
-          <SuccessModal
-            open={true}
-            title={t('title')}
+          <ResultDialog
+            open
+            status="success"
             description={t('description')}
-            buttonText={t('button')}
-            onDone={finish}
+            onClose={finish}
           />
         );
     }

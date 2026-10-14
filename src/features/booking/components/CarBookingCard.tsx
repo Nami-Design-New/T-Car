@@ -19,33 +19,6 @@ const BookingDailyModal = dynamic(() => import('./BookingDailyModal'), { ssr: fa
 const BookingConfirmModal = dynamic(() => import('./BookingConfirmModal'), { ssr: false });
 const PaymentMethodModal = dynamic(() => import('./PaymentMethodModal'), { ssr: false });
 
-interface SuccessProps {
-  open: boolean;
-  title: string;
-  description: string;
-  buttonText: string;
-  redirectTo: string;
-  autoRedirect?: boolean;
-}
-
-function SuccessModal({ open, title, description, buttonText, redirectTo }: SuccessProps) {
-  const handleRedirect = () => {
-    window.location.assign(redirectTo);
-  };
-
-  return (
-    <ResultDialog
-      open={open}
-      status="success"
-      title={title}
-      description={description}
-      action={{ label: buttonText, onClick: handleRedirect }}
-      autoCloseMs={3000}
-      onClose={handleRedirect}
-    />
-  );
-}
-
 /** One sheet at a time. A failed booking keeps the payment sheet open with the error. */
 type Flow =
   | { step: 'closed' }
@@ -95,6 +68,8 @@ export default function CarBookingCard({
     const result = await createBooking(booking, method);
     setFlow(result.ok ? { step: 'success' } : { step: 'payment', error: result.error });
   };
+
+  const handleBookingSuccess = () => window.location.assign('/account/bookings');
 
   return (
     <aside className="car-booking-card">
@@ -155,13 +130,13 @@ export default function CarBookingCard({
         />
       )}
 
-      <SuccessModal
+      <ResultDialog
         open={step === 'success'}
-        title={t('successTitle')}
+        status="success"
         description={t('successDescription')}
-        buttonText={t('goNow')}
-        redirectTo="/account/bookings"
-        autoRedirect
+        action={{ label: t('goNow'), onClick: handleBookingSuccess }}
+        autoCloseMs={3000}
+        onClose={handleBookingSuccess}
       />
     </aside>
   );

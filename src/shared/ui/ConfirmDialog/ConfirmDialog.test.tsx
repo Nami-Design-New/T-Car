@@ -39,4 +39,9 @@ describe('ConfirmDialog', () => {
     await user.keyboard('{Escape}');
     expect(onCancel).not.toHaveBeenCalled();
   });
+
+  it('renders an action error', () => {
+    renderConfirmDialog({ error: 'Unable to delete the account.' });
+    expect(screen.getByRole('alert')).toHaveTextContent('Unable to delete the account.');
+  });
 });

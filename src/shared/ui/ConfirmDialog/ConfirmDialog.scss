@@ -22,6 +22,11 @@
   &__confirm--danger {
     background: $ds-status-error;
   }
+  &__error {
+    margin: 0 $ds-space-7;
+    color: $ds-status-error;
+    font-size: 0.875rem;
+  }
   &__cancel:disabled,
   &__confirm:disabled {
     cursor: not-allowed;

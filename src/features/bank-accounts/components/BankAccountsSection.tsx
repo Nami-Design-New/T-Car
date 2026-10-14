@@ -11,67 +11,6 @@ import { useBankAccounts } from '../hooks/useBankAccounts';
 import BankAccountsTab from './BankAccountsTab';
 import BankAccountFormModal from './BankAccountFormModal';
 
-interface LegacyFailedModalProps {
-  open: boolean;
-  title?: string;
-  description?: string;
-  showButtons?: boolean;
-  primaryButtonText?: string;
-  secondaryButtonText?: string;
-  onPrimary?: () => void;
-  onSecondary?: () => void;
-  onDone?: () => void;
-}
-
-function FailedModal({
-  open,
-  title,
-  description,
-  showButtons,
-  primaryButtonText = 'Confirm',
-  secondaryButtonText = 'Cancel',
-  onPrimary,
-  onSecondary,
-  onDone,
-}: LegacyFailedModalProps) {
-  if (showButtons) {
-    return (
-      <ConfirmDialog
-        open={open}
-        title={title ?? ''}
-        description={description}
-        confirmLabel={primaryButtonText}
-        cancelLabel={secondaryButtonText}
-        tone="danger"
-        onConfirm={onPrimary ?? (() => undefined)}
-        onCancel={onSecondary ?? (() => undefined)}
-      />
-    );
-  }
-
-  return (
-    <ResultDialog
-      open={open}
-      status="error"
-      title={title ?? ''}
-      description={description}
-      onClose={onDone ?? (() => undefined)}
-    />
-  );
-}
-
-interface LegacySuccessModalProps {
-  open: boolean;
-  title?: string;
-  description?: string;
-  appearButton?: boolean;
-  onDone?: () => void;
-}
-
-function SuccessModal({ open, title = '', onDone }: LegacySuccessModalProps) {
-  return <ResultDialog open={open} status="success" title={title} autoCloseMs={2000} onClose={onDone ?? (() => undefined)} />;
-}
-
 type ResultKind = 'added' | 'updated' | 'deleted';
 
 /** One step at a time, so two bank account sheets can never be open together. */
@@ -82,10 +21,10 @@ type BankAccountsFlow =
   | { step: 'confirm-delete'; account: BankAccount }
   | { step: 'result'; kind: ResultKind; error?: AppError }; // no error means success
 
-const RESULT_KEYS: Record<ResultKind, { success: string; failure: string }> = {
-  added: { success: 'addedSuccess', failure: 'addedFailure' },
-  updated: { success: 'updatedSuccess', failure: 'updatedFailure' },
-  deleted: { success: 'deletedSuccess', failure: 'deletedFailure' },
+const RESULT_KEYS: Record<ResultKind, { failure: string }> = {
+  added: { failure: 'addedFailure' },
+  updated: { failure: 'updatedFailure' },
+  deleted: { failure: 'deletedFailure' },
 };
 
 export default function BankAccountsSection() {
@@ -136,41 +75,34 @@ export default function BankAccountsSection() {
         onConfirm={handleSubmit}
       />
 
-      <FailedModal
+      <ConfirmDialog
         open={flow.step === 'confirm-delete'}
         title={t('deleteConfirmTitle')}
         description={t('deleteConfirmDescription')}
-        showButtons
-        primaryButtonText={
+        confirmLabel={
           submitting
             ? t('deleting')
             : t('delete', {
                 bank: flow.step === 'confirm-delete' ? flow.account.bankName : '',
               })
         }
-        secondaryButtonText={t('cancel')}
-        onPrimary={handleDelete}
-        onSecondary={() => {
+        cancelLabel={t('cancel')}
+        tone="danger"
+        pending={submitting}
+        onConfirm={handleDelete}
+        onCancel={() => {
           if (!submitting) close();
         }}
       />
 
-      {flow.step === 'result' && !flow.error && (
-        <SuccessModal
+      {flow.step === 'result' && (
+        <ResultDialog
           open
-          appearButton={false}
-          title={t(RESULT_KEYS[flow.kind].success)}
-          description=""
-          onDone={close}
+          status={flow.error ? 'error' : 'success'}
+          description={flow.error ? errorMessage(flow.error) : undefined}
+          onClose={close}
         />
       )}
-
-      <FailedModal
-        open={flow.step === 'result' && Boolean(flow.error)}
-        title={flow.step === 'result' ? t(RESULT_KEYS[flow.kind].failure) : undefined}
-        description={flow.step === 'result' && flow.error ? errorMessage(flow.error) : undefined}
-        onDone={close}
-      />
     </>
   );
 }
