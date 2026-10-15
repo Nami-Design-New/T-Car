@@ -1,0 +1,31 @@
+'use client';
+
+import { BookingDailyModal, type BookingDetails } from '@/features/booking';
+
+
+interface Props {
+  open: boolean;
+  onClose: () => void;
+  onSubmit: (details: BookingDetails) => void;
+  initialDetails: BookingDetails;
+  pricePerDay: number;
+}
+
+export default function EditDailyBookingModal({
+  open,
+  onClose,
+  onSubmit,
+  initialDetails,
+  pricePerDay,
+}: Props) {
+  return (
+    <BookingDailyModal
+      open={open}
+      onClose={onClose}
+      pricePerDay={pricePerDay}
+      initialDetails={initialDetails}
+      mode="edit"
+      onConfirm={onSubmit}
+    />
+  );
+}

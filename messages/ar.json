@@ -11,11 +11,100 @@
     "login": "تسجيل الدخول",
     "faqs": "الأسئلة الشائعة"
   },
+  "layout": {
+    "userMenu": {
+      "account": "حسابي",
+      "logout": "تسجيل الخروج"
+    },
+    "mobileNav": {
+      "toggle": "فتح القائمة"
+    },
+    "location": {
+      "choose": "اختيار الموقع",
+      "default": "الرياض، شارع الحرية"
+    }
+  },
+  "account": {
+    "back": "\u0631\u062c\u0648\u0639",
+    "title": "حسابي",
+    "nav": {
+      "account": "حسابي",
+      "profile": "تعديل الحساب",
+      "bookings": "حجوزاتي",
+      "wallet": "المحفظة",
+      "bankAccounts": "الحسابات البنكية",
+      "notifications": "الإشعارات"
+    },
+    "points": {
+      "title": "نقاط الولاء",
+      "historyTitle": "سجل النقاط",
+      "unit": "نقطة",
+      "cardDescription": "اكسب نقاط الولاء بحجز سيارات أكثر واستخدمها للدفع.",
+      "expiresAt": "تنتهي صلاحية {date} نقطة",
+      "back": "العودة إلى الحساب",
+      "filtersLabel": "فلاتر سجل النقاط",
+      "filters": {
+        "all": "الكل",
+        "earned": "المكتسبة",
+        "spent": "المنفقة"
+      },
+      "transaction": {
+        "earned": "مكتسبة",
+        "spent": "مستخدمة في الدفع",
+        "expired": "نقاط منتهية"
+      }
+    },
+    "profile": {
+      "fullName": "الاسم بالكامل",
+      "email": "البريد الإلكتروني",
+      "birthDate": "تاريخ الميلاد",
+      "phone": "رقم الجوال",
+      "license": "رخصة القيادة",
+      "licenseRequired": "يرجى إرفاق رخصة لكي نتمكن من التحقق من الحجز",
+      "licenseVerified": "تم التحقق من الرخصة",
+      "deleteAccount": "حذف الحساب",
+      "save": "حفظ",
+      "saved": "تم حفظ التعديلات",
+      "deleteConfirmTitle": "نأسف لرغبتك في المغادرة.",
+      "deleteConfirmDescription": "عند حذف الحساب سيتم إزالة بياناتك الشخصية وسجل حجوزاتك بشكل نهائي ولن يكون بإمكانك استرجاعها لاحقاً. هل أنت متأكد من رغبتك بالمتابعة؟",
+      "keepAccount": "الاحتفاظ بالحساب"
+    },
+    "editPhone": {
+      "title": "تعديل رقم الجوال",
+      "close": "إغلاق",
+      "phone": "رقم الجوال",
+      "sendCode": "إرسال كود التحقق"
+    },
+    "license": {
+      "title": "رخصة القيادة",
+      "close": "إغلاق",
+      "uploadPrompt": "اضغط هنا لرفع صورة رخصة القيادة",
+      "fileTypes": "JPG أو PNG",
+      "submit": "إرسال"
+    },
+    "verifyPhone": {
+      "title": "رمز التحقق",
+      "close": "إغلاق",
+      "sentTo": "تم إرسال رمز التحقق إلى",
+      "editPhone": "تعديل الرقم",
+      "digitLabel": "الرقم {index}",
+      "resendIn": "إعادة الإرسال خلال {seconds} ثانية",
+      "resend": "إعادة إرسال الرمز",
+      "verify": "تحقق",
+      "successTitle": "تم التحقق",
+      "successDescription": "تم التحقق من رقم الجوال بنجاح"
+    },
+    "notifications": {
+      "title": "الإشعارات",
+      "markAllRead": "تحديد الكل كمقروء",
+      "unreadCount": "{count, plural, =0 {لا توجد إشعارات غير مقروءة} one {إشعار واحد غير مقروء} two {إشعاران غير مقروءين} few {# إشعارات غير مقروءة} many {# إشعارًا غير مقروء} other {# إشعار غير مقروء}}"
+    }
+  },
   "auth": {
     "login": {
       "logoAlt": "تي كار",
-      "title": "مرحباً بعودتك",
-      "description": "أدخل رقم جوالك لنرسل إليك رمز التحقق.",
+      "title": "مرحباً بك",
+      "description": "أدخل رقم جوالك وسنرسل لك رمز تحقق مرة واحدة",
       "phoneLabel": "رقم الجوال",
       "countrySearchPlaceholder": "ابحث عن الدولة...",
       "sendViaWhatsApp": "إرسال الرمز عبر واتساب",
@@ -23,14 +112,15 @@
       "createAccount": "إنشاء حساب"
     },
     "otp": {
-      "title": "أدخل رمز التحقق",
-      "description": "أرسلنا رمزاً مكوّناً من 4 أرقام إلى",
+      "title": "رمز التحقق",
+      "subtitle": "شيك على الواتساب!",
+      "description": "أرسلنا رمز تحقق إلى واتساب على الرقم {phone}، أدخل الرمز لإكمال تسجيل الدخول.",
       "backLabel": "العودة إلى رقم الجوال",
       "codeLabel": "رمز التحقق",
-      "digitLabel": "الرقم {{position}} من {{total}}",
-      "resendIn": "إعادة الإرسال خلال {{seconds}} ثانية",
-      "resend": "إعادة إرسال الرمز",
-      "verify": "تحقق ومتابعة"
+      "digitLabel": "الرقم {position} من {total}",
+      "resendIn": "إعادة إرسال الرمز بعد...",
+      "resend": "اعد إرسال الكود",
+      "verify": "تأكيد الرمز"
     },
     "register": {
       "title": "إنشاء حساب",
@@ -56,6 +146,59 @@
     "station": "الاستلام من محطة القطار",
     "international": "التأجير الدولي"
   },
+  "rentalSearch": {
+    "hero": {
+      "eyebrow": "تي كار للتأجير الفاخر",
+      "title": "رحلتك القادمة تبدأ هنا",
+      "subtitle": "أسطول مميّز، جاهز لكل وجهة"
+    },
+    "airport": {
+      "title": "اختر المطار",
+      "description": "اختر المطار الذي ترغب في استلام السيارة منه.",
+      "searchPlaceholder": "ابحث عن مطار...",
+      "confirm": "متابعة"
+    },
+    "branch": {
+      "title": "اختر الفرع",
+      "description": "اختر أقرب فرع لاستلام السيارة.",
+      "searchPlaceholder": "ابحث عن مدينة أو فرع...",
+      "confirm": "متابعة"
+    },
+    "country": {
+      "title": "اختر الدولة",
+      "description": "اختر الدولة التي ترغب باستلام السيارة فيها.",
+      "searchPlaceholder": "ابحث عن دولة...",
+      "confirm": "متابعة"
+    },
+    "station": {
+      "title": "اختر محطة القطار",
+      "description": "اختر محطة القطار التي ترغب في استلام السيارة منها.",
+      "searchPlaceholder": "ابحث عن محطة...",
+      "confirm": "متابعة"
+    },
+    "pickup": {
+      "title": "اختر نوع الاستلام",
+      "delivery": {
+        "title": "نوصل لمكانك",
+        "description": "استلم السيارة أمام منزلك أو موقعك"
+      },
+      "branch": {
+        "title": "استلام من الفرع",
+        "description": "استلم السيارة من أقرب فرع لك"
+      }
+    },
+    "map": {
+      "title": "حدد موقع الاستلام",
+      "searchPlaceholder": "ابحث عن عنوان أو مكان...",
+      "loading": "جاري تحميل الخريطة...",
+      "locating": "جاري التحديد...",
+      "useCurrentLocation": "استخدام موقعي الحالي",
+      "confirm": "تأكيد الموقع",
+      "unsupported": "المتصفح لا يدعم تحديد الموقع",
+      "permissionDenied": "تم رفض إذن الوصول للموقع",
+      "unavailable": "تعذر تحديد موقعك الحالي"
+    }
+  },
   "search": {
     "title": "ابحث عن سيارتك المثالية",
     "location": "موقع الاستلام",
@@ -78,7 +221,8 @@
     "saveNow": "يوم مجاناً",
     "discount": "خصم",
     "rating": "التقييم {rating} من 5",
-    "perDay": "/ يوم"
+    "perDay": "/ يوم",
+    "currency": "ريال سعودي"
   },
   "officeRow": {
     "office": "مكتب",
@@ -90,6 +234,63 @@
     "eyebrow": "اختر رحلتك القادمة",
     "title": "السيارات المتاحة",
     "subtitle": "تصفح مكاتب التأجير وقارن أفضل السيارات المتاحة في مكان واحد."
+  },
+  "cars": {
+    "currency": "ريال سعودي",
+    "filters": {
+      "title": "تصفية النتائج",
+      "searchPlaceholder": "ابحث عن سيارة أو ماركة...",
+      "apply": "بحث",
+      "clearAll": "مسح الكل",
+      "open": "فتح الفلاتر",
+      "close": "إغلاق الفلاتر",
+      "clear": "مسح",
+      "showLess": "عرض أقل",
+      "showAll": "عرض الكل",
+      "priceRange": "نطاق السعر",
+      "minimum": "الحد الأدنى",
+      "maximum": "الحد الأقصى",
+      "brand": "العلامة التجارية",
+      "type": "نوع السيارة",
+      "companies": "الشركات",
+      "services": "خدمات إضافية"
+    },
+    "companies": { "elite": "معرض النخبة" },
+    "brands": { "nissan": "نيسان" },
+    "types": {
+      "family": "عائلية",
+      "convertible": "كشف",
+      "hatchback": "هاتشباك",
+      "sedan": "سيدان",
+      "pickup": "حوض",
+      "van": "فان"
+    },
+    "cityTypes": { "economy": "اقتصادية", "sedan": "سيدان", "suv": "SUV", "luxury": "فاخرة" },
+    "services": {
+      "delivery": {
+        "title": "خدمة توصيل السيارات",
+        "description": "يتم توصيل السيارة عند باب منزلك"
+      }
+    },
+    "sort": {
+      "recommended": "الأكثر ملاءمة",
+      "priceAsc": "السعر: من الأقل للأعلى",
+      "priceDesc": "السعر: من الأعلى للأقل",
+      "rating": "الأعلى تقييمًا",
+      "filter": "فلتر",
+      "results": "{count} نتيجة"
+    }
+  },
+  "cities": {
+    "hero": {
+      "title": "تأجير سيارات {city}",
+      "description": "تأجير سيارات المدينة الآن سهل مع تكلفي، خدمة مميزة وسرعة في التأجير",
+      "pickup": "الاستلام",
+      "pickupPlaceholder": "اختر تاريخ الاستلام",
+      "dropoff": "التسليم",
+      "dropoffPlaceholder": "اختر تاريخ التسليم",
+      "search": "بحث"
+    }
   },
   "carSections": {
     "offers": "العروض",
@@ -115,6 +316,90 @@
     "title": "الأسئلة الشائعة",
     "subtitle": "كل ما تحتاجه لتجربة استئجار سلسة"
   },
+  "homeCta": {
+    "title": "انضم كشريك معنا",
+    "description": "انضم إلى منصة تي كار واعرض سياراتك أمام آلاف العملاء، واستقبل طلبات الحجز بكل سهولة.",
+    "cta": "انضم الآن"
+  },
+  "joinUs": {
+    "title": "انضم كشريك معنا",
+    "descriptionBeforeBrand": "شارك بياناتك وسيتواصل معك فريق",
+    "brand": "تي كار",
+    "descriptionAfterBrand": "في أقرب وقت.",
+    "fields": {
+      "firstName": { "label": "الاسم الأول", "placeholder": "اكتب اسمك الأول" },
+      "companyName": { "label": "اسم الشركة", "placeholder": "اكتب اسم الشركة" },
+      "headOffice": { "label": "المقر الرئيسي", "placeholder": "المدينة أو الدولة" },
+      "contactPerson": { "label": "اسم المسؤول للتواصل", "placeholder": "الاسم الكامل" },
+      "phone": {
+        "label": "رقم الجوال",
+        "placeholder": "رقم الجوال",
+        "searchPlaceholder": "ابحث عن دولة..."
+      },
+      "companySize": { "label": "حجم الشركة" },
+      "email": { "label": "البريد الإلكتروني", "placeholder": "company@email.com" },
+      "managerName": { "label": "اسم مدير الشركة", "placeholder": "الاسم" },
+      "managerEmail": { "label": "إيميل مدير الشركة", "placeholder": "manager@email.com" },
+      "managerPhone": { "label": "رقم تواصل مدير الشركة", "placeholder": "05xxxxxxxx" },
+      "branches": { "label": "عدد الفروع", "placeholder": "3" },
+      "fleet": { "label": "إجمالي أسطول السيارات", "placeholder": "122" }
+    },
+    "locations": {
+      "label": "مناطق تواجد الفروع",
+      "options": {
+        "riyadh": "الرياض",
+        "jeddah": "جدة",
+        "dammam": "الدمام",
+        "makkah": "مكة",
+        "madinah": "المدينة"
+      }
+    },
+    "fleetTypes": {
+      "label": "أنواع الأسطول",
+      "options": {
+        "economy": "اقتصادية",
+        "sedan": "سيدان",
+        "suv": "SUV",
+        "luxury": "فاخرة",
+        "pickup": "بيك أب"
+      }
+    },
+    "commercialRegister": {
+      "label": "السجل التجاري",
+      "allowedFormats": "الصيغ المسموح بها: PDF, JPG, PNG, WEBP"
+    },
+    "companySizes": {
+      "small": "من 1 إلى 10 موظفين",
+      "medium": "من 11 إلى 50 موظفًا",
+      "large": "من 51 إلى 200 موظف",
+      "enterprise": "201 موظف فأكثر"
+    },
+    "submit": "إرسال الطلب"
+  },
+  "downloadApp": {
+    "imageAlt": "تطبيق تي كار",
+    "tag": "تطبيق T-Car",
+    "title": "حمّل التطبيق واحجز سيارتك في دقائق",
+    "description": "ابحث عن أفضل السيارات، قارن الأسعار، احجز بسهولة، واستلم سيارتك أينما كنت داخل المملكة.",
+    "appStoreAlt": "حمّل من App Store",
+    "playStoreAlt": "احصل عليه من Google Play"
+  },
+  "whyChooseUs": {
+    "smallTitle": "لماذا نحن",
+    "title": "لماذا تختار",
+    "brandQuestion": "TCar؟",
+    "description": "نجعل تجربة استئجار السيارة أسهل وأسرع وأكثر أمانًا، مع أفضل الأسعار وخدمة احترافية أينما كنت.",
+    "features": {
+      "bestCompanies": "أفضل شركات التأجير",
+      "bestCompaniesDescription": "نتعاون مع أفضل شركات ومعارض تأجير السيارات لتوفير تجربة موثوقة وآمنة.",
+      "roundTheClockSupport": "دعم على مدار الساعة",
+      "roundTheClockSupportDescription": "فريق خدمة العملاء متواجد 24/7 للإجابة عن جميع استفساراتك.",
+      "comprehensiveInsurance": "تأمين شامل",
+      "comprehensiveInsuranceDescription": "خيارات تأمين متعددة تمنحك راحة البال أثناء رحلتك.",
+      "flexiblePickup": "استلام وتسليم مرن",
+      "flexiblePickupDescription": "اختر المكان والوقت المناسبين لاستلام وتسليم سيارتك."
+    }
+  },
   "contact": {
     "smallTitle": "تواصل معنا",
     "title": "يسعدنا سماعك",
@@ -124,14 +409,32 @@
     "phone": "رقم الجوال",
     "email": "البريد الإلكتروني",
     "address": "العنوان",
+    "phoneValue": "+966 500000000",
+    "emailValue": "info@tcar.com",
+    "addressValue": "الرياض، المملكة العربية السعودية",
     "name": "الاسم الكامل",
+    "reason": "سبب التواصل",
+    "reasons": {
+      "booking": "حجز",
+      "carRental": "تأجير سيارة",
+      "payment": "الدفع",
+      "partnership": "شراكة",
+      "other": "أخرى"
+    },
+    "bookingNumber": "رقم الحجز (اختياري)",
     "message": "رسالتك",
-    "send": "إرسال الرسالة"
+    "send": "إرسال الرسالة",
+    "sending": "جاري الإرسال...",
+    "sent": "تم إرسال رسالتك، وسنتواصل معك قريبًا."
   },
   "footer": {
     "rights": "جميع الحقوق محفوظة.",
     "quickLinks": "روابط سريعة",
     "contactUs": "اتصل بنا",
+    "emailValue": "info@tcar.com",
+    "phoneValue": "+966 500000000",
+    "addressValue": "الرياض، المملكة العربية السعودية",
+    "downloadApp": "حمّل التطبيق",
     "terms": "الشروط والأحكام",
     "privacy": "سياسة الخصوصية"
   },
@@ -153,5 +456,489 @@
     "home": "العودة للرئيسية",
     "browseCities": "تصفح المدن",
     "lost": "أين الطريق؟"
+  },
+  "errors": {
+    "network": "تعذر الاتصال. تحقق من اتصالك بالإنترنت وحاول مرة أخرى.",
+    "timeout": "استغرق الطلب وقتًا أطول من المتوقع. حاول مرة أخرى.",
+    "unauthorized": "انتهت جلستك. سجّل الدخول للمتابعة.",
+    "forbidden": "ليس لديك صلاحية للقيام بهذا الإجراء.",
+    "not_found": "العنصر المطلوب غير موجود.",
+    "validation": "تحقق من البيانات المدخلة وحاول مرة أخرى.",
+    "conflict": "تعذر إتمام العملية. حاول مرة أخرى.",
+    "rate_limited": "محاولات كثيرة. انتظر قليلًا ثم حاول مرة أخرى.",
+    "server": "حدث خطأ من جهتنا. حاول مرة أخرى بعد قليل.",
+    "unknown": "حدث خطأ غير متوقع.",
+    "points": {
+      "unavailable": "نقاطك غير متاحة مؤقتًا. حاول مرة أخرى بعد قليل."
+    },
+    "wallet": {
+      "topUpRejected": "تم رفض عملية الشحن.",
+      "withdrawRejected": "تم رفض عملية السحب.",
+      "insufficientBalance": "الرصيد القابل للسحب غير كافٍ."
+    },
+    "bankAccounts": {
+      "notFound": "الحساب البنكي غير موجود.",
+      "unknownBank": "اختر بنكًا من القائمة.",
+      "ibanRequired": "رقم الآيبان مطلوب."
+    },
+    "bookings": {
+      "notFound": "الحجز غير موجود.",
+      "notActive": "لم يعد هذا الحجز نشطًا.",
+      "extendLimit": "لا يمكن تمديد الحجز لأكثر من 30 يومًا.",
+      "invalidDates": "يجب أن يكون تاريخ التسليم بعد تاريخ الاستلام.",
+      "cancelNotAllowed": "لا يمكن إلغاء حجز متأخر عن التسليم. سلّم السيارة أولًا.",
+      "ratingRequired": "اختر تقييمًا من 1 إلى 5."
+    },
+    "cars": {
+      "notFound": "السيارة غير متاحة أو غير موجودة."
+    },
+    "booking": {
+      "startInPast": "لا يمكن أن يبدأ الحجز في تاريخ سابق.",
+      "carUnavailable": "السيارة غير متاحة لهذه المدة. اختر مدة أقصر أو سيارة أخرى."
+    },
+    "cities": {
+      "notFound": "المدينة غير متاحة حاليًا."
+    },
+    "contact": {
+      "phoneRequired": "أدخل رقم جوال صحيحًا.",
+      "required": "أكمل جميع حقول التواصل المطلوبة."
+    },
+    "account": {
+      "profileRejected": "تعذر حفظ الملف الشخصي. تحقق من البيانات وحاول مرة أخرى.",
+      "resendLimited": "لا يمكن إعادة إرسال الرمز الآن. انتظر قليلاً ثم حاول مرة أخرى.",
+      "licenseRequired": "اختر صورة لرخصة القيادة.",
+      "licenseRejected": "تعذر رفع رخصة القيادة. حاول باستخدام صورة أخرى.",
+      "deleteRejected": "لا يمكن حذف الحساب لوجود حجوزات نشطة.",
+      "invalidCode": "رمز التحقق غير صحيح. حاول مرة أخرى."
+    },
+    "auth": {
+      "invalidPhone": "أدخل رقم جوال صحيحًا.",
+      "invalidCode": "رمز التحقق غير صحيح. حاول مرة أخرى.",
+      "nameRequired": "الاسم الكامل مطلوب.",
+      "registrationRequired": "هذا الرقم غير مسجل. أكمل إنشاء الحساب."
+    }
+  },
+  "legalContent": {
+    "terms": [
+      {
+        "title": "قبول الشروط",
+        "content": "باستخدامك لمنصة T-Car فإنك توافق على الشروط والأحكام والأنظمة المعمول بها."
+      },
+      {
+        "title": "الحجوزات والتأجير",
+        "content": "تخضع الحجوزات لتوفر السيارات ويجب تقديم بيانات صحيحة وحديثة."
+      },
+      {
+        "title": "الدفع والاسترداد",
+        "content": "تتم عمليات الدفع وفق الأسعار الظاهرة وتطبق سياسة الاسترداد لكل حجز."
+      },
+      {
+        "title": "التزامات المستأجر",
+        "content": "يلتزم المستأجر بالمحافظة على السيارة واستخدامها بطريقة قانونية وآمنة."
+      },
+      {
+        "title": "تعديل الشروط",
+        "content": "تحتفظ منصة T-Car بالحق في تعديل الشروط، ويعني استمرار الاستخدام الموافقة عليها."
+      }
+    ],
+    "privacy": [
+      {
+        "title": "البيانات التي نقوم بجمعها",
+        "content": "نجمع بيانات الحساب والحجز لتقديم خدماتنا."
+      },
+      {
+        "title": "كيفية استخدام المعلومات",
+        "content": "نستخدم البيانات لإدارة الحجوزات وتأكيد العمليات والتواصل وتحسين الخدمات."
+      },
+      {
+        "title": "حماية بياناتك",
+        "content": "نتخذ الإجراءات الأمنية المناسبة لحماية بياناتك الشخصية."
+      },
+      {
+        "title": "مشاركة المعلومات",
+        "content": "لا نشارك البيانات إلا عند الضرورة لتقديم الخدمة أو بموجب القانون."
+      },
+      { "title": "حقوق المستخدم", "content": "يمكنك طلب تحديث بياناتك أو تعديلها أو حذفها." }
+    ]
+  },
+  "citiesPage": { "title": "المدن المتاحة", "subtitle": "اختر مدينتك وابدأ رحلتك معنا" },
+  "common": { "selectPlaceholder": "اختر..." },
+  "dateTimePicker": {
+    "previousMonth": "الشهر السابق",
+    "nextMonth": "الشهر التالي",
+    "time": "الوقت",
+    "done": "تم",
+    "weekdays": ["أحد", "اثنين", "ثلاثاء", "أربعاء", "خميس", "جمعة", "سبت"],
+    "months": [
+      "يناير",
+      "فبراير",
+      "مارس",
+      "أبريل",
+      "مايو",
+      "يونيو",
+      "يوليو",
+      "أغسطس",
+      "سبتمبر",
+      "أكتوبر",
+      "نوفمبر",
+      "ديسمبر"
+    ]
+  },
+  "authSuccess": {
+    "title": "تم إنشاء الحساب بنجاح",
+    "description": "يمكنك الآن الاستمتاع بجميع خدمات T-Car.",
+    "button": "ابدأ الآن"
+  },
+  "states": {
+    "loading": "جارٍ التحميل…",
+    "retry": "حاول مرة أخرى",
+    "error": {
+      "title": "حدث خطأ",
+      "offlineHint": "يبدو أنك غير متصل بالإنترنت.",
+      "signIn": "تسجيل الدخول",
+      "reference": "رمز المرجع: {reference}"
+    },
+    "dialog": {
+      "close": "إغلاق"
+    },
+    "price": {
+      "sar": "ريال"
+    }
+  },
+  "bookings": {
+    "empty": {
+      "active": "لا توجد حجوزات حالية",
+      "past": "لا توجد حجوزات سابقة",
+      "title": "لا توجد حجوزات",
+      "cta": "ابدأ حجزًا جديدًا"
+    }
+  },
+  "myBookings": {
+    "modelYear": "موديل {year}",
+    "perDay": "/يوم",
+    "countdown": {
+      "expired": "انتهت مدة الحجز",
+      "remaining": "الوقت المتبقي لإنهاء الحجز",
+      "days": "يوم",
+      "hours": "ساعة",
+      "minutes": "دقيقة"
+    },
+    "dates": {
+      "location": "الموقع",
+      "pickupAddress": "عنوان الاستلام",
+      "dropoffAddress": "عنوان التسليم",
+      "date": "التاريخ",
+      "pickupTime": "موعد الاستلام",
+      "dropoffTime": "موعد التسليم",
+      "additionalDetails": "تفاصيل إضافية"
+    },
+    "tabs": {
+      "title": "حجوزاتي",
+      "active": "حالية",
+      "past": "سابقة"
+    },
+    "sidebar": {
+      "priceDetails": "تفاصيل السعر",
+      "price": "السعر",
+      "subtotal": "المجموع الفرعي",
+      "vat": "ضريبة القيمة المضافة",
+      "points": "استخدام النقاط",
+      "total": "الإجمالي",
+      "review": "تقييمك يهمنا"
+    },
+    "review": {
+      "dialogLabel": "تقييم الحجز",
+      "close": "إغلاق",
+      "title": "تقييمك يهمنا",
+      "subtitle": "شاركنا تجربتك مع هذا الحجز",
+      "stars": "{count} نجوم",
+      "placeholder": "اكتب تجربتك مع السيارة والمعرض...",
+      "sending": "جارٍ الإرسال...",
+      "submit": "إرسال"
+    },
+    "cancel": {
+      "dialogLabel": "إلغاء الحجز",
+      "close": "إغلاق",
+      "title": "إلغاء الحجز",
+      "question": "هل أنت متأكد أنك تريد إلغاء الحجز؟",
+      "warning": "سوف يتم خصم {percent}% من قيمة الحجز كرسوم للإلغاء، ويتم إعادة المبلغ المتبقي إليك.",
+      "amountDetails": "تفاصيل المبلغ",
+      "paid": "المبلغ المدفوع",
+      "discountPercent": "نسبة الخصم",
+      "cancellationFee": "رسوم الإلغاء",
+      "refunded": "المبلغ المسترد",
+      "refundedToYou": "المبلغ المسترد إليك",
+      "cancelling": "جاري الإلغاء...",
+      "confirm": "تأكيد الإلغاء",
+      "back": "تراجع",
+      "currency": "ر.س"
+    },
+    "extend": {
+      "close": "إغلاق",
+      "title": "تمديد المدة",
+      "selectDays": "حدد عدد الأيام",
+      "increase": "زيادة الأيام",
+      "decrease": "تقليل الأيام",
+      "note": "تمديد ينتهي الحجز في 1 يناير 2025",
+      "priceDetails": "تفاصيل السعر",
+      "price": "السعر",
+      "subtotal": "المجموع الفرعي",
+      "lateFee": "غرامة التأخير",
+      "oneDay": "1 يوم",
+      "vat": "ضريبة القيمة المضافة",
+      "total": "الإجمالي",
+      "extending": "جاري التمديد...",
+      "confirm": "تأكيد",
+      "currency": "ر.س"
+    },
+    "details": {
+      "empty": "",
+      "back": "رجوع",
+      "title": "تفاصيل الحجز",
+      "actions": "إجراءات الحجز",
+      "requestEdit": "طلب تعديل",
+      "extend": "تمديد المدة",
+      "cancel": "إلغاء",
+      "ok": "حسناً",
+      "extendedTitle": "تم تمديد الحجز بنجاح",
+      "extendedFailure": "فشل في تمديد الحجز",
+      "editRequestedTitle": "تم إرسال طلب التعديل",
+      "editRequestedDescription": "تم إرسال طلبك إلى المعرض وسيتم التواصل معك من قبل خدمة العملاء",
+      "editRequestedFailure": "فشل في إرسال طلب التعديل",
+      "cancelledTitle": "تم إلغاء الحجز",
+      "cancelledFailure": "فشل في إلغاء الحجز"
+    }
+  },
+  "booking": {
+    "daily": {
+      "editBooking": "تعديل الحجز",
+      "newBooking": "حجز جديد",
+      "weekdays": {
+        "sun": "الأحد",
+        "mon": "الاثنين",
+        "tue": "الثلاثاء",
+        "wed": "الأربعاء",
+        "thu": "الخميس",
+        "fri": "الجمعة",
+        "sat": "السبت"
+      },
+      "months": {
+        "jan": "يناير",
+        "feb": "فبراير",
+        "mar": "مارس",
+        "apr": "أبريل",
+        "may": "مايو",
+        "jun": "يونيو",
+        "jul": "يوليو",
+        "aug": "أغسطس",
+        "sep": "سبتمبر",
+        "oct": "أكتوبر",
+        "nov": "نوفمبر",
+        "dec": "ديسمبر"
+      },
+      "to": "إلى",
+      "chooseEndDate": "اختر تاريخ النهاية",
+      "pickupDropoffTime": "حدد وقت الاستلام والتسليم",
+      "pickupAddress": "عنوان الاستلام",
+      "dropoffAddress": "عنوان التسليم",
+      "chooseFromMap": "اختر من الخريطة",
+      "changePickup": "تغيير عنوان الاستلام",
+      "changeDropoff": "تغيير عنوان التسليم",
+      "pickupLocation": "موقع الاستلام",
+      "dropoffLocation": "موقع التسليم",
+      "selected": "تم التحديد",
+      "enterAddress": "ادخل عنوانك",
+      "distanceHint": "يجب أن يكون الموقع في حدود 20 كم من موقع المعرض",
+      "additionalDetails": "تفاصيل إضافية",
+      "notesPlaceholder": "اكتب أي ملاحظات أو طلبات خاصة...",
+      "submitEdit": "إرسال طلب التعديل",
+      "continue": "متابعة الحجز",
+      "total": "الإجمالي",
+      "selectPickup": "حدد موقع الاستلام",
+      "selectDropoff": "حدد موقع التسليم",
+      "pickupTime": "حدد وقت الاستلام",
+      "previousMonth": "الشهر السابق",
+      "nextMonth": "الشهر التالي"
+    },
+    "monthly": {
+      "title": "حجز شهري",
+      "monthsCount": "عدد الشهور",
+      "increase": "زيادة عدد الشهور",
+      "decrease": "تقليل عدد الشهور",
+      "months": "{count, plural, =1 {# شهر} other {# شهور}}",
+      "sliderLabel": "عدد شهور الحجز",
+      "distanceHint": "يجب أن يكون الموقع في حدود <strong>20 كم</strong> من موقع المعرض"
+    },
+    "confirm": {
+      "dialogLabel": "تأكيد الحجز",
+      "close": "إغلاق",
+      "back": "رجوع",
+      "title": "تأكيد الحجز",
+      "perDay": "/يوم",
+      "pickupAddress": "عنوان الاستلام",
+      "dropoffAddress": "عنوان التسليم",
+      "pickupTime": "موعد الاستلام",
+      "dropoffTime": "موعد التسليم",
+      "insurance": "تفاصيل التأمين",
+      "insuranceValue": "تأمين السيارة تكون جاهزة قبل الموعد",
+      "orderTime": "وقت الطلب",
+      "priceDetails": "تفاصيل السعر",
+      "dailyPrice": "السعر اليومي",
+      "days": "عدد الأيام",
+      "day": "يوم",
+      "subtotal": "المجموع الفرعي",
+      "tax": "الضريبة",
+      "total": "الإجمالي",
+      "termsTitle": "الشروط والأحكام",
+      "eligibility": "أوافق على جميع هذه المتطلبات، أنا مؤهل للحجز.",
+      "continuePayment": "متابعة للدفع",
+      "terms": {
+        "license": "لدي رخصة قيادة سارية.",
+        "identity": "لدي هوية وطنية سارية / إقامة.",
+        "refundable": "قد يتطلب بعض مواقف التأجير أو الدفع مقدماً مبلغاً قابلاً للاسترداد.",
+        "agree": "أوافق على جميع الشروط والأحكام."
+      }
+    },
+    "payment": {
+      "dialogLabel": "طريقة الدفع",
+      "title": "طريقة الدفع",
+      "close": "إغلاق",
+      "wallet": "المحفظة",
+      "walletDescription": "ادفع بالمحفظة بطريقة أسرع",
+      "points": "استخدم النقاط",
+      "pointsDescription": "وفر وادفع بالنقاط التي لديك",
+      "upTo": "حتى",
+      "pointsUnit": "نقطة",
+      "currency": "ريال",
+      "confirming": "جاري تأكيد الحجز...",
+      "confirm": "تأكيد",
+      "options": {
+        "visa": {
+          "title": "دفع إلكتروني (فيزا / ماستركارد)",
+          "description": "دعم مدى، فيزا، وماستركارد من أي مكان بالعالم"
+        },
+        "tabby": {
+          "title": "ادفع لاحقاً عبر تابي",
+          "description": "قسم فاتورتك على 4 دفعات بدون فوائد"
+        },
+        "tamara": {
+          "title": "ادفع لاحقاً عبر تمارا",
+          "description": "ادفع على 3 دفعات مريحة ومتوافقة مع الشريعة"
+        }
+      }
+    },
+    "card": {
+      "currency": "ريال",
+      "perDay": "/ يوم",
+      "bookNow": "احجز الآن",
+      "paymentNote": "لن يتم خصم أي مبلغ الآن، الدفع عند الاستلام",
+      "successTitle": "تم تأكيد الحجز بنجاح!",
+      "successDescription": "جاري تحويلك إلى صفحة حجوزاتي...",
+      "goNow": "الانتقال الآن"
+    }
+  },
+  "carDetails": {
+    "addons": "خدمات إضافية",
+    "modelYear": "موديل {year}",
+    "airportPickup": "استلام من المطار",
+    "stationPickup": "استلام من محطة",
+    "warranties": "ضمانات تي كار",
+    "insurance": {
+      "title": "نوع التأمين",
+      "details": "تفاصيل التأمين",
+      "terms": "تعليمات المستأجر",
+      "cancellation": "سياسة الإلغاء"
+    },
+    "reviews": {
+      "overall": "التقييم الإجمالي",
+      "viewAll": "عرض كل التقييمات",
+      "countLabel": "تقييم",
+      "close": "إغلاق",
+      "title": "التقييمات",
+      "excellent": "ممتاز",
+      "veryGood": "جيد جدًا",
+      "good": "جيد",
+      "acceptable": "مقبول"
+    },
+    "pickup": {
+      "sectionLabel": "معلومات الاستلام والفرع",
+      "airportTitle": "مواقف تي كار في المطار",
+      "stationTitle": "مواقف تي كار في المحطة",
+      "airportDescription": "خدمة الاستلام والإرجاع السريعة في مواقف السيارات بالمطار",
+      "stationDescription": "خدمة الاستلام والإرجاع السريعة في مواقف السيارات بالمحطة",
+      "nearestBranch": "أقرب فرع لك",
+      "viewBranch": "عرض تفاصيل {showroom}",
+      "branches": "الفروع",
+      "closeBranches": "إغلاق قائمة الفروع",
+      "km": "كم"
+    }
+  },
+  "wallet": {
+    "topUpTitle": "اشحن المحفظة",
+    "topUp": "شحن",
+    "withdrawTitle": "اسحب الرصيد",
+    "withdraw": "سحب",
+    "totalBalance": "إجمالي الرصيد",
+    "addBalance": "إضافة رصيد",
+    "withdrawBalance": "اسحب رصيد",
+    "withdrawableBalance": "رصيد قابل للسحب",
+    "nonWithdrawableBalance": "رصيد غير قابل للسحب",
+    "history": "سجل الرصيد",
+    "topUpSuccess": "تم الشحن بنجاح",
+    "topUpFailure": "فشل في عملية الشحن",
+    "withdrawSuccess": "تم السحب بنجاح",
+    "withdrawFailure": "فشل في عملية السحب",
+    "transaction": {
+      "topup": "شحن",
+      "refund": "استرداد",
+      "payment": "دفع",
+      "withdraw": "سحب"
+    },
+    "amount": {
+      "rangeMin": "الحد الأدنى {min} ريال",
+      "rangeWithMax": "الحد الأدنى {min} ريال - الحد الأقصى {max} ريال",
+      "loading": "جاري التنفيذ"
+    },
+    "bankSelect": {
+      "title": "اختر البنك",
+      "empty": "لا توجد حسابات بنكية مضافة"
+    },
+    "empty": {
+      "history": "لا توجد عمليات على المحفظة بعد"
+    },
+    "insufficient": {
+      "title": "رصيدك غير كافي",
+      "heading": "الرصيد منخفض للغاية",
+      "description": "يرجى شحن رصيد محفظتك لكي تتمكن من الدفع بالمحفظة",
+      "topUp": "اشحن الآن"
+    }
+  },
+  "bankAccounts": {
+    "title": "الحسابات البنكية",
+    "add": "إضافة حساب بنكي",
+    "edit": "تعديل {bank}",
+    "delete": "حذف {bank}",
+    "deleteConfirmTitle": "حذف الحساب البنكي؟",
+    "deleteConfirmDescription": "هل أنت متأكد من رغبتك في حذف هذا الحساب البنكي؟ لن تتمكن من استخدامه في عمليات السحب بعد حذفه.",
+    "deleting": "جاري الحذف...",
+    "cancel": "تراجع",
+    "addedSuccess": "تم إضافة حسابك بنجاح",
+    "addedFailure": "فشل في إضافة الحساب البنكي",
+    "updatedSuccess": "تم حفظ تعديلك بنجاح",
+    "updatedFailure": "فشل في حفظ التعديل",
+    "deletedSuccess": "تم حذف حسابك بنجاح",
+    "deletedFailure": "فشل في حذف الحساب البنكي",
+    "form": {
+      "add": { "title": "إضافة حساب بنكي", "submit": "إضافة" },
+      "edit": { "title": "تعديل حساب بنكي", "submit": "حفظ" },
+      "close": "إغلاق",
+      "bankName": "اسم البنك",
+      "chooseBank": "اختر البنك",
+      "iban": "رقم الآيبان",
+      "loading": "جاري التنفيذ"
+    },
+    "empty": {
+      "title": "لا توجد حسابات بنكية مضافة"
+    }
   }
 }

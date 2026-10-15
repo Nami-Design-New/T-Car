@@ -1,0 +1,117 @@
+import Image from 'next/image';
+import { Link } from '@/i18n/navigation';
+import { getTranslations } from 'next-intl/server';
+import {
+  FiFacebook,
+  FiInstagram,
+  FiTwitter,
+  FiMail,
+  FiPhone,
+  FiMapPin,
+  FiDownload,
+} from 'react-icons/fi';
+
+import { IMAGES } from '@/shared/config/assets';
+const logo = IMAGES.brandMark;
+const appStore = IMAGES.appStore;
+const googlePlay = IMAGES.googlePlay;
+
+import { NAV_LINKS } from '@/shared/config/site';
+
+export default async function Footer() {
+  const t = await getTranslations();
+
+  const year = new Date().getFullYear();
+
+  return (
+   <footer className="footer">
+      
+      <div className="container-tcar footer_top">
+
+        <div className="footer_brand">
+          <Image src={logo} alt="T-Car" width={160} height={48} />
+
+          <p>{t('hero.subtitle')}</p>
+
+          <div className="footer_socials">
+            <a href="#">
+              <FiFacebook />
+            </a>
+
+            <a href="#">
+              <FiInstagram />
+            </a>
+
+            <a href="#">
+              <FiTwitter />
+            </a>
+          </div>
+        </div>
+
+        <div className="footer_links">
+          <h4>{t('footer.quickLinks')}</h4>
+
+          <ul>
+            {NAV_LINKS.map((link) => (
+              <li key={link.href}>
+                <Link href={link.href}>{t(link.label)}</Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div className="footer_contact">
+          <h4>{t('footer.contactUs')}</h4>
+
+          <div className="contact_item">
+            <FiMail />
+            <a href="mailto:info@tcar.com">{t('footer.emailValue')}</a>
+          </div>
+
+          <div className="contact_item">
+            <FiPhone />
+            <a href="tel:+966500000000">{t('footer.phoneValue')}</a>
+          </div>
+
+          <div className="contact_item">
+            <FiMapPin />
+            <a
+              href="https://maps.google.com/?q=Riyadh,Saudi Arabia"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {t('footer.addressValue')}
+            </a>
+          </div>
+        </div>
+
+        <div className="footer_apps">
+          <h4>
+            <FiDownload />
+            {t('footer.downloadApp')}
+          </h4>
+
+          <a href="#">
+            <Image src={appStore} alt={t('downloadApp.appStoreAlt')} width={170} />
+          </a>
+
+          <a href="#">
+            <Image src={googlePlay} alt={t('downloadApp.playStoreAlt')} width={170} />
+          </a>
+        </div>
+      </div>
+
+      <div className="footer_bottom container">
+        <div className="footer_copy">
+          © {year} T-Car. {t('footer.rights')}
+        </div>
+        <div className="footer_bottom_links">
+          <Link href="/terms">{t('footer.terms')}</Link>
+
+          <Link href="/privacy">{t('footer.privacy')}</Link>
+        </div>
+      </div>
+    </footer>
+ 
+  );
+}

@@ -1,20 +1,17 @@
-import CarFilters from '@components/cars/CarFilters';
-import CarOfficeRow from '@components/cars/CarOfficeRow';
-import type { CarListing } from '@app-types/car';
-import { MOCK_CARS } from '@/data/cars';
-import { groupCarsByOffice } from '@/data/offices';
+import { CarFilters, CarOfficeRow, SortBar, parseCarSearchParams } from '@/features/cars';
+import { getCarBrands, getOfficeCarGroups } from '@/features/cars/queries';
 import { Link } from '@/i18n/navigation';
 import { getTranslations } from 'next-intl/server';
 import { FiArrowLeft } from 'react-icons/fi';
 
-async function getCars(): Promise<CarListing[]> {
-  return MOCK_CARS;
+interface Props {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }
 
-export default async function CarsPage() {
+export default async function CarsPage({ searchParams }: Props) {
   const t = await getTranslations();
-  const cars = await getCars();
-  const officeGroups = groupCarsByOffice(cars);
+  const params = parseCarSearchParams(await searchParams);
+  const [officeGroups, brands] = await Promise.all([getOfficeCarGroups(params), getCarBrands()]);
 
   return (
     <section className="section city-listings car-page">
@@ -27,8 +24,12 @@ export default async function CarsPage() {
         </header>
 
         <div className="city-listings-grid">
-          <CarFilters />
+          <CarFilters brands={brands} />
           <div className="office-rows">
+            <SortBar
+              resultsCount={officeGroups.reduce((count, group) => count + group.cars.length, 0)}
+              value={params.sort}
+            />
             {officeGroups.map(({ office, cars: officeCars }) => (
               <CarOfficeRow key={office.id} office={office} cars={officeCars} />
             ))}

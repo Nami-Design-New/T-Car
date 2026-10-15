@@ -1,32 +1,33 @@
-import CityHero from '@components/cities/CityHero';
-import SortBar from '@components/cities/SortBar';
-import CityFilters from '@components/cities/CityFilters';
-import CarCard from '@components/cars/CarCard';
-import type { CityDetails, CarListing } from '@app-types/car';
-import { MOCK_CARS } from '@/data/cars';
-import cityHeroImage from '@assets/images/c1.jpg';
+import type { Metadata } from 'next';
+import { notFound } from 'next/navigation';
+import { CarCard, CityFilters, SortBar, parseCarSearchParams } from '@/features/cars';
+import { getCarBrands, getCarsForCity } from '@/features/cars/queries';
+import { CityHero } from '@/features/cities';
+import { getCityDetails } from '@/features/cities/queries';
 
 interface Props {
   params: Promise<{ slug: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }
 
-async function getCityDetails(slug: string): Promise<CityDetails> {
-  return {
-    id: '1',
-    name: 'المدينة المنورة',
-    slug,
-    heroImage: cityHeroImage,
-    carsCount: 24,
-  };
-}
-
-async function getCarsForCity(slug: string): Promise<CarListing[]> {
-  return MOCK_CARS;
-}
-export default async function CityDetailsPage({ params }: Props) {
+/** The city's own title; the query is cached, so the page reuses this read. */
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const city = await getCityDetails(slug);
-  const cars = await getCarsForCity(slug);
+  if (!city) notFound();
+
+  return { title: city.name };
+}
+
+export default async function CityDetailsPage({ params, searchParams }: Props) {
+  const { slug } = await params;
+  const filters = parseCarSearchParams(await searchParams);
+  const [city, cars, brands] = await Promise.all([
+    getCityDetails(slug),
+    getCarsForCity(slug, filters),
+    getCarBrands(),
+  ]);
+  if (!city) notFound();
 
   return (
     <>
@@ -34,10 +35,10 @@ export default async function CityDetailsPage({ params }: Props) {
 
       <section className="section city-listings">
         <div className="container-tcar">
-          <SortBar resultsCount={city.carsCount} />
+          <SortBar resultsCount={cars.length} value={filters.sort} />
 
           <div className="city-listings-grid">
-            <CityFilters />
+            <CityFilters brands={brands} />
 
             <div className="city-cars-grid">
               {cars.map((car) => (

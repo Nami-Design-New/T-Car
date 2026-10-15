@@ -1,0 +1,148 @@
+@use 'tokens/tokens' as *;
+
+.country-dialog {
+  &.dialog {
+    width: min(600px, calc(100% - 32px));
+    max-height: 78dvh;
+  }
+  &__header {
+    margin: 0;
+    padding: 25px 25px 0;
+  }
+  &__header .dialog__title {
+    font-size: 22px;
+  }
+  &__header .dialog__description {
+    margin: 4px 0 0;
+    font-size: 13px;
+  }
+  &__body {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 16px 25px;
+  }
+  &__search {
+    display: flex;
+    align-items: center;
+    height: 46px;
+    flex-shrink: 0;
+    padding-inline: 14px;
+    border: 1px solid $ds-stroke-light;
+    border-radius: $ds-radius-md;
+    svg {
+      font-size: 18px;
+      color: $ds-text-subtle;
+    }
+    input {
+      flex: 1;
+      min-width: 0;
+      border: 0;
+      outline: 0;
+      background: transparent;
+      padding-inline: 10px;
+      font-size: 14px;
+    }
+  }
+  &__list {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-height: 0;
+    gap: 10px;
+    overflow-y: auto;
+    padding-inline-end: 4px;
+    &::-webkit-scrollbar {
+      width: 5px;
+    }
+    &::-webkit-scrollbar-thumb {
+      background: rgba($ds-action-primary, 0.3);
+      border-radius: $ds-radius-full;
+    }
+  }
+  &__item {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    flex-shrink: 0;
+    gap: 14px;
+    padding: 12px 14px;
+    border: 1px solid $ds-stroke-light;
+    border-radius: $ds-radius-md;
+    background: $ds-surface-elevated;
+    color: $ds-text-primary;
+    cursor: pointer;
+    text-align: start;
+    transition: 0.25s;
+    &:hover,
+    &[data-selected] {
+      border-color: $ds-action-primary;
+      background: $ds-surface-card-primary;
+    }
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba($ds-action-primary, 0.1);
+    }
+  }
+  &__flag {
+    display: grid;
+    width: 42px;
+    height: 42px;
+    place-items: center;
+    flex-shrink: 0;
+    border-radius: $ds-radius-md;
+    background: $ds-surface-card-primary;
+    overflow: hidden;
+  }
+  &__footer {
+    padding: 0 25px 25px;
+  }
+  &__confirm {
+    width: 100%;
+    height: 56px;
+    border: 0;
+    border-radius: $ds-radius-md;
+    background: $ds-action-primary;
+    color: $ds-text-on-action;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.3s;
+    &:disabled {
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
+    &:hover:not(:disabled) {
+      transform: translateY(-2px);
+    }
+  }
+}
+
+@media (max-width: $breakpoint-md) {
+  .country-dialog {
+    &.dialog {
+      width: calc(100% - 24px);
+      max-height: 72dvh;
+    }
+    &__header {
+      padding: 18px 18px 0;
+    }
+    &__header .dialog__title {
+      font-size: 20px;
+    }
+    &__header .dialog__description {
+      font-size: 12px;
+    }
+    &__body {
+      padding: 16px 18px;
+    }
+    &__item {
+      padding: 10px 12px;
+    }
+    &__footer {
+      padding: 0 18px 18px;
+    }
+    &__confirm {
+      height: 44px;
+    }
+  }
+}

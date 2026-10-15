@@ -1,0 +1,40 @@
+import { ReactNode } from 'react';
+import './SectionTitle.scss';
+
+export interface SectionTitleProps {
+  smallTitle?: ReactNode;
+  title: ReactNode;
+  subtitle?: ReactNode;
+  align?: 'left' | 'center';
+}
+
+export function SectionTitle({
+  smallTitle,
+  title,
+  subtitle,
+  align = 'center',
+}: SectionTitleProps) {
+  return (
+    <div
+      className={`section-title ${
+        align === 'center' ? 'is-center' : 'is-left'
+      }`}
+    >
+      {smallTitle && (
+        <span className="section-title-eyebrow">
+          {smallTitle}
+        </span>
+      )}
+
+      <h2 className="section-title-heading">
+        {title}
+      </h2>
+
+      {subtitle && (
+        <p className="section-title-subtitle">
+          {subtitle}
+        </p>
+      )}
+    </div>
+  );
+}

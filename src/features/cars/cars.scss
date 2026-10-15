@@ -1,0 +1,1561 @@
+@use 'tokens/tokens' as *;
+
+// Listing layout shared by /cars and /cities/[slug]: sort bar, grid, car cards
+
+
+.city-listings {
+  padding-top: 0;
+}
+
+.sort-bar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 1.5rem;
+
+  &-filter-toggle {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    border: 1px solid $ds-stroke-light;
+    border-radius: $ds-radius-md;
+    background: $ds-surface-elevated;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: $ds-text-primary;
+    cursor: pointer;
+
+    @media (min-width: $breakpoint-lg) {
+      display: none;
+    }
+  }
+
+  &-count {
+    color: $ds-text-subtle;
+    font-size: 0.9rem;
+    margin-inline-end: auto;
+  }
+
+  &-select {
+    position: relative;
+
+    select {
+      appearance: none;
+      border: 1px solid $ds-stroke-light;
+      border-radius: $ds-radius-md;
+      padding: 8px 34px 8px 14px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: $ds-text-primary;
+      background: $ds-surface-elevated;
+      cursor: pointer;
+    }
+
+    &-icon {
+      position: absolute;
+      inset-inline-start: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      pointer-events: none;
+      color: $ds-text-subtle;
+    }
+  }
+}
+
+.city-listings-grid {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 2rem;
+  align-items: start;
+
+  @media (max-width: $breakpoint-lg) {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+.car-card {
+  min-width: 0;
+  height: 100%;
+  overflow: hidden;
+  border: 1px solid $ds-stroke-light;
+  border-radius: $ds-radius-lg;
+  background: $ds-surface-background;
+  box-shadow: 0 7px 24px rgba($ds-black, 0.055);
+  transition:
+    border-color 0.25s ease,
+    box-shadow 0.25s ease,
+    transform 0.25s ease;
+
+  &:hover {
+    border-color: rgba($ds-action-primary, 0.25);
+    box-shadow: 0 14px 34px rgba($ds-black, 0.1);
+    transform: translateY(-4px);
+
+    .car-card__media img {
+      transform: scale(1.035);
+    }
+  }
+
+  &:focus-within {
+    outline: 3px solid rgba($ds-action-primary, 0.18);
+    outline-offset: 3px;
+  }
+
+  &__link {
+    display: flex;
+    height: 100%;
+    flex-direction: column;
+    color: inherit;
+  }
+
+  &__media {
+    position: relative;
+    height: 210px;
+    overflow: hidden;
+    background: $ds-surface-on-background;
+
+    &::after {
+      content: '';
+      position: absolute;
+      inset: auto 0 0;
+      height: 45%;
+      background: linear-gradient(to top, rgba($ds-black, 0.3), transparent);
+      pointer-events: none;
+    }
+
+    img {
+      object-fit: cover;
+      transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+  }
+
+  &__pickup {
+    position: absolute;
+    z-index: 2;
+    top: $ds-space-4;
+    inset-inline-start: $ds-space-4;
+    display: inline-flex;
+    align-items: center;
+    gap: $ds-space-2;
+    min-height: 30px;
+    padding: $ds-space-2 $ds-space-3;
+    border: 1px solid rgba($ds-white, 0.7);
+    border-radius: $ds-radius-sm;
+    background: rgba($ds-surface-background, 0.92);
+    box-shadow: 0 4px 12px rgba($ds-black, 0.1);
+    color: $ds-text-primary;
+    font-size: 11px;
+    font-weight: 600;
+    backdrop-filter: blur(8px);
+
+    svg {
+      color: $ds-action-primary;
+      font-size: 14px;
+    }
+  }
+
+  &__offer {
+    position: absolute;
+    z-index: 2;
+    inset-inline: $ds-space-4;
+    bottom: $ds-space-4;
+
+    display: flex;
+    align-items: stretch;
+    justify-content: space-between;
+    min-height: $ds-space-10;
+    overflow: hidden;
+    border: 1px dashed $ds-status-success;
+    border-radius: $ds-radius-md;
+    background: rgba($ds-surface-background, 0.94);
+    box-shadow: 0 8px 22px rgba($ds-black, 0.14);
+    backdrop-filter: blur(10px);
+  }
+
+  &__offer-copy {
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    gap: $ds-space-3;
+    padding: $ds-space-3 $ds-space-4;
+
+    > svg {
+      flex: 0 0 auto;
+      color: $ds-status-success;
+      font-size: 22px;
+    }
+
+    span,
+    small,
+    strong {
+      display: block;
+    }
+
+    span {
+      min-width: 0;
+    }
+
+    small {
+      margin-bottom: 1px;
+      color: $ds-text-subtle;
+      font-size: 9px;
+      line-height: 1.3;
+    }
+
+    strong {
+      overflow: hidden;
+      color: $ds-text-primary;
+      font-size: 11px;
+      font-weight: 700;
+      line-height: 1.35;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+
+  &__offer-value {
+    position: relative;
+    display: grid;
+    min-width: 68px;
+    flex: 0 0 auto;
+    place-content: center;
+    padding: $ds-space-2 $ds-space-4;
+    background: $ds-status-success;
+    color: $ds-white;
+    text-align: center;
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      inset-inline-start: 0;
+      width: $ds-space-4;
+      height: $ds-space-4;
+      border-radius: $ds-radius-full;
+      background: rgba($ds-surface-background, 0.94);
+      transform: translate(-50%, -50%);
+    }
+
+    strong,
+    small {
+      display: block;
+    }
+
+    strong {
+      font-size: 15px;
+      line-height: 1.1;
+    }
+
+    small {
+      margin-top: 2px;
+      color: inherit;
+      font-size: 8px;
+      line-height: 1;
+    }
+  }
+
+  &__content {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    padding: $ds-space-5;
+  }
+
+  &__title {
+    margin: 0 0 $ds-space-4;
+    color: $ds-text-primary;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.45;
+  }
+
+  &__meta {
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    gap: $ds-space-3;
+    margin-bottom: $ds-space-5;
+  }
+
+  &__year {
+    flex: 0 0 auto;
+    padding: $ds-space-2 $ds-space-3;
+    border-radius: $ds-radius-sm;
+    background: $ds-surface-card-primary;
+    color: $ds-action-primary;
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 1;
+  }
+
+  &__showroom {
+    display: flex;
+    min-width: 0;
+    flex: 1;
+    align-items: center;
+    gap: $ds-space-2;
+    color: $ds-text-subtle;
+    font-size: 11px;
+    font-weight: 500;
+
+    svg {
+      flex: 0 0 auto;
+      padding: $ds-space-1;
+      border-radius: $ds-radius-xs;
+      background: $ds-action-primary;
+      color: $ds-white;
+      font-size: 18px;
+    }
+
+    span {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+
+  &__footer {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: $ds-space-4;
+    margin-top: auto;
+    padding-top: $ds-space-4;
+    border-top: 1px solid $ds-stroke-light;
+  }
+
+  &__rating {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: $ds-space-2;
+    color: $ds-text-primary;
+    font-size: 12px;
+    font-weight: 600;
+
+    svg {
+      color: $ds-status-warning;
+      font-size: 15px;
+    }
+  }
+
+  &__price {
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    gap: $ds-space-4;
+    white-space: nowrap;
+
+    del {
+      display: inline-flex;
+      align-items: center;
+      gap: $ds-space-2;
+      color: $ds-text-placeholder;
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 1;
+      text-decoration-color: currentColor;
+      text-decoration-thickness: 1.5px;
+    }
+  }
+
+  &__current-price {
+    display: inline-flex;
+    align-items: center;
+    gap: $ds-space-2;
+
+    strong {
+      color: $ds-action-primary;
+      font-size: 18px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    small {
+      color: $ds-text-subtle;
+      font-size: 14px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+  }
+
+  &__riyal-icon {
+    width: 16px;
+    height: auto;
+    flex: 0 0 auto;
+  }
+
+  @media (max-width: $breakpoint-sm) {
+    border-radius: $ds-radius-lg;
+
+    &__media {
+      height: 184px;
+    }
+
+    &__content {
+      padding: $ds-space-4 $ds-space-5 $ds-space-5;
+    }
+
+    &__title {
+      font-size: 15px;
+    }
+  }
+}
+
+.car-page {
+  margin-top: $ds-space-9;
+
+  &__heading {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: $ds-space-4;
+    max-width: 720px;
+    margin-bottom: $ds-space-9;
+
+    h1 {
+      margin: 0;
+      color: $ds-text-primary;
+      font-size: clamp(1.5rem, 2vw, 3rem);
+      font-weight: 800;
+      letter-spacing: -0.035em;
+      line-height: 1.18;
+    }
+  }
+
+  &__back {
+    display: grid;
+    flex: 0 0 auto;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border: 1px solid $ds-stroke-light;
+    border-radius: $ds-radius-md;
+    background: $ds-surface-elevated;
+    color: $ds-text-primary;
+    font-size: 1.2rem;
+    box-shadow: 0 6px 18px rgba($ds-shadow-color, 0.05);
+    transition:
+      border-color 0.2s ease,
+      background 0.2s ease,
+      color 0.2s ease,
+      transform 0.2s ease,
+      box-shadow 0.2s ease;
+
+    &:hover {
+      border-color: $ds-action-primary;
+      background: $ds-action-primary;
+      color: $ds-text-on-action;
+      transform: translateY(-1px);
+      box-shadow: 0 8px 20px rgba($ds-action-primary, 0.2);
+    }
+
+    &:focus-visible {
+      outline: 3px solid rgba($ds-action-primary, 0.2);
+      outline-offset: 3px;
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
+  }
+
+  @media (max-width: $breakpoint-md) {
+    margin-top: $ds-space-7;
+
+    &__heading {
+      margin-bottom: $ds-space-8;
+
+      h1 {
+        font-size: clamp(1.85rem, 9vw, 2.4rem);
+      }
+
+      p {
+        font-size: 0.88rem;
+      }
+    }
+
+    &__back {
+      width: 40px;
+      height: 40px;
+      font-size: 1.1rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &__back {
+      transition: none;
+    }
+  }
+}
+
+// ------- صف مكتب (سلايدر) -------
+.office-rows {
+  display: flex;
+  flex-direction: column;
+  gap-y: $ds-space-3;
+  min-width: 0;
+}
+
+.office-row {
+  min-width: 0;
+
+  &:last-child {
+    padding-bottom: 0;
+    border-bottom: 0;
+  }
+
+  &__header {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: $ds-space-5;
+    min-height: 82px;
+    margin-bottom: $ds-space-5;
+    overflow: hidden;
+  }
+
+  &__title {
+    display: flex;
+    align-items: center;
+    gap: $ds-space-4;
+    min-width: 0;
+    margin: 0;
+  }
+
+  &__logo {
+    display: grid;
+    flex-shrink: 0;
+    place-items: center;
+    width: 56px;
+    height: 56px;
+    padding: $ds-space-3;
+    overflow: hidden;
+    border: 1px solid $ds-stroke-light;
+    border-radius: $ds-radius-md;
+    background: $ds-surface-on-background;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+  }
+
+  &__copy {
+    display: flex;
+    min-width: 0;
+    gap: 2px;
+    font-size: 1.35rem;
+    font-weight: 800;
+    line-height: 1.35;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__label {
+    color: $ds-action-primary;
+  }
+
+  &__name {
+    color: $ds-text-primary;
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: $ds-space-4;
+    flex-shrink: 0;
+    margin-inline-start: auto;
+  }
+
+  &__count {
+    flex-shrink: 0;
+    padding: 0.4rem 0.8rem;
+    border: 1px solid rgba($ds-action-primary, 0.12);
+    border-radius: $ds-radius-full;
+    background: $ds-surface-card-primary;
+    color: $ds-action-primary;
+    font-size: 0.78rem;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  &__navs {
+    display: flex;
+    gap: $ds-space-2;
+    padding: $ds-space-2;
+    border: 1px solid $ds-stroke-light;
+    border-radius: $ds-radius-full;
+    background: $ds-surface-on-background;
+  }
+
+  &__nav {
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    border: 0;
+    border-radius: $ds-radius-full;
+    background: $ds-surface-elevated;
+    color: $ds-text-primary;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition:
+      background 0.2s ease,
+      color 0.2s ease,
+      box-shadow 0.2s ease,
+      transform 0.2s ease;
+
+    &:hover:not(:disabled) {
+      background: $ds-action-primary;
+      color: $ds-text-on-action;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 14px rgba($ds-action-primary, 0.22);
+    }
+
+    &:focus-visible {
+      outline: 3px solid rgba($ds-action-primary, 0.2);
+      outline-offset: 3px;
+    }
+
+    &:disabled {
+      background: transparent;
+      color: $ds-text-placeholder;
+      cursor: not-allowed;
+      opacity: 0.55;
+    }
+  }
+
+  &__swiper {
+    min-width: 0;
+    padding: 2px 2px 6px;
+
+    &:active {
+      cursor: grabbing;
+    }
+  }
+
+  &__slide {
+    height: auto;
+
+    .car-card {
+      height: 100%;
+    }
+  }
+
+  @media (max-width: $breakpoint-md) {
+    padding-bottom: $ds-space-8;
+
+    &__header {
+      flex-wrap: wrap;
+      gap: $ds-space-3;
+      min-height: 72px;
+      margin-bottom: $ds-space-4;
+      padding: $ds-space-4;
+    }
+
+    &__title {
+      flex: 1 1 180px;
+      gap: $ds-space-3;
+    }
+
+    &__logo {
+      width: 46px;
+      height: 46px;
+      padding: 6px;
+    }
+
+    &__name {
+      font-size: 1.05rem;
+    }
+
+    &__actions {
+      gap: $ds-space-3;
+    }
+
+    &__count {
+      padding: 0.35rem 0.65rem;
+      font-size: 0.7rem;
+    }
+
+    &__nav {
+      width: 32px;
+      height: 32px;
+      font-size: 1.05rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &__nav {
+      transition: none;
+    }
+  }
+}
+
+// ------- بحث في الفلاتر -------
+.filter_search {
+  position: relative;
+  margin-bottom: 22px;
+
+  svg {
+    position: absolute;
+    inset-inline-start: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 1;
+
+    color: $ds-text-subtle;
+    font-size: 19px;
+    pointer-events: none;
+  }
+
+  input {
+    width: 100%;
+    height: 52px;
+    padding-inline: 44px 14px;
+
+    border: 1px solid $ds-stroke-light;
+    border-radius: $ds-radius-md;
+    background: $ds-surface-on-background;
+    outline: none;
+
+    color: $ds-text-primary;
+    font-size: 14px;
+    transition:
+      border-color 0.2s ease,
+      background 0.2s ease,
+      box-shadow 0.2s ease;
+
+    &::placeholder {
+      color: $ds-text-placeholder;
+    }
+
+    &:focus {
+      border-color: $ds-action-primary;
+      background: $ds-surface-elevated;
+      box-shadow: 0 0 0 3px rgba($ds-action-primary, 0.1);
+    }
+  }
+}
+
+.filters_panel {
+  background: $ds-surface-elevated;
+  border-radius: $ds-radius-xl;
+  padding: 24px;
+  border: 1px solid rgba($ds-shadow-color, 0.06);
+  box-shadow: 0 4px 20px rgba($ds-shadow-color, 0.05);
+
+  align-self: start;
+  height: fit-content;
+
+  .filter_header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 18px;
+    margin-bottom: 24px;
+    border-bottom: 1px solid $ds-stroke-light;
+
+    h3 {
+      margin: 0;
+      color: $ds-text-primary;
+      font-size: 18px;
+      font-weight: 700;
+    }
+  }
+
+  .filter_group {
+    margin-bottom: 28px;
+    padding-bottom: 28px;
+    border-bottom: 1px solid $ds-stroke-light;
+
+    &:last-child {
+      margin-bottom: 0;
+      padding-bottom: 0;
+      border-bottom: 0;
+    }
+  }
+
+  .filter_title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 18px;
+
+    h4 {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0;
+      color: $ds-text-primary;
+      font-size: 15px;
+      font-weight: 700;
+
+      svg {
+        color: $ds-action-primary;
+      }
+    }
+
+    .view_all {
+      border: 0;
+      background: transparent;
+      color: $ds-action-primary;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+
+      &:disabled {
+        color: $ds-text-placeholder;
+        cursor: default;
+      }
+    }
+  }
+
+  .chip_filter_group {
+    .filter_title {
+      margin-bottom: 12px;
+
+      h4 {
+        color: $ds-text-primary;
+        font-size: 15px;
+        font-weight: 800;
+      }
+
+      .view_all {
+        color: $ds-text-primary;
+        font-size: 12px;
+        font-weight: 500;
+        text-decoration: underline;
+        text-underline-offset: 2px;
+
+        &:disabled {
+          color: $ds-text-placeholder;
+          text-decoration: none;
+        }
+      }
+    }
+  }
+
+  .filter_chip_list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 8px;
+  }
+
+  .filter_chip {
+    min-height: 42px;
+    max-width: 100%;
+    padding: 7px 11px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+
+    border: 1px solid transparent;
+    border-radius: $ds-radius-md;
+    background: $ds-surface-on-background;
+
+    color: $ds-text-primary;
+    cursor: pointer;
+
+    transition:
+      color 0.18s ease,
+      background 0.18s ease,
+      border-color 0.18s ease,
+      box-shadow 0.18s ease,
+      transform 0.18s ease;
+
+    .filter_chip_visual {
+      display: grid;
+      place-items: center;
+      flex: 0 0 auto;
+    }
+
+    .filter_chip_label {
+      min-width: 0;
+
+      overflow: hidden;
+      color: inherit;
+      font-size: 13px;
+      font-weight: 500;
+      line-height: 1.35;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .brand_chip_logo {
+      width: 26px;
+      height: 26px;
+
+      border-radius: $ds-radius-full;
+      background: $ds-surface-elevated;
+
+      img {
+        width: 22px;
+        height: 22px;
+        object-fit: contain;
+      }
+    }
+
+    .car_type_icon {
+      color: $ds-text-subtle;
+      font-size: 27px;
+      line-height: 1;
+    }
+
+    .filter_chip_remove {
+      width: 21px;
+      height: 21px;
+
+      display: grid;
+      place-items: center;
+      flex: 0 0 auto;
+
+      border-radius: $ds-radius-full;
+      background: $ds-surface-elevated;
+
+      color: $ds-text-primary;
+
+      svg {
+        font-size: 15px;
+        stroke-width: 2;
+      }
+    }
+
+    &:hover {
+      border-color: rgba($ds-action-primary, 0.25);
+      background: $ds-surface-card-primary;
+      transform: translateY(-1px);
+    }
+
+    &:focus-visible {
+      outline: 3px solid rgba($ds-action-primary, 0.16);
+      outline-offset: 2px;
+    }
+
+    &.is-selected {
+      border-color: $ds-action-primary;
+      background: $ds-action-primary;
+      box-shadow: 0 7px 16px rgba($ds-action-primary, 0.18);
+
+      color: $ds-text-on-action;
+
+      .car_type_icon {
+        color: $ds-text-on-action;
+      }
+
+      &:hover {
+        background: darken($ds-action-primary, 4%);
+        transform: translateY(-1px);
+      }
+    }
+  }
+
+  .brand_filter_chip {
+    flex: 1 1 calc(50% - 4px);
+    min-width: 100px;
+  }
+
+  .car_type_filter_chip {
+    flex: 0 1 auto;
+  }
+
+  .filter_actions {
+    display: flex;
+    gap: 10px;
+
+    margin-top: 4px;
+    padding-top: 18px;
+
+    border-top: 1px solid $ds-stroke-light;
+  }
+
+  .filter_action_btn {
+    flex: 1 1 0;
+    min-width: 0;
+    height: 50px;
+    padding-inline: 14px;
+
+    border-radius: $ds-radius-md;
+
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+
+    transition:
+      background 0.2s ease,
+      border-color 0.2s ease,
+      color 0.2s ease,
+      box-shadow 0.2s ease,
+      transform 0.2s ease;
+
+    &:focus-visible {
+      outline: 3px solid rgba($ds-action-primary, 0.16);
+      outline-offset: 2px;
+    }
+
+    &:active:not(:disabled) {
+      transform: scale(0.98);
+    }
+  }
+
+  .filter_clear_all_btn {
+    border: 1px solid $ds-stroke-heavy;
+    background: $ds-surface-elevated;
+    color: $ds-text-subtle;
+
+    &:hover:not(:disabled) {
+      border-color: $ds-action-primary;
+      color: $ds-action-primary;
+    }
+
+    &:disabled {
+      border-color: $ds-stroke-light;
+      color: $ds-text-placeholder;
+      cursor: not-allowed;
+    }
+  }
+
+  .filter_apply_btn {
+    border: 1px solid $ds-action-primary;
+    background: $ds-action-primary;
+    color: $ds-text-on-action;
+
+    &:hover {
+      border-color: darken($ds-action-primary, 6%);
+      background: darken($ds-action-primary, 6%);
+      box-shadow: 0 9px 20px rgba($ds-action-primary, 0.22);
+    }
+  }
+
+  .filter_group > h4 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 18px;
+    color: $ds-text-primary;
+    font-size: 15px;
+    font-weight: 700;
+
+    svg {
+      color: $ds-action-primary;
+    }
+  }
+
+  // ------- radio / checkbox -------
+  .radio_item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-direction: row-reverse;
+    padding: 10px 0;
+    cursor: pointer;
+
+    input {
+      width: 18px;
+      height: 18px;
+      accent-color: $ds-action-primary;
+      cursor: pointer;
+    }
+
+    span {
+      flex: 1;
+      color: $ds-text-subtle;
+      font-size: 14px;
+      font-weight: 500;
+      margin-inline-end: 10px;
+    }
+  }
+
+  .check_item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 0;
+    cursor: pointer;
+
+    input {
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
+      accent-color: $ds-action-primary;
+      cursor: pointer;
+    }
+
+    span {
+      color: $ds-text-subtle;
+      font-size: 14px;
+      font-weight: 500;
+    }
+  }
+
+  .service_item {
+    align-items: flex-start;
+
+    input {
+      margin-top: 3px;
+    }
+
+    div {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .service_title {
+      color: $ds-text-primary;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .service_desc {
+      color: $ds-text-placeholder;
+      font-size: 12px;
+      font-weight: 400;
+    }
+  }
+
+  // ------- زرار عرض الكل -------
+  .expand_btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 8px;
+    border: 0;
+    background: transparent;
+    color: $ds-action-primary;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+
+    svg {
+      font-size: 15px;
+      transition: transform 0.25s;
+
+      &.rotated {
+        transform: rotate(-90deg);
+      }
+    }
+  }
+
+  // ------- نطاق السعر (dual range slider) -------
+  .range_slider {
+    position: relative;
+    height: 24px;
+    margin-bottom: 16px;
+
+    .range_track {
+      position: absolute;
+      top: 50%;
+      inset-inline: 0;
+      height: 4px;
+      border-radius: $ds-radius-xs;
+      background: $ds-stroke-light;
+      transform: translateY(-50%);
+      overflow: hidden;
+
+      .range_fill {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        background: $ds-action-primary;
+      }
+    }
+
+    .thumb {
+      position: absolute;
+      top: 50%;
+      inset-inline: 0;
+      width: 100%;
+      transform: translateY(-50%);
+      margin: 0;
+      background: transparent;
+      pointer-events: none;
+      -webkit-appearance: none;
+      appearance: none;
+
+      &::-webkit-slider-thumb {
+        pointer-events: auto;
+        -webkit-appearance: none;
+        appearance: none;
+        width: 20px;
+        height: 20px;
+        border-radius: $ds-radius-full;
+        background: $ds-surface-elevated;
+        border: 3px solid $ds-action-primary;
+        cursor: pointer;
+        box-shadow: 0 2px 6px rgba($ds-shadow-color, 0.2);
+      }
+
+      &::-moz-range-thumb {
+        pointer-events: auto;
+        width: 20px;
+        height: 20px;
+        border-radius: $ds-radius-full;
+        background: $ds-surface-elevated;
+        border: 3px solid $ds-action-primary;
+        cursor: pointer;
+        box-shadow: 0 2px 6px rgba($ds-shadow-color, 0.2);
+      }
+
+      &::-webkit-slider-runnable-track {
+        background: transparent;
+      }
+    }
+  }
+
+  .price_inputs {
+    display: flex;
+    gap: 12px;
+
+    .price_box {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border: 1px solid $ds-stroke-light;
+      border-radius: $ds-radius-md;
+      padding: 10px 12px;
+      background: $ds-surface-on-background;
+
+      svg {
+        color: $ds-action-primary;
+        font-size: 18px;
+        flex-shrink: 0;
+      }
+
+      div {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+      }
+
+      .price_label {
+        color: $ds-text-placeholder;
+        font-size: 11px;
+        font-weight: 500;
+      }
+
+      input {
+        width: 100%;
+        border: 0;
+        background: transparent;
+        outline: none;
+        padding: 0;
+        color: $ds-text-primary;
+        font-size: 14px;
+        font-weight: 700;
+
+        // إخفاء الأسهم بتاعة number input
+        &::-webkit-outer-spin-button,
+        &::-webkit-inner-spin-button {
+          -webkit-appearance: none;
+          margin: 0;
+        }
+        -moz-appearance: textfield;
+      }
+    }
+  }
+
+  // ------- العلامة التجارية (logo + اسم جنبها) -------
+  .brand_list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .brand_item {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border: 1px solid $ds-stroke-light;
+    border-radius: $ds-radius-md;
+    background: $ds-surface-on-background;
+    cursor: pointer;
+    padding: 8px 12px;
+    width: 100%;
+    text-align: end;
+    transition: 0.2s;
+
+    .brand_logo {
+      position: relative;
+      width: 32px;
+      height: 32px;
+      border-radius: $ds-radius-full;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: $ds-surface-elevated;
+      border: 1px solid $ds-stroke-light;
+      overflow: hidden;
+      flex-shrink: 0;
+      transition: 0.2s;
+
+      img {
+        width: 20px;
+        height: 20px;
+        object-fit: contain;
+      }
+    }
+
+    .brand_name {
+      color: $ds-text-subtle;
+      font-size: 13px;
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    &:hover {
+      border-color: rgba($ds-action-primary, 0.3);
+    }
+
+    &.active {
+      background: $ds-action-primary;
+      border-color: $ds-action-primary;
+
+      .brand_logo {
+        background: $ds-surface-elevated;
+      }
+
+      .brand_name {
+        color: $ds-text-on-action;
+        font-weight: 700;
+      }
+    }
+  }
+}
+
+// ------- شريط البحث والفلتر في الموبايل -------
+.filters_mobile_bar {
+  display: none;
+}
+
+.filters_toggle_btn {
+  position: relative;
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 0;
+  border-radius: $ds-radius-md;
+  background: $ds-action-primary;
+  color: $ds-text-on-action;
+
+  font-size: 20px;
+  cursor: pointer;
+  transition: 0.25s;
+
+  &:hover {
+    background: darken($ds-action-primary, 6%);
+  }
+
+  .filters_toggle_dot {
+    position: absolute;
+    top: 6px;
+    inset-inline-end: 6px;
+
+    width: 9px;
+    height: 9px;
+    border-radius: $ds-radius-full;
+
+    background: $ds-status-error;
+    border: 2px solid $ds-surface-elevated;
+  }
+}
+
+.filters_close_btn {
+  display: none;
+  align-items: center;
+  justify-content: center;
+
+  border: 0;
+  background: transparent;
+
+  color: $ds-text-subtle;
+  font-size: 22px;
+  cursor: pointer;
+
+  &:hover {
+    color: $ds-text-primary;
+  }
+}
+
+.filters_overlay {
+  display: none;
+}
+
+@media (max-width: $breakpoint-lg) {
+  .filters_mobile_bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+
+    .filter_search {
+      flex: 1;
+      margin-bottom: 0;
+    }
+  }
+
+  .filter_search_desktop {
+    display: none;
+  }
+
+  .filters_close_btn {
+    display: flex;
+  }
+
+  .filters_overlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+
+    background: rgba($ds-shadow-color, 0.45);
+    backdrop-filter: blur(4px);
+  }
+
+  .filters_panel {
+    display: none;
+
+    position: fixed;
+    inset: 0;
+    top: auto;
+    z-index: 1001;
+
+    width: 100%;
+    height: 85vh;
+    max-height: 85vh;
+
+    border-radius: $ds-radius-xl $ds-radius-xl 0 0;
+
+    overflow-y: auto;
+
+    animation: popup 0.35s ease;
+
+    &.is-open {
+      display: block;
+    }
+
+    .filter_actions {
+      position: sticky;
+      bottom: -24px;
+      z-index: 4;
+
+      margin: 0 -24px -24px;
+      padding: 16px 24px max(16px, env(safe-area-inset-bottom));
+
+      background: rgba($ds-surface-elevated, 0.98);
+      box-shadow: 0 -10px 26px rgba($ds-shadow-color, 0.07);
+    }
+  }
+}
+
+// Cars rail (scroll-snap, RTL-friendly)
+.cars-rail {
+  // tighter than .section so consecutive rails read as one car block
+  padding: 3rem 0 0;
+
+  &-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+
+    @media (max-width: $breakpoint-md) {
+      margin-bottom: 0.75rem;
+
+      .section-title-heading {
+        font-size: 24px;
+      }
+
+      .section-title-subtitle {
+        font-size: 14px;
+      }
+    }
+  }
+
+  &-see-all {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    flex-shrink: 0;
+
+    min-height: 44px;
+    padding: 0 1.1rem;
+
+    border: 1px solid $ds-stroke-light;
+    border-radius: $ds-radius-full;
+    background: $ds-surface-elevated;
+
+    color: $ds-text-primary;
+    font-weight: 600;
+    text-decoration: none;
+
+    transition:
+      background 0.3s ease,
+      border-color 0.3s ease,
+      color 0.3s ease,
+      transform 0.3s ease,
+      box-shadow 0.3s ease;
+
+    &:hover {
+      border-color: $ds-action-primary;
+      background: $ds-action-primary;
+      color: $ds-text-on-action;
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba($ds-action-primary, 0.18);
+    }
+
+    &:focus-visible {
+      outline: 3px solid rgba($ds-action-primary, 0.2);
+      outline-offset: 3px;
+    }
+  }
+
+  &-see-all-icon {
+    font-size: 1.25rem;
+    // margin rather than transform: the nudge then mirrors for free, and
+    // cannot overwrite the transform set by .mirror-in-rtl
+    transition: margin-inline-end 0.25s ease;
+  }
+
+  &-see-all:hover &-see-all-icon {
+    margin-inline-end: 2px;
+  }
+
+  &-track {
+    display: flex;
+    gap: 1.5rem;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    padding-bottom: 8px;
+    scrollbar-width: none;
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  &-item {
+    flex: 0 0 auto;
+    scroll-snap-align: start;
+    width: 320px;
+
+    @media (max-width: $breakpoint-md) {
+      width: 78vw;
+    }
+  }
+}

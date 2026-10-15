@@ -11,6 +11,95 @@
     "login": "Login",
     "faqs": "FAQs"
   },
+  "layout": {
+    "userMenu": {
+      "account": "Account",
+      "logout": "Sign out"
+    },
+    "mobileNav": {
+      "toggle": "Toggle menu"
+    },
+    "location": {
+      "choose": "Choose your location",
+      "default": "Riyadh, Al Hurriya Street"
+    }
+  },
+  "account": {
+    "title": "My account",
+    "back": "Back",
+    "nav": {
+      "account": "My account",
+      "profile": "Edit profile",
+      "bookings": "My bookings",
+      "wallet": "Wallet",
+      "bankAccounts": "Bank accounts",
+      "notifications": "Notifications"
+    },
+    "points": {
+      "title": "Loyalty points",
+      "historyTitle": "Points history",
+      "unit": "points",
+      "cardDescription": "Earn loyalty points by booking more cars and use them for payment.",
+      "expiresAt": "{date} points expire",
+      "back": "Back to account",
+      "filtersLabel": "Points history filters",
+      "filters": {
+        "all": "All",
+        "earned": "Earned",
+        "spent": "Spent"
+      },
+      "transaction": {
+        "earned": "Earned",
+        "spent": "Used for payment",
+        "expired": "Expired points"
+      }
+    },
+    "profile": {
+      "fullName": "Full name",
+      "email": "Email address",
+      "birthDate": "Date of birth",
+      "phone": "Mobile number",
+      "license": "Driving license",
+      "licenseRequired": "Please attach a license so we can verify the booking",
+      "licenseVerified": "License verified",
+      "deleteAccount": "Delete account",
+      "save": "Save",
+      "saved": "Changes saved",
+      "deleteConfirmTitle": "Sorry to see you go.",
+      "deleteConfirmDescription": "Deleting your account will permanently remove your personal data and booking history, and you will not be able to recover it. Are you sure you want to continue?",
+      "keepAccount": "Keep account"
+    },
+    "editPhone": {
+      "title": "Edit mobile number",
+      "close": "Close",
+      "phone": "Mobile number",
+      "sendCode": "Send verification code"
+    },
+    "license": {
+      "title": "Driving license",
+      "close": "Close",
+      "uploadPrompt": "Click here to upload a photo of your driving license",
+      "fileTypes": "JPG or PNG",
+      "submit": "Upload"
+    },
+    "verifyPhone": {
+      "title": "Verification code",
+      "close": "Close",
+      "sentTo": "We sent a verification code to",
+      "editPhone": "Edit number",
+      "digitLabel": "Digit {index}",
+      "resendIn": "Resend in {seconds}s",
+      "resend": "Resend code",
+      "verify": "Verify",
+      "successTitle": "Verified",
+      "successDescription": "Your mobile number was verified successfully"
+    },
+    "notifications": {
+      "title": "Notifications",
+      "markAllRead": "Mark all as read",
+      "unreadCount": "{count, plural, =0 {No unread notifications} one {# unread notification} other {# unread notifications}}"
+    }
+  },
   "auth": {
     "login": {
       "logoAlt": "T-Car",
@@ -24,11 +113,12 @@
     },
     "otp": {
       "title": "Enter verification code",
-      "description": "We sent a 4-digit code to",
+      "subtitle": "Check your WhatsApp!",
+      "description": "We sent a verification code to WhatsApp at {phone}. Enter the code to complete sign in.",
       "backLabel": "Back to mobile number",
       "codeLabel": "Verification code",
-      "digitLabel": "Digit {{position}} of {{total}}",
-      "resendIn": "Resend in {{seconds}} seconds",
+      "digitLabel": "Digit {position} of {total}",
+      "resendIn": "Resend in {seconds} seconds",
       "resend": "Resend code",
       "verify": "Verify and continue"
     },
@@ -56,6 +146,59 @@
     "station": "Train Station Pickup",
     "international": "International Rental"
   },
+  "rentalSearch": {
+    "hero": {
+      "eyebrow": "T-CAR PREMIUM RENTALS",
+      "title": "Your next journey starts here",
+      "subtitle": "A distinctive fleet, ready for every destination"
+    },
+    "airport": {
+      "title": "Choose an airport",
+      "description": "Choose the airport where you would like to pick up the car.",
+      "searchPlaceholder": "Search airports...",
+      "confirm": "Continue"
+    },
+    "branch": {
+      "title": "Choose a branch",
+      "description": "Choose the nearest branch to pick up the car.",
+      "searchPlaceholder": "Search for a city or branch...",
+      "confirm": "Continue"
+    },
+    "country": {
+      "title": "Choose a country",
+      "description": "Choose the country where you would like to pick up the car.",
+      "searchPlaceholder": "Search countries...",
+      "confirm": "Continue"
+    },
+    "station": {
+      "title": "Choose a train station",
+      "description": "Choose the train station where you would like to pick up the car.",
+      "searchPlaceholder": "Search stations...",
+      "confirm": "Continue"
+    },
+    "pickup": {
+      "title": "Choose a pickup type",
+      "delivery": {
+        "title": "We deliver to you",
+        "description": "Pick up the car at your home or location."
+      },
+      "branch": {
+        "title": "Pick up from a branch",
+        "description": "Pick up the car from the nearest branch."
+      }
+    },
+    "map": {
+      "title": "Set pickup location",
+      "searchPlaceholder": "Search for an address or place...",
+      "loading": "Loading map...",
+      "locating": "Locating...",
+      "useCurrentLocation": "Use my current location",
+      "confirm": "Confirm location",
+      "unsupported": "Your browser does not support location services.",
+      "permissionDenied": "Location permission was denied.",
+      "unavailable": "Your current location could not be determined."
+    }
+  },
   "search": {
     "title": "Find Your Perfect Car",
     "location": "Pickup Location",
@@ -78,7 +221,8 @@
     "saveNow": "Save when you book now",
     "discount": "off",
     "rating": "Rated {rating} out of 5",
-    "perDay": "/ day"
+    "perDay": "/ day",
+    "currency": "Saudi Riyal"
   },
   "officeRow": {
     "office": "Branch",
@@ -115,6 +259,147 @@
     "title": "Frequently Asked Questions",
     "subtitle": "Everything you need for a smooth rental experience"
   },
+  "cars": {
+    "currency": "Saudi riyal",
+    "filters": {
+      "title": "Filter results",
+      "searchPlaceholder": "Search for a car or brand...",
+      "apply": "Search",
+      "clearAll": "Clear all",
+      "open": "Open filters",
+      "close": "Close filters",
+      "clear": "Clear",
+      "showLess": "Show less",
+      "showAll": "Show all",
+      "priceRange": "Price range",
+      "minimum": "Minimum",
+      "maximum": "Maximum",
+      "brand": "Brand",
+      "type": "Car type",
+      "companies": "Companies",
+      "services": "Additional services"
+    },
+    "companies": { "elite": "Elite showroom" },
+    "brands": { "nissan": "Nissan" },
+    "types": {
+      "family": "Family",
+      "convertible": "Convertible",
+      "hatchback": "Hatchback",
+      "sedan": "Sedan",
+      "pickup": "Pickup",
+      "van": "Van"
+    },
+    "cityTypes": { "economy": "Economy", "sedan": "Sedan", "suv": "SUV", "luxury": "Luxury" },
+    "services": {
+      "delivery": {
+        "title": "Car delivery service",
+        "description": "The car is delivered to your doorstep"
+      }
+    },
+    "sort": {
+      "recommended": "Most relevant",
+      "priceAsc": "Price: low to high",
+      "priceDesc": "Price: high to low",
+      "rating": "Top rated",
+      "filter": "Filter",
+      "results": "{count} results"
+    }
+  },
+  "cities": {
+    "hero": {
+      "title": "Car rental in {city}",
+      "description": "Renting a car in the city is easy with T-Car, with excellent service and fast booking.",
+      "pickup": "Pick-up",
+      "pickupPlaceholder": "Choose pick-up date",
+      "dropoff": "Drop-off",
+      "dropoffPlaceholder": "Choose drop-off date",
+      "search": "Search"
+    }
+  },
+  "homeCta": {
+    "title": "Join us as a partner",
+    "description": "Join the T-Car platform, showcase your cars to thousands of customers, and receive booking requests with ease.",
+    "cta": "Join now"
+  },
+  "joinUs": {
+    "title": "Join us as a partner",
+    "descriptionBeforeBrand": "Share your details and the",
+    "brand": "T-Car team",
+    "descriptionAfterBrand": "will contact you soon.",
+    "fields": {
+      "firstName": { "label": "First name", "placeholder": "Enter your first name" },
+      "companyName": { "label": "Company name", "placeholder": "Enter company name" },
+      "headOffice": { "label": "Head office", "placeholder": "City or country" },
+      "contactPerson": { "label": "Contact person", "placeholder": "Full name" },
+      "phone": {
+        "label": "Phone number",
+        "placeholder": "Phone number",
+        "searchPlaceholder": "Search countries..."
+      },
+      "companySize": { "label": "Company size" },
+      "email": { "label": "Email address", "placeholder": "company@email.com" },
+      "managerName": { "label": "Company manager name", "placeholder": "Name" },
+      "managerEmail": { "label": "Company manager email", "placeholder": "manager@email.com" },
+      "managerPhone": { "label": "Company manager contact number", "placeholder": "05xxxxxxxx" },
+      "branches": { "label": "Number of branches", "placeholder": "3" },
+      "fleet": { "label": "Total vehicle fleet", "placeholder": "122" }
+    },
+    "locations": {
+      "label": "Branch locations",
+      "options": {
+        "riyadh": "Riyadh",
+        "jeddah": "Jeddah",
+        "dammam": "Dammam",
+        "makkah": "Makkah",
+        "madinah": "Madinah"
+      }
+    },
+    "fleetTypes": {
+      "label": "Fleet types",
+      "options": {
+        "economy": "Economy",
+        "sedan": "Sedan",
+        "suv": "SUV",
+        "luxury": "Luxury",
+        "pickup": "Pickup"
+      }
+    },
+    "commercialRegister": {
+      "label": "Commercial registration",
+      "allowedFormats": "Allowed formats: PDF, JPG, PNG, WEBP"
+    },
+    "companySizes": {
+      "small": "1–10 employees",
+      "medium": "11–50 employees",
+      "large": "51–200 employees",
+      "enterprise": "201+ employees"
+    },
+    "submit": "Submit request"
+  },
+  "downloadApp": {
+    "imageAlt": "T-Car app",
+    "tag": "T-Car app",
+    "title": "Download the app and book your car in minutes",
+    "description": "Find the best cars, compare prices, book easily, and pick up your car anywhere in the Kingdom.",
+    "appStoreAlt": "Download on the App Store",
+    "playStoreAlt": "Get it on Google Play"
+  },
+  "whyChooseUs": {
+    "smallTitle": "Why us",
+    "title": "Why choose",
+    "brandQuestion": "TCar?",
+    "description": "We make car rental easier, faster, and safer, with the best prices and professional service wherever you are.",
+    "features": {
+      "bestCompanies": "Top rental companies",
+      "bestCompaniesDescription": "We work with the best car rental companies and showrooms to provide a reliable and safe experience.",
+      "roundTheClockSupport": "Round-the-clock support",
+      "roundTheClockSupportDescription": "Our customer service team is available 24/7 to answer all your questions.",
+      "comprehensiveInsurance": "Comprehensive insurance",
+      "comprehensiveInsuranceDescription": "Multiple insurance options give you peace of mind throughout your journey.",
+      "flexiblePickup": "Flexible pickup and return",
+      "flexiblePickupDescription": "Choose the right place and time to pick up and return your car."
+    }
+  },
   "contact": {
     "smallTitle": "Contact Us",
     "title": "We'd Love to Hear From You",
@@ -124,14 +409,32 @@
     "phone": "Phone Number",
     "email": "Email Address",
     "address": "Address",
+    "phoneValue": "+966 500000000",
+    "emailValue": "info@tcar.com",
+    "addressValue": "Riyadh, Saudi Arabia",
     "name": "Full Name",
+    "reason": "Contact reason",
+    "reasons": {
+      "booking": "Booking",
+      "carRental": "Car rental",
+      "payment": "Payment",
+      "partnership": "Partnership",
+      "other": "Other"
+    },
+    "bookingNumber": "Booking number (optional)",
     "message": "Your Message",
-    "send": "Send Message"
+    "send": "Send Message",
+    "sending": "Sending...",
+    "sent": "Your message was sent. We will get back to you soon."
   },
   "footer": {
     "rights": "All rights reserved.",
     "quickLinks": "Quick Links",
     "contactUs": "Contact Us",
+    "emailValue": "info@tcar.com",
+    "phoneValue": "+966 500000000",
+    "addressValue": "Riyadh, Saudi Arabia",
+    "downloadApp": "Download the app",
     "terms": "Terms & Conditions",
     "privacy": "Privacy Policy"
   },
@@ -153,5 +456,495 @@
     "home": "Back to Home",
     "browseCities": "Browse Cities",
     "lost": "Where to?"
+  },
+  "errors": {
+    "network": "Could not connect. Check your internet connection and try again.",
+    "timeout": "The request took longer than expected. Try again.",
+    "unauthorized": "Your session has expired. Sign in to continue.",
+    "forbidden": "You are not allowed to do this.",
+    "not_found": "The requested item was not found.",
+    "validation": "Check the details you entered and try again.",
+    "conflict": "The operation could not be completed. Try again.",
+    "rate_limited": "Too many attempts. Wait a moment and try again.",
+    "server": "Something went wrong on our side. Try again shortly.",
+    "unknown": "An unexpected error occurred.",
+    "points": {
+      "unavailable": "Your points are temporarily unavailable. Try again shortly."
+    },
+    "wallet": {
+      "topUpRejected": "The top-up was rejected.",
+      "withdrawRejected": "The withdrawal was rejected.",
+      "insufficientBalance": "Your withdrawable balance is not enough."
+    },
+    "bankAccounts": {
+      "notFound": "Bank account not found.",
+      "unknownBank": "Choose a bank from the list.",
+      "ibanRequired": "IBAN is required."
+    },
+    "bookings": {
+      "notFound": "Booking not found.",
+      "notActive": "This booking is no longer active.",
+      "extendLimit": "A booking cannot be extended beyond 30 days.",
+      "invalidDates": "The return date must be after the pickup date.",
+      "cancelNotAllowed": "An overdue booking cannot be cancelled. Return the car first.",
+      "ratingRequired": "Choose a rating from 1 to 5."
+    },
+    "cars": {
+      "notFound": "This car is not available or does not exist."
+    },
+    "booking": {
+      "startInPast": "A booking cannot start in the past.",
+      "carUnavailable": "This car is not available for that long. Choose a shorter rental or another car."
+    },
+    "cities": {
+      "notFound": "This city is not available."
+    },
+    "contact": {
+      "phoneRequired": "Enter a valid phone number.",
+      "required": "Complete all required contact fields."
+    },
+    "account": {
+      "profileRejected": "The profile could not be saved. Check the details and try again.",
+      "resendLimited": "The code cannot be resent yet. Wait a moment and try again.",
+      "licenseRequired": "Choose an image of your driving license.",
+      "licenseRejected": "The driving license could not be uploaded. Try another image.",
+      "deleteRejected": "The account cannot be deleted while it has active bookings.",
+      "invalidCode": "The verification code is incorrect. Try again."
+    },
+    "auth": {
+      "invalidPhone": "Enter a valid phone number.",
+      "invalidCode": "The verification code is incorrect. Try again.",
+      "nameRequired": "Full name is required.",
+      "registrationRequired": "This number has no account yet. Finish creating your account."
+    }
+  },
+  "legalContent": {
+    "terms": [
+      {
+        "title": "Acceptance of terms",
+        "content": "By using T-Car, you agree to the terms and conditions on this page and to comply with applicable rules."
+      },
+      {
+        "title": "Bookings and rental",
+        "content": "Bookings depend on vehicle availability. Provide accurate information; inaccurate bookings may be cancelled."
+      },
+      {
+        "title": "Payment and refunds",
+        "content": "Payments follow the prices shown during booking and the refund policy for each booking."
+      },
+      {
+        "title": "Renter responsibilities",
+        "content": "Renters must care for the vehicle and use it legally and safely."
+      },
+      {
+        "title": "Changes to terms",
+        "content": "T-Car may change these terms at any time; continued use means acceptance."
+      }
+    ],
+    "privacy": [
+      {
+        "title": "Information we collect",
+        "content": "We collect account and booking details to provide our services."
+      },
+      {
+        "title": "How we use information",
+        "content": "We use data to manage bookings, confirm operations, communicate, and improve services."
+      },
+      {
+        "title": "Protecting your data",
+        "content": "We take appropriate security measures to protect your personal data."
+      },
+      {
+        "title": "Sharing information",
+        "content": "We do not share data except when necessary to provide the service or required by law."
+      },
+      {
+        "title": "Your rights",
+        "content": "You can request that your personal data be updated, changed, or deleted."
+      }
+    ]
+  },
+  "citiesPage": {
+    "title": "Available cities",
+    "subtitle": "Choose your city and start your journey with us"
+  },
+  "common": { "selectPlaceholder": "Choose..." },
+  "dateTimePicker": {
+    "previousMonth": "Previous month",
+    "nextMonth": "Next month",
+    "time": "Time",
+    "done": "Done",
+    "weekdays": ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+    "months": [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December"
+    ]
+  },
+  "authSuccess": {
+    "title": "Account created successfully",
+    "description": "You can now enjoy all T-Car services.",
+    "button": "Get started"
+  },
+  "states": {
+    "loading": "Loading…",
+    "retry": "Try again",
+    "error": {
+      "title": "Something went wrong",
+      "offlineHint": "You appear to be offline.",
+      "signIn": "Sign in",
+      "reference": "Reference: {reference}"
+    },
+    "dialog": {
+      "close": "Close"
+    },
+    "price": {
+      "sar": "SAR"
+    }
+  },
+  "bookings": {
+    "empty": {
+      "active": "No current bookings",
+      "past": "No past bookings",
+      "title": "No bookings yet",
+      "cta": "Start a new booking"
+    }
+  },
+  "myBookings": {
+    "modelYear": "Model {year}",
+    "perDay": "/ day",
+    "countdown": {
+      "expired": "The booking period has ended",
+      "remaining": "Time remaining on booking",
+      "days": "days",
+      "hours": "hours",
+      "minutes": "minutes"
+    },
+    "dates": {
+      "location": "Location",
+      "pickupAddress": "Pickup address",
+      "dropoffAddress": "Drop-off address",
+      "date": "Date",
+      "pickupTime": "Pickup time",
+      "dropoffTime": "Drop-off time",
+      "additionalDetails": "Additional details"
+    },
+    "tabs": {
+      "title": "My bookings",
+      "active": "Current",
+      "past": "Past"
+    },
+    "sidebar": {
+      "priceDetails": "Price details",
+      "price": "Price",
+      "subtotal": "Subtotal",
+      "vat": "VAT",
+      "points": "Points used",
+      "total": "Total",
+      "review": "We value your review"
+    },
+    "review": {
+      "dialogLabel": "Booking review",
+      "close": "Close",
+      "title": "We value your review",
+      "subtitle": "Share your experience with this booking",
+      "stars": "{count} stars",
+      "placeholder": "Write about your experience with the car and showroom...",
+      "sending": "Sending...",
+      "submit": "Send"
+    },
+    "cancel": {
+      "dialogLabel": "Cancel booking",
+      "close": "Close",
+      "title": "Cancel booking",
+      "question": "Are you sure you want to cancel the booking?",
+      "warning": "{percent}% of the booking value will be deducted as a cancellation fee, and the remaining amount will be refunded.",
+      "amountDetails": "Amount details",
+      "paid": "Amount paid",
+      "discountPercent": "Discount percentage",
+      "cancellationFee": "Cancellation fee",
+      "refunded": "Refunded amount",
+      "refundedToYou": "Amount refunded to you",
+      "cancelling": "Cancelling...",
+      "confirm": "Confirm cancellation",
+      "back": "Back",
+      "currency": "SAR"
+    },
+    "extend": {
+      "close": "Close",
+      "title": "Extend booking",
+      "selectDays": "Select number of days",
+      "increase": "Increase days",
+      "decrease": "Decrease days",
+      "note": "The booking will end on January 1, 2025",
+      "priceDetails": "Price details",
+      "price": "Price",
+      "subtotal": "Subtotal",
+      "lateFee": "Late fee",
+      "oneDay": "1 day",
+      "vat": "VAT",
+      "total": "Total",
+      "extending": "Extending...",
+      "confirm": "Confirm",
+      "currency": "SAR"
+    },
+    "details": {
+      "empty": "",
+      "back": "Back",
+      "title": "Booking details",
+      "actions": "Booking actions",
+      "requestEdit": "Request change",
+      "extend": "Extend booking",
+      "cancel": "Cancel",
+      "ok": "Okay",
+      "extendedTitle": "Booking extended successfully",
+      "extendedFailure": "Failed to extend booking",
+      "editRequestedTitle": "Change request sent",
+      "editRequestedDescription": "Your request was sent to the showroom. Customer service will contact you.",
+      "editRequestedFailure": "Failed to send change request",
+      "cancelledTitle": "Booking cancelled successfully",
+      "cancelledFailure": "Failed to cancel booking"
+    }
+  },
+  "booking": {
+    "daily": {
+      "editBooking": "Edit booking",
+      "newBooking": "New booking",
+      "weekdays": {
+        "sun": "Sun",
+        "mon": "Mon",
+        "tue": "Tue",
+        "wed": "Wed",
+        "thu": "Thu",
+        "fri": "Fri",
+        "sat": "Sat"
+      },
+      "months": {
+        "jan": "January",
+        "feb": "February",
+        "mar": "March",
+        "apr": "April",
+        "may": "May",
+        "jun": "June",
+        "jul": "July",
+        "aug": "August",
+        "sep": "September",
+        "oct": "October",
+        "nov": "November",
+        "dec": "December"
+      },
+      "to": "to",
+      "chooseEndDate": "Choose an end date",
+      "pickupDropoffTime": "Pickup and drop-off time",
+      "pickupAddress": "Pickup address",
+      "dropoffAddress": "Drop-off address",
+      "chooseFromMap": "Choose from map",
+      "changePickup": "Change pickup address",
+      "changeDropoff": "Change drop-off address",
+      "pickupLocation": "Pickup location",
+      "dropoffLocation": "Drop-off location",
+      "selected": "Selected",
+      "enterAddress": "Enter your address",
+      "distanceHint": "The location must be within 20 km of the showroom",
+      "additionalDetails": "Additional details",
+      "notesPlaceholder": "Write any notes or special requests...",
+      "submitEdit": "Send change request",
+      "continue": "Continue booking",
+      "total": "Total",
+      "selectPickup": "Set pickup location",
+      "selectDropoff": "Set drop-off location",
+      "pickupTime": "Pickup time",
+      "previousMonth": "Previous month",
+      "nextMonth": "Next month"
+    },
+    "monthly": {
+      "title": "Monthly booking",
+      "monthsCount": "Number of months",
+      "increase": "Add a month",
+      "decrease": "Remove a month",
+      "months": "{count, plural, =1 {# month} other {# months}}",
+      "sliderLabel": "Booking length in months",
+      "distanceHint": "The location must be within <strong>20 km</strong> of the showroom"
+    },
+    "confirm": {
+      "dialogLabel": "Confirm booking",
+      "close": "Close",
+      "back": "Back",
+      "title": "Confirm booking",
+      "perDay": "/ day",
+      "pickupAddress": "Pickup address",
+      "dropoffAddress": "Drop-off address",
+      "pickupTime": "Pickup time",
+      "dropoffTime": "Drop-off time",
+      "insurance": "Insurance details",
+      "insuranceValue": "The car will be ready before the appointment",
+      "orderTime": "Order time",
+      "priceDetails": "Price details",
+      "dailyPrice": "Daily price",
+      "days": "Number of days",
+      "day": "days",
+      "subtotal": "Subtotal",
+      "tax": "Tax",
+      "total": "Total",
+      "termsTitle": "Terms and conditions",
+      "eligibility": "I agree to all requirements and am eligible to book.",
+      "continuePayment": "Continue to payment",
+      "terms": {
+        "license": "I have a valid driving license.",
+        "identity": "I have a valid national ID or residency permit.",
+        "refundable": "Some rental locations or prepayments may require a refundable amount.",
+        "agree": "I agree to all terms and conditions."
+      }
+    },
+    "payment": {
+      "dialogLabel": "Payment method",
+      "title": "Payment method",
+      "close": "Close",
+      "wallet": "Wallet",
+      "walletDescription": "Pay from your wallet faster",
+      "points": "Use points",
+      "pointsDescription": "Save by paying with your points",
+      "upTo": "Up to",
+      "pointsUnit": "points",
+      "currency": "SAR",
+      "confirming": "Confirming booking...",
+      "confirm": "Confirm",
+      "options": {
+        "visa": {
+          "title": "Electronic payment (Visa / Mastercard)",
+          "description": "Mada, Visa, and Mastercard accepted worldwide"
+        },
+        "tabby": {
+          "title": "Pay later with Tabby",
+          "description": "Split your bill into 4 interest-free payments"
+        },
+        "tamara": {
+          "title": "Pay later with Tamara",
+          "description": "Pay in 3 comfortable, Sharia-compliant installments"
+        }
+      }
+    },
+    "card": {
+      "currency": "SAR",
+      "perDay": "/ day",
+      "bookNow": "Book now",
+      "paymentNote": "No amount will be charged now; pay on pickup",
+      "successTitle": "Booking confirmed successfully!",
+      "successDescription": "Redirecting to your bookings...",
+      "goNow": "Go now"
+    }
+  },
+  "carDetails": {
+    "addons": "Additional services",
+    "modelYear": "Model {year}",
+    "airportPickup": "Airport pickup",
+    "stationPickup": "Station pickup",
+    "warranties": "T-Car warranties",
+    "insurance": {
+      "title": "Insurance type",
+      "details": "Insurance details",
+      "terms": "Renter instructions",
+      "cancellation": "Cancellation policy"
+    },
+    "reviews": {
+      "overall": "Overall rating",
+      "viewAll": "View all reviews",
+      "countLabel": "reviews",
+      "close": "Close",
+      "title": "Reviews",
+      "excellent": "Excellent",
+      "veryGood": "Very good",
+      "good": "Good",
+      "acceptable": "Acceptable"
+    },
+    "pickup": {
+      "sectionLabel": "Pickup and branch information",
+      "airportTitle": "T-Car airport parking",
+      "stationTitle": "T-Car station parking",
+      "airportDescription": "Fast pickup and return service at airport parking",
+      "stationDescription": "Fast pickup and return service at station parking",
+      "nearestBranch": "Nearest branch",
+      "viewBranch": "View details for {showroom}",
+      "branches": "Branches",
+      "closeBranches": "Close branches list",
+      "km": "km"
+    }
+  },
+  "wallet": {
+    "topUpTitle": "Top up wallet",
+    "topUp": "Top up",
+    "withdrawTitle": "Withdraw balance",
+    "withdraw": "Withdraw",
+    "totalBalance": "Total balance",
+    "addBalance": "Add balance",
+    "withdrawBalance": "Withdraw balance",
+    "withdrawableBalance": "Withdrawable balance",
+    "nonWithdrawableBalance": "Non-withdrawable balance",
+    "history": "Balance history",
+    "topUpSuccess": "Top-up completed successfully",
+    "topUpFailure": "Top-up failed",
+    "withdrawSuccess": "Withdrawal completed successfully",
+    "withdrawFailure": "Withdrawal failed",
+    "transaction": {
+      "topup": "Top-up",
+      "refund": "Refund",
+      "payment": "Payment",
+      "withdraw": "Withdrawal"
+    },
+    "amount": {
+      "rangeMin": "Minimum {min} SAR",
+      "rangeWithMax": "Minimum {min} SAR - Maximum {max} SAR",
+      "loading": "Processing"
+    },
+    "bankSelect": {
+      "title": "Choose a bank",
+      "empty": "No bank accounts added"
+    },
+    "empty": {
+      "history": "No wallet activity yet"
+    },
+    "insufficient": {
+      "title": "Insufficient balance",
+      "heading": "Your balance is too low",
+      "description": "Top up your wallet to pay with it",
+      "topUp": "Top up now"
+    }
+  },
+  "bankAccounts": {
+    "title": "Bank accounts",
+    "add": "Add bank account",
+    "edit": "Edit {bank}",
+    "delete": "Delete {bank}",
+    "deleteConfirmTitle": "Delete bank account?",
+    "deleteConfirmDescription": "Are you sure you want to delete this bank account? You will not be able to use it for withdrawals after deletion.",
+    "deleting": "Deleting...",
+    "cancel": "Cancel",
+    "addedSuccess": "Bank account added successfully",
+    "addedFailure": "Failed to add bank account",
+    "updatedSuccess": "Changes saved successfully",
+    "updatedFailure": "Failed to save changes",
+    "deletedSuccess": "Bank account deleted successfully",
+    "deletedFailure": "Failed to delete bank account",
+    "form": {
+      "add": { "title": "Add bank account", "submit": "Add" },
+      "edit": { "title": "Edit bank account", "submit": "Save" },
+      "close": "Close",
+      "bankName": "Bank name",
+      "chooseBank": "Choose a bank",
+      "iban": "IBAN",
+      "loading": "Processing"
+    },
+    "empty": {
+      "title": "No bank accounts added"
+    }
   }
 }

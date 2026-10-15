@@ -1,0 +1,29 @@
+@use 'tokens/tokens' as *;
+
+// The FAQ is native <details>: the open state comes from [open] instead of the
+// .active / .show classes the main.scss rules were written for.
+.faqs {
+  details.faq-item > summary {
+    list-style: none;
+    cursor: pointer;
+
+    &::-webkit-details-marker {
+      display: none;
+    }
+  }
+
+  details.faq-item[open] {
+    .faq-question {
+      color: $ds-action-primary;
+    }
+
+    .faq-question-icon svg {
+      transform: rotate(180deg);
+    }
+
+    .faq-answer {
+      max-height: none;
+      padding-bottom: 20px;
+    }
+  }
+}

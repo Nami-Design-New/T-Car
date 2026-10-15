@@ -1,0 +1,126 @@
+'use client';
+
+import { useState } from 'react';
+import { useTranslations } from 'next-intl';
+import { FiArrowLeft } from 'react-icons/fi';
+
+/** The profile fields; the verified phone and code are added by the dialog. */
+export interface RegisterValues {
+  fullName: string;
+  email: string;
+  birthDate: string;
+}
+
+type Props = {
+  onBack: () => void;
+  onSubmit: (values: RegisterValues) => void;
+  loading?: boolean;
+  /** Already translated; the form keeps its values so the user can fix them. */
+  error?: string;
+};
+
+export default function RegisterForm({ onBack, onSubmit, loading = false, error }: Props) {
+  const t = useTranslations();
+
+  const [form, setForm] = useState({
+    name: '',
+    email: '',
+    birthDate: '',
+    agree: false,
+  });
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value, type, checked } = e.target;
+
+    setForm((prev) => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value,
+    }));
+  };
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (loading) return;
+    onSubmit({ fullName: form.name, email: form.email, birthDate: form.birthDate });
+  };
+
+  return (
+    <form className="register_form auth_register_form" onSubmit={handleSubmit}>
+      <div className="otp_header">
+        <button
+          type="button"
+          className="back_btn"
+          onClick={onBack}
+          aria-label={t('auth.register.backLabel')}
+        >
+          <FiArrowLeft className="mirror-in-rtl" aria-hidden="true" />
+        </button>
+
+        <h2>{t('auth.register.title')}</h2>
+      </div>
+
+      <div className="inputs">
+        <label className="form_field" htmlFor="register-name">
+          <span>{t('auth.register.fullNameLabel')}</span>
+          <input
+            id="register-name"
+            name="name"
+            type="text"
+            placeholder={t('auth.register.fullNamePlaceholder')}
+            autoComplete="name"
+            value={form.name}
+            onChange={handleChange}
+            required
+          />
+        </label>
+
+        <label className="form_field" htmlFor="register-email">
+          <span>{t('auth.register.emailLabel')}</span>
+          <input
+            id="register-email"
+            className="email_input"
+            name="email"
+            type="email"
+            dir="ltr"
+            placeholder={t('auth.register.emailPlaceholder')}
+            autoComplete="email"
+            value={form.email}
+            onChange={handleChange}
+            required
+          />
+        </label>
+
+        <label className="form_field" htmlFor="register-birth-date">
+          <span>{t('auth.register.birthDateLabel')}</span>
+          <input
+            id="register-birth-date"
+            className="date_input"
+            name="birthDate"
+            type="date"
+            dir="ltr"
+            autoComplete="bday"
+            value={form.birthDate}
+            onChange={handleChange}
+            required
+          />
+        </label>
+      </div>
+
+      <label className="agree">
+        <input type="checkbox" name="agree" checked={form.agree} onChange={handleChange} required />
+
+        <span>{t('auth.register.agreeToTerms')}</span>
+      </label>
+
+      {error && (
+        <p className="text-danger small mt-2 mb-0" role="alert">
+          {error}
+        </p>
+      )}
+
+      <button type="submit" className="auth_btn" disabled={loading}>
+        {t('auth.register.submit')}
+      </button>
+    </form>
+  );
+}

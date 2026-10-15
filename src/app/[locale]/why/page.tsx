@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import WhyChooseUs from '@/components/home/Why';
+import { WhyChooseUs } from '@/features/home';
 
 export const metadata: Metadata = {
   title: 'Why Choose Us',

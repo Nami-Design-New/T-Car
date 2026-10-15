@@ -1,6 +1,77 @@
 {
   "extends": ["next/core-web-vitals"],
   "rules": {
-    "react/no-unescaped-entities": "off"
-  }
+    "react/no-unescaped-entities": "off",
+    "no-console": ["warn", { "allow": ["error"] }],
+    "no-restricted-syntax": [
+      "error",
+      {
+        "selector": ":matches(ImportDeclaration, ImportExpression)[source.value=/\\.(svg|png|jpe?g|webp|gif|avif)$/i]",
+        "message": "Reference images through shared/config/assets.ts or a URL from the model, not an import (doc 7 rules 1, 2, 4)."
+      },
+      {
+        "selector": "Literal[value=/^[\\x2f]mock[\\x2f]/]",
+        "message": "Mock image URLs (/mock/...) belong in src/services/mocks only (doc 7 rule 3)."
+      },
+      {
+        "selector": "TemplateElement[value.raw=/^[\\x2f]mock[\\x2f]/]",
+        "message": "Mock image URLs (/mock/...) belong in src/services/mocks only (doc 7 rule 3)."
+      }
+    ]
+  },
+  "overrides": [
+    {
+      "files": ["src/shared/**"],
+      "rules": {
+        "no-restricted-imports": [
+          "warn",
+          { "patterns": ["@/features/*", "@/app/*", "@/services/*"] }
+        ]
+      }
+    },
+    {
+      "files": ["src/app/**"],
+      "rules": {
+        "no-restricted-imports": [
+          "warn",
+          { "patterns": ["@/services/*", "@/features/*/*", "!@/features/*/queries"] }
+        ]
+      }
+    },
+    {
+      "files": ["src/features/**"],
+      "rules": {
+        "no-restricted-imports": ["warn", { "patterns": ["@/app/*"] }]
+      }
+    },
+    {
+      "files": ["src/services/**"],
+      "rules": {
+        "no-restricted-imports": [
+          "warn",
+          {
+            "patterns": [
+              "@/features/*/*",
+              "!@/features/*/model",
+              "@/app/*",
+              "@/shared/ui/*",
+              "@/shared/hooks/*"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["src/services/mocks/**"],
+      "rules": {
+        "no-restricted-syntax": [
+          "error",
+          {
+            "selector": ":matches(ImportDeclaration, ImportExpression)[source.value=/\\.(svg|png|jpe?g|webp|gif|avif)$/i]",
+            "message": "Reference images through shared/config/assets.ts or a URL from the model, not an import (doc 7 rules 1, 2, 4)."
+          }
+        ]
+      }
+    }
+  ]
 }

@@ -18,15 +18,7 @@
     "paths": {
       "@/*": ["src/*"],
       "@components/*": ["src/components/*"],
-      "@services/*": ["src/services/*"],
-      "@hooks/*": ["src/hooks/*"],
-      "@utils/*": ["src/utils/*"],
-      "@app-types/*": ["src/types/*"],
-      "@constants/*": ["src/constants/*"],
-      "@styles/*": ["src/styles/*"],
-      "@locales/*": ["src/locales/*"],
-      "@assets/*": ["src/assets/*"],
-      "@lib/*": ["src/lib/*"]
+      "@assets/*": ["src/assets/*"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],

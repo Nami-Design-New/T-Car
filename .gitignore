@@ -5,3 +5,8 @@ out
 .env.local
 .DS_Store
 *.log
+tsconfig.tsbuildinfo
+
+# Styles are compiled by Next from SCSS (docs/08); never commit generated CSS
+src/styles/**/*.css
+*.css.map

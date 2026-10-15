@@ -1,0 +1,238 @@
+@use 'tokens/tokens' as *;
+
+// ============ Bank accounts ============
+.bank_accounts_panel {
+  display: flex;
+  flex-direction: column;
+  gap: $ds-space-5;
+}
+
+.bank_accounts_title {
+  margin: 0;
+  color: $ds-text-primary;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 23px;
+}
+
+.bank_accounts_list {
+  display: flex;
+  flex-direction: column;
+  gap: $ds-space-3;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.bank_account_card {
+  display: flex;
+  align-items: center;
+  gap: $ds-space-3;
+  padding: $ds-space-4;
+  border: 1px dashed $ds-stroke-light;
+  border-radius: $ds-radius-md;
+  background: $ds-surface-on-background;
+}
+
+.bank_account_info {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: $ds-space-3;
+}
+
+.bank_account_bank {
+  display: flex;
+  align-items: center;
+  gap: $ds-space-2;
+  color: $ds-text-primary;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 17px;
+}
+
+.bank_account_logo {
+  object-fit: cover;
+}
+
+.bank_account_logo_fallback {
+  color: $ds-status-success;
+  font-size: 20px;
+}
+
+.bank_account_number {
+  color: $ds-text-primary;
+  font-size: 16px;
+  line-height: 23px;
+}
+
+.bank_account_actions {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: $ds-space-2;
+}
+
+.bank_account_action {
+  display: grid;
+  width: 28px;
+  height: 28px;
+  padding: $ds-space-2;
+  place-items: center;
+  border: 0;
+  border-radius: $ds-radius-md;
+  background: $ds-surface-background;
+  transition: box-shadow 0.2s ease;
+
+  &:hover,
+  &:focus-visible {
+    box-shadow: 0 0 0 1px $ds-stroke-light;
+    outline: 0;
+  }
+}
+
+.bank_accounts_add.wallet_topup_submit {
+  height: 52px;
+  border-radius: $ds-radius-md;
+  font-size: 14px;
+}
+
+.bank_form_modal {
+  width: min(380px, calc(100% - 32px));
+  padding: $ds-space-6 $ds-space-5 $ds-space-8;
+  border-radius: $ds-radius-xl;
+  background: $ds-surface-elevated;
+  box-shadow: 0 14px 40px rgba($ds-shadow-color, 0.16);
+
+  .wallet_topup_header {
+    margin-bottom: $ds-space-5;
+  }
+
+  .wallet_topup_header h3 {
+    font-size: 16px;
+    font-weight: 600;
+  }
+
+  .wallet_topup_submit {
+    height: 52px;
+    border-radius: $ds-radius-md;
+    font-size: 14px;
+  }
+}
+
+.bank_form_field {
+  display: flex;
+  flex-direction: column;
+  gap: $ds-space-2;
+  margin-bottom: $ds-space-5;
+}
+
+.bank_form_label {
+  color: $ds-text-primary;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 20px;
+}
+
+.bank_form_picker {
+  position: relative;
+}
+
+.bank_form_control {
+  display: flex;
+  width: 100%;
+  height: 50px;
+  padding: 0 $ds-space-3;
+  align-items: center;
+  justify-content: space-between;
+  gap: $ds-space-2;
+  border: 1px solid $ds-stroke-light;
+  border-radius: $ds-radius-md;
+  background: $ds-surface-on-background;
+  color: $ds-text-primary;
+  font-size: 14px;
+  outline: 0;
+  transition: border-color 0.2s ease;
+
+  &:focus-visible,
+  &.open {
+    border-color: $ds-action-primary;
+  }
+}
+
+.bank_form_input {
+  &:dir(rtl) {
+    text-align: right;
+  }
+
+  &::placeholder {
+    color: $ds-text-placeholder;
+    font-size: 12px;
+  }
+}
+
+.bank_form_placeholder {
+  color: $ds-text-placeholder;
+  font-size: 12px;
+}
+
+.bank_form_value,
+.bank_form_option {
+  display: flex;
+  align-items: center;
+  gap: $ds-space-2;
+}
+
+.bank_form_logo {
+  object-fit: cover;
+}
+
+.bank_form_logo_fallback {
+  color: $ds-status-success;
+  font-size: 20px;
+}
+
+.bank_form_arrow {
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+
+.bank_form_control.open .bank_form_arrow {
+  transform: rotate(180deg);
+}
+
+.bank_form_options {
+  position: absolute;
+  z-index: 2;
+  top: calc(100% + #{$ds-space-2});
+  inset-inline: 0;
+  max-height: 220px;
+  margin: 0;
+  padding: $ds-space-2;
+  overflow-y: auto;
+  border: 1px solid $ds-stroke-light;
+  border-radius: $ds-radius-md;
+  background: $ds-surface-elevated;
+  box-shadow: 0 8px 24px rgba($ds-shadow-color, 0.08);
+  list-style: none;
+}
+
+.bank_form_option {
+  width: 100%;
+  padding: $ds-space-3;
+  border: 0;
+  border-radius: $ds-radius-sm;
+  background: transparent;
+  color: $ds-text-primary;
+  font-size: 14px;
+  text-align: start;
+
+  &:hover,
+  &:focus-visible,
+  &.selected {
+    background: $ds-surface-on-background;
+    outline: 0;
+  }
+}

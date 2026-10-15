@@ -1,0 +1,94 @@
+@use 'tokens/tokens' as *;
+
+// Common / Button
+.btn {
+  position: relative;
+
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+
+  overflow: hidden;
+  isolation: isolate;
+
+  transition: 0.35s;
+  border-radius: $ds-radius-md;
+  span {
+    position: relative;
+    z-index: 2;
+
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    transition: 0.3s;
+  }
+
+  &::after {
+    content: '';
+
+    position: absolute;
+    inset: 0;
+
+    width: 0;
+
+    transition: width 0.35s ease;
+
+    z-index: 1;
+  }
+
+  &:hover::after {
+    width: 100%;
+  }
+
+  &:hover span {
+    animation: btnScale 0.3s;
+  }
+
+  &-primary {
+    &::after {
+      background: darken($ds-action-primary, 12%);
+    }
+
+    &:hover span {
+      color: $ds-text-on-action;
+    }
+  }
+
+  &-secondary {
+    &::after {
+      background: darken($ds-surface-brand, 10%);
+    }
+
+    &:hover span {
+      color: $ds-text-on-brand;
+    }
+  }
+
+  &-outline {
+    &::after {
+      background: $ds-action-primary;
+    }
+
+    &:hover {
+      border-color: $ds-action-primary;
+    }
+
+    &:hover span {
+      color: $ds-text-on-action;
+    }
+  }
+}
+@keyframes btnScale {
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(0.95);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}

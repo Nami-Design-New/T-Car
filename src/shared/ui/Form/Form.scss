@@ -1,0 +1,51 @@
+@use 'tokens/tokens' as *;
+
+.form_group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form_label {
+  font-size: 14px;
+  font-weight: 600;
+  color: $ds-text-primary;
+
+  span {
+    color: $ds-status-error;
+    margin-inline-start: 4px;
+  }
+}
+
+.form_input,
+.form_textarea,
+.form_select {
+  width: 100%;
+  border: 1px solid $ds-stroke-light;
+  border-radius: $ds-radius-md;
+  padding: 14px 16px;
+  background: $ds-surface-elevated;
+  transition: 0.25s;
+  font-size: 15px;
+
+  &:focus {
+    outline: none;
+    border-color: $ds-action-primary;
+    box-shadow: 0 0 0 3px rgba($ds-action-primary, 0.12);
+  }
+}
+
+.form_select {
+  appearance: none;
+  cursor: pointer;
+
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' fill='none' stroke='%23666' stroke-width='2' viewBox='0 0 24 24'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: left 16px center;
+  padding-inline-end: 16px;
+  padding-inline-start: 45px;
+}
+.form_error {
+  color: $ds-status-error;
+  font-size: 13px;
+}

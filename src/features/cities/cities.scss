@@ -1,0 +1,348 @@
+@use 'tokens/tokens' as *;
+
+.popular-cities {
+  padding: 120px 0 40px 0;
+  &-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+    @media (max-width: 768px) {
+      margin-bottom: 0;
+      h2 {
+        font-size: 24px;
+      }
+      p {
+        font-size: 14px;
+      }
+    }
+    .slider-controls {
+      display: flex;
+      gap: 0.75rem;
+      flex-shrink: 0;
+
+      button {
+        width: 44px;
+        height: 44px;
+        border-radius: $ds-radius-full;
+        border: 1px solid $ds-stroke-light;
+        background: $ds-surface-elevated;
+        color: $ds-text-primary;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        cursor: pointer;
+        transition: 0.3s ease;
+
+        &:hover {
+          background: $ds-action-primary;
+          border-color: $ds-action-primary;
+          color: $ds-text-on-action;
+          transform: translateY(-2px);
+          box-shadow: 0 10px 20px rgba($ds-action-primary, 0.18);
+        }
+      }
+    }
+  }
+
+  .cities-track {
+    display: flex;
+    gap: 1.5rem;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    padding-bottom: 4px;
+
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+
+    .city-card {
+      flex: 0 0 auto;
+      scroll-snap-align: start;
+
+      width: 320px;
+      height: 260px;
+
+      @media (max-width: $breakpoint-md) {
+        width: 78vw;
+        height: 220px;
+      }
+    }
+  }
+
+  .city-card {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    border-radius: $ds-radius-md;
+    text-decoration: none;
+
+    &-image {
+      object-fit: cover;
+      transition: transform 0.6s ease;
+    }
+
+    &-scrim {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        to top,
+        rgba($ds-shadow-color, 0.75) 0%,
+        rgba($ds-shadow-color, 0.25) 55%,
+        rgba($ds-shadow-color, 0) 100%
+      );
+    }
+
+    &-badge {
+      position: absolute;
+      top: $font-size-base;
+      inset-inline-start: $font-size-base;
+      z-index: 2;
+
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+
+      padding: 0.35rem 0.8rem;
+
+      border-radius: $ds-radius-full;
+
+      background: rgba($ds-text-on-brand, 0.15);
+      backdrop-filter: blur(10px);
+
+      color: $ds-text-on-brand;
+      font-size: 0.875rem;
+      font-weight: 600;
+    }
+
+    &-content {
+      position: absolute;
+      inset-inline: 0;
+      bottom: 0;
+
+      padding: 1.4rem;
+
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.5rem;
+
+      h3 {
+        margin: 0;
+        color: $ds-text-on-brand;
+        font-size: 1.35rem;
+        font-weight: 700;
+      }
+    }
+
+    &-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+
+      color: $ds-text-on-brand;
+      font-size: 0.95rem;
+      font-weight: 600;
+
+      .cta-icon {
+        // margin rather than transform: the nudge then mirrors for free, and
+        // cannot overwrite the transform set by .mirror-in-rtl
+        transition: margin-inline-end 0.3s ease;
+      }
+    }
+
+    &:hover {
+      .city-card-image {
+        transform: scale(1.08);
+      }
+
+      .city-card-cta {
+        .cta-icon {
+          margin-inline-end: 5px;
+        }
+      }
+    }
+  }
+}
+
+.city-hero {
+  position: relative;
+  height: 450px;
+  border-radius: 0 0 $ds-radius-2xl $ds-radius-2xl;
+  overflow: hidden;
+
+  &-image {
+    object-fit: cover;
+  }
+
+  &-scrim {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to left,
+      rgba($ds-shadow-color, 0.15) 0%,
+      rgba($ds-shadow-color, 0.65) 55%,
+      rgba($ds-shadow-color, 0.85) 100%
+    );
+  }
+
+  &-content {
+    position: relative;
+    z-index: 2;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    // max-width: 480px;
+    @media (max-width: 992px) {
+      text-align: center;
+    }
+    h1 {
+      color: $ds-text-on-brand;
+      font-size: 3rem;
+      font-weight: 800;
+      margin-bottom: 12px;
+      @media (max-width: 992px) {
+        font-size: 2rem;
+      }
+    }
+
+    p {
+      color: rgba($ds-text-on-brand, 0.85);
+      line-height: 1.8;
+    }
+  }
+}
+
+.city-search-card {
+  display: flex;
+  align-items: center;
+
+  padding: 12px;
+  margin-top: -45px;
+  margin-bottom: 3rem;
+
+  background: rgba($ds-surface-elevated, 0.96);
+  backdrop-filter: blur(20px);
+
+  border: 1px solid $ds-stroke-light;
+  border-radius: $ds-radius-xl;
+
+  box-shadow:
+    0 12px 40px rgba($ds-shadow-color, 0.08),
+    0 2px 10px rgba($ds-shadow-color, 0.04);
+
+  position: relative;
+  z-index: 10;
+
+  @media (max-width: $breakpoint-md) {
+    flex-direction: column;
+    align-items: unset;
+    gap: 14px;
+  }
+
+  &-field {
+    flex: 1;
+
+    display: flex;
+    align-items: center;
+
+    gap: 14px;
+
+    padding: 0 18px;
+
+    min-height: 72px;
+
+    .field-icon {
+      width: 52px;
+      height: 52px;
+
+      border-radius: $ds-radius-lg;
+
+      background: $ds-surface-card-primary;
+
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      color: $ds-action-primary;
+
+      font-size: 22px;
+
+      flex-shrink: 0;
+
+      transition: 0.3s;
+    }
+
+    &:hover {
+      .field-icon {
+        background: $ds-action-primary;
+        color: $ds-text-on-action;
+        transform: scale(1.05);
+      }
+    }
+  }
+
+  &-divider {
+    width: 1px;
+    height: 55px;
+
+    background: $ds-stroke-light;
+
+    @media (max-width: $breakpoint-md) {
+      width: 100%;
+      height: 1px;
+    }
+  }
+
+  &-btn {
+    min-width: 170px;
+    height: 64px;
+
+    border: none;
+    border-radius: $ds-radius-lg;
+
+    background: linear-gradient(135deg, $ds-action-primary, lighten($ds-action-primary, 8%));
+
+    color: $ds-text-on-action;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    gap: 10px;
+
+    font-weight: 700;
+
+    transition: 0.35s;
+
+    svg {
+      font-size: 20px;
+    }
+
+    &:hover {
+      transform: translateY(-3px);
+
+      box-shadow: 0 15px 30px rgba($ds-action-primary, 0.28);
+    }
+
+    &:active {
+      transform: scale(0.98);
+    }
+
+    @media (max-width: $breakpoint-md) {
+      width: 100%;
+    }
+  }
+}
+
+.city-cars-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: $ds-space-6;
+}

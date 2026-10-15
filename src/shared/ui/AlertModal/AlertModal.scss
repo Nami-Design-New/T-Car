@@ -1,0 +1,25 @@
+@use 'tokens/tokens' as *;
+
+.wallet_result_modal {
+  .failed_modal_header {
+    width: 100%;
+    align-items: center;
+    direction: rtl;
+    gap: $ds-space-4;
+  }
+
+  .failed_modal_header .dialog__title {
+    flex: 1;
+    color: $ds-text-primary;
+    font-size: 1.35rem;
+    font-weight: 700;
+    line-height: 1.4;
+    text-align: right;
+  }
+}
+
+@media (max-width: #{$breakpoint-sm - 1px}) {
+  .wallet_result_modal .failed_modal_header .dialog__title {
+    font-size: 1.15rem;
+  }
+}

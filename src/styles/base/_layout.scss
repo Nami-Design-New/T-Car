@@ -1,0 +1,15 @@
+@use 'tokens/tokens' as *;
+
+.section {
+  padding: $section-padding-y 0;
+
+  @media (max-width: $breakpoint-md) {
+    padding: $section-padding-y-sm 0;
+  }
+}
+.container-tcar {
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 $font-size-base;
+}
