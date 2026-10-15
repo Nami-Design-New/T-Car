@@ -1,0 +1,284 @@
+@use 'tokens/tokens' as *;
+
+.points-summary-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background-color: #edf2f7;
+  border-radius: 20px;
+  margin-bottom: 20px;
+  overflow: hidden;
+  text-decoration: none;
+  width: 100%;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+  direction: rtl;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  }
+
+  &__topline {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: $ds-action-primary;
+    padding: 18px 24px;
+    color: $ds-text-on-action;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+  }
+
+  &__title {
+    font-size: 18px;
+    font-weight: 700;
+    color: $ds-text-on-action;
+    margin-inline-start: 130px;
+  }
+
+  &__balance {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 20px;
+    font-weight: 700;
+    color: $ds-text-on-action;
+
+    .points-summary-card__chevron {
+      font-size: 12px;
+      stroke-width: 30px;
+    }
+  }
+
+  &__bottom {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 24px;
+    background-color: $ds-primary-100;
+    min-height: 55px;
+  }
+
+  &__description {
+    font-size: 13px;
+    color: $ds-text-subtle;
+    line-height: 1.5;
+    max-width: 75%;
+    margin-inline-start: 125px;
+  }
+
+  &__icon-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    inset-inline-start: 0;
+    top: 0;
+    width: 121px;
+    height: 121px;
+    // border: 8px solid $ds-action-primary;
+    // border-radius: 50%;
+    img {
+      object-fit: contain;
+    }
+  }
+}
+
+.points-page {
+  min-height: 560px;
+  overflow: hidden;
+  border-radius: $ds-radius-xl;
+  background: linear-gradient(214deg, #f6faff 0%, #eff6fe 100%);
+  color: $ds-text-primary;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 20px 8px;
+
+    h1 {
+      margin: 0;
+      font-size: 1.25rem;
+      font-weight: 700;
+    }
+  }
+
+  &__back {
+    display: grid;
+    width: 42px;
+    height: 42px;
+    place-items: center;
+    border-radius: $ds-radius-md;
+    background: $ds-surface-elevated;
+    color: $ds-text-primary;
+    box-shadow: 0 2px 8px rgba($ds-shadow-color, 0.04);
+
+    svg {
+      font-size: 22px;
+    }
+  }
+
+  &__summary {
+    padding: 30px 20px 20px;
+    text-align: center;
+
+    h2 {
+      margin: 0;
+      color: $ds-action-primary;
+      font-size: clamp(2.25rem, 5vw, 3rem);
+      font-weight: 700;
+      line-height: 1.2;
+
+      span {
+        font-size: 0.8em;
+      }
+    }
+
+    p {
+      margin: 14px 0 0;
+      color: $ds-text-subtle;
+      font-size: 0.75rem;
+    }
+  }
+
+  &__filters {
+    display: flex;
+    justify-content: space-around;
+    border-block: 1px solid rgba($ds-stroke-heavy, 0.55);
+    background: rgba($ds-surface-elevated, 0.72);
+
+    button {
+      position: relative;
+      min-width: 110px;
+      padding: 13px 16px 12px;
+      border: 0;
+      background: transparent;
+      color: $ds-text-subtle;
+      font: inherit;
+      font-size: 0.85rem;
+      cursor: pointer;
+
+      &::after {
+        position: absolute;
+        right: 16px;
+        bottom: -1px;
+        left: 16px;
+        height: 3px;
+        border-radius: $ds-radius-full;
+        background: transparent;
+        content: '';
+      }
+
+      &.is-active {
+        color: $ds-action-primary;
+        font-weight: 700;
+
+        &::after {
+          background: $ds-action-primary;
+        }
+      }
+    }
+  }
+
+  &__transactions {
+    margin: 0;
+    padding: 0 20px;
+    list-style: none;
+  }
+}
+
+.points-transaction {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 74px;
+  border-bottom: 1px solid rgba($ds-stroke-heavy, 0.55);
+
+  &__amount {
+    min-width: 72px;
+    color: $ds-text-subtle;
+    font-size: 1rem;
+    font-weight: 700;
+  }
+
+  &__content {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 3px;
+    min-width: 0;
+
+    strong {
+      font-size: 0.9rem;
+      font-weight: 700;
+    }
+
+    span {
+      color: $ds-text-subtle;
+      font-size: 0.75rem;
+    }
+  }
+
+  &__icon {
+    display: grid;
+    width: 36px;
+    height: 36px;
+    place-items: center;
+    border-radius: $ds-radius-full;
+    background: $ds-surface-card-primary;
+  }
+
+  &--earned {
+    .points-transaction__amount {
+      color: $ds-action-primary;
+    }
+  }
+
+  &--spent {
+    .points-transaction__amount {
+      color: $ds-success-700;
+    }
+
+    .points-transaction__icon {
+      background: $ds-success-100;
+    }
+  }
+
+  &--expired {
+    .points-transaction__icon {
+      background: $ds-neutral-200;
+    }
+  }
+}
+
+@media (max-width: $breakpoint-md) {
+  .points-page {
+    min-height: calc(100vh - 160px);
+
+    &__header {
+      padding-inline: 16px;
+    }
+
+    &__summary {
+      padding-block: 24px 18px;
+    }
+
+    &__filters {
+      button {
+        min-width: 0;
+        flex: 1;
+        padding-inline: 8px;
+      }
+    }
+
+    &__transactions {
+      padding-inline: 16px;
+    }
+  }
+}

@@ -1,15 +1,18 @@
 import type { ReactNode } from 'react';
-import { useTranslations } from 'next-intl';
+import { getTranslations } from 'next-intl/server';
+import { getPoints } from '@/features/points/queries';
+import PointsSummaryCard from '@/features/points/components/PointsSummaryCard';
 import AccountNav from './AccountNav';
 
 /** The account shell: title and section links stay while a section loads or fails. */
-export default function AccountLayout({ children }: { children: ReactNode }) {
-  const t = useTranslations('account');
+export default async function AccountLayout({ children }: { children: ReactNode }) {
+  const [t, points] = await Promise.all([getTranslations('account'), getPoints()]);
 
   return (
     <section className="section account-page">
       <div className="container-tcar">
         <h1 className="account-page-title">{t('title')}</h1>
+        <PointsSummaryCard summary={points.summary} />
 
         <div className="account-grid">
           <AccountNav />

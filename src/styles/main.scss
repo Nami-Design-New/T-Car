@@ -18,6 +18,7 @@
 @use '../features/auth/auth';
 @use '../shared/ui/OtpInput/OtpInput';
 @use '../features/account/account';
+@use '../features/points/points';
 @use '../features/bank-accounts/bank-accounts';
 @use '../features/wallet/wallet';
 @use '../features/my-bookings/my-bookings';

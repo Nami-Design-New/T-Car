@@ -34,6 +34,25 @@
       "bankAccounts": "Bank accounts",
       "notifications": "Notifications"
     },
+    "points": {
+      "title": "Loyalty points",
+      "historyTitle": "Points history",
+      "unit": "points",
+      "cardDescription": "Earn loyalty points by booking more cars and use them for payment.",
+      "expiresAt": "{date} points expire",
+      "back": "Back to account",
+      "filtersLabel": "Points history filters",
+      "filters": {
+        "all": "All",
+        "earned": "Earned",
+        "spent": "Spent"
+      },
+      "transaction": {
+        "earned": "Earned",
+        "spent": "Used for payment",
+        "expired": "Expired points"
+      }
+    },
     "profile": {
       "fullName": "Full name",
       "email": "Email address",
@@ -448,6 +467,9 @@
     "rate_limited": "Too many attempts. Wait a moment and try again.",
     "server": "Something went wrong on our side. Try again shortly.",
     "unknown": "An unexpected error occurred.",
+    "points": {
+      "unavailable": "Your points are temporarily unavailable. Try again shortly."
+    },
     "wallet": {
       "topUpRejected": "The top-up was rejected.",
       "withdrawRejected": "The withdrawal was rejected.",

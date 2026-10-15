@@ -14,6 +14,13 @@ export const ICONS = {
   whatsapp: { src: '/icons/whatsapp.svg', width: 24, height: 24 },
 } as const;
 
+export const POINTS_ICONS = {
+  coins: { src: '/icons/coins.svg', width: 74, height: 74 },
+  earned: { src: '/icons/gift-points-blue.svg', width: 20, height: 20 },
+  spent: { src: '/icons/gift-points -green.svg', width: 20, height: 20 },
+  expired: { src: '/icons/gift-points-gray.svg', width: 20, height: 20 },
+} as const;
+
 export const RENTAL_ICONS = {
   daily: { src: '/icons/rental/daily.svg', width: 48, height: 48 },
   monthly: { src: '/icons/rental/monthly.svg', width: 48, height: 48 },
