@@ -20,6 +20,7 @@ steps.
 | 6 | [Loading, empty, and error states](06-ui-states.md) | What every screen shows while waiting, when there is nothing, and when something fails |
 | 7 | [Images and assets](07-images-and-assets.md) | Where each image lives (`public/icons`, `public/images`, backend URLs), and how it is referenced |
 | 8 | [Styles: compile from SCSS](08-styles-and-scss.md) | How stylesheets are built: SCSS sources compiled by Next, no committed CSS |
+| - | [Account routes flow](account-routes-flow.md) | How account layouts, pages, `children`, and route boundaries compose |
 
 The existing root-level plans stay valid and are referenced where they overlap:
 

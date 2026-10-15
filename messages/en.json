@@ -26,6 +26,7 @@
   },
   "account": {
     "title": "My account",
+    "back": "Back",
     "nav": {
       "account": "My account",
       "profile": "Edit profile",
