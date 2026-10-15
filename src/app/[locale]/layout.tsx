@@ -3,10 +3,10 @@ import type { Metadata } from 'next';
 import { NextIntlClientProvider } from 'next-intl';
 import { getDirection } from '@/shared/config/languages';
 import { DirectionProvider } from '@/shared/ui/DirectionProvider';
+import NextTopLoader from 'nextjs-toploader';
+import localFont from 'next/font/local';
 import '../../styles/vendor/bootstrap.scss';
 import '../../styles/main.scss';
-import localFont from 'next/font/local'
-
 
 const expo = localFont({
   src: [
@@ -24,20 +24,18 @@ const expo = localFont({
       path: '../../assets/fonts/Expo-Arabic-SemiBold.woff2',
       weight: '600',
       style: 'normal',
-    }, 
+    },
     {
       path: '../../assets/fonts/Expo-Arabic-Bold.woff2',
       weight: '700',
       style: 'normal',
-    }, 
-   
-  ], 
+    },
+  ],
   variable: '--font-expo',
   display: 'swap',
-})
+});
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
-
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -91,13 +89,14 @@ export default async function RootLayout({
   return (
     <html lang={locale} dir={dir} className={expo.variable}>
       <body>
-         <NextIntlClientProvider>
+        <NextIntlClientProvider>
           <DirectionProvider dir={dir}>
+            <NextTopLoader color="#1f7ffa" height={3} showSpinner={false} />
             <Header />
-               <main>{children}</main>
+            <main>{children}</main>
             <Footer />
-           </DirectionProvider>
-         </NextIntlClientProvider>
+          </DirectionProvider>
+        </NextIntlClientProvider>
       </body>
     </html>
   );
