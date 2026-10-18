@@ -499,7 +499,12 @@
     "wallet": {
       "topUpRejected": "The top-up was rejected.",
       "withdrawRejected": "The withdrawal was rejected.",
-      "insufficientBalance": "Your withdrawable balance is not enough."
+      "insufficientBalance": "Your withdrawable balance is not enough.",
+      "amountRequired": "Enter an amount.",
+      "invalidAmount": "Enter a valid amount.",
+      "amountTooLow": "The amount is below the allowed minimum.",
+      "amountTooHigh": "The amount is above the allowed maximum.",
+      "bankAccountRequired": "Choose a bank account."
     },
     "bankAccounts": {
       "notFound": "Bank account not found.",

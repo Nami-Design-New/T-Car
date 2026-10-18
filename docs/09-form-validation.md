@@ -1,10 +1,10 @@
 # 9. Form control and validation
 
 > **Status (2026-10-18):** fractions 1 (auth sign-in and registration), 2
-> (profile save, change/verify phone), and 3 (license upload) are implemented;
+> (profile save, change/verify phone), 3 (license upload), and 4 (wallet top-up / withdrawal) are implemented;
 > `zod` and `@hookform/resolvers` are installed. License images must declare
 > JPG or PNG and be no larger than 5 MB; the same schema runs in the client and
-> Server Action. Shared rules (`isPhoneNumber`, `isPastIsoDate`) live in
+> Server Action. Wallet amounts use the flow-provided minimum and maximum; the top-up maximum is the current mock contract and withdrawal rechecks the current withdrawable balance. Shared rules live in
 > `shared/lib/validation.ts`. Progress and the
 > assumptions still open are in the [migration status](README.md#what-remains).
 > Every migrated form renders its fields with the shared controls

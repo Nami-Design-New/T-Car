@@ -499,7 +499,12 @@
     "wallet": {
       "topUpRejected": "تم رفض عملية الشحن.",
       "withdrawRejected": "تم رفض عملية السحب.",
-      "insufficientBalance": "الرصيد القابل للسحب غير كافٍ."
+      "insufficientBalance": "الرصيد القابل للسحب غير كافٍ.",
+      "amountRequired": "أدخل مبلغًا.",
+      "invalidAmount": "أدخل مبلغًا صالحًا.",
+      "amountTooLow": "المبلغ أقل من الحد الأدنى المسموح.",
+      "amountTooHigh": "المبلغ أعلى من الحد الأقصى المسموح.",
+      "bankAccountRequired": "اختر حسابًا بنكيًا."
     },
     "bankAccounts": {
       "notFound": "الحساب البنكي غير موجود.",

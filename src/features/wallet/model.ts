@@ -26,4 +26,6 @@ export interface WithdrawParams {
 }
 
 export const MIN_TOP_UP = 10;
+/** Current mock contract; the real service owns this limit when integrated. */
+export const MAX_TOP_UP = 10000;
 export const MIN_WITHDRAW = 10;

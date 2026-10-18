@@ -5,9 +5,16 @@ import type { BankAccount } from '@/features/bank-accounts/model';
 import { AppError } from '@/shared/lib/errors';
 import { reportError } from '@/shared/lib/report';
 import { fail, ok, toActionResult, type ActionResult } from '@/shared/lib/result';
+import { toValidationError } from '@/shared/lib/validation';
+import type { ZodType } from 'zod';
 import type { WalletData, WithdrawParams } from './model';
+import { topUpSchema, withdrawSchema } from './validation';
 
-const MOCK_MAX_TOP_UP = 10000;
+function parse<T>(schema: ZodType<T>, input: unknown): T {
+  const result = schema.safeParse(input);
+  if (!result.success) throw toValidationError(result.error);
+  return result.data;
+}
 
 async function run<T>(scope: string, write: () => T): Promise<ActionResult<T>> {
   try {
@@ -26,19 +33,19 @@ export async function topUpAction(
   current: WalletData
 ): Promise<ActionResult<WalletData>> {
   return run('wallet.topUp', () => {
-    if (amount > MOCK_MAX_TOP_UP) throw new AppError('conflict', 'wallet.topUpRejected');
+    const values = parse(topUpSchema, { amount });
 
     return {
       summary: {
         ...current.summary,
-        total: current.summary.total + amount,
-        withdrawable: current.summary.withdrawable + amount,
+        total: current.summary.total + values.amount,
+        withdrawable: current.summary.withdrawable + values.amount,
       },
       transactions: [
         {
           id: `action-${Date.now()}`,
           type: 'topup',
-          amount,
+          amount: values.amount,
           reference: 'ACTION',
           createdAt: new Date().toISOString(),
         },
@@ -54,24 +61,25 @@ export async function withdrawAction(
   accounts: BankAccount[]
 ): Promise<ActionResult<WalletData>> {
   return run('wallet.withdraw', () => {
-    if (!accounts.some((account) => account.id === params.bankAccountId)) {
+    const values = parse(withdrawSchema(current.summary.withdrawable), params);
+    if (!accounts.some((account) => account.id === values.bankAccountId)) {
       throw new AppError('not_found', 'bankAccounts.notFound');
     }
-    if (params.amount > current.summary.withdrawable) {
+    if (values.amount > current.summary.withdrawable) {
       throw new AppError('conflict', 'wallet.insufficientBalance');
     }
 
     return {
       summary: {
         ...current.summary,
-        total: current.summary.total - params.amount,
-        withdrawable: current.summary.withdrawable - params.amount,
+        total: current.summary.total - values.amount,
+        withdrawable: current.summary.withdrawable - values.amount,
       },
       transactions: [
         {
           id: `action-${Date.now()}`,
           type: 'withdraw',
-          amount: params.amount,
+          amount: values.amount,
           reference: 'ACTION',
           createdAt: new Date().toISOString(),
         },
