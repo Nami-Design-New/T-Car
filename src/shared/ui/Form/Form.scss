@@ -45,6 +45,39 @@
   padding-inline-end: 16px;
   padding-inline-start: 45px;
 }
+.form_input_wrapper {
+  position: relative;
+}
+
+.form_input--with-icon {
+  position: relative;
+  padding-inline-end: 44px;
+
+  // A date input's own picker button becomes an invisible hit area over the
+  // decorative icon, so there is one icon and clicking it still opens the picker.
+  &::-webkit-calendar-picker-indicator {
+    position: absolute;
+    top: 50%;
+    inset-inline-end: 12px;
+    width: 24px;
+    height: 24px;
+    margin: 0;
+    opacity: 0;
+    cursor: pointer;
+    transform: translateY(-50%);
+  }
+}
+
+.form_input_icon {
+  position: absolute;
+  top: 50%;
+  inset-inline-end: 14px;
+  display: inline-flex;
+  color: $ds-action-primary;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
 .form_check {
   display: flex;
   align-items: center;

@@ -2,6 +2,31 @@ import type { FieldValues, Path, UseFormSetError } from 'react-hook-form';
 import type { ZodError } from 'zod';
 import { AppError } from './errors';
 
+// Domain-free rules shared by feature schemas (doc 9 §9.1: promoted once a
+// second feature needed them). Each feature keeps its own `errors.*` keys.
+
+/**
+ * Digits a phone number may have, country code included: 9 is the current mock
+ * minimum, 15 is the E.164 maximum. Supported countries and the stored format
+ * are not decided yet (doc 9 §9.4), so the number is checked, not rewritten.
+ */
+const PHONE_DIGITS = { min: 9, max: 15 };
+
+export function isPhoneNumber(value: string) {
+  if (!/^\+?[\d\s()-]+$/.test(value)) return false;
+  const digits = value.replace(/\D/g, '').length;
+  return digits >= PHONE_DIGITS.min && digits <= PHONE_DIGITS.max;
+}
+
+/** A real `YYYY-MM-DD` calendar date that is not in the future. */
+export function isPastIsoDate(value: string) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+  const date = new Date(`${value}T00:00:00Z`);
+  if (Number.isNaN(date.getTime())) return false;
+  // Rejects dates such as 2001-02-30, which Date rolls over into March.
+  return date.toISOString().startsWith(value) && date.getTime() <= Date.now();
+}
+
 /**
  * A failed schema parse as a `validation` AppError (doc 9 §9.2). Field errors
  * keep the first issue per field; the code is the first of them, so a form

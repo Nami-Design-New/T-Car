@@ -1,7 +1,9 @@
 # 9. Form control and validation
 
-> **Status (2026-10-18):** fraction 1 (auth sign-in and registration) is
-> implemented; `zod` and `@hookform/resolvers` are installed. Progress and the
+> **Status (2026-10-18):** fractions 1 (auth sign-in and registration) and 2
+> (profile save, change/verify phone) are implemented; `zod` and
+> `@hookform/resolvers` are installed. Shared rules (`isPhoneNumber`,
+> `isPastIsoDate`) live in `shared/lib/validation.ts`. Progress and the
 > assumptions still open are in the [migration status](README.md#what-remains).
 > Every migrated form renders its fields with the shared controls
 > (`shared/ui/Form`, `PhoneField`, `OtpInput`), which take a translated `error`

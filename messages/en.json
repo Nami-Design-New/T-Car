@@ -73,7 +73,9 @@
       "title": "Edit mobile number",
       "close": "Close",
       "phone": "Mobile number",
-      "sendCode": "Send verification code"
+      "sendCode": "Send verification code",
+      "description": "Enter your new mobile number to receive a verification code.",
+      "countrySearchPlaceholder": "Search countries..."
     },
     "license": {
       "title": "Driving license",
@@ -509,7 +511,13 @@
       "licenseRequired": "Choose an image of your driving license.",
       "licenseRejected": "The driving license could not be uploaded. Try another image.",
       "deleteRejected": "The account cannot be deleted while it has active bookings.",
-      "invalidCode": "The verification code is incorrect. Try again."
+      "invalidCode": "The verification code is incorrect. Try again.",
+      "nameRequired": "Full name is required.",
+      "emailRequired": "Email address is required.",
+      "invalidEmail": "Enter a valid email address.",
+      "birthDateRequired": "Date of birth is required.",
+      "invalidBirthDate": "Enter a valid date of birth that is not in the future.",
+      "invalidPhone": "Enter a valid phone number."
     },
     "auth": {
       "invalidPhone": "Enter a valid phone number.",

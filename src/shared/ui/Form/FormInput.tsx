@@ -1,6 +1,6 @@
 'use client';
 
-import { InputHTMLAttributes, Ref } from 'react';
+import { InputHTMLAttributes, ReactNode, Ref } from 'react';
 import { cn } from '@/shared/lib/cn';
 import { useFieldA11y } from './useFieldA11y';
 import './Form.scss';
@@ -10,6 +10,8 @@ export interface FormInputProps extends InputHTMLAttributes<HTMLInputElement> {
   /** Already translated; shown under the input and announced as its description. */
   error?: string;
   required?: boolean;
+  /** Decorative icon at the end of the input, e.g. a calendar; hidden from assistive technology. */
+  icon?: ReactNode;
   ref?: Ref<HTMLInputElement>;
 }
 
@@ -17,6 +19,7 @@ export function FormInput({
   label,
   error,
   required,
+  icon,
   className,
   id,
   ...props
@@ -30,11 +33,25 @@ export function FormInput({
         {required && <span aria-hidden="true">*</span>}
       </label>
 
-      <input
-        className={cn('form_input', className)}
-        {...props}
-        {...field.controlProps}
-      />
+      {icon ? (
+        // Shares the input's direction, so the icon sits on the side its padding is on.
+        <div className="form_input_wrapper" dir={props.dir}>
+          <input
+            className={cn('form_input', 'form_input--with-icon', className)}
+            {...props}
+            {...field.controlProps}
+          />
+          <span className="form_input_icon" aria-hidden="true">
+            {icon}
+          </span>
+        </div>
+      ) : (
+        <input
+          className={cn('form_input', className)}
+          {...props}
+          {...field.controlProps}
+        />
+      )}
 
       {error && (
         <small id={field.errorId} className="form_error">

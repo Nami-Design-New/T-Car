@@ -230,7 +230,7 @@ merged or pushed yet.
 | `cars`, `cities` | Yes | Yes | n/a | Fraction 6 complete: search and price URL state is shared by `CarFilters` and `CityFilters`; sort and hero search context remain URL-backed. Brand options come from `getCarBrands()` (mocked `carsApi.listBrands()`). Left: consolidate the remaining option data (companies, types, services; doc 4) |
 | `home`, `rental-search` | Yes | Yes (FAQs, search options) | Yes (Server Action: contact form) | Fraction 7 complete: pickup type, branch, airport, station, map, and country dialogs use shared `Dialog`. The FAQ is native `<details>`; static home content remains component-local |
 | `auth` | Yes | NextAuth + mocked `authApi` | Yes (Server Actions) | Auth dialog uses shared `Dialog` and `ResultDialog`; login, OTP, and registration use RHF + Zod (`validation.ts`) with the schemas re-parsed in the actions (doc 9 fraction 1). Real backend endpoints remain a later integration concern |
-| `account` (profile, notifications) | Yes | Yes (scoped to the session user) | Yes (Server Actions: save, phone change send and verify, license upload, delete) | Routes per section with a shared layout and `AccountNav`; the loyalty points summary is shown in the account layout and `/account/points` owns the points history view. Common success/failure results now use `shared/ui/Dialog`. Left: notification mark-all-read is still static; opening the license details is still a TODO; forms (doc 3 step 7) and remaining dialogs |
+| `account` (profile, notifications) | Yes | Yes (scoped to the session user) | Yes (Server Actions: save, phone change send and verify, license upload, delete) | Routes per section with a shared layout and `AccountNav`; the loyalty points summary is shown in the account layout and `/account/points` owns the points history view. Common success/failure results now use `shared/ui/Dialog`. Profile save and change/verify phone use RHF + Zod (`validation.ts`) with the schemas re-parsed in the actions (doc 9 fraction 2). Left: notification mark-all-read is still static; opening the license details is still a TODO; the license upload form (doc 9 fraction 3) and remaining dialogs |
 | `layout` | Yes | n/a | n/a | The header shell and footer render on the server; mobile navigation, language, and auth are client islands; the user menu uses `Menu`. Left: trimming the client messages (doc 2 step 7), the language switcher on `Menu` |
 
 The `*.api.ts` files are backed by mocks only; no backend endpoint is wired in.
@@ -239,7 +239,14 @@ extensions over 30 days, and so on) are documented in each `services/mocks/*.ts`
 
 ### What remains
 
-- Form validation ([doc 9](09-form-validation.md)), fraction 1 of 7 (auth) done:
+- Form validation ([doc 9](09-form-validation.md)), 2 of 8 fractions done, one
+  commit each: (1) ✅ auth sign-in and registration; (2) ✅ profile save and
+  change/verify phone; (3) license upload, waiting on the size and file-type
+  contract (doc 9 §9.4); (4) wallet top-up / withdrawal; (5) bank-account
+  add / edit; (6) contact message (moves its fields to native `required` with
+  `noValidate`); (7) daily booking and checkout terms / payment; (8) booking
+  review, extend, and edit. Join-us stays blocked until it has a write contract.
+- Form validation fraction 1 (auth):
   `zod` 4 and `@hookform/resolvers` 5 added; `features/auth/validation.ts` holds
   the phone, OTP, and registration schemas (messages are `errors.auth.*` keys,
   five new in both locales); the login, OTP, and registration forms use React
@@ -265,18 +272,52 @@ extensions over 30 days, and so on) are documented in each `services/mocks/*.ts`
   checked by the action only; the auth contract has no field for it.
   Assumptions to confirm (doc 9 §9.4): phone is 9–15 digits, any country, sent
   as entered (no canonical format); birth date is a real date not in the
-  future (no minimum age); no name/email length limits. Next fractions, in
-  order: profile/phone, wallet, bank accounts, contact, booking, reviews.
+  future (no minimum age); no name/email length limits.
+- Form validation fraction 2 (profile and phone, branch
+  `refactor/form-validation-profile`): `isPhoneNumber` and `isPastIsoDate` moved
+  to `shared/lib/validation.ts` (a second feature needed them, doc 9 §9.1) and
+  auth imports them; `features/account/validation.ts` holds the profile, phone,
+  and code schemas with `errors.account.*` keys (six new in both locales).
+  `saveProfileAction`, `sendPhoneCodeAction`, and `verifyPhoneAction` check the
+  session, then parse their input; profile save takes only `fullName`, `email`,
+  and `birthDate` and merges them into the stored profile, so the phone and
+  license status stay server-managed. `ProfileTab` uses RHF with `FormInput`
+  (new optional decorative `icon`, used for the calendar) and a submit `Button`;
+  its form closes before the dialogs, because React submit events bubble
+  through portals, and uses `display: contents` so the panel layout is
+  unchanged. A failed save maps field errors (e.g. `account.profileRejected` on
+  the email) and keeps the input; a successful save resets the form to the
+  saved values. `EditPhoneModal` and `VerifyPhoneModal` use RHF with
+  `PhoneField` / `OtpInput` `error` props and `Button`; their handlers resolve
+  with the error, so the three error states in `ProfileTab` are gone. The phone
+  input now has a localized accessible name. Removed as dead: the account
+  `.form_field`, `.input_wrapper`, `.save_btn` rules and the `.auth_btn` rules
+  in `auth.scss`. `%auth_btn` stays only for `.license_modal .primary_btn` until
+  fraction 3. Design follow-up (same fraction, checked in headless Chrome, en
+  and ar, desktop and 390 px): the change-phone and verify dialogs use the
+  auth dialog layout (`auth_modal_wrapper` / `auth_modal`, `login_form` and
+  `otp_form` with the back arrow, the number inside the sentence in `<bdi>`,
+  centered digits, the resend row), so the buttons get the auth spacing; the
+  old `phone_modal` / `verify_modal` styles were removed as dead.
+  `account.editPhone` gained `description` and `countrySearchPlaceholder` in
+  both locales. The profile rows have 12 px between them, their chevrons point
+  forward (`FiChevronRight` + `mirror-in-rtl`), the phone value is isolated LTR,
+  and the license warning icon is red again (the success color won on equal
+  specificity). `FormInput`'s icon follows the input's `dir`, and a date input's
+  native picker button becomes an invisible hit area over it (one icon).
+  `.login_form p` now styles only direct children, so `PhoneField`'s error
+  keeps its style in both phone forms. Left: an unused `.auth_btn` rule remains
+  in `styles/legacy/_components.scss` for the legacy cleanup.
 - Shared `Button` adoption (decision 2026-10-18): every text action button uses
   `shared/ui/Button` (with `loading` for pending submits) for a consistent look
   and pending state. Icon-only, tab, chip, toggle, and filter-option buttons are
   out of scope (they stay native or use their own shared component). At the
   decision, 103 native `<button>`s remained in 49 files outside `shared/ui`.
   Fractions, one commit each: (1) ✅ auth forms (with doc 9 fraction 1);
-  (2) submit buttons move with each later doc 9 form fraction (profile/phone,
-  wallet, bank accounts, contact, booking, reviews); (3) remaining action buttons
-  per feature: `account` (`VerifyPhoneModal` still uses `.auth_btn`, and with it
-  the shared `%auth_btn` rules), `my-bookings` (details header, cancel, extend,
+  (2) submit buttons move with each later doc 9 form fraction: ✅ profile save,
+  change phone, and verify phone; then license, wallet, bank accounts, contact,
+  booking, reviews; (3) remaining action buttons per feature: `account` (only
+  `LicenseModal` is left, with fraction 3), `my-bookings` (details header, cancel, extend,
   review), `booking` (daily, confirm, payment, booking card), `bank-accounts`,
   `wallet`, `rental-search` dialogs and hero, `cars` / `cities`, `layout`,
   `points` / `notifications`; (4) `global-error.tsx` only if the shared button

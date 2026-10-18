@@ -270,7 +270,7 @@ failure path gets built and tested now, not after launch.
    plus the segment `not-found.tsx` files.
 6. ☐ **Split `FailedModal`** into `ConfirmDialog` (destructive confirmation) and
    `ResultDialog` (success or failure outcome), as part of the dialog migration.
-7. ◐ **Forms** (auth done, see [doc 9](09-form-validation.md)): move `ProfileTab`, `WalletAmountModal`, `BankAccountFormModal`, and
+7. ◐ **Forms** (auth and `ProfileTab` done, see [doc 9](09-form-validation.md)): move `ProfileTab`, `WalletAmountModal`, `BankAccountFormModal`, and
    the auth forms to `react-hook-form` with `zod` and the shared `Field`.
 8. ✅ **Replace the `console.log` handlers** (no `console.log` is left in `src/`) with mock actions that return
    `Result`, one feature at a time during phase 4.

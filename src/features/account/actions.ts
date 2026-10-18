@@ -5,7 +5,15 @@ import { accountApi } from '@/services/account.api';
 import { AppError } from '@/shared/lib/errors';
 import { reportError } from '@/shared/lib/report';
 import { fail, ok, toActionResult, type ActionResult } from '@/shared/lib/result';
+import { toValidationError } from '@/shared/lib/validation';
+import type { ZodType } from 'zod';
 import type { LicenseUpload, UserProfile } from './model';
+import {
+  phoneChangeSchema,
+  profileFormSchema,
+  verifyPhoneSchema,
+  type ProfileFormValues,
+} from './validation';
 
 /**
  * Runs a write for the signed-in customer. Server Actions are public POST
@@ -26,17 +34,44 @@ async function run<T>(
   }
 }
 
-export async function saveProfileAction(profile: UserProfile): Promise<ActionResult<UserProfile>> {
-  return run('account.saveProfile', (accountId) => accountApi.updateProfile(accountId, profile));
+/**
+ * Parses the input again on the server: the client's validation is not
+ * trusted. A failure becomes a `validation` AppError with field errors, which
+ * `reportError` does not report.
+ */
+function parse<T>(schema: ZodType<T>, input: unknown): T {
+  const parsed = schema.safeParse(input);
+  if (!parsed.success) throw toValidationError(parsed.error);
+  return parsed.data;
+}
+
+/**
+ * Saves the editable fields only. The phone and license status are
+ * server-managed, so they come from the stored profile, not the client.
+ */
+export async function saveProfileAction(
+  input: ProfileFormValues
+): Promise<ActionResult<UserProfile>> {
+  return run('account.saveProfile', async (accountId) => {
+    const changes = parse(profileFormSchema, input);
+    const current = await accountApi.getProfile(accountId);
+    return accountApi.updateProfile(accountId, { ...current, ...changes });
+  });
 }
 
 /** Sends (or resends) the verification code to a new phone number. */
 export async function sendPhoneCodeAction(phone: string): Promise<ActionResult<void>> {
-  return run('account.sendPhoneCode', (accountId) => accountApi.sendPhoneCode(accountId, phone));
+  return run('account.sendPhoneCode', (accountId) => {
+    const input = parse(phoneChangeSchema, { phone });
+    return accountApi.sendPhoneCode(accountId, input.phone);
+  });
 }
 
 export async function verifyPhoneAction(phone: string, code: string): Promise<ActionResult<void>> {
-  return run('account.verifyPhone', (accountId) => accountApi.verifyPhone(accountId, phone, code));
+  return run('account.verifyPhone', (accountId) => {
+    const input = parse(verifyPhoneSchema, { phone, code });
+    return accountApi.verifyPhone(accountId, input.phone, input.code);
+  });
 }
 
 export async function uploadLicenseAction(formData: FormData): Promise<ActionResult<void>> {
