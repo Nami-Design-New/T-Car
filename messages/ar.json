@@ -267,7 +267,12 @@
       "pickup": "حوض",
       "van": "فان"
     },
-    "cityTypes": { "economy": "اقتصادية", "sedan": "سيدان", "suv": "SUV", "luxury": "فاخرة" },
+    "cityTypes": {
+      "economy": "اقتصادية",
+      "sedan": "سيدان",
+      "suv": "SUV",
+      "luxury": "فاخرة"
+    },
     "services": {
       "delivery": {
         "title": "خدمة توصيل السيارات",
@@ -330,19 +335,37 @@
     "descriptionAfterBrand": "في أقرب وقت.",
     "fields": {
       "firstName": { "label": "الاسم الأول", "placeholder": "اكتب اسمك الأول" },
-      "companyName": { "label": "اسم الشركة", "placeholder": "اكتب اسم الشركة" },
-      "headOffice": { "label": "المقر الرئيسي", "placeholder": "المدينة أو الدولة" },
-      "contactPerson": { "label": "اسم المسؤول للتواصل", "placeholder": "الاسم الكامل" },
+      "companyName": {
+        "label": "اسم الشركة",
+        "placeholder": "اكتب اسم الشركة"
+      },
+      "headOffice": {
+        "label": "المقر الرئيسي",
+        "placeholder": "المدينة أو الدولة"
+      },
+      "contactPerson": {
+        "label": "اسم المسؤول للتواصل",
+        "placeholder": "الاسم الكامل"
+      },
       "phone": {
         "label": "رقم الجوال",
         "placeholder": "رقم الجوال",
         "searchPlaceholder": "ابحث عن دولة..."
       },
       "companySize": { "label": "حجم الشركة" },
-      "email": { "label": "البريد الإلكتروني", "placeholder": "company@email.com" },
+      "email": {
+        "label": "البريد الإلكتروني",
+        "placeholder": "company@email.com"
+      },
       "managerName": { "label": "اسم مدير الشركة", "placeholder": "الاسم" },
-      "managerEmail": { "label": "إيميل مدير الشركة", "placeholder": "manager@email.com" },
-      "managerPhone": { "label": "رقم تواصل مدير الشركة", "placeholder": "05xxxxxxxx" },
+      "managerEmail": {
+        "label": "إيميل مدير الشركة",
+        "placeholder": "manager@email.com"
+      },
+      "managerPhone": {
+        "label": "رقم تواصل مدير الشركة",
+        "placeholder": "05xxxxxxxx"
+      },
       "branches": { "label": "عدد الفروع", "placeholder": "3" },
       "fleet": { "label": "إجمالي أسطول السيارات", "placeholder": "122" }
     },
@@ -510,6 +533,8 @@
       "resendLimited": "لا يمكن إعادة إرسال الرمز الآن. انتظر قليلاً ثم حاول مرة أخرى.",
       "licenseRequired": "اختر صورة لرخصة القيادة.",
       "licenseRejected": "تعذر رفع رخصة القيادة. حاول باستخدام صورة أخرى.",
+      "licenseTooLarge": "??? ??? ?????? ??? ???? ???? ??????? 5 ????????.",
+      "licenseInvalidType": "???? ???? JPG ?? PNG.",
       "deleteRejected": "لا يمكن حذف الحساب لوجود حجوزات نشطة.",
       "invalidCode": "رمز التحقق غير صحيح. حاول مرة أخرى.",
       "nameRequired": "الاسم الكامل مطلوب.",
@@ -571,10 +596,16 @@
         "title": "مشاركة المعلومات",
         "content": "لا نشارك البيانات إلا عند الضرورة لتقديم الخدمة أو بموجب القانون."
       },
-      { "title": "حقوق المستخدم", "content": "يمكنك طلب تحديث بياناتك أو تعديلها أو حذفها." }
+      {
+        "title": "حقوق المستخدم",
+        "content": "يمكنك طلب تحديث بياناتك أو تعديلها أو حذفها."
+      }
     ]
   },
-  "citiesPage": { "title": "المدن المتاحة", "subtitle": "اختر مدينتك وابدأ رحلتك معنا" },
+  "citiesPage": {
+    "title": "المدن المتاحة",
+    "subtitle": "اختر مدينتك وابدأ رحلتك معنا"
+  },
   "common": { "selectPlaceholder": "اختر..." },
   "dateTimePicker": {
     "previousMonth": "الشهر السابق",

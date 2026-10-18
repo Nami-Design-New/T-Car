@@ -80,7 +80,7 @@ export default function ProfileTab({ profile }: Props) {
     reValidateMode: "onChange",
     defaultValues: editableFields(profile),
   });
-  const [licenseError, setLicenseError] = useState<string | null>(null);
+
   const [deleteError, setDeleteError] = useState<string | null>(null);
 
   // ==================== Phone ====================
@@ -153,21 +153,19 @@ export default function ProfileTab({ profile }: Props) {
 
   // ==================== Submit License ====================
 
-  const handleLicenseSubmit = async (file: File) => {
+  const handleLicenseSubmit = async (
+    file: File,
+  ): Promise<AppError | undefined> => {
     setPendingAction("license");
-    setLicenseError(null);
     try {
       const formData = new FormData();
       formData.set("license", file);
       const result = fromActionResult(await uploadLicenseAction(formData));
-      if (!result.ok) {
-        setLicenseError(errorMessage(result.error));
-        return;
-      }
+      if (!result.ok) return result.error;
       setForm((previous) => ({ ...previous, licenseUploaded: true }));
       setShowLicenseModal(false);
     } catch (error) {
-      setLicenseError(errorMessage(error));
+      return toAppError(error);
     } finally {
       setPendingAction(null);
     }
@@ -287,7 +285,10 @@ export default function ProfileTab({ profile }: Props) {
               </div>
             </div>
 
-            <FiChevronRight className="arrow mirror-in-rtl" aria-hidden="true" />
+            <FiChevronRight
+              className="arrow mirror-in-rtl"
+              aria-hidden="true"
+            />
           </button>
         </div>
 
@@ -311,10 +312,7 @@ export default function ProfileTab({ profile }: Props) {
             <button
               type="button"
               className="profile_action_btn"
-              onClick={() => {
-                setLicenseError(null);
-                setShowLicenseModal(true);
-              }}
+              onClick={() => setShowLicenseModal(true)}
             >
               <div className="profile_action_content">
                 <span className="profile_action_title">{t("license")}</span>
@@ -325,7 +323,10 @@ export default function ProfileTab({ profile }: Props) {
                 </div>
               </div>
 
-              <FiChevronRight className="arrow mirror-in-rtl" aria-hidden="true" />
+              <FiChevronRight
+                className="arrow mirror-in-rtl"
+                aria-hidden="true"
+              />
             </button>
           </div>
         )}
@@ -404,7 +405,6 @@ export default function ProfileTab({ profile }: Props) {
         }}
         onSubmit={handleLicenseSubmit}
         loading={pendingAction === "license"}
-        error={licenseError ?? undefined}
       />
 
       {/* ==================== Delete Account Modal ==================== */}

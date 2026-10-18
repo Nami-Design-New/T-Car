@@ -81,7 +81,7 @@
       "title": "Driving license",
       "close": "Close",
       "uploadPrompt": "Click here to upload a photo of your driving license",
-      "fileTypes": "JPG or PNG",
+      "fileTypes": "JPG or PNG, up to 5 MB",
       "submit": "Upload"
     },
     "verifyPhone": {
@@ -291,7 +291,12 @@
       "pickup": "Pickup",
       "van": "Van"
     },
-    "cityTypes": { "economy": "Economy", "sedan": "Sedan", "suv": "SUV", "luxury": "Luxury" },
+    "cityTypes": {
+      "economy": "Economy",
+      "sedan": "Sedan",
+      "suv": "SUV",
+      "luxury": "Luxury"
+    },
     "services": {
       "delivery": {
         "title": "Car delivery service",
@@ -329,10 +334,22 @@
     "brand": "T-Car team",
     "descriptionAfterBrand": "will contact you soon.",
     "fields": {
-      "firstName": { "label": "First name", "placeholder": "Enter your first name" },
-      "companyName": { "label": "Company name", "placeholder": "Enter company name" },
-      "headOffice": { "label": "Head office", "placeholder": "City or country" },
-      "contactPerson": { "label": "Contact person", "placeholder": "Full name" },
+      "firstName": {
+        "label": "First name",
+        "placeholder": "Enter your first name"
+      },
+      "companyName": {
+        "label": "Company name",
+        "placeholder": "Enter company name"
+      },
+      "headOffice": {
+        "label": "Head office",
+        "placeholder": "City or country"
+      },
+      "contactPerson": {
+        "label": "Contact person",
+        "placeholder": "Full name"
+      },
       "phone": {
         "label": "Phone number",
         "placeholder": "Phone number",
@@ -341,8 +358,14 @@
       "companySize": { "label": "Company size" },
       "email": { "label": "Email address", "placeholder": "company@email.com" },
       "managerName": { "label": "Company manager name", "placeholder": "Name" },
-      "managerEmail": { "label": "Company manager email", "placeholder": "manager@email.com" },
-      "managerPhone": { "label": "Company manager contact number", "placeholder": "05xxxxxxxx" },
+      "managerEmail": {
+        "label": "Company manager email",
+        "placeholder": "manager@email.com"
+      },
+      "managerPhone": {
+        "label": "Company manager contact number",
+        "placeholder": "05xxxxxxxx"
+      },
       "branches": { "label": "Number of branches", "placeholder": "3" },
       "fleet": { "label": "Total vehicle fleet", "placeholder": "122" }
     },
@@ -510,6 +533,8 @@
       "resendLimited": "The code cannot be resent yet. Wait a moment and try again.",
       "licenseRequired": "Choose an image of your driving license.",
       "licenseRejected": "The driving license could not be uploaded. Try another image.",
+      "licenseTooLarge": "The driving license image must be 5 MB or smaller.",
+      "licenseInvalidType": "Choose a JPG or PNG image.",
       "deleteRejected": "The account cannot be deleted while it has active bookings.",
       "invalidCode": "The verification code is incorrect. Try again.",
       "nameRequired": "Full name is required.",
