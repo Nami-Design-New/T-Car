@@ -1,29 +1,55 @@
 'use client';
 
 import Image from 'next/image';
-import { useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
+import { Button } from '@/shared/ui/Button';
 import { PhoneField } from '@/shared/ui/PhoneField';
+import { useErrorMessage, useFieldErrorMessage } from '@/shared/hooks/useErrorMessage';
+import type { AppError } from '@/shared/lib/errors';
+import { applyFieldErrors } from '@/shared/lib/validation';
+import { phoneSchema, type PhoneFormValues } from '../validation';
 import { IMAGES } from '@/shared/config/assets';
 const logo = IMAGES.brandMark;
 import { ICONS } from '@/shared/config/assets';
 const whatsappIcon = ICONS.whatsapp;
 
 type Props = {
-  /** Sends the code to this phone. */
-  onNext: (phone: string) => void;
+  /** Sends the code to this phone; resolves with the error when that fails. */
+  onNext: (phone: string) => Promise<AppError | undefined>;
   loading?: boolean;
-  /** Already translated. */
-  error?: string;
 };
 
-export default function LoginForm({ onNext, loading = false, error }: Props) {
+export default function LoginForm({ onNext, loading = false }: Props) {
   const t = useTranslations();
+  const errorMessage = useErrorMessage();
+  const fieldError = useFieldErrorMessage();
 
-  const [phone, setPhone] = useState('+966');
+  const {
+    control,
+    handleSubmit,
+    setError,
+    formState: { errors },
+  } = useForm<PhoneFormValues>({
+    resolver: zodResolver(phoneSchema),
+    mode: 'onBlur',
+    reValidateMode: 'onChange',
+    defaultValues: { phone: '+966' },
+  });
+
+  const onSubmit = handleSubmit(async ({ phone }) => {
+    if (loading) return;
+    const error = await onNext(phone);
+    if (error && !applyFieldErrors(error, setError, ['phone'])) {
+      setError('root.server', { type: error.kind, message: errorMessage(error) });
+    }
+  });
+
+  const formError = errors.root?.server?.message;
 
   return (
-    <div className="login_form">
+    <form className="login_form" onSubmit={onSubmit} noValidate>
       <div className="logo">
         <Image src={logo} alt={t('auth.login.logoAlt')} width={70} height={70} />
       </div>
@@ -32,32 +58,36 @@ export default function LoginForm({ onNext, loading = false, error }: Props) {
       <p>{t('auth.login.description')}</p>
 
       <div className="phone_wrapper">
-        <PhoneField
-          label={t('auth.login.phoneLabel')}
-          value={phone}
-          onChange={setPhone}
-          searchPlaceholder={t('auth.login.countrySearchPlaceholder')}
-          inputAriaLabel={t('auth.login.phoneLabel')}
+        <Controller
+          name="phone"
+          control={control}
+          render={({ field }) => (
+            <PhoneField
+              label={t('auth.login.phoneLabel')}
+              value={field.value}
+              onChange={field.onChange}
+              onBlur={field.onBlur}
+              searchPlaceholder={t('auth.login.countrySearchPlaceholder')}
+              inputAriaLabel={t('auth.login.phoneLabel')}
+              required
+              error={fieldError(errors.phone?.message)}
+            />
+          )}
         />
       </div>
 
-      {error && (
+      {formError && (
         <p className="text-danger small mt-1 mb-0" role="alert">
-          {error}
+          {formError}
         </p>
       )}
 
-      <button
-        type="button"
-        className="auth_btn auth_btn--whatsapp"
-        onClick={() => onNext(phone)}
-        disabled={loading}
-      >
+      <Button type="submit" size="lg" className="w-100" loading={loading}>
         <span className="auth_btn_icon" aria-hidden="true">
           <Image src={whatsappIcon} alt="" width={18} height={18} />
         </span>
-        <span className="auth_btn_label">{t('auth.login.sendViaWhatsApp')}</span>
-      </button>
-    </div>
+        {t('auth.login.sendViaWhatsApp')}
+      </Button>
+    </form>
   );
 }

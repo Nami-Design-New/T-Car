@@ -119,62 +119,22 @@
       margin-bottom: 24px;
     }
 
-    .auth_btn--whatsapp {
-      position: relative;
+    // The WhatsApp mark sits in a small chip beside the button label.
+    .auth_btn_icon {
+      display: grid;
+      place-items: center;
+      flex: 0 0 auto;
 
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
+      width: 30px;
+      height: 30px;
 
-      min-height: 56px;
-      padding-inline: 20px;
+      border: 1px solid rgba($ds-text-on-brand, 0.2);
+      border-radius: $ds-radius-sm;
+      background: rgba($ds-text-on-brand, 0.12);
 
-      font-size: 0.95rem;
-      font-weight: 700;
-      letter-spacing: -0.01em;
-
-      overflow: hidden;
-      isolation: isolate;
-
-      .auth_btn_label {
-        line-height: 1.4;
-        font-weight: 400;
-      }
-
-      .auth_btn_icon {
-        display: grid;
-        place-items: center;
-        flex: 0 0 auto;
-
-        width: 30px;
-        height: 30px;
-
-        border: 1px solid rgba($ds-text-on-brand, 0.2);
-        border-radius: $ds-radius-sm;
-        background: rgba($ds-text-on-brand, 0.12);
-
-        img {
-          width: 18px;
-          height: 18px;
-        }
-      }
-
-      &:hover {
-        opacity: 1;
-        transform: translateY(-2px);
-        box-shadow:
-          0 14px 30px rgba($ds-action-primary, 0.26),
-          inset 0 1px 0 rgba($ds-text-on-brand, 0.2);
-      }
-
-      &:focus-visible {
-        outline-color: rgba($ds-action-primary, 0.3);
-      }
-
-      &:active {
-        transform: translateY(0) scale(0.985);
-        box-shadow: 0 6px 16px rgba($ds-action-primary, 0.2);
+      img {
+        width: 18px;
+        height: 18px;
       }
     }
 
@@ -524,18 +484,9 @@
   }
 
   .agree {
-    display: flex;
-    align-items: center;
-    gap: 10px;
     margin-bottom: 24px;
 
-    input {
-      width: 18px;
-      height: 18px;
-      accent-color: $ds-action-primary;
-    }
-
-    span {
+    .form_check span {
       color: $ds-text-subtle;
       font-size: 14px;
     }
@@ -567,13 +518,10 @@
     border-radius: $ds-radius-lg;
     background: $ds-surface-card-primary;
 
-    .form_field {
-      display: grid;
-      gap: 8px;
-
+    .form_group {
       text-align: start;
 
-      > span {
+      > label {
         color: $ds-text-primary;
         font-size: 14px;
         font-weight: 700;
@@ -634,7 +582,7 @@
     }
   }
 
-  .agree {
+  .agree .form_check {
     align-items: flex-start;
 
     input {
@@ -647,19 +595,13 @@
     }
   }
 
-  .auth_btn {
-    min-height: 54px;
-    font-size: 0.95rem;
-    font-weight: 400;
-  }
-
   @media (max-width: 576px) {
     .inputs {
       gap: 16px;
       padding: 14px;
 
-      .form_field {
-        > span {
+      .form_group {
+        > label {
           font-size: 13px;
         }
 

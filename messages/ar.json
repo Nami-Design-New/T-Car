@@ -515,7 +515,12 @@
       "invalidPhone": "أدخل رقم جوال صحيحًا.",
       "invalidCode": "رمز التحقق غير صحيح. حاول مرة أخرى.",
       "nameRequired": "الاسم الكامل مطلوب.",
-      "registrationRequired": "هذا الرقم غير مسجل. أكمل إنشاء الحساب."
+      "registrationRequired": "هذا الرقم غير مسجل. أكمل إنشاء الحساب.",
+      "emailRequired": "البريد الإلكتروني مطلوب.",
+      "invalidEmail": "أدخل بريدًا إلكترونيًا صحيحًا.",
+      "birthDateRequired": "تاريخ الميلاد مطلوب.",
+      "invalidBirthDate": "أدخل تاريخ ميلاد صحيحًا لا يقع في المستقبل.",
+      "termsRequired": "وافق على الشروط والأحكام للمتابعة."
     }
   },
   "legalContent": {

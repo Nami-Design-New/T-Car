@@ -45,6 +45,19 @@
   padding-inline-end: 16px;
   padding-inline-start: 45px;
 }
+.form_check {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+
+  input {
+    width: 18px;
+    height: 18px;
+    accent-color: $ds-action-primary;
+  }
+}
+
 .form_error {
   color: $ds-status-error;
   font-size: 13px;

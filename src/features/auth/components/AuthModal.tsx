@@ -4,16 +4,15 @@ import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 
 import { useRouter } from '@/i18n/navigation';
-import { useErrorMessage } from '@/shared/hooks/useErrorMessage';
 import type { AppError } from '@/shared/lib/errors';
 import { fromActionResult } from '@/shared/lib/result';
 import { Dialog } from '@/shared/ui/Dialog';
 import { ResultDialog } from '@/shared/ui/ResultDialog';
 import { registerAction, requestOtpAction, verifyOtpAction } from '../actions';
-import type { RegistrationInput } from '../model';
+import type { RegisterFormValues } from '../validation';
 import LoginForm from './LoginForm';
 import OtpForm from './OtpForm';
-import RegisterForm, { type RegisterValues } from './RegisterForm';
+import RegisterForm from './RegisterForm';
 
 type Props = {
   show: boolean;
@@ -27,18 +26,15 @@ type Step = 'login' | 'otp' | 'register' | 'success';
 export default function AuthModal({ show, onHide, next }: Props) {
   const t = useTranslations('authSuccess');
   const router = useRouter();
-  const errorMessage = useErrorMessage();
 
   const [step, setStep] = useState<Step>('login');
   const [phone, setPhone] = useState('');
   const [code, setCode] = useState('');
   const [pending, setPending] = useState(false);
-  const [error, setError] = useState<AppError | null>(null);
 
   const reset = () => {
     setStep('login');
     setCode('');
-    setError(null);
   };
 
   const close = () => {
@@ -55,9 +51,9 @@ export default function AuthModal({ show, onHide, next }: Props) {
     router.refresh();
   };
 
-  const run = async <T,>(action: () => Promise<T>) => {
+  /** Runs one action; resolves with its error so the form can show it and keep its input. */
+  const run = async (action: () => Promise<AppError | undefined>) => {
     setPending(true);
-    setError(null);
     try {
       return await action();
     } finally {
@@ -68,7 +64,7 @@ export default function AuthModal({ show, onHide, next }: Props) {
   const handleRequestOtp = (value: string) =>
     run(async () => {
       const result = fromActionResult(await requestOtpAction(value));
-      if (!result.ok) return setError(result.error);
+      if (!result.ok) return result.error;
       setPhone(value);
       setStep('otp');
     });
@@ -76,58 +72,47 @@ export default function AuthModal({ show, onHide, next }: Props) {
   const handleResend = () =>
     run(async () => {
       const result = fromActionResult(await requestOtpAction(phone));
-      if (!result.ok) setError(result.error);
+      if (!result.ok) return result.error;
     });
 
   const handleVerify = (value: string) =>
     run(async () => {
       const result = fromActionResult(await verifyOtpAction(phone, value));
-      if (!result.ok) return setError(result.error);
+      if (!result.ok) return result.error;
       setCode(value);
       if (result.data.registrationRequired) setStep('register');
       else finish();
     });
 
-  const handleRegister = (values: RegisterValues) =>
+  const handleRegister = (values: RegisterFormValues) =>
     run(async () => {
-      const input: RegistrationInput = { phone, code, ...values };
-      const result = fromActionResult(await registerAction(input));
-      if (!result.ok) return setError(result.error);
+      const result = fromActionResult(await registerAction({ phone, code, ...values }));
+      if (!result.ok) return result.error;
       setStep('success');
     });
-
-  const errorText = error ? errorMessage(error) : undefined;
 
   const renderStep = () => {
     switch (step) {
       case 'login':
-        return <LoginForm onNext={handleRequestOtp} loading={pending} error={errorText} />;
+        return <LoginForm onNext={handleRequestOtp} loading={pending} />;
 
       case 'otp':
         return (
           <OtpForm
             phone={phone}
-            onBack={() => {
-              setError(null);
-              setStep('login');
-            }}
+            onBack={() => setStep('login')}
             onVerify={handleVerify}
             onResend={handleResend}
             loading={pending}
-            error={errorText}
           />
         );
 
       case 'register':
         return (
           <RegisterForm
-            onBack={() => {
-              setError(null);
-              setStep('otp');
-            }}
+            onBack={() => setStep('otp')}
             onSubmit={handleRegister}
             loading={pending}
-            error={errorText}
           />
         );
 

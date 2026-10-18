@@ -3,10 +3,10 @@
 Status: **in progress** on branch `refactor/architecture-layers` (not merged). See
 [Migration status](#migration-status) for what is done and where the code
 deliberately differs from these documents.
-Last reviewed against the code: 2026-10-14. Status updated: 2026-10-14.
+Last reviewed against the code: 2026-10-18. Status updated: 2026-10-18.
 
 This folder reviews the current front end and sets out the target design and the
-migration path for six areas. Each document stands on its own: it covers the
+migration path for the architecture areas. Each document stands on its own: it covers the
 current state (with file references), the target, the rules, and the migration
 steps.
 
@@ -20,6 +20,7 @@ steps.
 | 6 | [Loading, empty, and error states](06-ui-states.md) | What every screen shows while waiting, when there is nothing, and when something fails |
 | 7 | [Images and assets](07-images-and-assets.md) | Where each image lives (`public/icons`, `public/images`, backend URLs), and how it is referenced |
 | 8 | [Styles: compile from SCSS](08-styles-and-scss.md) | How stylesheets are built: SCSS sources compiled by Next, no committed CSS |
+| 9 | [Form control and validation](09-form-validation.md) | Which inputs use React Hook Form + Zod, which do not, and where the server remains authoritative |
 | - | [Account routes flow](account-routes-flow.md) | How account layouts, pages, `children`, and route boundaries compose |
 
 The existing root-level plans stay valid and are referenced where they overlap:
@@ -228,7 +229,7 @@ merged or pushed yet.
 | `car-details`, `booking` | Yes | Yes | Yes (checkout) | Fraction 5 complete: daily booking, confirmation, payment, and booking result dialogs use shared primitives. Left: keep a failed edit request open inside `BookingDailyModal` and migrate remaining booking-flow details |
 | `cars`, `cities` | Yes | Yes | n/a | Fraction 6 complete: search and price URL state is shared by `CarFilters` and `CityFilters`; sort and hero search context remain URL-backed. Brand options come from `getCarBrands()` (mocked `carsApi.listBrands()`). Left: consolidate the remaining option data (companies, types, services; doc 4) |
 | `home`, `rental-search` | Yes | Yes (FAQs, search options) | Yes (Server Action: contact form) | Fraction 7 complete: pickup type, branch, airport, station, map, and country dialogs use shared `Dialog`. The FAQ is native `<details>`; static home content remains component-local |
-| `auth` | Yes | NextAuth + mocked `authApi` | Yes (Server Actions) | Auth dialog uses shared `Dialog` and `ResultDialog`; real backend endpoints remain a later integration concern |
+| `auth` | Yes | NextAuth + mocked `authApi` | Yes (Server Actions) | Auth dialog uses shared `Dialog` and `ResultDialog`; login, OTP, and registration use RHF + Zod (`validation.ts`) with the schemas re-parsed in the actions (doc 9 fraction 1). Real backend endpoints remain a later integration concern |
 | `account` (profile, notifications) | Yes | Yes (scoped to the session user) | Yes (Server Actions: save, phone change send and verify, license upload, delete) | Routes per section with a shared layout and `AccountNav`; the loyalty points summary is shown in the account layout and `/account/points` owns the points history view. Common success/failure results now use `shared/ui/Dialog`. Left: notification mark-all-read is still static; opening the license details is still a TODO; forms (doc 3 step 7) and remaining dialogs |
 | `layout` | Yes | n/a | n/a | The header shell and footer render on the server; mobile navigation, language, and auth are client islands; the user menu uses `Menu`. Left: trimming the client messages (doc 2 step 7), the language switcher on `Menu` |
 
@@ -238,6 +239,50 @@ extensions over 30 days, and so on) are documented in each `services/mocks/*.ts`
 
 ### What remains
 
+- Form validation ([doc 9](09-form-validation.md)), fraction 1 of 7 (auth) done:
+  `zod` 4 and `@hookform/resolvers` 5 added; `features/auth/validation.ts` holds
+  the phone, OTP, and registration schemas (messages are `errors.auth.*` keys,
+  five new in both locales); the login, OTP, and registration forms use React
+  Hook Form + `zodResolver` (`mode: 'onBlur'`, `reValidateMode: 'onChange'`,
+  `noValidate`, Enter submits); `requestOtpAction`, `verifyOtpAction`, and
+  `registerAction` parse the same schemas before calling the service and return
+  `ActionResult` field errors (`shared/lib/validation.ts`: `toValidationError`,
+  and `applyFieldErrors` for RHF `setError`); provider codes `auth.invalidCode` /
+  `auth.invalidPhone` / `auth.nameRequired` now carry their field. A failed
+  submit keeps the dialog step and its values. **Shared form controls are the
+  standard for every migrated form:** `FormInput`, `FormSelect`, `FormTextarea`,
+  the new `FormCheckbox`, `PhoneField`, and `OtpInput` take an already
+  translated `error`, render it, and link it with `aria-invalid` /
+  `aria-describedby`; the Form components forward `ref` (for `register`) and
+  announce `required` as `aria-required` with an `aria-hidden` asterisk (native
+  `required` is not passed, so the contact and join-us forms keep their current
+  submit behavior until their own fractions). The three submit buttons use the
+  shared `Button` (`size="lg"`, `loading` gives the spinner, `disabled`, and
+  `aria-busy`); the auth-only `.auth_btn--whatsapp` and register `.auth_btn`
+  rules are gone, and the WhatsApp icon chip keeps its own rule. The step-back
+  arrows stay native: `BackButton` calls `router.back()`, not a dialog step.
+  The registration terms checkbox is
+  checked by the action only; the auth contract has no field for it.
+  Assumptions to confirm (doc 9 §9.4): phone is 9–15 digits, any country, sent
+  as entered (no canonical format); birth date is a real date not in the
+  future (no minimum age); no name/email length limits. Next fractions, in
+  order: profile/phone, wallet, bank accounts, contact, booking, reviews.
+- Shared `Button` adoption (decision 2026-10-18): every text action button uses
+  `shared/ui/Button` (with `loading` for pending submits) for a consistent look
+  and pending state. Icon-only, tab, chip, toggle, and filter-option buttons are
+  out of scope (they stay native or use their own shared component). At the
+  decision, 103 native `<button>`s remained in 49 files outside `shared/ui`.
+  Fractions, one commit each: (1) ✅ auth forms (with doc 9 fraction 1);
+  (2) submit buttons move with each later doc 9 form fraction (profile/phone,
+  wallet, bank accounts, contact, booking, reviews); (3) remaining action buttons
+  per feature: `account` (`VerifyPhoneModal` still uses `.auth_btn`, and with it
+  the shared `%auth_btn` rules), `my-bookings` (details header, cancel, extend,
+  review), `booking` (daily, confirm, payment, booking card), `bank-accounts`,
+  `wallet`, `rental-search` dialogs and hero, `cars` / `cities`, `layout`,
+  `points` / `notifications`; (4) `global-error.tsx` only if the shared button
+  styles load outside the locale layout. The three product-held modals
+  (`BookingModal`, `BookingMonthlyModal`, `InsufficientBalanceModal`) are left
+  until product decides.
 - Phase 2 routing and Phase 3 Server Action fractions are complete. Wallet and
   bank-account reads still use browser-only stateful mocks until user-scoped
   persistence/API contracts are available.
@@ -297,9 +342,10 @@ extensions over 30 days, and so on) are documented in each `services/mocks/*.ts`
   markdown, Lottie JSON, `public/`, the lockfile, `next-env.d.ts`;
   `npm run format -- <files>` formats only the files named.
 - `shared/ui` bugs found while writing tests (not fixed; the tests do not assert
-  the wrong behavior): `FormInput` / `FormSelect` / `FormTextarea` show `*` for
+  the wrong behavior): ~~`FormInput` / `FormSelect` / `FormTextarea` show `*` for
   `required` but never pass `required` to the control, and do not link the error
-  to it (`aria-describedby`, `aria-invalid`); `ResourceNotFound` labels its link
+  to it~~ (fixed in doc 9 fraction 1: `aria-required`, `aria-invalid`,
+  `aria-describedby`); `ResourceNotFound` labels its link
   "Browse Cities" for cars and bookings too; `DateTimePicker` parses
   `YYYY-MM-DD` as UTC, so west of UTC `minDate` allows one day early, and it
   formats the chosen date with a fixed `ar-SA` locale; `ResourceNotFound`'s

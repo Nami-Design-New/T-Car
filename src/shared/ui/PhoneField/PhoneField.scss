@@ -1,5 +1,11 @@
 @use 'tokens/tokens' as *;
 
+.phone_field_error {
+  margin: 4px 0 0;
+  color: $ds-status-error;
+  font-size: 13px;
+}
+
 .phone_field {
   direction: ltr;
 

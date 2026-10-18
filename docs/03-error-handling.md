@@ -169,9 +169,12 @@ type WalletFlow =
 
 ### 4. Forms
 
-- Use `react-hook-form` everywhere (it is already installed), with one schema
-  per form. Add `zod` and `@hookform/resolvers` so the same schema can also
-  validate in the Server Action.
+The form policy and surface-by-surface inventory live in
+[doc 9](09-form-validation.md). Use `react-hook-form` with one Zod schema per
+submitted data form, not indiscriminately for filters, pickers, or
+confirmation-only actions. Add `zod` and `@hookform/resolvers` with the first
+approved implementation fraction so the same schema can validate in the Server
+Action.
 - Map server field errors back into the form:
   `Object.entries(result.error.fieldErrors ?? {}).forEach(([f, key]) => setError(f, { message: t(key) }))`.
 - The shared `Field` component wires `aria-invalid`, `aria-describedby`, and the
@@ -267,7 +270,7 @@ failure path gets built and tested now, not after launch.
    plus the segment `not-found.tsx` files.
 6. ☐ **Split `FailedModal`** into `ConfirmDialog` (destructive confirmation) and
    `ResultDialog` (success or failure outcome), as part of the dialog migration.
-7. ☐ **Forms:** move `ProfileTab`, `WalletAmountModal`, `BankAccountFormModal`, and
+7. ◐ **Forms** (auth done, see [doc 9](09-form-validation.md)): move `ProfileTab`, `WalletAmountModal`, `BankAccountFormModal`, and
    the auth forms to `react-hook-form` with `zod` and the shared `Field`.
 8. ✅ **Replace the `console.log` handlers** (no `console.log` is left in `src/`) with mock actions that return
    `Result`, one feature at a time during phase 4.

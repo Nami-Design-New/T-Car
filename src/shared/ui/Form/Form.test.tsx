@@ -2,6 +2,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 import { renderWithIntl } from '@/shared/test/render';
+import { FormCheckbox } from './FormCheckbox';
 import { FormInput } from './FormInput';
 import { FormSelect } from './FormSelect';
 import { FormTextarea } from './FormTextarea';
@@ -82,5 +83,87 @@ describe('FormSelect', () => {
     );
     expect(screen.getByText('*')).toBeInTheDocument();
     expect(screen.getByText('Choose a city')).toBeInTheDocument();
+  });
+});
+
+describe('field errors and required marks', () => {
+  it('links the error to the input and marks it invalid', () => {
+    render(<FormInput id="email" label="Email" error="Enter a valid email" />);
+    const input = screen.getByRole('textbox', { name: 'Email' });
+    expect(input).toHaveAttribute('aria-invalid', 'true');
+    expect(input).toHaveAccessibleDescription('Enter a valid email');
+  });
+
+  it('keeps a description the caller already linked', () => {
+    render(
+      <>
+        <p id="hint">We never share it</p>
+        <FormInput id="email" label="Email" aria-describedby="hint" error="Enter a valid email" />
+      </>
+    );
+    expect(screen.getByRole('textbox', { name: 'Email' })).toHaveAccessibleDescription(
+      'We never share it Enter a valid email'
+    );
+  });
+
+  it('announces required without the browser blocking the submit or the mark in the name', () => {
+    render(<FormInput id="name" label="Full name" required />);
+    const input = screen.getByRole('textbox', { name: 'Full name' });
+    expect(input).toHaveAttribute('aria-required', 'true');
+    expect(input).not.toHaveAttribute('required');
+  });
+
+  it('is not invalid without an error', () => {
+    render(<FormInput id="name" label="Full name" />);
+    const input = screen.getByRole('textbox', { name: 'Full name' });
+    expect(input).not.toHaveAttribute('aria-invalid');
+    expect(input).not.toHaveAttribute('aria-describedby');
+  });
+
+  it('labels the control without an id', () => {
+    render(<FormInput label="City" error="Choose a city" />);
+    expect(screen.getByRole('textbox', { name: 'City' })).toHaveAccessibleDescription(
+      'Choose a city'
+    );
+  });
+
+  it('forwards the ref, as react-hook-form register needs', () => {
+    const ref = { current: null as HTMLInputElement | null };
+    render(<FormInput id="name" label="Full name" ref={ref} />);
+    expect(ref.current).toBe(screen.getByRole('textbox', { name: 'Full name' }));
+  });
+
+  it('wires textarea and select errors the same way', () => {
+    renderWithIntl(
+      <>
+        <FormTextarea id="notes" label="Notes" error="Too short" />
+        <FormSelect id="city" label="City" options={[]} error="Choose a city" />
+      </>
+    );
+    expect(screen.getByRole('textbox', { name: 'Notes' })).toHaveAccessibleDescription(
+      'Too short'
+    );
+    expect(screen.getByRole('combobox', { name: 'City' })).toHaveAccessibleDescription(
+      'Choose a city'
+    );
+  });
+});
+
+describe('FormCheckbox', () => {
+  it('is a labelled checkbox that toggles', async () => {
+    const onChange = vi.fn();
+    render(<FormCheckbox id="terms" label="I agree" onChange={onChange} />);
+    const checkbox = screen.getByRole('checkbox', { name: 'I agree' });
+    await userEvent.click(checkbox);
+    expect(checkbox).toBeChecked();
+    expect(onChange).toHaveBeenCalledOnce();
+  });
+
+  it('shows its error and links it', () => {
+    render(<FormCheckbox id="terms" label="I agree" required error="Accept the terms" />);
+    const checkbox = screen.getByRole('checkbox', { name: 'I agree' });
+    expect(checkbox).toHaveAttribute('aria-invalid', 'true');
+    expect(checkbox).toHaveAttribute('aria-required', 'true');
+    expect(checkbox).toHaveAccessibleDescription('Accept the terms');
   });
 });
