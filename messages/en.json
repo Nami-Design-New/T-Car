@@ -515,7 +515,12 @@
       "invalidPhone": "Enter a valid phone number.",
       "invalidCode": "The verification code is incorrect. Try again.",
       "nameRequired": "Full name is required.",
-      "registrationRequired": "This number has no account yet. Finish creating your account."
+      "registrationRequired": "This number has no account yet. Finish creating your account.",
+      "emailRequired": "Email address is required.",
+      "invalidEmail": "Enter a valid email address.",
+      "birthDateRequired": "Date of birth is required.",
+      "invalidBirthDate": "Enter a valid date of birth that is not in the future.",
+      "termsRequired": "Accept the terms and conditions to continue."
     }
   },
   "legalContent": {

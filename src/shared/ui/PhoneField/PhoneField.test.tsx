@@ -40,4 +40,23 @@ describe('PhoneField', () => {
     render(<PhoneField value="966500000000" onChange={vi.fn()} disabled />);
     expect(screen.getByRole('textbox', { name: 'Phone number' })).toBeDisabled();
   });
+
+  it('shows its error, announces it, and links it to the input', () => {
+    render(
+      <PhoneField value="966" onChange={vi.fn()} required error="Enter a valid phone number." />
+    );
+    const input = screen.getByRole('textbox', { name: 'Phone number' });
+    expect(screen.getByRole('alert')).toHaveTextContent('Enter a valid phone number.');
+    expect(input).toHaveAttribute('aria-invalid', 'true');
+    expect(input).toHaveAttribute('aria-required', 'true');
+    expect(input).toHaveAccessibleDescription('Enter a valid phone number.');
+  });
+
+  it('reports blur', async () => {
+    const onBlur = vi.fn();
+    render(<PhoneField value="966" onChange={vi.fn()} onBlur={onBlur} />);
+    await userEvent.click(screen.getByRole('textbox', { name: 'Phone number' }));
+    await userEvent.tab();
+    expect(onBlur).toHaveBeenCalled();
+  });
 });

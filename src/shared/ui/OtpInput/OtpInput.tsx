@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useId, useRef } from 'react';
 
 export interface OtpInputProps {
   value: string;
@@ -10,6 +10,8 @@ export interface OtpInputProps {
   digitAriaLabel?: (position: number, total: number) => string;
   autoFocus?: boolean;
   disabled?: boolean;
+  /** Already translated; shown under the digits, announced, and linked to every digit. */
+  error?: string;
 }
 
 export function OtpInput({
@@ -20,8 +22,10 @@ export function OtpInput({
   digitAriaLabel = (position, total) => `Digit ${position} of ${total}`,
   autoFocus = false,
   disabled = false,
+  error,
 }: OtpInputProps) {
   const inputs = useRef<(HTMLInputElement | null)[]>([]);
+  const errorId = `${useId()}-error`;
 
   useEffect(() => {
     if (autoFocus) inputs.current[0]?.focus();
@@ -80,25 +84,40 @@ export function OtpInput({
   };
 
   return (
-    <div className="otp-inputs" onPaste={handlePaste} dir="ltr" role="group" aria-label={ariaLabel}>
-      {Array.from({ length }, (_, index) => (
-        <input
-          key={index}
-          ref={(element) => {
-            inputs.current[index] = element;
-          }}
-          type="text"
-          inputMode="numeric"
-          autoComplete={index === 0 ? 'one-time-code' : 'off'}
-          pattern="[0-9]*"
-          maxLength={length}
-          value={value[index] ?? ''}
-          disabled={disabled}
-          aria-label={digitAriaLabel(index + 1, length)}
-          onChange={(event) => handleChange(event.target.value, index)}
-          onKeyDown={(event) => handleKeyDown(event, index)}
-        />
-      ))}
+    <div className="otp-field">
+      <div
+        className="otp-inputs"
+        onPaste={handlePaste}
+        dir="ltr"
+        role="group"
+        aria-label={ariaLabel}
+      >
+        {Array.from({ length }, (_, index) => (
+          <input
+            key={index}
+            ref={(element) => {
+              inputs.current[index] = element;
+            }}
+            type="text"
+            inputMode="numeric"
+            autoComplete={index === 0 ? 'one-time-code' : 'off'}
+            pattern="[0-9]*"
+            maxLength={length}
+            value={value[index] ?? ''}
+            disabled={disabled}
+            aria-label={digitAriaLabel(index + 1, length)}
+            aria-invalid={error ? true : undefined}
+            aria-describedby={error ? errorId : undefined}
+            onChange={(event) => handleChange(event.target.value, index)}
+            onKeyDown={(event) => handleKeyDown(event, index)}
+          />
+        ))}
+      </div>
+      {error && (
+        <p id={errorId} className="otp-field__error" role="alert">
+          {error}
+        </p>
+      )}
     </div>
   );
 }

@@ -1,51 +1,54 @@
 'use client';
 
-import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
 import { FiArrowLeft } from 'react-icons/fi';
-
-/** The profile fields; the verified phone and code are added by the dialog. */
-export interface RegisterValues {
-  fullName: string;
-  email: string;
-  birthDate: string;
-}
+import { useErrorMessage, useFieldErrorMessage } from '@/shared/hooks/useErrorMessage';
+import type { AppError } from '@/shared/lib/errors';
+import { applyFieldErrors } from '@/shared/lib/validation';
+import { Button } from '@/shared/ui/Button';
+import { FormCheckbox, FormInput } from '@/shared/ui/Form';
+import { registerFormSchema, type RegisterFormValues } from '../validation';
 
 type Props = {
   onBack: () => void;
-  onSubmit: (values: RegisterValues) => void;
+  /** Resolves with the error when registration fails; the form keeps its values for fixing. */
+  onSubmit: (values: RegisterFormValues) => Promise<AppError | undefined>;
   loading?: boolean;
-  /** Already translated; the form keeps its values so the user can fix them. */
-  error?: string;
 };
 
-export default function RegisterForm({ onBack, onSubmit, loading = false, error }: Props) {
-  const t = useTranslations();
+const FIELDS = ['fullName', 'email', 'birthDate', 'acceptTerms'] as const;
 
-  const [form, setForm] = useState({
-    name: '',
-    email: '',
-    birthDate: '',
-    agree: false,
+export default function RegisterForm({ onBack, onSubmit, loading = false }: Props) {
+  const t = useTranslations();
+  const errorMessage = useErrorMessage();
+  const fieldError = useFieldErrorMessage();
+
+  const {
+    register,
+    handleSubmit,
+    setError,
+    formState: { errors },
+  } = useForm<RegisterFormValues>({
+    resolver: zodResolver(registerFormSchema),
+    mode: 'onBlur',
+    reValidateMode: 'onChange',
+    defaultValues: { fullName: '', email: '', birthDate: '', acceptTerms: false },
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value, type, checked } = e.target;
-
-    setForm((prev) => ({
-      ...prev,
-      [name]: type === 'checkbox' ? checked : value,
-    }));
-  };
-
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const submit = handleSubmit(async (values) => {
     if (loading) return;
-    onSubmit({ fullName: form.name, email: form.email, birthDate: form.birthDate });
-  };
+    const error = await onSubmit(values);
+    if (error && !applyFieldErrors(error, setError, FIELDS)) {
+      setError('root.server', { type: error.kind, message: errorMessage(error) });
+    }
+  });
+
+  const formError = errors.root?.server?.message;
 
   return (
-    <form className="register_form auth_register_form" onSubmit={handleSubmit}>
+    <form className="register_form auth_register_form" onSubmit={submit} noValidate>
       <div className="otp_header">
         <button
           type="button"
@@ -60,67 +63,61 @@ export default function RegisterForm({ onBack, onSubmit, loading = false, error 
       </div>
 
       <div className="inputs">
-        <label className="form_field" htmlFor="register-name">
-          <span>{t('auth.register.fullNameLabel')}</span>
-          <input
-            id="register-name"
-            name="name"
-            type="text"
-            placeholder={t('auth.register.fullNamePlaceholder')}
-            autoComplete="name"
-            value={form.name}
-            onChange={handleChange}
-            required
-          />
-        </label>
+        <FormInput
+          id="register-name"
+          label={t('auth.register.fullNameLabel')}
+          type="text"
+          placeholder={t('auth.register.fullNamePlaceholder')}
+          autoComplete="name"
+          required
+          error={fieldError(errors.fullName?.message)}
+          {...register('fullName')}
+        />
 
-        <label className="form_field" htmlFor="register-email">
-          <span>{t('auth.register.emailLabel')}</span>
-          <input
-            id="register-email"
-            className="email_input"
-            name="email"
-            type="email"
-            dir="ltr"
-            placeholder={t('auth.register.emailPlaceholder')}
-            autoComplete="email"
-            value={form.email}
-            onChange={handleChange}
-            required
-          />
-        </label>
+        <FormInput
+          id="register-email"
+          label={t('auth.register.emailLabel')}
+          className="email_input"
+          type="email"
+          dir="ltr"
+          placeholder={t('auth.register.emailPlaceholder')}
+          autoComplete="email"
+          required
+          error={fieldError(errors.email?.message)}
+          {...register('email')}
+        />
 
-        <label className="form_field" htmlFor="register-birth-date">
-          <span>{t('auth.register.birthDateLabel')}</span>
-          <input
-            id="register-birth-date"
-            className="date_input"
-            name="birthDate"
-            type="date"
-            dir="ltr"
-            autoComplete="bday"
-            value={form.birthDate}
-            onChange={handleChange}
-            required
-          />
-        </label>
+        <FormInput
+          id="register-birth-date"
+          label={t('auth.register.birthDateLabel')}
+          className="date_input"
+          type="date"
+          dir="ltr"
+          autoComplete="bday"
+          required
+          error={fieldError(errors.birthDate?.message)}
+          {...register('birthDate')}
+        />
       </div>
 
-      <label className="agree">
-        <input type="checkbox" name="agree" checked={form.agree} onChange={handleChange} required />
+      <FormCheckbox
+        id="register-terms"
+        className="agree"
+        label={t('auth.register.agreeToTerms')}
+        required
+        error={fieldError(errors.acceptTerms?.message)}
+        {...register('acceptTerms')}
+      />
 
-        <span>{t('auth.register.agreeToTerms')}</span>
-      </label>
-
-      {error && (
+      {formError && (
         <p className="text-danger small mt-2 mb-0" role="alert">
-          {error}
+          {formError}
         </p>
       )}
 
-      <button type="submit" className="auth_btn" disabled={loading}>
+      <Button type="submit" size="lg" className="w-100" loading={loading}>
         {t('auth.register.submit')}
-      </button>
+      </Button>
     </form>
   );
 }

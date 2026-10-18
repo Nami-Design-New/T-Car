@@ -1,5 +1,18 @@
 @use 'tokens/tokens' as *;
 
+.otp-field {
+  display: flex;
+  flex-direction: column;
+}
+
+// Sits 8px under the digits and keeps their 24px spacing below.
+.otp-field__error {
+  margin: -16px 0 16px;
+  color: $ds-status-error;
+  font-size: 13px;
+  text-align: center;
+}
+
 .otp-inputs {
   display: flex;
   gap: 12px;

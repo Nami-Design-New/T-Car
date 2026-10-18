@@ -36,6 +36,17 @@ describe('OtpInput', () => {
     expect(screen.getAllByRole('textbox')).toHaveLength(4);
     expect(screen.getByRole('group', { name: 'Code' })).toBeInTheDocument();
   });
+
+  it('shows its error, announces it, and links it to every digit', () => {
+    render(
+      <OtpInput value="99" onChange={() => {}} length={4} ariaLabel="Code" error="Wrong code" />
+    );
+    expect(screen.getByRole('alert')).toHaveTextContent('Wrong code');
+    for (const input of screen.getAllByRole('textbox')) {
+      expect(input).toHaveAttribute('aria-invalid', 'true');
+      expect(input).toHaveAccessibleDescription('Wrong code');
+    }
+  });
 });
 
 function renderOtp(value: string, onChange: (nextValue: string) => void) {

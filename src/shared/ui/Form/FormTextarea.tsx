@@ -1,14 +1,17 @@
 'use client';
 
-import { TextareaHTMLAttributes } from 'react';
+import { Ref, TextareaHTMLAttributes } from 'react';
 import { cn } from '@/shared/lib/cn';
+import { useFieldA11y } from './useFieldA11y';
 import './Form.scss';
 
 export interface FormTextareaProps
   extends TextareaHTMLAttributes<HTMLTextAreaElement> {
   label: string;
+  /** Already translated; shown under the textarea and announced as its description. */
   error?: string;
   required?: boolean;
+  ref?: Ref<HTMLTextAreaElement>;
 }
 
 export function FormTextarea({
@@ -19,20 +22,26 @@ export function FormTextarea({
   id,
   ...props
 }: FormTextareaProps) {
+  const field = useFieldA11y({ id, error, required, describedBy: props['aria-describedby'] });
+
   return (
     <div className="form_group">
-      <label htmlFor={id} className="form_label">
+      <label htmlFor={field.id} className="form_label">
         {label}
-        {required && <span>*</span>}
+        {required && <span aria-hidden="true">*</span>}
       </label>
 
       <textarea
-        id={id}
         className={cn('form_textarea', className)}
         {...props}
+        {...field.controlProps}
       />
 
-      {error && <small className="form_error">{error}</small>}
+      {error && (
+        <small id={field.errorId} className="form_error">
+          {error}
+        </small>
+      )}
     </div>
   );
 }
