@@ -22,6 +22,18 @@ export async function getCarsForCity(_slug: string, params?: CarSearchParams): P
   return params ? filterAndSortCars(cars, params) : cars;
 }
 
+/** The mock has no city association yet, so every city groups the same cars by office. */
+export async function getOfficeCarGroupsForCity(
+  slug: string,
+  params?: CarSearchParams,
+): Promise<OfficeCarGroup[]> {
+  const [offices, cars] = await Promise.all([
+    carsApi.listOffices(),
+    getCarsForCity(slug, params),
+  ]);
+  return groupCarsByOffice(offices, cars);
+}
+
 export async function getOfferCars(): Promise<CarListing[]> {
   return selectOfferCars(await carsApi.listCars());
 }
