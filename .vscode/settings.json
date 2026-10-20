@@ -1,0 +1,11 @@
+{
+  "eslint.enable": true,
+  "eslint.run": "onType",
+  "eslint.validate": [
+    "typescript",
+    "typescriptreact",
+    "javascript",
+    "javascriptreact"
+  ],
+  "eslint.workingDirectories": [{ "mode": "auto" }]
+}
