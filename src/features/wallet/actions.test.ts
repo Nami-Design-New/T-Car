@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { BankAccount } from "@/features/bank-accounts/model";
+import type { BankAccount } from "@/features/bank-accounts";
 import type { WalletData } from "./model";
 
 const { auth } = vi.hoisted(() => ({ auth: vi.fn() }));

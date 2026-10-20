@@ -41,7 +41,6 @@ export default function BookingDetailsScreen({ booking }: Props) {
 
               {isRentalRunning(booking.status) && (
                 <BookingCountdown
-                  pickupDateTime={booking.pickupDateTime}
                   targetDateTime={booking.dropoffDateTime}
                 />
               )}

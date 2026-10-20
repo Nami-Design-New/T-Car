@@ -1,14 +1,19 @@
-'use server';
+"use server";
 
-import { auth } from '@/auth';
-import type { BankAccount } from '@/features/bank-accounts/model';
-import { AppError } from '@/shared/lib/errors';
-import { reportError } from '@/shared/lib/report';
-import { fail, ok, toActionResult, type ActionResult } from '@/shared/lib/result';
-import { toValidationError } from '@/shared/lib/validation';
-import type { ZodType } from 'zod';
-import type { WalletData, WithdrawParams } from './model';
-import { topUpSchema, withdrawSchema } from './validation';
+import { auth } from "@/auth";
+import type { BankAccount } from "@/features/bank-accounts";
+import { AppError } from "@/shared/lib/errors";
+import { reportError } from "@/shared/lib/report";
+import {
+  fail,
+  ok,
+  toActionResult,
+  type ActionResult,
+} from "@/shared/lib/result";
+import { toValidationError } from "@/shared/lib/validation";
+import type { ZodType } from "zod";
+import type { WalletData, WithdrawParams } from "./model";
+import { topUpSchema, withdrawSchema } from "./validation";
 
 function parse<T>(schema: ZodType<T>, input: unknown): T {
   const result = schema.safeParse(input);
@@ -19,7 +24,7 @@ function parse<T>(schema: ZodType<T>, input: unknown): T {
 async function run<T>(scope: string, write: () => T): Promise<ActionResult<T>> {
   try {
     const session = await auth();
-    if (!session?.user?.id) throw new AppError('unauthorized');
+    if (!session?.user?.id) throw new AppError("unauthorized");
     return toActionResult(ok(write()));
   } catch (error) {
     reportError(error, { scope });
@@ -30,9 +35,9 @@ async function run<T>(scope: string, write: () => T): Promise<ActionResult<T>> {
 /** Stateless mock transition; the real API will replace this when available. */
 export async function topUpAction(
   amount: number,
-  current: WalletData
+  current: WalletData,
 ): Promise<ActionResult<WalletData>> {
-  return run('wallet.topUp', () => {
+  return run("wallet.topUp", () => {
     const values = parse(topUpSchema, { amount });
 
     return {
@@ -44,9 +49,9 @@ export async function topUpAction(
       transactions: [
         {
           id: `action-${Date.now()}`,
-          type: 'topup',
+          type: "topup",
           amount: values.amount,
-          reference: 'ACTION',
+          reference: "ACTION",
           createdAt: new Date().toISOString(),
         },
         ...current.transactions,
@@ -58,15 +63,15 @@ export async function topUpAction(
 export async function withdrawAction(
   params: WithdrawParams,
   current: WalletData,
-  accounts: BankAccount[]
+  accounts: BankAccount[],
 ): Promise<ActionResult<WalletData>> {
-  return run('wallet.withdraw', () => {
+  return run("wallet.withdraw", () => {
     const values = parse(withdrawSchema(current.summary.withdrawable), params);
     if (!accounts.some((account) => account.id === values.bankAccountId)) {
-      throw new AppError('not_found', 'bankAccounts.notFound');
+      throw new AppError("not_found", "bankAccounts.notFound");
     }
     if (values.amount > current.summary.withdrawable) {
-      throw new AppError('conflict', 'wallet.insufficientBalance');
+      throw new AppError("conflict", "wallet.insufficientBalance");
     }
 
     return {
@@ -78,9 +83,9 @@ export async function withdrawAction(
       transactions: [
         {
           id: `action-${Date.now()}`,
-          type: 'withdraw',
+          type: "withdraw",
           amount: values.amount,
-          reference: 'ACTION',
+          reference: "ACTION",
           createdAt: new Date().toISOString(),
         },
         ...current.transactions,
