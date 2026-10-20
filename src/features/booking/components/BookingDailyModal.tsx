@@ -9,7 +9,8 @@ import { Dialog } from '@/shared/ui/Dialog';
 import type { BookingDetails } from '../model';
 import { ICONS } from '@/shared/config/assets';
 const deliveryCarIcon = ICONS.deliveryCar;
-import { MapLocationModal, type LocationData } from '@/features/rental-search';
+import { MapLocationModal } from '@/shared/ui/MapLocationModal';
+import type { LocationData } from '@/shared/lib/location';
 
 interface Props {
   open: boolean;

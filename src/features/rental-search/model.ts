@@ -3,11 +3,6 @@ export type RentalType = 'daily' | 'monthly' | 'airport' | 'station' | 'internat
 
 export type PickupType = 'delivery' | 'branch';
 
-export interface LocationData {
-  lat: number;
-  lng: number;
-  address: string;
-}
 
 export interface Branch {
   id: number;

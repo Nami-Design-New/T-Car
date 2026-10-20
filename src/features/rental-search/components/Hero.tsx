@@ -19,13 +19,17 @@ const hero1 = IMAGES.heroOne;
 const hero2 = IMAGES.heroTwo;
 const hero3 = IMAGES.heroThree;
 
+import type { LocationData } from '@/shared/lib/location';
 import RentalTabs from './RentalTabs';
 import CarFilters from '@/features/cars/components/CarFilters';
 import type { CarBrand } from '@/features/cars/model';
 import { applyCarFilterDraft, type CarFilterDraft } from '@/features/cars/searchParams';
 
 const PickupTypeModal = dynamic(() => import('./PickupTypeModal'), { ssr: false });
-const MapLocationModal = dynamic(() => import('./MapLocationModal'), { ssr: false });
+const MapLocationModal = dynamic(
+  () => import('@/shared/ui/MapLocationModal').then(({ MapLocationModal }) => MapLocationModal),
+  { ssr: false }
+);
 const BranchModal = dynamic(() => import('./BranchModal'), { ssr: false });
 const AirportModal = dynamic(() => import('./AirportModal'), { ssr: false });
 const StationModal = dynamic(() => import('./StationModal'), { ssr: false });
@@ -37,7 +41,6 @@ import type {
   Branch,
   Airport,
   Station,
-  LocationData,
   Country,
   RentalSearchOptions,
 } from '../model';

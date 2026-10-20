@@ -5,9 +5,10 @@ import { useLocale, useTranslations } from 'next-intl';
 import { GoogleMap, Marker, useJsApiLoader } from '@react-google-maps/api';
 import { FiSearch, FiMapPin, FiNavigation, FiX, FiLoader } from 'react-icons/fi';
 import { Dialog } from '@/shared/ui/Dialog';
-import type { LocationData } from '../model';
+import type { LocationData } from '@/shared/lib/location';
+import './MapLocationModal.scss';
 
-interface Props {
+export interface MapLocationModalProps {
   open: boolean;
   onClose: () => void;
   onConfirm: (location: LocationData) => void;
@@ -34,7 +35,7 @@ export default function MapLocationModal({
   onConfirm,
   title,
   initialLocation,
-}: Props) {
+}: MapLocationModalProps) {
   const t = useTranslations('rentalSearch.map');
   const [position, setPosition] = useState(defaultCenter);
   const [address, setAddress] = useState('');

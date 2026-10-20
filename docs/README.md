@@ -222,7 +222,7 @@ merged or pushed yet.
 
 ### Features
 
-**Phase 1 import-boundary remediation (2026-10-20):** The account shell now receives points data from its App Router section layout and imports the summary card through `features/points/index.ts`. The root layout now supplies the authenticated notifications count to the layout feature. The initial lint audit is reduced from nine to six boundary errors; remaining violations are in `LocationPicker`, rental-search, and wallet.
+**Phase 1 import-boundary remediation (2026-10-20):** The account shell now receives points data from its App Router section layout and imports the summary card through `features/points/index.ts`. The root layout now supplies the authenticated notifications count to the layout feature. `MapLocationModal` and `LocationData` now live in `shared/ui` and `shared/lib`, respectively, with every caller using that shared API. The initial lint audit is reduced from nine to five boundary errors; remaining violations are in rental-search and wallet.
 
 
 | Feature | Moved to `features/` | Data behind queries / api | Actions return `Result` | Remaining |

@@ -1,4 +1,4 @@
-import type { LocationData } from '@/features/rental-search';
+import type { LocationData } from '@/shared/lib/location';
 
 export type PaymentMethod = 'wallet' | 'visa' | 'tabby' | 'tamara';
 
