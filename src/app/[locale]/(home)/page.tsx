@@ -1,7 +1,7 @@
 import { Hero } from '@/features/rental-search';
 import { getRentalSearchOptions } from '@/features/rental-search/queries';
-import { CarsRail, getOffices } from '@/features/cars';
-import { getCarBrands, getHandpickedCars, getOfferCars } from '@/features/cars/queries';
+import { CarsRail } from '@/features/cars';
+import { getCarBrands, getHandpickedCars, getOfferCars, getOffices } from '@/features/cars/queries';
 import { PopularCities } from '@/features/cities';
 import { getCities } from '@/features/cities/queries';
 import { CTA, Contact, DownloadApp, FAQ, Partners, WhyChooseUs } from '@/features/home';

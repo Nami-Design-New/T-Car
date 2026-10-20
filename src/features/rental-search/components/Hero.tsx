@@ -21,9 +21,12 @@ const hero3 = IMAGES.heroThree;
 
 import type { LocationData } from '@/shared/lib/location';
 import RentalTabs from './RentalTabs';
-import CarFilters from '@/features/cars/components/CarFilters';
-import type { CarBrand } from '@/features/cars/model';
-import { applyCarFilterDraft, type CarFilterDraft } from '@/features/cars/searchParams';
+import {
+  applyCarFilterDraft,
+  CarFilters,
+  type CarBrand,
+  type CarFilterDraft,
+} from '@/features/cars';
 
 const PickupTypeModal = dynamic(() => import('./PickupTypeModal'), { ssr: false });
 const MapLocationModal = dynamic(
