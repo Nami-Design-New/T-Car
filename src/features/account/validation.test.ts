@@ -9,6 +9,31 @@ import {
   verifyPhoneSchema,
 } from "./validation";
 
+describe("profile full-name rules", () => {
+  it("accepts a trimmed non-Latin full name", () => {
+    expect(
+      profileFormSchema.parse({
+        fullName: " أحمد عبدالله ",
+        email: "ahmed@domain.com",
+        birthDate: "1993-03-15",
+      }).fullName,
+    ).toBe("أحمد عبدالله");
+  });
+
+  it.each([
+    ["one character", "A", "account.nameRequired"],
+    ["101 characters", "A".repeat(101), "account.nameRequired"],
+    ["digits", "Ahmed 123", "account.nameRequired"],
+    ["punctuation", "Ahmed-Abdullah", "account.nameRequired"],
+  ])("rejects %s", (_, fullName, error) => {
+    expect(
+      fieldErrors(profileFormSchema.safeParse({ ...validProfile, fullName })),
+    ).toEqual({
+      fullName: error,
+    });
+  });
+});
+
 const validProfile = {
   fullName: "Ahmed Abdullah",
   email: "ahmed@domain.com",

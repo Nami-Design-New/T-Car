@@ -1,39 +1,53 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { toValidationError } from '@/shared/lib/validation';
-import {
-  otpCodeSchema,
-  phoneSchema,
-  registerFormSchema,
-  registrationSchema,
-  verifyOtpSchema,
-} from './validation';
+import { otpCodeSchema, phoneSchema, registerFormSchema, registrationSchema, verifyOtpSchema } from './validation';
+
+describe('registration full-name rules', () => {
+  it('accepts a trimmed non-Latin full name', () => {
+    expect(
+      registerFormSchema.parse({
+        fullName: ' أحمد عبدالله ',
+        email: 'ahmed@domain.com',
+        birthDate: '1990-05-17',
+        acceptTerms: true
+      }).fullName
+    ).toBe('أحمد عبدالله');
+  });
+
+  it.each([
+    ['one character', 'A', 'auth.nameRequired'],
+    ['101 characters', 'A'.repeat(101), 'auth.nameRequired'],
+    ['digits', 'Ahmed 123', 'auth.nameRequired'],
+    ['punctuation', 'Ahmed-Abdullah', 'auth.nameRequired']
+  ])('rejects %s', (_, fullName, error) => {
+    expect(fieldErrors(registerFormSchema.safeParse({ ...validProfile, fullName }))).toEqual({
+      fullName: error
+    });
+  });
+});
 
 const validProfile = {
   fullName: 'Ahmed Abdullah',
   email: 'ahmed@domain.com',
   birthDate: '1990-05-17',
-  acceptTerms: true,
+  acceptTerms: true
 };
 
 /** The `errors.*` key per field, as the Server Action would return it. */
-function fieldErrors(result: {
-  success: boolean;
-  error?: Parameters<typeof toValidationError>[0];
-}) {
+function fieldErrors(result: { success: boolean; error?: Parameters<typeof toValidationError>[0] }) {
   if (result.success || !result.error) return undefined;
   return toValidationError(result.error).fieldErrors;
 }
 
 describe('phoneSchema', () => {
-  it.each(['966500000000', '+966500000000', '+966 50 000 0000', ' +1 (415) 555-0100 '])(
-    'accepts %s',
-    (phone) => {
-      expect(phoneSchema.safeParse({ phone }).success).toBe(true);
-    }
-  );
+  it.each(['966500000000', '+966500000000', '+966 50 000 0000', ' +1 (415) 555-0100 '])('accepts %s', (phone) => {
+    expect(phoneSchema.safeParse({ phone }).success).toBe(true);
+  });
 
   it('trims the phone and keeps its format otherwise', () => {
-    expect(phoneSchema.parse({ phone: ' +966 500000000 ' })).toEqual({ phone: '+966 500000000' });
+    expect(phoneSchema.parse({ phone: ' +966 500000000 ' })).toEqual({
+      phone: '+966 500000000'
+    });
   });
 
   it.each([
@@ -41,9 +55,11 @@ describe('phoneSchema', () => {
     ['8 digits', '96650000'],
     ['16 digits', '+9665000000000000'],
     ['letters', '+96650000000a'],
-    ['empty', ''],
+    ['empty', '']
   ])('rejects %s', (_, phone) => {
-    expect(fieldErrors(phoneSchema.safeParse({ phone }))).toEqual({ phone: 'auth.invalidPhone' });
+    expect(fieldErrors(phoneSchema.safeParse({ phone }))).toEqual({
+      phone: 'auth.invalidPhone'
+    });
   });
 
   it('accepts 9 and 15 digits, the bounds', () => {
@@ -53,7 +69,7 @@ describe('phoneSchema', () => {
 
   it('rejects a value that is not a string with the same key', () => {
     expect(fieldErrors(phoneSchema.safeParse({ phone: 966500000000 }))).toEqual({
-      phone: 'auth.invalidPhone',
+      phone: 'auth.invalidPhone'
     });
   });
 });
@@ -64,12 +80,14 @@ describe('otpCodeSchema', () => {
   });
 
   it.each(['123', '12345', '12a4', ' 1234', ''])('rejects %j', (code) => {
-    expect(fieldErrors(otpCodeSchema.safeParse({ code }))).toEqual({ code: 'auth.invalidCode' });
+    expect(fieldErrors(otpCodeSchema.safeParse({ code }))).toEqual({
+      code: 'auth.invalidCode'
+    });
   });
 
   it('checks the phone too when verifying', () => {
     expect(fieldErrors(verifyOtpSchema.safeParse({ phone: '+966', code: '1234' }))).toEqual({
-      phone: 'auth.invalidPhone',
+      phone: 'auth.invalidPhone'
     });
   });
 });
@@ -84,7 +102,7 @@ describe('registerFormSchema', () => {
       registerFormSchema.parse({
         ...validProfile,
         fullName: '  Ahmed Abdullah ',
-        email: ' ahmed@domain.com ',
+        email: ' ahmed@domain.com '
       })
     ).toEqual(validProfile);
   });
@@ -96,43 +114,50 @@ describe('registerFormSchema', () => {
           fullName: '   ',
           email: '',
           birthDate: '',
-          acceptTerms: false,
+          acceptTerms: false
         })
       )
     ).toEqual({
       fullName: 'auth.nameRequired',
       email: 'auth.emailRequired',
       birthDate: 'auth.birthDateRequired',
-      acceptTerms: 'auth.termsRequired',
+      acceptTerms: 'auth.termsRequired'
     });
   });
 
   it('rejects a malformed email', () => {
-    expect(
-      fieldErrors(registerFormSchema.safeParse({ ...validProfile, email: 'ahmed@' }))
-    ).toEqual({ email: 'auth.invalidEmail' });
+    expect(fieldErrors(registerFormSchema.safeParse({ ...validProfile, email: 'ahmed@' }))).toEqual({
+      email: 'auth.invalidEmail'
+    });
   });
 
   it.each([
     ['an impossible date', '2001-02-30'],
     ['another format', '17/05/1990'],
-    ['a date in the future', '2026-10-19'],
+    ['a date in the future', '2026-10-19']
   ])('rejects %s as a birth date', (_, birthDate) => {
-    vi.useFakeTimers({ now: new Date('2026-10-18T12:00:00Z'), toFake: ['Date'] });
+    vi.useFakeTimers({
+      now: new Date('2026-10-18T12:00:00Z'),
+      toFake: ['Date']
+    });
     expect(fieldErrors(registerFormSchema.safeParse({ ...validProfile, birthDate }))).toEqual({
-      birthDate: 'auth.invalidBirthDate',
+      birthDate: 'auth.invalidBirthDate'
     });
   });
 
   it('accepts today as a birth date (no minimum age is decided yet)', () => {
-    vi.useFakeTimers({ now: new Date('2026-10-18T12:00:00Z'), toFake: ['Date'] });
-    expect(
-      registerFormSchema.safeParse({ ...validProfile, birthDate: '2026-10-18' }).success
-    ).toBe(true);
+    vi.useFakeTimers({
+      now: new Date('2026-10-18T12:00:00Z'),
+      toFake: ['Date']
+    });
+    expect(registerFormSchema.safeParse({ ...validProfile, birthDate: '2026-10-18' }).success).toBe(true);
   });
 
   it('needs the phone and code as well on the server', () => {
     const errors = fieldErrors(registrationSchema.safeParse(validProfile));
-    expect(errors).toEqual({ phone: 'auth.invalidPhone', code: 'auth.invalidCode' });
+    expect(errors).toEqual({
+      phone: 'auth.invalidPhone',
+      code: 'auth.invalidCode'
+    });
   });
 });

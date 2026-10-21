@@ -12,6 +12,14 @@ import { AppError } from './errors';
  */
 const PHONE_DIGITS = { min: 9, max: 15 };
 
+export const FULL_NAME_MIN_LENGTH = 2;
+export const FULL_NAME_MAX_LENGTH = 100;
+
+/** Unicode letters and spaces are allowed; punctuation and digits are not. */
+export function isFullName(value: string) {
+  return /^[\p{L}\p{M}]+(?:[ \u00a0]+[\p{L}\p{M}]+)*$/u.test(value);
+}
+
 export function isPhoneNumber(value: string) {
   if (!/^\+?[\d\s()-]+$/.test(value)) return false;
   const digits = value.replace(/\D/g, '').length;
