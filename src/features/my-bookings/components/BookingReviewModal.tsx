@@ -1,13 +1,17 @@
 'use client';
 
 import { useState } from 'react';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
 import { useTranslations } from 'next-intl';
 import { FiStar } from 'react-icons/fi';
+import { Button } from '@/shared/ui/Button';
 import { Dialog } from '@/shared/ui/Dialog';
-import { useErrorMessage } from '@/shared/hooks/useErrorMessage';
-import type { AppError } from '@/shared/lib/errors';
+import { FormTextarea } from '@/shared/ui/Form';
+import { useErrorMessage, useFieldErrorMessage } from '@/shared/hooks/useErrorMessage';
 import type { Result } from '@/shared/lib/result';
 import type { BookingReviewInput } from '../model';
+import { bookingReviewSchema, type BookingReviewFormValues } from '../validation';
 
 interface Props {
   submitting?: boolean;
@@ -17,66 +21,107 @@ interface Props {
 
 export default function BookingReviewModal({ submitting = false, onSubmit, onClose }: Props) {
   const t = useTranslations('myBookings.review');
-  const [rating, setRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
-  const [review, setReview] = useState('');
-  const [error, setError] = useState<AppError | null>(null);
   const errorMessage = useErrorMessage();
+  const fieldError = useFieldErrorMessage();
+  const {
+    register,
+    handleSubmit,
+    setError,
+    clearErrors,
+    setValue,
+    watch,
+    formState: { errors },
+  } = useForm<BookingReviewFormValues>({
+    resolver: zodResolver(bookingReviewSchema),
+    mode: 'onBlur',
+    reValidateMode: 'onChange',
+    defaultValues: { rating: 0, review: '' },
+  });
+  const rating = watch('rating');
 
-  async function handleSubmit() {
-    if (!rating || submitting) return;
+  const submit = handleSubmit(async (values) => {
+    if (submitting) return;
 
-    setError(null);
-    const result = await onSubmit({ rating, review });
-    // On failure the dialog stays open and keeps what the user typed.
-    if (result.ok) onClose();
-    else setError(result.error);
-  }
+    const result = await onSubmit(values);
+    if (result.ok) {
+      onClose();
+      return;
+    }
+
+    for (const [field, message] of Object.entries(result.error.fieldErrors ?? {})) {
+      if (field === 'rating' || field === 'review') {
+        setError(field, { type: 'server', message });
+      }
+    }
+    if (!result.error.fieldErrors || Object.keys(result.error.fieldErrors).length === 0) {
+      setError('root.server', { type: 'server', message: errorMessage(result.error) });
+    }
+  });
 
   return (
     <Dialog open onClose={onClose} label={t('dialogLabel')}>
-      <div className="review-modal" onClick={(e) => e.stopPropagation()}>
+      <form className="review-modal" onSubmit={submit} noValidate onClick={(e) => e.stopPropagation()}>
         <Dialog.Title>{t('title')}</Dialog.Title>
         <Dialog.Close className="close_btn" />
         <p className="review-modal-subtitle">{t('subtitle')}</p>
 
-        <div className="review-modal-stars">
+        <div
+          className="review-modal-stars"
+          role="radiogroup"
+          aria-label={t('ratingLabel')}
+          aria-invalid={Boolean(errors.rating)}
+          aria-describedby={errors.rating ? 'review-rating-error' : undefined}
+        >
           {[1, 2, 3, 4, 5].map((star) => (
             <button
               key={star}
               type="button"
+              role="radio"
               className={star <= (hoverRating || rating) ? 'filled' : ''}
+              aria-checked={rating === star}
               onMouseEnter={() => setHoverRating(star)}
               onMouseLeave={() => setHoverRating(0)}
-              onClick={() => setRating(star)}
+              onClick={() => {
+                setValue('rating', star, { shouldDirty: true, shouldValidate: true });
+                clearErrors();
+              }}
               aria-label={t('stars', { count: star })}
             >
               <FiStar />
             </button>
           ))}
         </div>
-
-        <textarea
-          placeholder={t('placeholder')}
-          value={review}
-          onChange={(e) => setReview(e.target.value)}
-          rows={4}
-        />
-
-        {error && (
-          <p className="text-danger small mb-2" role="alert">
-            {errorMessage(error)}
+        {errors.rating && (
+          <p id="review-rating-error" className="form_error" role="alert">
+            {fieldError(errors.rating.message)}
           </p>
         )}
 
-        <button
+        <FormTextarea
+          id="booking-review"
+          label={t('reviewLabel')}
+          placeholder={t('placeholder')}
+          rows={4}
+          error={fieldError(errors.review?.message)}
+          {...register('review')}
+        />
+
+        {errors.root?.server?.message && (
+          <p className="text-danger small mb-2" role="alert">
+            {errors.root.server.message}
+          </p>
+        )}
+
+        <Button
+          type="submit"
           className="review-modal-submit"
-          onClick={handleSubmit}
-          disabled={!rating || submitting}
+          loading={submitting}
+          disabled={!rating}
         >
           {submitting ? t('sending') : t('submit')}
-        </button>
-      </div>
+        </Button>
+      </form>
     </Dialog>
   );
 }

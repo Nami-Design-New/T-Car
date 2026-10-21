@@ -7,7 +7,8 @@ import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import { FiChevronRight, FiChevronLeft, FiClock, FiMapPin } from 'react-icons/fi';
 import { formatCurrency } from '@/shared/lib/format';
-import { useFieldErrorMessage } from '@/shared/hooks/useErrorMessage';
+import { useErrorMessage, useFieldErrorMessage } from '@/shared/hooks/useErrorMessage';
+import type { Result } from '@/shared/lib/result';
 import { Button } from '@/shared/ui/Button';
 import { Dialog } from '@/shared/ui/Dialog';
 import type { BookingDetails } from '../model';
@@ -21,9 +22,10 @@ interface Props {
   open: boolean;
   onClose: () => void;
   pricePerDay: number;
-  onConfirm: (details: BookingDetails) => void;
+  onConfirm: (details: BookingDetails) => void | Result<void> | Promise<void | Result<void>>;
   initialDetails?: BookingDetails | null;
   mode?: 'create' | 'edit';
+  loading?: boolean;
 }
 
 interface DateRange {
@@ -57,17 +59,20 @@ export default function BookingDailyModal({
   onConfirm,
   initialDetails = null,
   mode = 'create',
+  loading = false,
 }: Props) {
   const t = useTranslations('booking.daily');
   const [cursor, setCursor] = useState<Date>(new Date());
   const [range, setRange] = useState<DateRange>({ start: null, end: null });
   const [mapField, setMapField] = useState<MapField | null>(null);
+  const errorMessage = useErrorMessage();
   const fieldError = useFieldErrorMessage();
   const {
     register,
     handleSubmit,
     reset,
     setValue,
+    setError,
     watch,
     formState: { errors },
   } = useForm<BookingDetailsFormValues, unknown, BookingDetails>({
@@ -168,6 +173,11 @@ export default function BookingDailyModal({
     setRange(nextRange);
     setValue('startDate', nextRange.start, { shouldValidate: true });
     setValue('endDate', nextRange.end, { shouldValidate: true });
+    setValue(
+      'days',
+      Math.max(1, Math.round((nextRange.end.getTime() - nextRange.start.getTime()) / 86400000)),
+      { shouldValidate: true },
+    );
   };
 
   const totalDays =
@@ -193,8 +203,8 @@ export default function BookingDailyModal({
     setMapField(null);
   };
 
-  const submit = handleSubmit((details) => {
-    onConfirm({
+  const submit = handleSubmit(async (details) => {
+    const result = await onConfirm({
       ...details,
       days: totalDays,
       pricePerDay,
@@ -202,6 +212,17 @@ export default function BookingDailyModal({
       vat,
       total,
     });
+
+    if (!result || result.ok) return;
+
+    for (const [field, message] of Object.entries(result.error.fieldErrors ?? {})) {
+      if (field in details) {
+        setError(field as keyof BookingDetailsFormValues, { type: 'server', message });
+      }
+    }
+    if (!result.error.fieldErrors || Object.keys(result.error.fieldErrors).length === 0) {
+      setError('root.server', { type: 'server', message: errorMessage(result.error) });
+    }
   });
 
   return (
@@ -420,11 +441,18 @@ export default function BookingDailyModal({
           )}
         </div>
 
+        {errors.root?.server?.message && (
+          <p className="form_error" role="alert">
+            {errors.root.server.message}
+          </p>
+        )}
+
         <div className="booking_modal_footer">
           <Button
             type="submit"
             className="confirm_booking_btn"
             disabled={!range.start || !range.end}
+            loading={loading}
           >
             {mode === 'edit' ? t('submitEdit') : t('continue')}
           </Button>

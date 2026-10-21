@@ -5,3 +5,9 @@ export type {
   BookingDetailsView,
   BookingEditRequest,
   BookingReviewInput, BookingStatus, BookingTab, UserBooking } from './model';
+export { bookingEditSchema, bookingReviewSchema, extendBookingSchema } from './validation';
+export type {
+  BookingEditFormValues,
+  BookingReviewFormValues,
+  ExtendBookingFormValues,
+} from './validation';
