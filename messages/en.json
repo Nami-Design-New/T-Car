@@ -509,7 +509,8 @@
     "bankAccounts": {
       "notFound": "Bank account not found.",
       "unknownBank": "Choose a bank from the list.",
-      "ibanRequired": "IBAN is required."
+      "ibanRequired": "IBAN is required.",
+      "invalidIban": "Enter a valid Saudi IBAN."
     },
     "bookings": {
       "notFound": "Booking not found.",

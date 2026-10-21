@@ -509,7 +509,8 @@
     "bankAccounts": {
       "notFound": "الحساب البنكي غير موجود.",
       "unknownBank": "اختر بنكًا من القائمة.",
-      "ibanRequired": "رقم الآيبان مطلوب."
+      "ibanRequired": "رقم الآيبان مطلوب.",
+      "invalidIban": "أدخل رقم آيبان سعودي صالح."
     },
     "bookings": {
       "notFound": "الحجز غير موجود.",

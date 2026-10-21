@@ -21,12 +21,6 @@ type BankAccountsFlow =
   | { step: 'confirm-delete'; account: BankAccount }
   | { step: 'result'; kind: ResultKind; error?: AppError }; // no error means success
 
-const RESULT_KEYS: Record<ResultKind, { failure: string }> = {
-  added: { failure: 'addedFailure' },
-  updated: { failure: 'updatedFailure' },
-  deleted: { failure: 'deletedFailure' },
-};
-
 export default function BankAccountsSection() {
   const t = useTranslations('bankAccounts');
   const { accounts, banks, loading, error, reload, submitting, add, update, remove } =
@@ -36,14 +30,19 @@ export default function BankAccountsSection() {
 
   const close = useCallback(() => setFlow({ step: 'idle' }), []);
 
-  const handleSubmit = async (payload: BankAccountPayload) => {
+  /** Keeps the form open on errors so RHF can associate them with the entered fields. */
+  const handleSubmit = async (payload: BankAccountPayload): Promise<AppError | undefined> => {
     if (flow.step === 'add') {
       const result = await add(payload);
-      setFlow({ step: 'result', kind: 'added', error: result.ok ? undefined : result.error });
+      if (!result.ok) return result.error;
+      setFlow({ step: 'result', kind: 'added' });
     } else if (flow.step === 'edit') {
       const result = await update(flow.account.id, payload);
-      setFlow({ step: 'result', kind: 'updated', error: result.ok ? undefined : result.error });
+      if (!result.ok) return result.error;
+      setFlow({ step: 'result', kind: 'updated' });
     }
+
+    return undefined;
   };
 
   const handleDelete = async () => {

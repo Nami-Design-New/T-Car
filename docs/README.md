@@ -227,7 +227,7 @@ merged or pushed yet.
 
 | Feature | Moved to `features/` | Data behind queries / api | Actions return `Result` | Remaining |
 | ------- | :---: | :---: | :---: | --------- |
-| `wallet`, `bank-accounts` | Yes | Client reads over `*.api.ts`; writes through Server Actions | Yes | Fractions 1–3 complete: wallet and bank-account form, confirmation, and result states use shared dialogs. Left: user-scoped reads/API and forms (doc 3 step 7). Form validation fraction 4 adds RHF + Zod amount rules, re-parsed by the actions, for top-up and withdrawal |
+| `wallet`, `bank-accounts` | Yes | Client reads over `*.api.ts`; writes through Server Actions | Yes | Fractions 1–3 complete: wallet and bank-account form, confirmation, and result states use shared dialogs. Left: user-scoped reads/API and forms (doc 3 step 7). Form validation fractions 4–5 add RHF + Zod amount and bank-account rules, re-parsed by the actions |
 | `my-bookings` | Yes | Yes | Yes (Server Actions) | Fraction 4 complete: extend, cancel, review, and result dialogs use shared Dialog primitives. Left: `router.refresh()` after an action once the API keeps state |
 | `car-details`, `booking` | Yes | Yes | Yes (checkout) | Fraction 5 complete: daily booking, confirmation, payment, and booking result dialogs use shared primitives. Left: keep a failed edit request open inside `BookingDailyModal` and migrate remaining booking-flow details |
 | `cars`, `cities` | Yes | Yes | n/a | Fraction 6 complete: search and price URL state is shared by `CarFilters` and `CityFilters`; sort and hero search context remain URL-backed. Brand options come from `getCarBrands()` (mocked `carsApi.listBrands()`). Left: consolidate the remaining option data (companies, types, services; doc 4) |
@@ -242,10 +242,9 @@ extensions over 30 days, and so on) are documented in each `services/mocks/*.ts`
 
 ### What remains
 
-- Form validation ([doc 9](09-form-validation.md)), 4 of 8 fractions done, one
+- Form validation ([doc 9](09-form-validation.md)), 5 of 8 fractions done, one
   commit each: (1) ✅ auth sign-in and registration; (2) ✅ profile save and
-  change/verify phone; (3) license upload, complete (JPG/PNG, 5 MB); (4) wallet top-up / withdrawal, complete; (5) bank-account
-  add / edit; (6) contact message (moves its fields to native `required` with
+  change/verify phone; (3) license upload, complete (JPG/PNG, 5 MB); (4) wallet top-up / withdrawal, complete; (5) bank-account add / edit, complete; (6) contact message (moves its fields to native `required` with
   `noValidate`); (7) daily booking and checkout terms / payment; (8) booking
   review, extend, and edit. Join-us stays blocked until it has a write contract.
 - Form validation fraction 1 (auth):
@@ -317,6 +316,7 @@ extensions over 30 days, and so on) are documented in each `services/mocks/*.ts`
   calling the mock service, which rechecks declared type and size; actual image
   inspection, scanning, and retention remain backend contract follow-ups.
 - Form validation fraction 4 (wallet top-up and withdrawal): the wallet validation module defines the shared finite amount schemas. The amount sheet uses RHF + Zod and keeps returned errors inline with its value. Both Server Actions re-parse the schema; top-up uses the current mock maximum (10,000 SAR), and withdrawal uses the current withdrawable balance. Bank-account ownership remains an action check. The mock/API contract still owns daily limits and a future persisted balance check.
+- Form validation fraction 5 (bank-account add / edit): `features/bank-accounts/validation.ts` normalizes Saudi IBAN input (spaces removed, upper-cased) and checks the `SA` prefix, two check digits, and 24-character length. The form uses RHF + Zod with the shared `FormInput` and `Button`; its custom bank picker maps local and returned field errors accessibly. Add and edit actions re-parse the payload before applying the stateless mock transition. Unknown bank availability remains an action check, while ownership, duplicates, and checksum verification remain backend contract follow-ups. A rejected submit remains open with its selected bank and IBAN.
 - Shared `Button` adoption (decision 2026-10-18): every text action button uses
   `shared/ui/Button` (with `loading` for pending submits) for a consistent look
   and pending state. Icon-only, tab, chip, toggle, and filter-option buttons are
