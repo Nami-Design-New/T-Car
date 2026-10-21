@@ -1,9 +1,14 @@
-import type { Metadata } from 'next';
-import { notFound } from 'next/navigation';
-import { CarCard, CityFilters, SortBar, parseCarSearchParams } from '@/features/cars';
-import { getCarBrands, getCarsForCity } from '@/features/cars/queries';
-import { CityHero } from '@/features/cities';
-import { getCityDetails } from '@/features/cities/queries';
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+import {
+  CarOfficeRow,
+  CarFilters,
+  SortBar,
+  parseCarSearchParams,
+} from "@/features/cars";
+import { getCarBrands, getOfficeCarGroupsForCity } from "@/features/cars/queries";
+import { CityHero } from "@/features/cities";
+import { getCityDetails } from "@/features/cities/queries";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -22,9 +27,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function CityDetailsPage({ params, searchParams }: Props) {
   const { slug } = await params;
   const filters = parseCarSearchParams(await searchParams);
-  const [city, cars, brands] = await Promise.all([
+  const [city, officeGroups, brands] = await Promise.all([
     getCityDetails(slug),
-    getCarsForCity(slug, filters),
+    getOfficeCarGroupsForCity(slug, filters),
     getCarBrands(),
   ]);
   if (!city) notFound();
@@ -35,14 +40,14 @@ export default async function CityDetailsPage({ params, searchParams }: Props) {
 
       <section className="section city-listings">
         <div className="container-tcar">
-          <SortBar resultsCount={cars.length} value={filters.sort} />
+          {/* <SortBar resultsCount={officeGroups.reduce((count, group) => count + group.cars.length)} value={filters.sort} /> */}
 
           <div className="city-listings-grid">
-            <CityFilters brands={brands} />
+            <CarFilters brands={brands} />
 
-            <div className="city-cars-grid">
-              {cars.map((car) => (
-                <CarCard key={car.id} car={car} />
+            <div className="office-rows">
+              {officeGroups.map(({ office, cars }) => (
+                <CarOfficeRow key={office.id} office={office} cars={cars} />
               ))}
             </div>
           </div>

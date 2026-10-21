@@ -1,14 +1,14 @@
-'use client';
+"use client";
 
-import Image from 'next/image';
-import { useTranslations } from 'next-intl';
-import { Dialog } from '@/shared/ui/Dialog';
+import Image from "next/image";
+import { useTranslations } from "next-intl";
+import { Dialog } from "@/shared/ui/Dialog";
 
-import { ICONS } from '@/shared/config/assets';
+import { ICONS } from "@/shared/config/assets";
 const deliveryImg = ICONS.deliveryCar;
 const branchImg = ICONS.branchCar;
-import type { PickupType } from '../model';
-import './PickupTypeModal.scss';
+import type { PickupType } from "../model";
+import "./PickupTypeModal.scss";
 
 interface Props {
   open: boolean;
@@ -17,31 +17,31 @@ interface Props {
 }
 
 export default function PickupTypeModal({ open, onClose, onSelect }: Props) {
-  const t = useTranslations('rentalSearch.pickup');
+  const t = useTranslations("rentalSearch.pickup");
 
   return (
     <Dialog open={open} onClose={onClose} size="lg" className="pickup_modal">
       <Dialog.Close className="close_btn" />
 
       <div className="modal_header">
-        <Dialog.Title>{t('title')}</Dialog.Title>
+        <Dialog.Title>{t("title")}</Dialog.Title>
       </div>
 
       <div className="pickup_cards">
-        <button className="pickup_card" onClick={() => onSelect('delivery')}>
-          <Image src={deliveryImg} alt={t('delivery.title')} />
+        <button className="pickup_card" onClick={() => onSelect("delivery")}>
+          <Image src={deliveryImg} alt={t("delivery.title")} />
 
-          <h4>{t('delivery.title')}</h4>
+          <h4>{t("delivery.title")}</h4>
 
-          <p>{t('delivery.description')}</p>
+          <p>{t("delivery.description")}</p>
         </button>
 
-        <button className="pickup_card" onClick={() => onSelect('branch')}>
-          <Image src={branchImg} alt={t('branch.title')} />
+        <button className="pickup_card" onClick={() => onSelect("delivery")}>
+          <Image src={branchImg} alt={t("branch.title")} />
 
-          <h4>{t('branch.title')}</h4>
+          <h4>{t("branch.title")}</h4>
 
-          <p>{t('branch.description')}</p>
+          <p>{t("branch.description")}</p>
         </button>
       </div>
     </Dialog>
