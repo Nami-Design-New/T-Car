@@ -1,7 +1,7 @@
 # 9. Form control and validation
 
 > **Status (2026-10-21):** fractions 1 (auth sign-in and registration), 2
-> (profile save, change/verify phone), 3 (license upload), 4 (wallet top-up / withdrawal), 5 (bank-account add / edit), and 6 (contact message) are implemented;
+> (profile save, change/verify phone), 3 (license upload), 4 (wallet top-up / withdrawal), 5 (bank-account add / edit), 6 (contact message), and 7 (daily booking and checkout terms / payment) are implemented;
 > `zod` and `@hookform/resolvers` are installed. License images must declare
 > JPG or PNG and be no larger than 5 MB; the same schema runs in the client and
 > Server Action. Wallet amounts use the flow-provided minimum and maximum; the top-up maximum is the current mock contract and withdrawal rechecks the current withdrawable balance. Shared rules live in

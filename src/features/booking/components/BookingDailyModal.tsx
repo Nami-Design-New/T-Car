@@ -1,12 +1,17 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import { FiChevronRight, FiChevronLeft, FiClock, FiMapPin } from 'react-icons/fi';
 import { formatCurrency } from '@/shared/lib/format';
+import { useFieldErrorMessage } from '@/shared/hooks/useErrorMessage';
+import { Button } from '@/shared/ui/Button';
 import { Dialog } from '@/shared/ui/Dialog';
 import type { BookingDetails } from '../model';
+import { bookingDetailsSchema, TIME_SLOTS, type BookingDetailsFormValues } from '../validation';
 import { ICONS } from '@/shared/config/assets';
 const deliveryCarIcon = ICONS.deliveryCar;
 import { MapLocationModal } from '@/shared/ui/MapLocationModal';
@@ -35,7 +40,6 @@ const WEEKDAYS = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
 
 const MONTHS = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'];
 
-const TIME_SLOTS = ['8:00 AM', '9:00 AM', '10:00 AM', '11:00 AM', '12:00 PM', '1:00 PM', '2:00 PM'];
 const VAT_RATE = 0.15;
 
 function sameDay(a: Date, b: Date) {
@@ -57,35 +61,83 @@ export default function BookingDailyModal({
   const t = useTranslations('booking.daily');
   const [cursor, setCursor] = useState<Date>(new Date());
   const [range, setRange] = useState<DateRange>({ start: null, end: null });
-  const [time, setTime] = useState('9:00 AM');
-  const [notes, setNotes] = useState('');
-  const [pickupAddress, setPickupAddress] = useState('');
-  const [dropoffAddress, setDropoffAddress] = useState('');
-  const [pickupLocation, setPickupLocation] = useState<LocationData | null>(null);
-  const [dropoffLocation, setDropoffLocation] = useState<LocationData | null>(null);
   const [mapField, setMapField] = useState<MapField | null>(null);
-  // Prefill when opened in edit mode or when initialDetails provided
+  const fieldError = useFieldErrorMessage();
+  const {
+    register,
+    handleSubmit,
+    reset,
+    setValue,
+    watch,
+    formState: { errors },
+  } = useForm<BookingDetailsFormValues, unknown, BookingDetails>({
+    resolver: zodResolver(bookingDetailsSchema),
+    mode: 'onBlur',
+    reValidateMode: 'onChange',
+    defaultValues: {
+      startDate: null,
+      endDate: null,
+      time: '9:00 AM',
+      days: 1,
+      pricePerDay,
+      subtotal: 0,
+      vat: 0,
+      total: 0,
+      notes: '',
+      pickupAddress: '',
+      dropoffAddress: '',
+      pickupLocation: null,
+      dropoffLocation: null,
+    },
+  });
+  const time = watch('time');
+  const notes = watch('notes');
+  const pickupAddress = watch('pickupAddress') ?? '';
+  const dropoffAddress = watch('dropoffAddress') ?? '';
+  const pickupLocation = watch('pickupLocation') ?? null;
+  const dropoffLocation = watch('dropoffLocation') ?? null;
+  const pickupAddressField = register('pickupAddress');
+  const dropoffAddressField = register('dropoffAddress');
+  const notesField = register('notes');
+
+  // Prefill when opened in edit mode or when initialDetails provided.
   useEffect(() => {
     if (!open) return;
 
     if (initialDetails) {
-      try {
-        const start = initialDetails.startDate ? new Date(initialDetails.startDate) : new Date();
-        const end = initialDetails.endDate ? new Date(initialDetails.endDate) : null;
-
-        setCursor(start);
-        setRange({ start, end });
-
-        if (initialDetails.time) setTime(initialDetails.time);
-        if (initialDetails.notes) setNotes(initialDetails.notes || '');
-        if (initialDetails.pickupAddress) setPickupAddress(initialDetails.pickupAddress || '');
-        if (initialDetails.dropoffAddress) setDropoffAddress(initialDetails.dropoffAddress || '');
-        if (initialDetails.pickupLocation) setPickupLocation(initialDetails.pickupLocation || null);
-        if (initialDetails.dropoffLocation)
-          setDropoffLocation(initialDetails.dropoffLocation || null);
-      } catch (e) {}
+      const start = new Date(initialDetails.startDate);
+      const end = new Date(initialDetails.endDate);
+      setCursor(start);
+      setRange({ start, end });
+      reset({
+        ...initialDetails,
+        startDate: start,
+        endDate: end,
+        time: TIME_SLOTS.includes(initialDetails.time as (typeof TIME_SLOTS)[number])
+          ? (initialDetails.time as (typeof TIME_SLOTS)[number])
+          : '9:00 AM',
+        pricePerDay,
+      });
+      return;
     }
-  }, [open, initialDetails]);
+
+    reset({
+      startDate: null,
+      endDate: null,
+      time: '9:00 AM',
+      days: 1,
+      pricePerDay,
+      subtotal: 0,
+      vat: 0,
+      total: 0,
+      notes: '',
+      pickupAddress: '',
+      dropoffAddress: '',
+      pickupLocation: null,
+      dropoffLocation: null,
+    });
+    setRange({ start: null, end: null });
+  }, [open, initialDetails, pricePerDay, reset]);
 
   const year = cursor.getFullYear();
   const month = cursor.getMonth();
@@ -104,14 +156,18 @@ export default function BookingDailyModal({
   const handlePick = (day: Date) => {
     if (!range.start || range.end) {
       setRange({ start: day, end: null });
+      setValue('startDate', day, { shouldValidate: true });
+      setValue('endDate', null, { shouldValidate: true });
       return;
     }
 
-    if (day < range.start) {
-      setRange({ start: day, end: range.start });
-    } else {
-      setRange({ start: range.start, end: day });
-    }
+    const nextRange =
+      day < range.start
+        ? { start: day, end: range.start }
+        : { start: range.start, end: day };
+    setRange(nextRange);
+    setValue('startDate', nextRange.start, { shouldValidate: true });
+    setValue('endDate', nextRange.end, { shouldValidate: true });
   };
 
   const totalDays =
@@ -127,35 +183,26 @@ export default function BookingDailyModal({
     const selectedLocation = { ...location, address };
 
     if (mapField === 'pickup') {
-      setPickupAddress(address);
-      setPickupLocation(selectedLocation);
+      setValue('pickupAddress', address, { shouldValidate: true });
+      setValue('pickupLocation', selectedLocation, { shouldValidate: true });
     } else if (mapField === 'dropoff') {
-      setDropoffAddress(address);
-      setDropoffLocation(selectedLocation);
+      setValue('dropoffAddress', address, { shouldValidate: true });
+      setValue('dropoffLocation', selectedLocation, { shouldValidate: true });
     }
 
     setMapField(null);
   };
 
-  const handleConfirmClick = () => {
-    if (!range.start || !range.end) return;
-
+  const submit = handleSubmit((details) => {
     onConfirm({
-      startDate: range.start,
-      endDate: range.end,
-      time,
-      notes,
+      ...details,
       days: totalDays,
       pricePerDay,
       subtotal,
       vat,
       total,
-      pickupAddress,
-      dropoffAddress,
-      pickupLocation,
-      dropoffLocation,
     });
-  };
+  });
 
   return (
     <Dialog
@@ -169,7 +216,7 @@ export default function BookingDailyModal({
         <Dialog.Title>{mode === 'edit' ? t('editBooking') : t('newBooking')}</Dialog.Title>
         <Dialog.Close />
       </Dialog.Header>
-      <div className="booking_modal">
+      <form className="booking_modal" onSubmit={submit} noValidate>
         <div className="booking_modal_calendar">
           <div className="calendar_header">
             <button
@@ -233,13 +280,18 @@ export default function BookingDailyModal({
                 : `${range.start.toLocaleDateString()} — ${t('chooseEndDate')}`}
             </div>
           )}
+          {(errors.startDate || errors.endDate) && (
+            <p className="form_error" role="alert">
+              {fieldError(errors.startDate?.message ?? errors.endDate?.message)}
+            </p>
+          )}
         </div>
 
         <div className="booking_field">
           <label>{t('pickupDropoffTime')}</label>
           <div className="time_select">
             <FiClock />
-            <select value={time} onChange={(e) => setTime(e.target.value)}>
+            <select {...register('time')} value={time}>
               {TIME_SLOTS.map((slot) => (
                 <option key={slot} value={slot}>
                   {slot}
@@ -247,6 +299,11 @@ export default function BookingDailyModal({
               ))}
             </select>
           </div>
+          {errors.time && (
+            <p className="form_error" role="alert">
+              {fieldError(errors.time.message)}
+            </p>
+          )}
         </div>
 
         <div className="booking_field booking_location_field">
@@ -275,17 +332,25 @@ export default function BookingDailyModal({
             </button>
           ) : (
             <input
+              {...pickupAddressField}
               id="pickup-address"
               type="text"
               placeholder={t('enterAddress')}
               value={pickupAddress}
-              onChange={(e) => {
-                setPickupAddress(e.target.value);
-                setPickupLocation(null);
+              aria-invalid={Boolean(errors.pickupAddress)}
+              aria-describedby={errors.pickupAddress ? 'pickup-address-error' : undefined}
+              onChange={(event) => {
+                setValue('pickupAddress', event.target.value, { shouldValidate: true });
+                setValue('pickupLocation', null, { shouldValidate: true });
               }}
             />
           )}
           <p>{t('distanceHint')}</p>
+          {errors.pickupAddress && (
+            <p id="pickup-address-error" className="form_error" role="alert">
+              {fieldError(errors.pickupAddress.message)}
+            </p>
+          )}
         </div>
 
         <div className="booking_field booking_location_field">
@@ -314,45 +379,62 @@ export default function BookingDailyModal({
             </button>
           ) : (
             <input
+              {...dropoffAddressField}
               id="dropoff-address"
               type="text"
               placeholder={t('enterAddress')}
               value={dropoffAddress}
-              onChange={(e) => {
-                setDropoffAddress(e.target.value);
-                setDropoffLocation(null);
+              aria-invalid={Boolean(errors.dropoffAddress)}
+              aria-describedby={errors.dropoffAddress ? 'dropoff-address-error' : undefined}
+              onChange={(event) => {
+                setValue('dropoffAddress', event.target.value, { shouldValidate: true });
+                setValue('dropoffLocation', null, { shouldValidate: true });
               }}
             />
           )}
           <p>{t('distanceHint')}</p>
+          {errors.dropoffAddress && (
+            <p id="dropoff-address-error" className="form_error" role="alert">
+              {fieldError(errors.dropoffAddress.message)}
+            </p>
+          )}
         </div>
 
         <div className="booking_field">
           <label>{t('additionalDetails')}</label>
           <textarea
+            {...notesField}
             rows={4}
             placeholder={t('notesPlaceholder')}
             value={notes}
-            onChange={(e) => setNotes(e.target.value)}
+            aria-invalid={Boolean(errors.notes)}
+            aria-describedby={errors.notes ? 'booking-notes-error' : undefined}
+            onChange={(event) =>
+              setValue('notes', event.target.value, { shouldValidate: true, shouldDirty: true })
+            }
           />
+          {errors.notes && (
+            <p id="booking-notes-error" className="form_error" role="alert">
+              {fieldError(errors.notes.message)}
+            </p>
+          )}
         </div>
 
         <div className="booking_modal_footer">
-          <button
-            type="button"
+          <Button
+            type="submit"
             className="confirm_booking_btn"
             disabled={!range.start || !range.end}
-            onClick={handleConfirmClick}
           >
             {mode === 'edit' ? t('submitEdit') : t('continue')}
-          </button>
+          </Button>
 
           <div className="booking_total">
             <span>{t('total')}</span>
             <h3>{formatCurrency(total)}</h3>
           </div>
         </div>
-      </div>
+      </form>
 
       {mapField !== null && (
         <MapLocationModal

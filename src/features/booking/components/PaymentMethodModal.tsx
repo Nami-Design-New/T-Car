@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import { RadioCards } from '@/shared/ui/RadioCards';
 import { Dialog } from '@/shared/ui/Dialog';
+import { Button } from '@/shared/ui/Button';
 import type { PaymentMethod } from '../model';
 import { ICONS, PAYMENT_ICONS } from '@/shared/config/assets';
 const walletIcon = PAYMENT_ICONS.wallet;
@@ -165,14 +166,14 @@ export default function PaymentMethodModal({
           </p>
         )}
 
-        <button
+        <Button
           type="button"
-          className="payment_confirm_btn btn btn-primary w-100 mt-3"
+          className="payment_confirm_btn w-100 mt-3"
           onClick={() => onConfirm(method)}
-          disabled={loading}
+          loading={loading}
         >
           {loading ? t('confirming') : t('confirm')}
-        </button>
+        </Button>
       </div>
     </Dialog>
   );

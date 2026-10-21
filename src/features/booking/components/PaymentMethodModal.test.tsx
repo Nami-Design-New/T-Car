@@ -26,6 +26,16 @@ describe('PaymentMethodModal', () => {
     expect(onConfirm).toHaveBeenCalledWith('tabby');
   });
 
+  it('shows the pending state on the confirm button', () => {
+    renderWithIntl(
+      <PaymentMethodModal open onClose={() => {}} onConfirm={() => {}} loading />
+    );
+
+    const button = screen.getByRole('button', { name: 'Confirming booking...' });
+    expect(button).toBeDisabled();
+    expect(button).toHaveAttribute('aria-busy', 'true');
+  });
+
   it('keeps the points switch outside the payment choice', () => {
     renderWithIntl(<PaymentMethodModal open onClose={() => {}} onConfirm={() => {}} />);
     const points = screen.getByRole('switch');

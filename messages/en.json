@@ -525,6 +525,18 @@
     },
     "booking": {
       "startInPast": "A booking cannot start in the past.",
+      "startDateRequired": "Choose a pickup date",
+      "endDateRequired": "Choose a return date",
+      "timeRequired": "Choose a pickup and drop-off time",
+      "invalidDays": "Choose a valid rental period",
+      "invalidPrice": "The booking price is invalid",
+      "invalidNotes": "Enter valid booking notes",
+      "notesTooLong": "Notes must be 500 characters or fewer",
+      "addressTooLong": "Address must be 200 characters or fewer",
+      "invalidLocation": "Choose a valid location",
+      "paymentMethodRequired": "Choose a payment method",
+      "carRequired": "Choose a car",
+      "termsRequired": "Accept the terms and conditions to continue",
       "carUnavailable": "This car is not available for that long. Choose a shorter rental or another car."
     },
     "cities": {

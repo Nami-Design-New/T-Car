@@ -23,4 +23,5 @@ export interface CreateBookingRequest {
   carId: string;
   details: BookingDetails;
   paymentMethod: PaymentMethod;
+  termsAccepted: boolean;
 }

@@ -525,6 +525,18 @@
     },
     "booking": {
       "startInPast": "لا يمكن أن يبدأ الحجز في تاريخ سابق.",
+      "startDateRequired": "اختر تاريخ الاستلام",
+      "endDateRequired": "اختر تاريخ الإرجاع",
+      "timeRequired": "اختر وقت الاستلام والتسليم",
+      "invalidDays": "اختر مدة إيجار صحيحة",
+      "invalidPrice": "سعر الحجز غير صالح",
+      "invalidNotes": "أدخل ملاحظات حجز صحيحة",
+      "notesTooLong": "يجب ألا تتجاوز الملاحظات 500 حرف",
+      "addressTooLong": "يجب ألا يتجاوز العنوان 200 حرف",
+      "invalidLocation": "اختر موقعًا صالحًا",
+      "paymentMethodRequired": "اختر طريقة دفع",
+      "carRequired": "اختر سيارة",
+      "termsRequired": "وافق على الشروط والأحكام للمتابعة",
       "carUnavailable": "السيارة غير متاحة لهذه المدة. اختر مدة أقصر أو سيارة أخرى."
     },
     "cities": {

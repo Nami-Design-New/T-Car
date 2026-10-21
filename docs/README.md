@@ -242,9 +242,9 @@ extensions over 30 days, and so on) are documented in each `services/mocks/*.ts`
 
 ### What remains
 
-- Form validation ([doc 9](09-form-validation.md)), 6 of 8 fractions done, one
+- Form validation ([doc 9](09-form-validation.md)), 7 of 8 fractions done, one
   commit each: (1) ✅ auth sign-in and registration; (2) ✅ profile save and
-  change/verify phone; (3) license upload, complete (JPG/PNG, 5 MB); (4) wallet top-up / withdrawal, complete; (5) bank-account add / edit, complete; (6) contact message, complete (RHF + Zod with server re-parse); (7) daily booking and checkout terms / payment; (8) booking
+  change/verify phone; (3) license upload, complete (JPG/PNG, 5 MB); (4) wallet top-up / withdrawal, complete; (5) bank-account add / edit, complete; (6) contact message, complete (RHF + Zod with server re-parse); (7) daily booking and checkout terms / payment, complete; (8) booking
   review, extend, and edit. Join-us stays blocked until it has a write contract.
 - Form validation fraction 1 (auth):
   `zod` 4 and `@hookform/resolvers` 5 added; `features/auth/validation.ts` holds
@@ -317,6 +317,7 @@ extensions over 30 days, and so on) are documented in each `services/mocks/*.ts`
 - Form validation fraction 4 (wallet top-up and withdrawal): the wallet validation module defines the shared finite amount schemas. The amount sheet uses RHF + Zod and keeps returned errors inline with its value. Both Server Actions re-parse the schema; top-up uses the current mock maximum (10,000 SAR), and withdrawal uses the current withdrawable balance. Bank-account ownership remains an action check. The mock/API contract still owns daily limits and a future persisted balance check.
 - Form validation fraction 5 (bank-account add / edit): `features/bank-accounts/validation.ts` normalizes Saudi IBAN input (spaces removed, upper-cased) and checks the `SA` prefix, two check digits, and 24-character length. The form uses RHF + Zod with the shared `FormInput` and `Button`; its custom bank picker maps local and returned field errors accessibly. Add and edit actions re-parse the payload before applying the stateless mock transition. Unknown bank availability remains an action check, while ownership, duplicates, and checksum verification remain backend contract follow-ups. A rejected submit remains open with its selected bank and IBAN.
 - Form validation fraction 6 (contact message): `features/home/validation.ts` trims name, email, reason, booking number, and message; accepts the supplied reason enum and treats a blank booking number as absent. The contact form uses RHF + Zod with shared controls, keyboard submission, pending state, localized field errors, and preserved values after a failed send. `sendContactMessageAction` re-parses the normalized payload before calling the mock. Booking numbers currently have a client-side 50-character bound pending the product length, moderation, and abuse/rate-limit contract.
+- Form validation fraction 7 (daily booking and checkout): `features/booking/validation.ts` validates future ordered dates, known time slots, normalized bounded notes and addresses, finite price fields, accepted payment methods, and explicit terms acceptance. `BookingDailyModal` uses RHF + Zod for calendar, time, location, and notes input; `BookingConfirmModal` blocks payment until the eligibility terms are accepted; and the booking action re-parses the request before the mock service. The 500-character notes and 200-character address bounds are provisional until the product contract sets final limits; availability, price, wallet/provider eligibility, and payment results remain server rules.
 - Shared `Button` adoption (decision 2026-10-18): every text action button uses
   `shared/ui/Button` (with `loading` for pending submits) for a consistent look
   and pending state. Icon-only, tab, chip, toggle, and filter-option buttons are
