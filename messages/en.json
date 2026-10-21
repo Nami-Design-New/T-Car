@@ -532,6 +532,13 @@
     },
     "contact": {
       "phoneRequired": "Enter a valid phone number.",
+      "nameRequired": "Enter your full name.",
+      "emailRequired": "Enter your email address.",
+      "invalidEmail": "Enter a valid email address.",
+      "reasonRequired": "Choose a contact reason.",
+      "invalidReason": "Choose a valid contact reason.",
+      "bookingNumberTooLong": "Booking number is too long.",
+      "messageRequired": "Enter your message.",
       "required": "Complete all required contact fields."
     },
     "account": {

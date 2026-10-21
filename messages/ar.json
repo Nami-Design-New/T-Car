@@ -532,6 +532,13 @@
     },
     "contact": {
       "phoneRequired": "أدخل رقم جوال صحيحًا.",
+      "nameRequired": "أدخل اسمك الكامل.",
+      "emailRequired": "أدخل بريدك الإلكتروني.",
+      "invalidEmail": "أدخل بريدًا إلكترونيًا صحيحًا.",
+      "reasonRequired": "اختر سبب التواصل.",
+      "invalidReason": "اختر سبب تواصل صالحًا.",
+      "bookingNumberTooLong": "رقم الحجز طويل جدًا.",
+      "messageRequired": "أدخل رسالتك.",
       "required": "أكمل جميع حقول التواصل المطلوبة."
     },
     "account": {
