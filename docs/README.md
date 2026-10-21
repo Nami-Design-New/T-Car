@@ -270,7 +270,7 @@ extensions over 30 days, and so on) are documented in each `services/mocks/*.ts`
   arrows stay native: `BackButton` calls `router.back()`, not a dialog step.
   The registration terms checkbox is
   checked by the action only; the auth contract has no field for it.
-  Assumptions to confirm (doc 9 §9.4): phone is 9–15 digits, any country, sent
+  Assumptions to confirm (doc 9 §9.4): phone is 8–15 digits, any country, sent
   as entered (no canonical format); birth date is a real date not in the
   future (no minimum age); no name/email length limits.
 - Form validation fraction 2 (profile and phone, branch

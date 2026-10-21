@@ -1,6 +1,6 @@
 # T-Car validation rules: user application plan
 
-Status: **Fraction 1 implemented and verified; Fraction 2 not started**. This
+Status: **Fractions 1 and 2 implemented and verified; Fraction 3 not started**. This
 document maps the supplied workbook to the customer-facing user application
 and divides the work into six fractions.
 
@@ -91,8 +91,9 @@ payload.
 
 Scope: Phone Number in sign-in, registration, change-phone, and OTP flows.
 
-- The approved interim rule is 8–15 digits only. The API will provide country,
-  separators, canonical storage, and normalization rules later.
+- The approved interim rule is 8–15 digits only; presentation separators from the
+  shared phone input are accepted, while letters and empty values are rejected.
+  The API will provide country, canonical storage, and normalization rules later.
 - Keep OTP length, expiry, resend limits, and account ownership server-side.
 - Test minimum/maximum boundaries, separators, letters, empty input, resend, and
   action rejection.

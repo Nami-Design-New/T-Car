@@ -6,11 +6,11 @@ import { AppError } from './errors';
 // second feature needed them). Each feature keeps its own `errors.*` keys.
 
 /**
- * Digits a phone number may have, country code included: 9 is the current mock
- * minimum, 15 is the E.164 maximum. Supported countries and the stored format
+ * Digits a phone number may have, country code included: 8 is the approved interim
+ * minimum, 15 is the maximum for now. Supported countries and the stored format
  * are not decided yet (doc 9 §9.4), so the number is checked, not rewritten.
  */
-const PHONE_DIGITS = { min: 9, max: 15 };
+const PHONE_DIGITS = { min: 8, max: 15 };
 
 export const FULL_NAME_MIN_LENGTH = 2;
 export const FULL_NAME_MAX_LENGTH = 100;

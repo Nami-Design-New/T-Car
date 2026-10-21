@@ -1,12 +1,5 @@
-@use '../../../styles/tokens/tokens' as *;
+@use "../../../styles/tokens/tokens" as *;
 .map_modal {
-  width: min(900px, calc(100% - 32px));
-  background: $ds-surface-elevated;
-  border-radius: $ds-radius-2xl;
-  padding: 32px;
-  position: relative;
-  animation: popup 0.35s ease;
-
   .modal_header {
     margin-bottom: 24px;
 

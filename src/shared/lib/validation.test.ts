@@ -12,11 +12,11 @@ describe('isFullName', () => {
 });
 
 describe('isPhoneNumber', () => {
-  it.each(['966500000', '+966500000000', '+966 50 000 0000', '+1 (415) 555-0100'])('accepts %s', (value) => {
+  it.each(['12345678', '966500000', '+966500000000', '+966 50 000 0000', '+1 (415) 555-0100'])('accepts %s', (value) => {
     expect(isPhoneNumber(value)).toBe(true);
   });
 
-  it.each(['+966', '96650000', '+9665000000000000', '96650000000a', ''])('rejects %j', (value) => {
+  it.each(['+966', '9665000', '+9665000000000000', '96650000000a', ''])('rejects %j', (value) => {
     expect(isPhoneNumber(value)).toBe(false);
   });
 });

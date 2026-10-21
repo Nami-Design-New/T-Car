@@ -1,4 +1,4 @@
-@use 'tokens/tokens' as *;
+@use "tokens/tokens" as *;
 
 // Legacy dialog chrome shared by several features (.modal_overlay, .close_btn, .back_btn, .selection_modal).
 // Goes away as dialogs move to shared/ui/Dialog (doc 4).
@@ -169,32 +169,32 @@
   }
 }
 
-.close_btn {
-  position: absolute;
-  top: -20px;
-  inset-inline-end: 18px;
+// .close_btn {
+//   position: absolute;
+//   top: -20px;
+//   inset-inline-end: 18px;
 
-  width: 42px;
-  height: 42px;
+//   width: 42px;
+//   height: 42px;
 
-  border: none;
-  border-radius: $ds-radius-full;
+//   border: none;
+//   border-radius: $ds-radius-full;
 
-  background: $ds-surface-on-background;
+//   background: $ds-surface-on-background;
 
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1;
-  cursor: pointer;
-  font-size: 22px;
-  transition: 0.3s;
+//   display: flex;
+//   align-items: center;
+//   justify-content: center;
+//   z-index: 1;
+//   cursor: pointer;
+//   font-size: 22px;
+//   transition: 0.3s;
 
-  &:hover {
-    background: $ds-action-primary;
-    color: $ds-text-on-action;
-  }
-}
+//   &:hover {
+//     background: $ds-action-primary;
+//     color: $ds-text-on-action;
+//   }
+// }
 
 .selection_modal {
   width: min(600px, calc(100% - 32px));

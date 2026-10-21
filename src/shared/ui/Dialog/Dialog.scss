@@ -1,4 +1,4 @@
-@use 'tokens/tokens' as *;
+@use "tokens/tokens" as *;
 
 .dialog-backdrop {
   position: fixed;
@@ -25,6 +25,7 @@
   box-shadow: 0 20px 48px rgba($ds-shadow-color, 0.18);
   outline: none;
   animation: dialog-pop-in 0.18s ease-out;
+  padding: $ds-space-7;
 
   &--sm {
     max-width: 400px;

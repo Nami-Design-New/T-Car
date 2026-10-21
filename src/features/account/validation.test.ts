@@ -112,10 +112,11 @@ describe("profileFormSchema", () => {
 
 describe("phone schemas", () => {
   it("checks the new phone number", () => {
+    expect(phoneChangeSchema.safeParse({ phone: "12345678" }).success).toBe(true);
     expect(phoneChangeSchema.safeParse({ phone: "966511111111" }).success).toBe(
       true,
     );
-    expect(fieldErrors(phoneChangeSchema.safeParse({ phone: "+966" }))).toEqual(
+    expect(fieldErrors(phoneChangeSchema.safeParse({ phone: "1234567" }))).toEqual(
       {
         phone: "account.invalidPhone",
       },

@@ -52,7 +52,7 @@ describe('phoneSchema', () => {
 
   it.each([
     ['only the country code', '+966'],
-    ['8 digits', '96650000'],
+    ['7 digits', '9665000'],
     ['16 digits', '+9665000000000000'],
     ['letters', '+96650000000a'],
     ['empty', '']
@@ -62,8 +62,8 @@ describe('phoneSchema', () => {
     });
   });
 
-  it('accepts 9 and 15 digits, the bounds', () => {
-    expect(phoneSchema.safeParse({ phone: '966500000' }).success).toBe(true);
+  it('accepts 8 and 15 digits, the bounds', () => {
+    expect(phoneSchema.safeParse({ phone: '12345678' }).success).toBe(true);
     expect(phoneSchema.safeParse({ phone: '966500000000000' }).success).toBe(true);
   });
 

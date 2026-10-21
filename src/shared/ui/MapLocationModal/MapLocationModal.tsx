@@ -1,12 +1,18 @@
-'use client';
+"use client";
 
-import { useState, useCallback, useEffect, useRef } from 'react';
-import { useLocale, useTranslations } from 'next-intl';
-import { GoogleMap, Marker, useJsApiLoader } from '@react-google-maps/api';
-import { FiSearch, FiMapPin, FiNavigation, FiX, FiLoader } from 'react-icons/fi';
-import { Dialog } from '@/shared/ui/Dialog';
-import type { LocationData } from '@/shared/lib/location';
-import './MapLocationModal.scss';
+import { useState, useCallback, useEffect, useRef } from "react";
+import { useLocale, useTranslations } from "next-intl";
+import { GoogleMap, Marker, useJsApiLoader } from "@react-google-maps/api";
+import {
+  FiSearch,
+  FiMapPin,
+  FiNavigation,
+  FiX,
+  FiLoader,
+} from "react-icons/fi";
+import { Dialog } from "@/shared/ui/Dialog";
+import type { LocationData } from "@/shared/lib/location";
+import "./MapLocationModal.scss";
 
 export interface MapLocationModalProps {
   open: boolean;
@@ -17,8 +23,8 @@ export interface MapLocationModalProps {
 }
 
 const containerStyle = {
-  width: '100%',
-  height: '100%',
+  width: "100%",
+  height: "100%",
 };
 
 const defaultCenter = {
@@ -36,18 +42,18 @@ export default function MapLocationModal({
   title,
   initialLocation,
 }: MapLocationModalProps) {
-  const t = useTranslations('rentalSearch.map');
+  const t = useTranslations("rentalSearch.map");
   const [position, setPosition] = useState(defaultCenter);
-  const [address, setAddress] = useState('');
-  const [search, setSearch] = useState('');
+  const [address, setAddress] = useState("");
+  const [search, setSearch] = useState("");
   const [predictions, setPredictions] = useState<
     google.maps.places.AutocompletePrediction[] | null
   >(null);
   const [isLocating, setIsLocating] = useState(false);
-  const [locationError, setLocationError] = useState('');
+  const [locationError, setLocationError] = useState("");
 
   const locale = useLocale();
-  const displayTitle = title ?? t('title');
+  const displayTitle = title ?? t("title");
 
   // The Maps script is injected once per page session, and useJsApiLoader
   // throws ("must not be called again with different options") if it is later
@@ -68,7 +74,7 @@ export default function MapLocationModal({
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY!,
     language: mapsLanguage,
-    libraries: ['places'],
+    libraries: ["places"],
   });
 
   useEffect(() => {
@@ -95,7 +101,7 @@ export default function MapLocationModal({
     const geocoder = new window.google.maps.Geocoder();
 
     geocoder.geocode({ location: { lat, lng } }, (results, status) => {
-      if (status === 'OK' && results?.[0]) {
+      if (status === "OK" && results?.[0]) {
         setAddress(results[0].formatted_address);
       }
     });
@@ -113,12 +119,12 @@ export default function MapLocationModal({
 
   const useCurrentLocation = () => {
     if (!navigator.geolocation) {
-      setLocationError(t('unsupported'));
+      setLocationError(t("unsupported"));
       return;
     }
 
     setIsLocating(true);
-    setLocationError('');
+    setLocationError("");
 
     navigator.geolocation.getCurrentPosition(
       (pos) => {
@@ -133,11 +139,11 @@ export default function MapLocationModal({
         setIsLocating(false);
         setLocationError(
           err.code === err.PERMISSION_DENIED
-            ? t('permissionDenied')
-            : t('unavailable')
+            ? t("permissionDenied")
+            : t("unavailable"),
         );
       },
-      { enableHighAccuracy: true, timeout: 10000 }
+      { enableHighAccuracy: true, timeout: 10000 },
     );
   };
 
@@ -159,9 +165,12 @@ export default function MapLocationModal({
 
       const service = new window.google.maps.places.AutocompleteService();
 
-      service.getPlacePredictions({ input: search, language: mapsLanguage }, (preds) => {
-        setPredictions(preds || null);
-      });
+      service.getPlacePredictions(
+        { input: search, language: mapsLanguage },
+        (preds) => {
+          setPredictions(preds || null);
+        },
+      );
     }, 300);
 
     return () => {
@@ -175,15 +184,15 @@ export default function MapLocationModal({
     const geocoder = new window.google.maps.Geocoder();
 
     geocoder.geocode({ placeId }, (results, status) => {
-      if (status === 'OK' && results?.[0] && results[0].geometry?.location) {
+      if (status === "OK" && results?.[0] && results[0].geometry?.location) {
         const lat = results[0].geometry.location.lat();
         const lng = results[0].geometry.location.lng();
 
         // بيحرك الخريطة فورًا (الـ useEffect فوق بيمسك أي تغيير في position)
         setPosition({ lat, lng });
-        setAddress(results[0].formatted_address || description || '');
+        setAddress(results[0].formatted_address || description || "");
         setPredictions(null);
-        setSearch('');
+        setSearch("");
       }
     });
   };
@@ -202,14 +211,14 @@ export default function MapLocationModal({
           type="text"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          placeholder={t('searchPlaceholder')}
+          placeholder={t("searchPlaceholder")}
         />
         {search && (
           <button
             type="button"
             className="clear_search"
             onClick={() => {
-              setSearch('');
+              setSearch("");
               setPredictions(null);
             }}
           >
@@ -220,14 +229,19 @@ export default function MapLocationModal({
         {predictions && predictions.length > 0 && (
           <ul className="predictions_list">
             {predictions.map((p) => (
-              <li key={p.place_id} onClick={() => selectPrediction(p.place_id, p.description)}>
+              <li
+                key={p.place_id}
+                onClick={() => selectPrediction(p.place_id, p.description)}
+              >
                 <FiMapPin />
                 <div>
                   <span className="main_text">
                     {p.structured_formatting?.main_text || p.description}
                   </span>
                   {p.structured_formatting?.secondary_text && (
-                    <span className="secondary_text">{p.structured_formatting.secondary_text}</span>
+                    <span className="secondary_text">
+                      {p.structured_formatting.secondary_text}
+                    </span>
                   )}
                 </div>
               </li>
@@ -253,7 +267,7 @@ export default function MapLocationModal({
         ) : (
           <>
             <FiMapPin />
-            <span>{t('loading')}</span>
+            <span>{t("loading")}</span>
           </>
         )}
       </div>
@@ -270,7 +284,7 @@ export default function MapLocationModal({
           disabled={isLocating}
         >
           {isLocating ? <FiLoader className="spin" /> : <FiNavigation />}
-          <span>{isLocating ? t('locating') : t('useCurrentLocation')}</span>
+          <span>{isLocating ? t("locating") : t("useCurrentLocation")}</span>
         </button>
 
         <button
@@ -284,7 +298,7 @@ export default function MapLocationModal({
             })
           }
         >
-          {t('confirm')}
+          {t("confirm")}
         </button>
       </div>
     </Dialog>
