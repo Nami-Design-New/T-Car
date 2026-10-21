@@ -1,4 +1,4 @@
-@use 'tokens/tokens' as *;
+@use "tokens/tokens" as *;
 
 //////////////////////Hero////////////////////
 .hero_section {
@@ -23,7 +23,12 @@
     z-index: 1;
     pointer-events: none;
     background:
-      linear-gradient(180deg, rgba($ds-surface-brand, 0.64) 0%, rgba($ds-surface-brand, 0.12) 38%, rgba($ds-shadow-color, 0.58) 100%),
+      linear-gradient(
+        180deg,
+        rgba($ds-surface-brand, 0.64) 0%,
+        rgba($ds-surface-brand, 0.12) 38%,
+        rgba($ds-shadow-color, 0.58) 100%
+      ),
       linear-gradient(90deg, rgba($ds-surface-brand, 0.38) 0%, transparent 58%);
   }
 
@@ -42,19 +47,28 @@
     background-repeat: no-repeat;
 
     &::before {
-      content: '';
+      content: "";
       position: absolute;
       inset: 0;
       background:
-        linear-gradient(180deg, rgba($ds-shadow-color, 0.62) 0%, rgba($ds-shadow-color, 0.16) 42%, rgba($ds-shadow-color, 0.58) 100%),
+        linear-gradient(
+          180deg,
+          rgba($ds-shadow-color, 0.62) 0%,
+          rgba($ds-shadow-color, 0.16) 42%,
+          rgba($ds-shadow-color, 0.58) 100%
+        ),
         linear-gradient(90deg, rgba($ds-surface-brand, 0.28), transparent 58%);
     }
 
     &::after {
-      content: '';
+      content: "";
       position: absolute;
       inset: 0;
-      background: linear-gradient(120deg, rgba($ds-white, 0.08), transparent 35%);
+      background: linear-gradient(
+        120deg,
+        rgba($ds-white, 0.08),
+        transparent 35%
+      );
       mix-blend-mode: screen;
       pointer-events: none;
     }
@@ -83,7 +97,7 @@
 
     &::before,
     &::after {
-      content: '';
+      content: "";
       position: absolute;
       top: 50%;
       width: clamp(28px, 9vw, 112px);
@@ -369,7 +383,7 @@
   }
 }
 
-html[dir='rtl'] .hero_filter_drawer {
+html[dir="rtl"] .hero_filter_drawer {
   box-shadow: 18px 0 48px rgba($ds-shadow-color, 0.2);
   animation-name: hero-drawer-slide-in-rtl;
 }
@@ -573,78 +587,14 @@ html[dir='rtl'] .hero_filter_drawer {
   }
 }
 .branch_modal {
-  width: min(600px, calc(100% - 32px));
-  max-height: 78vh;
-
-  background: $ds-surface-elevated;
-  border-radius: $ds-radius-xl;
-
-  padding: 25px;
-
-  position: relative;
-
-  display: flex;
-  flex-direction: column;
-
-  .modal_header {
-    margin-bottom: 16px;
-
-    h2 {
-      font-size: 22px;
-      margin-bottom: 4px;
-      color: $ds-text-primary;
-    }
-
-    p {
-      font-size: 13px;
-      color: $ds-text-subtle;
-      margin: 0;
-    }
-  }
-
-  .search_box {
-    height: 46px;
-
-    display: flex;
-    align-items: center;
-
-    padding-inline: 14px;
-    margin-bottom: 16px;
-
-    border: 1px solid $ds-stroke-light;
-    border-radius: $ds-radius-md;
-
-    flex-shrink: 0;
-
-    svg {
-      font-size: 18px;
-      color: $ds-action-primary;
-    }
-
-    input {
-      flex: 1;
-
-      border: none;
-      outline: none;
-
-      background: transparent;
-
-      padding-inline: 10px;
-      font-size: 14px;
-    }
-  }
-
   .branch_list {
     flex: 1;
     min-height: 0;
-
+    padding: 1.25rem 0;
     overflow-y: auto;
-
     display: flex;
     flex-direction: column;
     gap: 10px;
-
-    margin-bottom: 18px;
     padding-inline-end: 4px;
 
     &::-webkit-scrollbar {

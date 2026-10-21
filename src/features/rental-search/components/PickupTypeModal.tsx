@@ -7,43 +7,36 @@ import { Dialog } from "@/shared/ui/Dialog";
 import { ICONS } from "@/shared/config/assets";
 const deliveryImg = ICONS.deliveryCar;
 const branchImg = ICONS.branchCar;
-import type { PickupType } from "../model";
-import "./PickupTypeModal.scss";
 
 interface Props {
   open: boolean;
   onClose: () => void;
-  onSelect: (type: PickupType) => void;
+  onSelect: () => void;
 }
 
 export default function PickupTypeModal({ open, onClose, onSelect }: Props) {
   const t = useTranslations("rentalSearch.pickup");
 
   return (
-    <Dialog open={open} onClose={onClose} size="lg" className="pickup_modal">
-      <Dialog.Close className="close_btn" />
-
-      <div className="modal_header">
+    <Dialog open={open} onClose={onClose} size="md" className="pickup_modal">
+      <Dialog.Header>
         <Dialog.Title>{t("title")}</Dialog.Title>
-      </div>
+        <Dialog.Close className="close_btn" />
+      </Dialog.Header>
 
-      <div className="pickup_cards">
-        <button className="pickup_card" onClick={() => onSelect("delivery")}>
-          <Image src={deliveryImg} alt={t("delivery.title")} />
+      <Dialog.Body>
+        <div className="pickup_cards">
+          <button className="pickup_card" onClick={() => onSelect()}>
+            <Image src={deliveryImg} alt={t("delivery.title")} />
+            <h4>{t("delivery.title")}</h4>
+          </button>
 
-          <h4>{t("delivery.title")}</h4>
-
-          <p>{t("delivery.description")}</p>
-        </button>
-
-        <button className="pickup_card" onClick={() => onSelect("delivery")}>
-          <Image src={branchImg} alt={t("branch.title")} />
-
-          <h4>{t("branch.title")}</h4>
-
-          <p>{t("branch.description")}</p>
-        </button>
-      </div>
+          <button className="pickup_card" onClick={() => onSelect()}>
+            <Image src={branchImg} alt={t("branch.title")} />
+            <h4>{t("branch.title")}</h4>
+          </button>
+        </div>
+      </Dialog.Body>
     </Dialog>
   );
 }

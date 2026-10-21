@@ -142,10 +142,10 @@
     "subtitle": "Choose from daily, monthly, or airport pickup rentals and enjoy a fast, secure booking experience."
   },
   "rentalTabs": {
-    "daily": "Daily Rental",
-    "monthly": "Monthly Rental",
+    "daily": "Daily",
+    "monthly": "Monthly",
     "airport": "Airport Pickup",
-    "station": "Train Station Pickup",
+    "station": "Train Station",
     "international": "International Rental"
   },
   "rentalSearch": {
@@ -158,25 +158,25 @@
       "title": "Choose an airport",
       "description": "Choose the airport where you would like to pick up the car.",
       "searchPlaceholder": "Search airports...",
-      "confirm": "Continue"
+      "confirm": "Confirm"
     },
     "branch": {
       "title": "Choose a branch",
       "description": "Choose the nearest branch to pick up the car.",
       "searchPlaceholder": "Search for a city or branch...",
-      "confirm": "Continue"
+      "confirm": "Confirm"
     },
     "country": {
       "title": "Choose a country",
       "description": "Choose the country where you would like to pick up the car.",
       "searchPlaceholder": "Search countries...",
-      "confirm": "Continue"
+      "confirm": "Confirm"
     },
     "station": {
       "title": "Choose a train station",
       "description": "Choose the train station where you would like to pick up the car.",
       "searchPlaceholder": "Search stations...",
-      "confirm": "Continue"
+      "confirm": "Confirm"
     },
     "pickup": {
       "title": "Choose a pickup type",

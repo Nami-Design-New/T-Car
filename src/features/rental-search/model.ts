@@ -1,15 +1,5 @@
-
-export type RentalType = 'daily' | 'monthly' | 'airport' | 'station' | 'international';
-
-export type PickupType = 'delivery' | 'branch';
-
-
-export interface Branch {
-  id: number;
-  city: string;
-  branch: string;
-  address: string;
-}
+export type RentalType =
+  "daily" | "monthly" | "airport" | "station" | "international";
 
 export interface Airport {
   id: number;
@@ -34,7 +24,6 @@ export interface Country {
 
 /** The choices the search dialogs offer, loaded once for the hero. */
 export interface RentalSearchOptions {
-  branches: Branch[];
   airports: Airport[];
   stations: Station[];
   countries: Country[];
