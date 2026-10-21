@@ -1,20 +1,23 @@
-'use client';
+"use client";
 
-import { Link } from '@/i18n/navigation';
-import { discountPercent as getDiscountPercent, type CarListing } from '../model';
-import { IMAGES } from '@/shared/config/assets';
+import { Link } from "@/i18n/navigation";
+import {
+  discountPercent as getDiscountPercent,
+  type CarListing,
+} from "../model";
+import { IMAGES } from "@/shared/config/assets";
 const giftImage = IMAGES.gift;
-import { ICONS } from '@/shared/config/assets';
-const RiyalIcon = ICONS.riyalAlt;
-import { cn } from '@/shared/lib/cn';
-import { useTranslations } from 'next-intl';
-import Image from 'next/image';
-import { FaStar } from 'react-icons/fa6';
-import { FiMapPin } from 'react-icons/fi';
-import { LuPlane } from 'react-icons/lu';
-import { MdTrain } from 'react-icons/md';
+import { ICONS } from "@/shared/config/assets";
+const RiyalIcon = ICONS.riyal;
+import { cn } from "@/shared/lib/cn";
+import { useTranslations } from "next-intl";
+import Image from "next/image";
+import { FaStar } from "react-icons/fa6";
+import { FiMapPin } from "react-icons/fi";
+import { LuPlane } from "react-icons/lu";
+import { MdTrain } from "react-icons/md";
 
-const priceFormatter = new Intl.NumberFormat('en-US', {
+const priceFormatter = new Intl.NumberFormat("en-US", {
   maximumFractionDigits: 0,
 });
 
@@ -28,19 +31,19 @@ export interface CarCardProps {
 export default function CarCard({
   car,
   className,
-  imageSizes = '(max-width: 767px) 86vw, (max-width: 1199px) 45vw, 350px',
+  imageSizes = "(max-width: 767px) 86vw, (max-width: 1199px) 45vw, 350px",
   priority = false,
 }: CarCardProps) {
-  const t = useTranslations('carCard');
+  const t = useTranslations("carCard");
   const detailsHref = `/cars/${car.id}` as const;
   const discountPercent = getDiscountPercent(car);
 
   return (
-    <article className={cn('car-card', className)}>
+    <article className={cn("car-card", className)}>
       <Link
         href={detailsHref}
         className="car-card__link"
-        aria-label={t('viewCar', { brand: car.brand, name: car.name })}
+        aria-label={t("viewCar", { brand: car.brand, name: car.name })}
       >
         <div className="car-card__media">
           <Image
@@ -53,27 +56,29 @@ export default function CarCard({
 
           {car.pickupPoint ? (
             <span className="car-card__pickup">
-              {car.pickupPoint === 'airport' ? (
+              {car.pickupPoint === "airport" ? (
                 <LuPlane aria-hidden="true" />
               ) : (
                 <MdTrain aria-hidden="true" />
               )}
-              {car.pickupPoint === 'airport' ? t('airportPickup') : t('stationPickup')}
+              {car.pickupPoint === "airport"
+                ? t("airportPickup")
+                : t("stationPickup")}
             </span>
           ) : null}
 
           {discountPercent ? (
             <div className="car-card__offer">
               <span className="car-card__offer-copy">
-                <Image src={giftImage} alt={t('gift')} />
+                <Image src={giftImage} alt={t("gift")} />
                 <span>
-                  <small>{t('limitedOffer')}</small>
-                  <strong>{t('saveNow')}</strong>
+                  <small>{t("limitedOffer")}</small>
+                  <strong>{t("saveNow")}</strong>
                 </span>
               </span>
               <span className="car-card__offer-value">
                 <strong>{discountPercent}%</strong>
-                <small>{t('discount')}</small>
+                <small>{t("discount")}</small>
               </span>
             </div>
           ) : null}
@@ -96,17 +101,28 @@ export default function CarCard({
             <span className="car-card__price">
               <span className="car-card__current-price">
                 <strong>{priceFormatter.format(car.pricePerDay)}</strong>
-                <Image src={RiyalIcon} alt={t('currency')} className="car-card__riyal-icon" />
-                <small>{t('perDay')}</small>
+                <Image
+                  src={RiyalIcon}
+                  alt={t("currency")}
+                  className="car-card__riyal-icon"
+                />
+                <small>{t("perDay")}</small>
               </span>
               {car.originalPrice ? (
                 <del className="car-card__old-price">
                   <span>{priceFormatter.format(car.originalPrice)}</span>
-                  <Image src={RiyalIcon} alt={t('currency')} className="car-card__riyal-icon" />
+                  <Image
+                    src={RiyalIcon}
+                    alt={t("currency")}
+                    className="car-card__riyal-icon"
+                  />
                 </del>
               ) : null}
             </span>
-            <span className="car-card__rating" aria-label={t('rating', { rating: car.rating })}>
+            <span
+              className="car-card__rating"
+              aria-label={t("rating", { rating: car.rating })}
+            >
               <span>{car.rating}</span>
               <FaStar aria-hidden="true" />
             </span>
