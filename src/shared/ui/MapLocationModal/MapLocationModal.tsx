@@ -11,6 +11,8 @@ import {
   FiLoader,
 } from "react-icons/fi";
 import { Dialog } from "@/shared/ui/Dialog";
+import { FormInput } from "../Form";
+import { Button } from "../Button";
 import type { LocationData } from "@/shared/lib/location";
 import "./MapLocationModal.scss";
 
@@ -199,108 +201,112 @@ export default function MapLocationModal({
 
   return (
     <Dialog open={open} onClose={onClose} size="xl" className="map_modal">
-      <Dialog.Close className="close_btn" />
-
-      <div className="modal_header">
+      <Dialog.Header>
         <Dialog.Title>{displayTitle}</Dialog.Title>
-      </div>
+        <Dialog.Close />
+      </Dialog.Header>
+      <Dialog.Body>
+        <div className="search_box">
+          <div className="search_input">
+            <FormInput
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder={t("searchPlaceholder")}
+              icon={<FiSearch />}
+            />
+          </div>
+          {search && (
+            <button
+              type="button"
+              className="clear_search"
+              onClick={() => {
+                setSearch("");
+                setPredictions(null);
+              }}
+            >
+              <FiX />
+            </button>
+          )}
 
-      <div className="search_box">
-        <FiSearch className="search_icon" />
-        <input
-          type="text"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder={t("searchPlaceholder")}
-        />
-        {search && (
-          <button
-            type="button"
-            className="clear_search"
-            onClick={() => {
-              setSearch("");
-              setPredictions(null);
-            }}
-          >
-            <FiX />
-          </button>
-        )}
-
-        {predictions && predictions.length > 0 && (
-          <ul className="predictions_list">
-            {predictions.map((p) => (
-              <li
-                key={p.place_id}
-                onClick={() => selectPrediction(p.place_id, p.description)}
-              >
-                <FiMapPin />
-                <div>
-                  <span className="main_text">
-                    {p.structured_formatting?.main_text || p.description}
-                  </span>
-                  {p.structured_formatting?.secondary_text && (
-                    <span className="secondary_text">
-                      {p.structured_formatting.secondary_text}
+          {predictions && predictions.length > 0 && (
+            <ul className="predictions_list">
+              {predictions.map((p) => (
+                <li
+                  key={p.place_id}
+                  onClick={() => selectPrediction(p.place_id, p.description)}
+                >
+                  <FiMapPin />
+                  <div>
+                    <span className="main_text">
+                      {p.structured_formatting?.main_text || p.description}
                     </span>
-                  )}
-                </div>
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
+                    {p.structured_formatting?.secondary_text && (
+                      <span className="secondary_text">
+                        {p.structured_formatting.secondary_text}
+                      </span>
+                    )}
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
 
-      <div className="map_placeholder">
-        {isLoaded ? (
-          <GoogleMap
-            mapContainerStyle={containerStyle}
-            center={position}
-            zoom={14}
-            onLoad={onMapLoad}
-            options={{
-              disableDefaultUI: true,
-              zoomControl: true,
-            }}
+        <div className="map_placeholder">
+          {isLoaded ? (
+            <GoogleMap
+              mapContainerStyle={containerStyle}
+              center={position}
+              zoom={14}
+              onLoad={onMapLoad}
+              options={{
+                disableDefaultUI: true,
+                zoomControl: true,
+              }}
+            >
+              <Marker position={position} draggable onDragEnd={handleDragEnd} />
+            </GoogleMap>
+          ) : (
+            <>
+              <FiMapPin />
+              <span>{t("loading")}</span>
+            </>
+          )}
+        </div>
+
+        {address && <p className="selected_address">{address}</p>}
+        {locationError && <p className="location_error">{locationError}</p>}
+      </Dialog.Body>
+
+      <Dialog.Footer>
+        <div className="location_actions">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={useCurrentLocation}
+            disabled={isLocating}
+            loading={isLocating}
+            icon={<FiNavigation />}
           >
-            <Marker position={position} draggable onDragEnd={handleDragEnd} />
-          </GoogleMap>
-        ) : (
-          <>
-            <FiMapPin />
-            <span>{t("loading")}</span>
-          </>
-        )}
-      </div>
+            {/* {isLocating ? <FiLoader className="spin" /> : <FiNavigation />} */}
+            <span>{t("useCurrentLocation")}</span>
+          </Button>
 
-      {address && <p className="selected_address">{address}</p>}
-
-      {locationError && <p className="location_error">{locationError}</p>}
-
-      <div className="location_actions">
-        <button
-          type="button"
-          className="current_location"
-          onClick={useCurrentLocation}
-          disabled={isLocating}
-        >
-          {isLocating ? <FiLoader className="spin" /> : <FiNavigation />}
-          <span>{isLocating ? t("locating") : t("useCurrentLocation")}</span>
-        </button>
-
-        <button
-          type="button"
-          className="confirm_btn"
-          onClick={() =>
-            onConfirm({
-              lat: position.lat,
-              lng: position.lng,
-              address,
-            })
-          }
-        >
-          {t("confirm")}
-        </button>
-      </div>
+          <Button
+            type="button"
+            onClick={() =>
+              onConfirm({
+                lat: position.lat,
+                lng: position.lng,
+                address,
+              })
+            }
+          >
+            {t("confirm")}
+          </Button>
+        </div>
+      </Dialog.Footer>
     </Dialog>
   );
 }

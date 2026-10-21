@@ -1,26 +1,11 @@
 @use "../../../styles/tokens/tokens" as *;
 .map_modal {
-  .modal_header {
-    margin-bottom: 24px;
-
-    h2 {
-      margin-bottom: 8px;
-      color: $ds-text-primary;
-    }
-  }
   .search_box {
     position: relative;
     margin-bottom: 20px;
     display: flex;
     align-items: center;
-
-    .search_icon {
-      position: absolute;
-      inset-inline-end: 18px;
-      font-size: 18px;
-      color: $ds-text-placeholder;
-      pointer-events: none;
-    }
+    width: 100%;
 
     .search_spinner {
       position: absolute;
@@ -29,33 +14,13 @@
       animation: spin 0.8s linear infinite;
     }
 
-    input {
-      width: 100%;
-      height: 52px;
-      border-radius: $ds-radius-md;
-      border: 1px solid $ds-stroke-light;
-      background: $ds-surface-on-background;
-      padding-block: 0;
-      padding-inline-start: 40px;
-      padding-inline-end: 48px;
-      font-size: 15px;
-      outline: none;
-      transition: 0.25s;
-
-      &:focus {
-        border-color: $ds-action-primary;
-        background: $ds-surface-elevated;
-        box-shadow: 0 0 0 3px rgba($ds-action-primary, 0.1);
-      }
-
-      &::placeholder {
-        color: $ds-text-placeholder;
-      }
+    .search_input {
+      flex-grow: 1;
     }
 
     .clear_search {
       position: absolute;
-      inset-inline-start: 14px;
+      inset-inline-end: 28px;
       background: none;
       border: none;
       cursor: pointer;
@@ -212,45 +177,10 @@
 
   .location_actions {
     margin-top: 24px;
-
     display: flex;
     justify-content: space-between;
     align-items: center;
-
-    .current_location,
-    .confirm_btn {
-      height: 52px;
-      border-radius: 14px;
-      padding: 0 28px;
-
-      display: flex;
-      align-items: center;
-      gap: 10px;
-
-      cursor: pointer;
-      transition: 0.3s;
-      font-weight: 600;
-    }
-
-    .current_location {
-      background: $ds-surface-card-primary;
-      color: $ds-action-primary;
-      border: 1px solid rgba($ds-action-primary, 0.15);
-
-      &:hover {
-        background: $ds-primary-100;
-      }
-    }
-
-    .confirm_btn {
-      background: $ds-action-primary;
-      color: $ds-text-on-action;
-      border: none;
-
-      &:hover {
-        background: darken($ds-action-primary, 8%);
-      }
-    }
+    gap: 1rem;
   }
 }
 
@@ -260,16 +190,6 @@
 
     .map_placeholder {
       height: 300px;
-    }
-
-    .location_actions {
-      flex-direction: column;
-      gap: 16px;
-
-      button {
-        width: 100%;
-        justify-content: center;
-      }
     }
   }
 }
