@@ -1,4 +1,6 @@
+import { auth } from '@/auth';
 import { Footer, Header } from '@/features/layout';
+import { getNotifications } from '@/features/notifications/queries';
 import type { Metadata } from 'next';
 import { NextIntlClientProvider } from 'next-intl';
 import { getDirection } from '@/shared/config/languages';
@@ -83,8 +85,11 @@ export default async function RootLayout({
   children: React.ReactNode;
   params: Promise<{ locale: string }>;
 }) {
-  const { locale } = await params;
+  const [{ locale }, session] = await Promise.all([params, auth()]);
   const dir = getDirection(locale);
+  const unreadCount = session
+    ? (await getNotifications()).filter((notification) => !notification.read).length
+    : 0;
 
   return (
     <html lang={locale} dir={dir} className={expo.variable}>
@@ -92,7 +97,11 @@ export default async function RootLayout({
         <NextIntlClientProvider>
           <DirectionProvider dir={dir}>
             <NextTopLoader color="#1f7ffa" height={3} showSpinner={false} />
-            <Header />
+            <Header
+              hasSession={Boolean(session)}
+              signedIn={Boolean(session?.user)}
+              unreadCount={unreadCount}
+            />
             <main>{children}</main>
             <Footer />
           </DirectionProvider>

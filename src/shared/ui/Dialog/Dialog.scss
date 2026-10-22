@@ -1,4 +1,4 @@
-@use 'tokens/tokens' as *;
+@use "tokens/tokens" as *;
 
 .dialog-backdrop {
   position: fixed;
@@ -25,6 +25,7 @@
   box-shadow: 0 20px 48px rgba($ds-shadow-color, 0.18);
   outline: none;
   animation: dialog-pop-in 0.18s ease-out;
+  padding: $ds-space-7;
 
   &--sm {
     max-width: 400px;
@@ -52,10 +53,9 @@
 
   &__header {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     justify-content: space-between;
     gap: $ds-space-4;
-    // padding: $ds-space-7 $ds-space-7 0;
   }
 
   &__title {
@@ -73,7 +73,6 @@
     flex: 1 1 auto;
     min-height: 0;
     overflow-y: auto;
-    // padding: $ds-space-7;
   }
 
   &__footer {
@@ -81,7 +80,6 @@
     flex-wrap: wrap;
     justify-content: flex-end;
     gap: $ds-space-4;
-    padding: 0 $ds-space-7 $ds-space-7;
   }
 
   &__close {
@@ -91,7 +89,6 @@
     flex-shrink: 0;
     width: 36px;
     height: 36px;
-    margin-inline-start: auto;
     border: 0;
     border-radius: $ds-radius-full;
     background: $ds-neutral-100;

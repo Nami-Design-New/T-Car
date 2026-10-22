@@ -21,7 +21,7 @@ const grantFor = (user: AuthUser): AuthGrant => ({
 const delay = (ms = 600) => new Promise((resolve) => setTimeout(resolve, ms));
 
 function checkCode(phone: string, code: string) {
-  if (digits(phone).length < 9) {
+  if (digits(phone).length < 8) {
     throw new AppError('validation', 'auth.invalidPhone', undefined, { phone: 'auth.invalidPhone' });
   }
   if (code !== MOCK_OTP_CODE) {
@@ -36,7 +36,7 @@ function checkCode(phone: string, code: string) {
 export const authMock: AuthApi = {
   async sendOtp(phone) {
     await delay();
-    if (digits(phone).length < 9) {
+    if (digits(phone).length < 8) {
       throw new AppError('validation', 'auth.invalidPhone', undefined, { phone: 'auth.invalidPhone' });
     }
   },

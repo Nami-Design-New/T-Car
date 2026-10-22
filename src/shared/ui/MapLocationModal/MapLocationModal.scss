@@ -1,0 +1,195 @@
+@use "../../../styles/tokens/tokens" as *;
+.map_modal {
+  .search_box {
+    position: relative;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    width: 100%;
+
+    .search_spinner {
+      position: absolute;
+      inset-inline-start: 14px;
+      color: $ds-action-primary;
+      animation: spin 0.8s linear infinite;
+    }
+
+    .search_input {
+      flex-grow: 1;
+    }
+
+    .clear_search {
+      position: absolute;
+      inset-inline-end: 28px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: $ds-text-placeholder;
+      display: flex;
+      align-items: center;
+      font-size: 16px;
+
+      &:hover {
+        color: $ds-text-primary;
+      }
+    }
+
+    .predictions_list {
+      position: absolute;
+      top: calc(100% + 6px);
+      inset-inline: 0;
+      z-index: 20;
+
+      background: $ds-surface-elevated;
+      border-radius: $ds-radius-md;
+      border: 1px solid $ds-stroke-light;
+      box-shadow: 0 8px 24px rgba($ds-shadow-color, 0.1);
+      max-height: 260px;
+      overflow-y: auto;
+
+      list-style: none;
+      margin: 0;
+      padding: 8px;
+
+      li {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 12px;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: 0.15s;
+
+        svg {
+          font-size: 16px;
+          color: $ds-action-primary;
+          flex-shrink: 0;
+        }
+
+        div {
+          display: flex;
+          flex-direction: column;
+          overflow: hidden;
+        }
+
+        .main_text {
+          font-weight: 600;
+          color: $ds-text-primary;
+          font-size: 14px;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        .secondary_text {
+          font-size: 12px;
+          color: $ds-text-subtle;
+        }
+
+        &:hover,
+        &.active {
+          background: $ds-surface-card-primary;
+        }
+      }
+    }
+
+    .no_results {
+      position: absolute;
+      top: calc(100% + 6px);
+      inset-inline: 0;
+      z-index: 20;
+
+      background: $ds-surface-elevated;
+      border-radius: $ds-radius-md;
+      border: 1px solid $ds-stroke-light;
+      box-shadow: 0 8px 24px rgba($ds-shadow-color, 0.1);
+      padding: 16px;
+      text-align: center;
+      color: $ds-text-placeholder;
+      font-size: 13px;
+    }
+  }
+  .location_error {
+    color: $ds-status-error;
+    font-size: 13px;
+    margin: 8px 0 0;
+  }
+
+  .current_location {
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
+
+  .spin {
+    animation: spin 0.8s linear infinite;
+  }
+
+  @keyframes spin {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  .confirm_btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .spin {
+    animation: spin 0.8s linear infinite;
+  }
+
+  @keyframes spin {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  .map_placeholder {
+    height: 420px;
+    border-radius: $ds-radius-xl;
+    border: 2px dashed $ds-stroke-heavy;
+    background: $ds-surface-on-background;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    gap: 16px;
+
+    svg {
+      font-size: 70px;
+      color: $ds-action-primary;
+    }
+
+    span {
+      color: $ds-text-subtle;
+      font-weight: 600;
+    }
+  }
+
+  .location_actions {
+    margin-top: 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .map_modal {
+    padding: 24px;
+
+    .map_placeholder {
+      height: 300px;
+    }
+  }
+}

@@ -1,11 +1,16 @@
 'use client';
 
-import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
 import { FiStar, FiArrowLeft } from 'react-icons/fi';
 import { formatCurrency } from '@/shared/lib/format';
 import { Dialog } from '@/shared/ui/Dialog';
+import { Button } from '@/shared/ui/Button';
+import { FormCheckbox } from '@/shared/ui/Form';
+import { useFieldErrorMessage } from '@/shared/hooks/useErrorMessage';
 import type { BookingDetails } from '../model';
+import { bookingTermsSchema, type BookingTermsValues } from '../validation';
 import Image from 'next/image';
 
 interface Props {
@@ -34,7 +39,16 @@ export default function BookingConfirmModal({
   booking,
 }: Props) {
   const t = useTranslations('booking.confirm');
-  const [termsAccepted, setTermsAccepted] = useState(false);
+  const fieldError = useFieldErrorMessage();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<BookingTermsValues>({
+    resolver: zodResolver(bookingTermsSchema),
+    mode: 'onSubmit',
+  });
+  const submit = handleSubmit(() => onContinue());
   const formatFull = (date: Date, time: string) => `${date.toLocaleDateString()} - ${time}`;
   return (
     <Dialog open={open} onClose={onClose} size="xl" label={t('dialogLabel')}>
@@ -47,6 +61,7 @@ export default function BookingConfirmModal({
           <Dialog.Close className="close_btn" />
         </div>
 
+        <form onSubmit={submit} noValidate>
         <div className="confirm_modal_scroll">
           <div className="confirm_car_summary">
             <div className="confirm_car_summary_image">
@@ -154,22 +169,22 @@ export default function BookingConfirmModal({
               <li>{t('terms.agree')}</li>
             </ul>
 
-            <label>
-              <input
-                type="checkbox"
-                checked={termsAccepted}
-                onChange={(e) => setTermsAccepted(e.target.checked)}
-              />{' '}
-              {t('eligibility')}
-            </label>
+            <FormCheckbox
+              id="booking-terms"
+              label={t('eligibility')}
+              required
+              error={fieldError(errors.termsAccepted?.message)}
+              {...register('termsAccepted')}
+            />
           </div>
         </div>
 
         <div className="confirm_modal_footer">
-          <button type="button" className="pay_btn" onClick={onContinue}>
+          <Button type="submit" className="pay_btn">
             {t('continuePayment')}
-          </button>
+          </Button>
         </div>
+        </form>
       </div>
     </Dialog>
   );

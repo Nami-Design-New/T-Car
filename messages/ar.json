@@ -73,7 +73,9 @@
       "title": "تعديل رقم الجوال",
       "close": "إغلاق",
       "phone": "رقم الجوال",
-      "sendCode": "إرسال كود التحقق"
+      "sendCode": "إرسال كود التحقق",
+      "description": "أدخل رقم جوالك الجديد لاستلام رمز التحقق.",
+      "countrySearchPlaceholder": "ابحث عن دولة..."
     },
     "license": {
       "title": "رخصة القيادة",
@@ -140,10 +142,10 @@
     "subtitle": "اختر من بين خيارات الإيجار اليومية أو الشهرية أو الاستلام من المطار، واستمتع بتجربة حجز سريعة وآمنة."
   },
   "rentalTabs": {
-    "daily": "إيجار يومي",
-    "monthly": "إيجار شهري",
-    "airport": "الاستلام من المطار",
-    "station": "الاستلام من محطة القطار",
+    "daily": " يومي",
+    "monthly": " شهري",
+    "airport": " من المطار",
+    "station": "  محطة القطار",
     "international": "التأجير الدولي"
   },
   "rentalSearch": {
@@ -156,7 +158,7 @@
       "title": "اختر المطار",
       "description": "اختر المطار الذي ترغب في استلام السيارة منه.",
       "searchPlaceholder": "ابحث عن مطار...",
-      "confirm": "متابعة"
+      "confirm": "تأكيد"
     },
     "branch": {
       "title": "اختر الفرع",
@@ -165,26 +167,24 @@
       "confirm": "متابعة"
     },
     "country": {
-      "title": "اختر الدولة",
+      "title": "حدد الدولة",
       "description": "اختر الدولة التي ترغب باستلام السيارة فيها.",
       "searchPlaceholder": "ابحث عن دولة...",
-      "confirm": "متابعة"
+      "confirm": "تأكيد"
     },
     "station": {
       "title": "اختر محطة القطار",
       "description": "اختر محطة القطار التي ترغب في استلام السيارة منها.",
       "searchPlaceholder": "ابحث عن محطة...",
-      "confirm": "متابعة"
+      "confirm": "تأكيد"
     },
     "pickup": {
       "title": "اختر نوع الاستلام",
       "delivery": {
-        "title": "نوصل لمكانك",
-        "description": "استلم السيارة أمام منزلك أو موقعك"
+        "title": "التوصيل إلى موقعك"
       },
       "branch": {
-        "title": "استلام من الفرع",
-        "description": "استلم السيارة من أقرب فرع لك"
+        "title": "استلام من الفرع"
       }
     },
     "map": {
@@ -265,7 +265,12 @@
       "pickup": "حوض",
       "van": "فان"
     },
-    "cityTypes": { "economy": "اقتصادية", "sedan": "سيدان", "suv": "SUV", "luxury": "فاخرة" },
+    "cityTypes": {
+      "economy": "اقتصادية",
+      "sedan": "سيدان",
+      "suv": "SUV",
+      "luxury": "فاخرة"
+    },
     "services": {
       "delivery": {
         "title": "خدمة توصيل السيارات",
@@ -328,19 +333,37 @@
     "descriptionAfterBrand": "في أقرب وقت.",
     "fields": {
       "firstName": { "label": "الاسم الأول", "placeholder": "اكتب اسمك الأول" },
-      "companyName": { "label": "اسم الشركة", "placeholder": "اكتب اسم الشركة" },
-      "headOffice": { "label": "المقر الرئيسي", "placeholder": "المدينة أو الدولة" },
-      "contactPerson": { "label": "اسم المسؤول للتواصل", "placeholder": "الاسم الكامل" },
+      "companyName": {
+        "label": "اسم الشركة",
+        "placeholder": "اكتب اسم الشركة"
+      },
+      "headOffice": {
+        "label": "المقر الرئيسي",
+        "placeholder": "المدينة أو الدولة"
+      },
+      "contactPerson": {
+        "label": "اسم المسؤول للتواصل",
+        "placeholder": "الاسم الكامل"
+      },
       "phone": {
         "label": "رقم الجوال",
         "placeholder": "رقم الجوال",
         "searchPlaceholder": "ابحث عن دولة..."
       },
       "companySize": { "label": "حجم الشركة" },
-      "email": { "label": "البريد الإلكتروني", "placeholder": "company@email.com" },
+      "email": {
+        "label": "البريد الإلكتروني",
+        "placeholder": "company@email.com"
+      },
       "managerName": { "label": "اسم مدير الشركة", "placeholder": "الاسم" },
-      "managerEmail": { "label": "إيميل مدير الشركة", "placeholder": "manager@email.com" },
-      "managerPhone": { "label": "رقم تواصل مدير الشركة", "placeholder": "05xxxxxxxx" },
+      "managerEmail": {
+        "label": "إيميل مدير الشركة",
+        "placeholder": "manager@email.com"
+      },
+      "managerPhone": {
+        "label": "رقم تواصل مدير الشركة",
+        "placeholder": "05xxxxxxxx"
+      },
       "branches": { "label": "عدد الفروع", "placeholder": "3" },
       "fleet": { "label": "إجمالي أسطول السيارات", "placeholder": "122" }
     },
@@ -474,12 +497,18 @@
     "wallet": {
       "topUpRejected": "تم رفض عملية الشحن.",
       "withdrawRejected": "تم رفض عملية السحب.",
-      "insufficientBalance": "الرصيد القابل للسحب غير كافٍ."
+      "insufficientBalance": "الرصيد القابل للسحب غير كافٍ.",
+      "amountRequired": "أدخل مبلغًا.",
+      "invalidAmount": "أدخل مبلغًا صالحًا.",
+      "amountTooLow": "المبلغ أقل من الحد الأدنى المسموح.",
+      "amountTooHigh": "المبلغ أعلى من الحد الأقصى المسموح.",
+      "bankAccountRequired": "اختر حسابًا بنكيًا."
     },
     "bankAccounts": {
       "notFound": "الحساب البنكي غير موجود.",
       "unknownBank": "اختر بنكًا من القائمة.",
-      "ibanRequired": "رقم الآيبان مطلوب."
+      "ibanRequired": "رقم الآيبان مطلوب.",
+      "invalidIban": "أدخل رقم آيبان سعودي صالح."
     },
     "bookings": {
       "notFound": "الحجز غير موجود.",
@@ -487,13 +516,28 @@
       "extendLimit": "لا يمكن تمديد الحجز لأكثر من 30 يومًا.",
       "invalidDates": "يجب أن يكون تاريخ التسليم بعد تاريخ الاستلام.",
       "cancelNotAllowed": "لا يمكن إلغاء حجز متأخر عن التسليم. سلّم السيارة أولًا.",
-      "ratingRequired": "اختر تقييمًا من 1 إلى 5."
+      "ratingRequired": "اختر تقييمًا من 1 إلى 5.",
+      "invalidExtendDays": "اختر عددًا صحيحًا لأيام التمديد.",
+      "invalidReview": "أدخل نصًا صالحًا للتقييم.",
+      "reviewTooLong": "يجب ألا تتجاوز التقييمات 1000 حرف."
     },
     "cars": {
       "notFound": "السيارة غير متاحة أو غير موجودة."
     },
     "booking": {
       "startInPast": "لا يمكن أن يبدأ الحجز في تاريخ سابق.",
+      "startDateRequired": "اختر تاريخ الاستلام",
+      "endDateRequired": "اختر تاريخ الإرجاع",
+      "timeRequired": "اختر وقت الاستلام والتسليم",
+      "invalidDays": "اختر مدة إيجار صحيحة",
+      "invalidPrice": "سعر الحجز غير صالح",
+      "invalidNotes": "أدخل ملاحظات حجز صحيحة",
+      "notesTooLong": "يجب ألا تتجاوز الملاحظات 500 حرف",
+      "addressTooLong": "يجب ألا يتجاوز العنوان 200 حرف",
+      "invalidLocation": "اختر موقعًا صالحًا",
+      "paymentMethodRequired": "اختر طريقة دفع",
+      "carRequired": "اختر سيارة",
+      "termsRequired": "وافق على الشروط والأحكام للمتابعة",
       "carUnavailable": "السيارة غير متاحة لهذه المدة. اختر مدة أقصر أو سيارة أخرى."
     },
     "cities": {
@@ -501,6 +545,13 @@
     },
     "contact": {
       "phoneRequired": "أدخل رقم جوال صحيحًا.",
+      "nameRequired": "أدخل اسمك الكامل.",
+      "emailRequired": "أدخل بريدك الإلكتروني.",
+      "invalidEmail": "أدخل بريدًا إلكترونيًا صحيحًا.",
+      "reasonRequired": "اختر سبب التواصل.",
+      "invalidReason": "اختر سبب تواصل صالحًا.",
+      "bookingNumberTooLong": "رقم الحجز طويل جدًا.",
+      "messageRequired": "أدخل رسالتك.",
       "required": "أكمل جميع حقول التواصل المطلوبة."
     },
     "account": {
@@ -508,8 +559,16 @@
       "resendLimited": "لا يمكن إعادة إرسال الرمز الآن. انتظر قليلاً ثم حاول مرة أخرى.",
       "licenseRequired": "اختر صورة لرخصة القيادة.",
       "licenseRejected": "تعذر رفع رخصة القيادة. حاول باستخدام صورة أخرى.",
+      "licenseTooLarge": "??? ??? ?????? ??? ???? ???? ??????? 5 ????????.",
+      "licenseInvalidType": "???? ???? JPG ?? PNG.",
       "deleteRejected": "لا يمكن حذف الحساب لوجود حجوزات نشطة.",
-      "invalidCode": "رمز التحقق غير صحيح. حاول مرة أخرى."
+      "invalidCode": "رمز التحقق غير صحيح. حاول مرة أخرى.",
+      "nameRequired": "الاسم الكامل مطلوب.",
+      "emailRequired": "البريد الإلكتروني مطلوب.",
+      "invalidEmail": "أدخل بريدًا إلكترونيًا صحيحًا.",
+      "birthDateRequired": "تاريخ الميلاد مطلوب.",
+      "invalidBirthDate": "أدخل تاريخ ميلاد صحيحًا لا يقع في المستقبل.",
+      "invalidPhone": "أدخل رقم جوال صحيحًا."
     },
     "auth": {
       "invalidPhone": "أدخل رقم جوال صحيحًا.",
@@ -563,10 +622,16 @@
         "title": "مشاركة المعلومات",
         "content": "لا نشارك البيانات إلا عند الضرورة لتقديم الخدمة أو بموجب القانون."
       },
-      { "title": "حقوق المستخدم", "content": "يمكنك طلب تحديث بياناتك أو تعديلها أو حذفها." }
+      {
+        "title": "حقوق المستخدم",
+        "content": "يمكنك طلب تحديث بياناتك أو تعديلها أو حذفها."
+      }
     ]
   },
-  "citiesPage": { "title": "المدن المتاحة", "subtitle": "اختر مدينتك وابدأ رحلتك معنا" },
+  "citiesPage": {
+    "title": "المدن المتاحة",
+    "subtitle": "اختر مدينتك وابدأ رحلتك معنا"
+  },
   "common": { "selectPlaceholder": "اختر..." },
   "dateTimePicker": {
     "previousMonth": "الشهر السابق",
@@ -656,6 +721,8 @@
       "close": "إغلاق",
       "title": "تقييمك يهمنا",
       "subtitle": "شاركنا تجربتك مع هذا الحجز",
+      "ratingLabel": "التقييم",
+      "reviewLabel": "نص التقييم",
       "stars": "{count} نجوم",
       "placeholder": "اكتب تجربتك مع السيارة والمعرض...",
       "sending": "جارٍ الإرسال...",

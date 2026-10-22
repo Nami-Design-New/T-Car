@@ -30,6 +30,8 @@
   }
 }
 
+// Used only by `.license_modal .primary_btn` (account.scss) until the license
+// dialog moves to the shared Button (doc 9 fraction 3); delete it then.
 %auth_btn {
   width: 100%;
   height: 54px;
@@ -62,6 +64,7 @@
     opacity: 0.55;
   }
 }
+
 .auth_modal_wrapper {
   .modal-content {
     border: none;
@@ -90,9 +93,7 @@
   }
 }
 // ============ Login form ============
-.auth_modal,
-.phone_modal,
-.verify_modal {
+.auth_modal {
   padding: 0 40px 40px;
   border-radius: $ds-radius-xl;
 
@@ -109,7 +110,8 @@
       @extend %auth_heading;
     }
 
-    p {
+    // Own paragraphs only: field errors inside (e.g. PhoneField's) keep their style.
+    > p {
       @extend %auth_subtext;
       margin-bottom: 28px;
     }
@@ -152,230 +154,6 @@
       }
     }
   }
-
-  .auth_btn {
-    @extend %auth_btn;
-  }
-
-  // =========================
-  // Edit Phone Modal
-  // =========================
-
-  &.phone_modal.dialog {
-    width: min(460px, calc(100% - 32px));
-    background: $ds-surface-elevated;
-    display: flex;
-    visibility: visible;
-    opacity: 1;
-    z-index: 10001;
-  }
-
-  .phone_modal_header {
-    position: relative;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    margin-bottom: 28px;
-
-    .dialog__title {
-      margin: 0;
-
-      color: $ds-text-primary;
-      font-size: 20px;
-      font-weight: 700;
-      text-align: center;
-    }
-
-    .dialog__close {
-      position: absolute;
-      inset-inline-start: 0;
-
-      width: 34px;
-      height: 34px;
-
-      display: flex;
-      align-items: center;
-      justify-content: center;
-
-      padding: 0;
-
-      border: none;
-      border-radius: $ds-radius-full;
-
-      background: transparent;
-      color: $ds-text-subtle;
-
-      font-size: 20px;
-
-      cursor: pointer;
-
-      transition:
-        background 0.2s ease,
-        color 0.2s ease;
-
-      &:hover {
-        background: $ds-surface-on-background;
-        color: $ds-text-primary;
-      }
-    }
-  }
-
-  .phone_modal_body {
-    width: 100%;
-
-    .field_label {
-      display: block;
-
-      margin-bottom: 10px;
-
-      color: $ds-text-primary;
-
-      font-size: 14px;
-      font-weight: 600;
-
-      text-align: end;
-    }
-
-    .phone_wrapper {
-      width: 100%;
-      margin-bottom: 24px;
-    }
-
-    .auth_btn {
-      width: 100%;
-    }
-  }
-
-  // Mobile
-  @media (max-width: 768px) {
-    &.phone_modal.dialog {
-      width: calc(100% - 30px);
-      max-width: 420px;
-    }
-
-    .phone_modal_header {
-      margin-bottom: 22px;
-
-      .dialog__title {
-        font-size: 18px;
-      }
-
-      .dialog__close {
-        width: 30px;
-        height: 30px;
-
-        font-size: 18px;
-      }
-    }
-
-    .phone_modal_body {
-      .field_label {
-        font-size: 13px;
-      }
-    }
-  }
-  // =========================
-  // Verify Phone Modal
-  // =========================
-
-  &.verify_modal.dialog {
-    width: min(460px, calc(100% - 32px));
-
-    background: $ds-surface-elevated;
-
-    border-radius: $ds-radius-xl;
-  }
-
-  .verify_modal_header {
-    width: 100%;
-
-    display: flex;
-    justify-content: space-between;
-
-    margin-bottom: 4px;
-
-    .dialog__close {
-      width: 34px;
-      height: 34px;
-
-      display: flex;
-      align-items: center;
-      justify-content: center;
-
-      padding: 0;
-
-      border: none;
-      border-radius: $ds-radius-full;
-
-      background: transparent;
-
-      color: $ds-text-subtle;
-
-      font-size: 20px;
-
-      cursor: pointer;
-
-      transition:
-        background 0.2s ease,
-        color 0.2s ease;
-
-      &:hover {
-        background: $ds-surface-on-background;
-        color: $ds-text-primary;
-      }
-    }
-  }
-
-  .otp_form {
-    .phone {
-      margin-bottom: 26px;
-    }
-
-    .edit_phone_btn {
-      padding: 0;
-
-      margin-bottom: 24px;
-
-      border: none;
-      background: transparent;
-
-      color: $ds-action-primary;
-
-      font-size: 13px;
-      font-weight: 600;
-
-      cursor: pointer;
-
-      &:hover {
-        text-decoration: underline;
-      }
-    }
-
-    .auth_btn {
-      @extend %auth_btn;
-
-      width: 100%;
-
-      &:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-      }
-    }
-  }
-
-  // =========================
-  // Mobile
-  // =========================
-
-  @media (max-width: 768px) {
-    &.verify_modal.dialog {
-      width: calc(100% - 30px);
-
-      max-width: 420px;
-    }
-  }
 }
 
 .otp_header {
@@ -413,25 +191,11 @@
     font-size: 1rem;
     line-height: 1.8;
     text-align: start;
-  }
 
-  .phone {
-    display: inline-flex;
-    align-items: center;
-
-    margin: 8px 0 26px;
-    padding: 7px 12px;
-
-    border: 1px solid rgba($ds-action-primary, 0.12);
-    border-radius: $ds-radius-full;
-    background: $ds-surface-card-primary;
-
-    color: $ds-action-primary;
-    font-size: 0.9rem;
-    font-weight: 600;
-    letter-spacing: 0.025em;
-    line-height: 1.4;
-    unicode-bidi: isolate;
+    // A phone number in the sentence never breaks across lines.
+    bdi {
+      white-space: nowrap;
+    }
   }
 
   .otp_resend_status {

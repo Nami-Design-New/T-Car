@@ -3,7 +3,7 @@
 Status: **in progress** on branch `refactor/architecture-layers` (not merged). See
 [Migration status](#migration-status) for what is done and where the code
 deliberately differs from these documents.
-Last reviewed against the code: 2026-10-18. Status updated: 2026-10-18.
+Last reviewed against the code: 2026-10-21. Status updated: 2026-10-21.
 
 This folder reviews the current front end and sets out the target design and the
 migration path for the architecture areas. Each document stands on its own: it covers the
@@ -211,7 +211,7 @@ merged or pushed yet.
 | Phase | Status | Notes |
 | ----- | ------ | ----- |
 | 0. Bug fixes and dead code | Done (one item waiting on product) | All 10 bugs above fixed. Dead code deleted: `bookings/BookingsTab`, `BookingCarSummary`, `BookingPriceDetails`, `RateBookingButton`, `CityCarCard`, `CitiesGrid`, `lib/i18n.ts`, `layout/I18nProvider.tsx`, and 8 unused path aliases. `npm run typecheck` and `npm run check` (typecheck + lint) added; there is no CI config yet to run them in. React 19.3 (verified with the build and server rendering of every route; not yet checked in a browser). Also fixed on the way: a duplicated mock car id. **Kept by product decision (2026-10-13):** `BookingModal`, `BookingMonthlyModal`, `InsufficientBalanceModal` (unused for now). Optional: a designed Open Graph image (`src/app/opengraph-image.jpg`) |
-| 1. Foundations | Done | `features/`, `shared/{ui,lib,hooks,config}`, `services/http`, the import rules (as warnings), `AppError` / `Result` / `reportError`, the `errors` and `states` messages, root `error.tsx` and `global-error.tsx`, a non-blocking root `loading.tsx` with `Skeleton`, and the first Radix `shared/ui` set, each tested and with at least one production caller: `Dialog` (`CountryModal`, `WalletAmountModal`, `BankSelectModal`), `ConfirmDialog`, `ResultDialog`, `Tabs` (insurance terms), `Accordion` (warranties), `RadioCards` (payment method), `Menu` (user menu), `Button` with `loading` / `asChild`, `Price` (wallet), `EmptyState` + lazy `Illustration` and `ErrorState` (bookings, wallet, bank accounts). The FAQ became native `<details>` rather than `Accordion` (answers stay in the server HTML). Vitest + Testing Library (`npm run test`, 64 tests). Moved to phase 2: per-segment `loading.tsx`, which real 404 status codes need. Replacing the remaining dialogs and menus is doc 4 / phase 4 work |
+| 1. Foundations | Done | `features/`, `shared/{ui,lib,hooks,config}`, `services/http`, and import boundaries: `eslint-plugin-boundaries` resolves aliases and relative paths through a default-deny layer allow-list. The existing targeted `no-restricted-imports` checks remain warnings until legacy aliases and reported feature-to-feature deep imports are migrated. `AppError` / `Result` / `reportError`, the `errors` and `states` messages, root `error.tsx` and `global-error.tsx`, a non-blocking root `loading.tsx` with `Skeleton`, and the first Radix `shared/ui` set, each tested and with at least one production caller: `Dialog` (`CountryModal`, `WalletAmountModal`, `BankSelectModal`), `ConfirmDialog`, `ResultDialog`, `Tabs` (insurance terms), `Accordion` (warranties), `RadioCards` (payment method), `Menu` (user menu), `Button` with `loading` / `asChild` / start-or-end icons, `Price` (wallet), `EmptyState` + lazy `Illustration` and `ErrorState` (bookings, wallet, bank accounts). The FAQ became native `<details>` rather than `Accordion` (answers stay in the server HTML). Vitest + Testing Library (`npm run test`, 64 tests). Moved to phase 2: per-segment `loading.tsx`, which real 404 status codes need. Replacing the remaining dialogs and menus is doc 4 / phase 4 work |
 | 2. Routing | Done (5 of 5 fractions) | **Done:** (1) the account sections are routes: `/account/{profile,bookings,wallet,bank-accounts,notifications}` in a `(sections)` route group with one layout (title + link sidebar with `aria-current`); each loads only its own data and JS (e.g. notifications 101 kB vs the single 334 kB page before); `/account` and old `/account?tab=<section>` links are real HTTP redirects (`next.config.mjs`). (2) Booking details moved to `/account/bookings/[id]` (outside the group, so the page keeps its full-width layout), with its own title and a permanent redirect from `/my-bookings/[id]`; all of `/account/**` is `noindex`. (3) The bookings list reads `?status=active|past` (links with `aria-current`, rendered on the server, no client state); the details back link returns to the booking's own list. (4) Route-level loading and error boundaries now cover home, account sections, car details, city details, and booking details; car, city, and booking resources have segment-specific not-found screens. **Complete:** filters, sorting, and hero search context are now read from URL parameters by `/cars` and `/cities/[slug]`. |
 | 3. Server-first data and auth | Done (4 of 4 fractions) | Reads go through `features/*/queries.ts` for cars, cities, car details, bookings, home, rental search, account profile, and notifications (car and city pages also set their own `<title>`). Auth is NextAuth v5 with the backend token in its `httpOnly` session cookie and a middleware guard ([doc 2](02-server-client-boundary.md#23-auth-across-the-boundary)). Wallet, bank-account, booking, checkout, and contact writes now cross Server Actions and use `fromActionResult`; wallet and bank-account reads remain on browser-only stateful mocks until a user-scoped persistence contract exists. |
 | 4. Feature migration | Done (8 of 8 fractions) | All retained modal surfaces now use `shared/ui/Dialog`, including account phone/license/verification, car-detail reviews and branch information, booking forms and payment, booking actions, wallet and bank-account forms, selection flows, auth, and common result dialogs. The shared `OtpInput` now owns digit entry, focus, keyboard, and paste behavior for auth and phone verification. The filter drawers remain intentionally outside the dialog interface. Remaining performance, i18n, image, and SCSS work is tracked in phases 5–8 |
@@ -222,15 +222,18 @@ merged or pushed yet.
 
 ### Features
 
+**Phase 1 import-boundary remediation (2026-10-20):** The account shell now receives points data from its App Router section layout and imports the summary card through `features/points/index.ts`. The root layout now supplies the authenticated notifications count to the layout feature. `MapLocationModal` and `LocationData` now live in `shared/ui` and `shared/lib`, respectively, with every caller using that shared API. Rental search now consumes the cars feature only through its public index; that index no longer exposes the server-only `getOffices` read, which the home route imports directly. The initial lint audit is reduced from nine to two boundary errors; both remaining violations are in wallet's bank-account action dependency.
+
+
 | Feature | Moved to `features/` | Data behind queries / api | Actions return `Result` | Remaining |
 | ------- | :---: | :---: | :---: | --------- |
-| `wallet`, `bank-accounts` | Yes | Client reads over `*.api.ts`; writes through Server Actions | Yes | Fractions 1–3 complete: wallet and bank-account form, confirmation, and result states use shared dialogs. Left: user-scoped reads/API and forms (doc 3 step 7) |
-| `my-bookings` | Yes | Yes | Yes (Server Actions) | Fraction 4 complete: extend, cancel, review, and result dialogs use shared Dialog primitives. Left: `router.refresh()` after an action once the API keeps state |
+| `wallet`, `bank-accounts` | Yes | Client reads over `*.api.ts`; writes through Server Actions | Yes | Fractions 1–3 complete: wallet and bank-account form, confirmation, and result states use shared dialogs. Left: user-scoped reads/API and forms (doc 3 step 7). Form validation fractions 4–5 add RHF + Zod amount and bank-account rules, re-parsed by the actions |
+| `my-bookings` | Yes | Yes | Yes (Server Actions) | Fraction 4 complete: extend, cancel, review, and result dialogs use shared Dialog primitives. Form-validation fraction 8 adds RHF + Zod to review, extend, and edit. Left: `router.refresh()` after an action once the API keeps state |
 | `car-details`, `booking` | Yes | Yes | Yes (checkout) | Fraction 5 complete: daily booking, confirmation, payment, and booking result dialogs use shared primitives. Left: keep a failed edit request open inside `BookingDailyModal` and migrate remaining booking-flow details |
 | `cars`, `cities` | Yes | Yes | n/a | Fraction 6 complete: the same `CarFilters` surface serves the hero drawer, `/cars`, and city listings. It preserves the hero's selected URL filters when navigating to `/cars`; `/cars` and each city listing keep independent, URL-backed state on their own routes. City listings use the same office-grouped `CarOfficeRow` swipers as `/cars`. Brand options come from `getCarBrands()` (mocked `carsApi.listBrands()`). Left: consolidate the remaining option data (companies, types, services; doc 4) |
 | `home`, `rental-search` | Yes | Yes (FAQs, search options) | Yes (Server Action: contact form) | Fraction 7 complete: pickup type, branch, airport, station, map, and country dialogs use shared `Dialog`. The FAQ is native `<details>`; static home content remains component-local |
 | `auth` | Yes | NextAuth + mocked `authApi` | Yes (Server Actions) | Auth dialog uses shared `Dialog` and `ResultDialog`; login, OTP, and registration use RHF + Zod (`validation.ts`) with the schemas re-parsed in the actions (doc 9 fraction 1). Real backend endpoints remain a later integration concern |
-| `account` (profile, notifications) | Yes | Yes (scoped to the session user) | Yes (Server Actions: save, phone change send and verify, license upload, delete) | Routes per section with a shared layout and `AccountNav`; the loyalty points summary is shown in the account layout and `/account/points` owns the points history view. Common success/failure results now use `shared/ui/Dialog`. Left: notification mark-all-read is still static; opening the license details is still a TODO; forms (doc 3 step 7) and remaining dialogs |
+| `account` (profile, notifications) | Yes | Yes (scoped to the session user) | Yes (Server Actions: save, phone change send and verify, license upload, delete) | Routes per section with a shared layout and `AccountNav`; the loyalty points summary is shown in the account layout and `/account/points` owns the points history view. Common success/failure results now use `shared/ui/Dialog`. Profile save and change/verify phone use RHF + Zod (`validation.ts`) with the schemas re-parsed in the actions (doc 9 fraction 2). License upload uses RHF + Zod (doc 9 fraction 3); left: notification mark-all-read is still static, opening the license details is still a TODO, and remaining dialogs |
 | `layout` | Yes | n/a | n/a | The header shell and footer render on the server; mobile navigation, language, and auth are client islands; the user menu uses `Menu`. Left: trimming the client messages (doc 2 step 7), the language switcher on `Menu` |
 
 The `*.api.ts` files are backed by mocks only; no backend endpoint is wired in.
@@ -239,7 +242,11 @@ extensions over 30 days, and so on) are documented in each `services/mocks/*.ts`
 
 ### What remains
 
-- Form validation ([doc 9](09-form-validation.md)), fraction 1 of 7 (auth) done:
+- Form validation ([doc 9](09-form-validation.md)), 8 of 8 fractions done, one
+  commit each: (1) ✅ auth sign-in and registration; (2) ✅ profile save and
+  change/verify phone; (3) license upload, complete (JPG/PNG, 5 MB); (4) wallet top-up / withdrawal, complete; (5) bank-account add / edit, complete; (6) contact message, complete (RHF + Zod with server re-parse); (7) daily booking and checkout terms / payment, complete; (8) booking
+  review, extend, and edit, complete. Join-us stays blocked until it has a write contract.
+- Form validation fraction 1 (auth):
   `zod` 4 and `@hookform/resolvers` 5 added; `features/auth/validation.ts` holds
   the phone, OTP, and registration schemas (messages are `errors.auth.*` keys,
   five new in both locales); the login, OTP, and registration forms use React
@@ -263,20 +270,66 @@ extensions over 30 days, and so on) are documented in each `services/mocks/*.ts`
   arrows stay native: `BackButton` calls `router.back()`, not a dialog step.
   The registration terms checkbox is
   checked by the action only; the auth contract has no field for it.
-  Assumptions to confirm (doc 9 §9.4): phone is 9–15 digits, any country, sent
+  Assumptions to confirm (doc 9 §9.4): phone is 8–15 digits, any country, sent
   as entered (no canonical format); birth date is a real date not in the
-  future (no minimum age); no name/email length limits. Next fractions, in
-  order: profile/phone, wallet, bank accounts, contact, booking, reviews.
+  future (no minimum age); no name/email length limits.
+- Form validation fraction 2 (profile and phone, branch
+  `refactor/form-validation-profile`): `isPhoneNumber` and `isPastIsoDate` moved
+  to `shared/lib/validation.ts` (a second feature needed them, doc 9 §9.1) and
+  auth imports them; `features/account/validation.ts` holds the profile, phone,
+  and code schemas with `errors.account.*` keys (six new in both locales).
+  `saveProfileAction`, `sendPhoneCodeAction`, and `verifyPhoneAction` check the
+  session, then parse their input; profile save takes only `fullName`, `email`,
+  and `birthDate` and merges them into the stored profile, so the phone and
+  license status stay server-managed. `ProfileTab` uses RHF with `FormInput`
+  (new optional decorative `icon`, used for the calendar) and a submit `Button`;
+  its form closes before the dialogs, because React submit events bubble
+  through portals, and uses `display: contents` so the panel layout is
+  unchanged. A failed save maps field errors (e.g. `account.profileRejected` on
+  the email) and keeps the input; a successful save resets the form to the
+  saved values. `EditPhoneModal` and `VerifyPhoneModal` use RHF with
+  `PhoneField` / `OtpInput` `error` props and `Button`; their handlers resolve
+  with the error, so the three error states in `ProfileTab` are gone. The phone
+  input now has a localized accessible name. Removed as dead: the account
+  `.form_field`, `.input_wrapper`, `.save_btn` rules and the `.auth_btn` rules
+  in `auth.scss`. `%auth_btn` stays only for `.license_modal .primary_btn` until
+  fraction 3. Design follow-up (same fraction, checked in headless Chrome, en
+  and ar, desktop and 390 px): the change-phone and verify dialogs use the
+  auth dialog layout (`auth_modal_wrapper` / `auth_modal`, `login_form` and
+  `otp_form` with the back arrow, the number inside the sentence in `<bdi>`,
+  centered digits, the resend row), so the buttons get the auth spacing; the
+  old `phone_modal` / `verify_modal` styles were removed as dead.
+  `account.editPhone` gained `description` and `countrySearchPlaceholder` in
+  both locales. The profile rows have 12 px between them, their chevrons point
+  forward (`FiChevronRight` + `mirror-in-rtl`), the phone value is isolated LTR,
+  and the license warning icon is red again (the success color won on equal
+  specificity). `FormInput`'s icon follows the input's `dir`, and a date input's
+  native picker button becomes an invisible hit area over it (one icon).
+  `.login_form p` now styles only direct children, so `PhoneField`'s error
+  keeps its style in both phone forms. Left: an unused `.auth_btn` rule remains
+  in `styles/legacy/_components.scss` for the legacy cleanup.
+- Form validation fraction 3 (license upload): the dialog now uses RHF +
+  Zod with a single selected-file schema. It accepts declared JPG/PNG files
+  up to 5 MB and keeps a failed submission open with the file and a localized
+  inline error. The Server Action parses the same schema from FormData before
+  calling the mock service, which rechecks declared type and size; actual image
+  inspection, scanning, and retention remain backend contract follow-ups.
+- Form validation fraction 4 (wallet top-up and withdrawal): the wallet validation module defines the shared finite amount schemas. The amount sheet uses RHF + Zod and keeps returned errors inline with its value. Both Server Actions re-parse the schema; top-up uses the current mock maximum (10,000 SAR), and withdrawal uses the current withdrawable balance. Bank-account ownership remains an action check. The mock/API contract still owns daily limits and a future persisted balance check.
+- Form validation fraction 5 (bank-account add / edit): `features/bank-accounts/validation.ts` normalizes Saudi IBAN input (spaces removed, upper-cased) and checks the `SA` prefix, two check digits, and 24-character length. The form uses RHF + Zod with the shared `FormInput` and `Button`; its custom bank picker maps local and returned field errors accessibly. Add and edit actions re-parse the payload before applying the stateless mock transition. Unknown bank availability remains an action check, while ownership, duplicates, and checksum verification remain backend contract follow-ups. A rejected submit remains open with its selected bank and IBAN.
+- Form validation fraction 6 (contact message): `features/home/validation.ts` trims name, email, reason, booking number, and message; accepts the supplied reason enum and treats a blank booking number as absent. The contact form uses RHF + Zod with shared controls, keyboard submission, pending state, localized field errors, and preserved values after a failed send. `sendContactMessageAction` re-parses the normalized payload before calling the mock. Booking numbers currently have a client-side 50-character bound pending the product length, moderation, and abuse/rate-limit contract.
+- Form validation fraction 7 (daily booking and checkout): `features/booking/validation.ts` validates future ordered dates, known time slots, normalized bounded notes and addresses, finite price fields, accepted payment methods, and explicit terms acceptance. `BookingDailyModal` uses RHF + Zod for calendar, time, location, and notes input; `BookingConfirmModal` blocks payment until the eligibility terms are accepted; and the booking action re-parses the request before the mock service. The 500-character notes and 200-character address bounds are provisional until the product contract sets final limits; availability, price, wallet/provider eligibility, and payment results remain server rules.
+
+- Form validation fraction 8 (booking review, extend, and edit): my-bookings/validation.ts defines the 1–5 integer rating, normalized optional review (provisional 1000-character bound), positive integer extension days, and the shared booking-details edit schema. Review and extension dialogs use RHF + Zod with shared controls and pending states; edit reuses the daily booking form and keeps its values open with inline field errors when the request fails. The three Server Actions re-parse their payloads before calling the mock service. Completion, authorization, availability, extension limits, and review eligibility remain server rules.
 - Shared `Button` adoption (decision 2026-10-18): every text action button uses
   `shared/ui/Button` (with `loading` for pending submits) for a consistent look
   and pending state. Icon-only, tab, chip, toggle, and filter-option buttons are
   out of scope (they stay native or use their own shared component). At the
   decision, 103 native `<button>`s remained in 49 files outside `shared/ui`.
   Fractions, one commit each: (1) ✅ auth forms (with doc 9 fraction 1);
-  (2) submit buttons move with each later doc 9 form fraction (profile/phone,
-  wallet, bank accounts, contact, booking, reviews); (3) remaining action buttons
-  per feature: `account` (`VerifyPhoneModal` still uses `.auth_btn`, and with it
-  the shared `%auth_btn` rules), `my-bookings` (details header, cancel, extend,
+  (2) submit buttons move with each later doc 9 form fraction: ✅ profile save,
+  change phone, and verify phone; then license, wallet, bank accounts, contact,
+  booking, reviews; (3) remaining action buttons per feature: `account` (only
+  `LicenseModal` is left, with fraction 3), `my-bookings` (details header, cancel, extend,
   review), `booking` (daily, confirm, payment, booking card), `bank-accounts`,
   `wallet`, `rental-search` dialogs and hero, `cars` / `cities`, `layout`,
   `points` / `notifications`; (4) `global-error.tsx` only if the shared button

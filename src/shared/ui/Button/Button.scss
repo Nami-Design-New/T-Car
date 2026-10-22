@@ -1,10 +1,27 @@
 @use 'tokens/tokens' as *;
 
+.btn--with-icon {
+  gap: 0.5rem;
+}
+
+.btn__icon {
+  flex: 0 0 auto;
+  line-height: 0;
+
+  svg {
+    display: block;
+  }
+}
+
 .btn--loading {
   position: relative;
 
   // Hidden, not removed: the button keeps its width and its accessible name.
   .btn__label {
+    visibility: hidden;
+  }
+
+  .btn__icon {
     visibility: hidden;
   }
 }

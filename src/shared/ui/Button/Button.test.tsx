@@ -27,6 +27,30 @@ describe('Button', () => {
     expect(onClick).not.toHaveBeenCalled();
   });
 
+  it('renders its icon at the start by default', () => {
+    render(
+      <Button icon={<svg data-testid="icon" />}>
+        Browse cars
+      </Button>,
+    );
+
+    const button = screen.getByRole('button', { name: 'Browse cars' });
+    expect(button).toHaveClass('btn--with-icon');
+    expect(button.firstElementChild).toHaveClass('btn__icon--start');
+    expect(screen.getByTestId('icon').closest('.btn__icon')).toHaveAttribute('aria-hidden', 'true');
+  });
+
+  it('renders its icon at the end when requested', () => {
+    render(
+      <Button icon={<svg data-testid="icon" />} iconPosition="end">
+        Continue
+      </Button>,
+    );
+
+    const button = screen.getByRole('button', { name: 'Continue' });
+    expect(button.lastElementChild).toHaveClass('btn__icon--end');
+  });
+
   it('puts the button styles on its child with asChild', () => {
     render(
       <Button asChild size="lg">

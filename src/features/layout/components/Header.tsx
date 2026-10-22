@@ -1,22 +1,23 @@
 import Image from 'next/image';
 import { getTranslations } from 'next-intl/server';
 import { FiBell } from 'react-icons/fi';
-import { auth } from '@/auth';
 import { IMAGES } from '@/shared/config/assets';
 const logo = IMAGES.brandLogo;
 import { Link } from '@/i18n/navigation';
 import { NAV_LINKS } from '@/shared/config/site';
-import { getNotifications } from '@/features/notifications/queries';
 import AuthControl from './AuthControl';
 import LanguageSwitcher from './LanguageSwitcher';
 import LocationPicker from './LocationPicker';
 import MobileNav from './MobileNav';
 
-export default async function Header() {
-  const [session, t] = await Promise.all([auth(), getTranslations()]);
-  const unreadCount = session
-    ? (await getNotifications()).filter((notification) => !notification.read).length
-    : 0;
+interface Props {
+  hasSession: boolean;
+  signedIn: boolean;
+  unreadCount: number;
+}
+
+export default async function Header({ hasSession, signedIn, unreadCount }: Props) {
+  const t = await getTranslations();
   const notificationCountLabel = t('account.notifications.unreadCount', {
     count: unreadCount,
   });
@@ -42,7 +43,7 @@ export default async function Header() {
 
           <div className="header-nav-actions">
             <LanguageSwitcher />
-            {session && (
+            {hasSession && (
               <Link
                 href="/account/notifications"
                 className="header-notifications"
@@ -56,7 +57,7 @@ export default async function Header() {
                 )}
               </Link>
             )}
-            <AuthControl signedIn={Boolean(session?.user)} loginLabel={t('nav.login')} />
+            <AuthControl signedIn={signedIn} loginLabel={t('nav.login')} />
           </div>
         </MobileNav>
       </div>

@@ -78,12 +78,15 @@ export function cancellationFee(amount: number, percent: number): number {
 
 /** Pre-fills the edit request form from the booking. */
 export function toEditRequest(booking: BookingDetailsView): BookingEditRequest {
+  const startDate = new Date(booking.pickupDateTime);
+  const endDate = new Date(booking.dropoffDateTime);
+
   return {
-    startDate: new Date(booking.pickupDateTime),
-    endDate: new Date(booking.dropoffDateTime),
+    startDate,
+    endDate,
     time: booking.pickupDateTime.slice(11, 16),
     notes: '',
-    days: booking.days,
+    days: Math.max(1, Math.round((endDate.getTime() - startDate.getTime()) / 86400000)),
     pricePerDay: booking.pricePerDay,
     subtotal: booking.subtotal,
     vat: booking.vat,

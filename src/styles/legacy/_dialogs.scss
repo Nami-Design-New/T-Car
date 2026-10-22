@@ -1,155 +1,68 @@
-@use 'tokens/tokens' as *;
+@use "tokens/tokens" as *;
 
-// Legacy dialog chrome shared by several features (.modal_overlay, .close_btn, .back_btn, .selection_modal).
-// Goes away as dialogs move to shared/ui/Dialog (doc 4).
-
-// --- overlay, header and body of the legacy dialogs
-.modal_overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 9999;
-
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-  background: rgba($ds-shadow-color, 0.45);
-  backdrop-filter: blur(8px);
-
-  .pickup_modal {
-    position: relative;
-
-    width: min(720px, calc(100% - 28px));
-
-    background: $ds-surface-elevated;
-    border-radius: $ds-radius-xl;
-
-    padding: 24px;
-
-    animation: popup 0.35s ease;
-
-    .modal_header {
+.pickup_modal {
+  .pickup_cards {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px;
+    padding: 1.25rem 0;
+    .pickup_card {
+      padding: 22px 18px;
+      border: 1px solid $ds-stroke-light;
+      border-radius: $ds-radius-lg;
+      background: $ds-surface-elevated;
       display: flex;
-      justify-content: space-between;
+      flex-direction: column;
       align-items: center;
-
-      margin-bottom: 20px;
-
-      h2 {
-        margin: 0;
-        font-size: 24px;
-        color: $ds-text-primary;
+      cursor: pointer;
+      transition: 0.3s;
+      gap: 0.75rem;
+      img {
+        width: 44px;
+        height: auto;
+        transition: 0.3s;
       }
 
-      p {
-        margin-top: 6px;
-        font-size: 14px;
-        color: $ds-text-subtle;
+      h4 {
+        font-size: 1rem;
+        color: $ds-text-primary;
+        transition: 0.3s;
+      }
+
+      &:hover {
+        transform: translateY(-4px);
+        border-color: $ds-action-primary;
+        box-shadow: 0 10px 24px rgba($ds-action-primary, 0.12);
+        img {
+          transform: scale(1.05);
+        }
+        h4 {
+          color: $ds-action-primary;
+        }
       }
     }
+  }
 
+  @media (max-width: $breakpoint-md) {
     .pickup_cards {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 18px;
+      grid-template-columns: 1fr;
+      gap: 14px;
 
       .pickup_card {
-        padding: 22px 18px;
-
-        border: 1px solid $ds-stroke-light;
-        border-radius: $ds-radius-lg;
-
-        background: $ds-surface-elevated;
-
-        display: flex;
-        flex-direction: column;
+        padding: 18px 14px;
+        flex-direction: row;
+        gap: 0.5rem;
         align-items: center;
-
-        cursor: pointer;
-
-        transition: 0.3s;
+        justify-content: center;
 
         img {
-          width: 60px;
-          height: auto;
-
-          margin-bottom: 14px;
-
-          transition: 0.3s;
+          width: 24px;
+          margin: 0;
         }
 
         h4 {
-          margin-bottom: 6px;
-
-          font-size: 17px;
-          color: $ds-text-primary;
-
-          transition: 0.3s;
-        }
-
-        p {
+          font-size: 14px;
           margin: 0;
-
-          font-size: 13px;
-          line-height: 1.6;
-
-          text-align: center;
-
-          color: $ds-text-subtle;
-        }
-
-        &:hover {
-          transform: translateY(-4px);
-
-          border-color: $ds-action-primary;
-
-          box-shadow: 0 10px 24px rgba($ds-action-primary, 0.12);
-
-          img {
-            transform: scale(1.05);
-          }
-
-          h4 {
-            color: $ds-action-primary;
-          }
-        }
-      }
-    }
-
-    @media (max-width: 768px) {
-      width: calc(100% - 24px);
-
-      padding: 18px;
-
-      .modal_header {
-        margin-bottom: 16px;
-
-        h2 {
-          font-size: 20px;
-        }
-
-        p {
-          font-size: 13px;
-        }
-      }
-
-      .pickup_cards {
-        gap: 14px;
-
-        .pickup_card {
-          padding: 18px 14px;
-
-          img {
-            width: 48px;
-          }
-
-          h4 {
-            font-size: 15px;
-          }
-
-          p {
-            font-size: 12px;
-          }
         }
       }
     }
@@ -169,111 +82,16 @@
   }
 }
 
-.close_btn {
-  position: absolute;
-  top: -20px;
-  inset-inline-end: 18px;
-
-  width: 42px;
-  height: 42px;
-
-  border: none;
-  border-radius: $ds-radius-full;
-
-  background: $ds-surface-on-background;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1;
-  cursor: pointer;
-  font-size: 22px;
-  transition: 0.3s;
-
-  &:hover {
-    background: $ds-action-primary;
-    color: $ds-text-on-action;
-  }
-}
-
 .selection_modal {
-  width: min(600px, calc(100% - 32px));
-  max-height: 78vh;
-
-  background: $ds-surface-elevated;
-  border-radius: $ds-radius-xl;
-
-  padding: 25px;
-
-  position: relative;
-
-  display: flex;
-  flex-direction: column;
-
-  // overflow: hidden;
-
-  .modal_header {
-    margin-bottom: 16px;
-
-    h2 {
-      font-size: 22px;
-      margin-bottom: 4px;
-    }
-
-    p {
-      font-size: 13px;
-      color: $ds-text-subtle;
-      margin: 0;
-    }
-  }
-
-  .search_box {
-    height: 46px;
-
-    display: flex;
-    align-items: center;
-
-    padding-inline: 14px;
-    margin-bottom: 16px;
-
-    border: 1px solid $ds-stroke-light;
-    border-radius: $ds-radius-md;
-
-    flex-shrink: 0;
-
-    svg {
-      font-size: 18px;
-      color: $ds-text-subtle;
-    }
-
-    input {
-      flex: 1;
-
-      border: none;
-      outline: none;
-
-      background: transparent;
-
-      padding-inline: 10px;
-
-      font-size: 14px;
-    }
-  }
-
   .selection_list {
-    flex: 1;
-
-    min-height: 0;
-
-    overflow-y: auto;
-
     display: flex;
     flex-direction: column;
-
+    flex: 1;
+    min-height: 0;
+    padding: 1.25rem 0;
+    overflow-y: auto;
     gap: 10px;
-
     padding-inline-end: 4px;
-
     &::-webkit-scrollbar {
       width: 5px;
     }
@@ -286,52 +104,42 @@
 
   .selection_item {
     width: 100%;
-
     display: flex;
     align-items: center;
-
+    justify-content: space-between;
     gap: 14px;
-
     padding: 12px 14px;
-
-    border: 1px solid $ds-stroke-light;
+    border: none;
     border-radius: $ds-radius-md;
-
-    background: $ds-surface-elevated;
-
+    background: $ds-surface-on-background;
     cursor: pointer;
-
     transition: 0.25s;
-
     flex-shrink: 0;
 
     .icon {
       width: 42px;
       height: 42px;
-
       border-radius: $ds-radius-md;
-
       display: flex;
       justify-content: center;
       align-items: center;
-
-      background: $ds-surface-card-primary;
-
+      // background: $ds-surface-card-primary;
       svg {
         font-size: 20px;
-        color: $ds-action-primary;
+        color: $ds-stroke-heavy;
       }
     }
 
     .content {
-      flex: 1;
-      text-align: end;
+      flex-grow: 1;
+      text-align: start;
+      display: flex;
+      gap: 0.25rem;
 
       h4 {
         font-size: 15px;
         margin-bottom: 2px;
       }
-
       p {
         margin: 0;
         font-size: 12px;
@@ -347,58 +155,16 @@
 
     &.active {
       border-color: $ds-action-primary;
-      background: $ds-surface-card-primary;
-
       .icon {
-        background: $ds-action-primary;
-
         svg {
-          color: $ds-text-on-action;
+          color: $ds-action-primary;
         }
       }
     }
   }
 
-  .confirm_btn {
-    width: 100%;
-    height: 56px;
-
-    border: none;
-
-    border-radius: $ds-radius-md;
-
-    background: $ds-action-primary;
-
-    color: $ds-text-on-action;
-
-    font-weight: 700;
-
-    cursor: pointer;
-
-    transition: 0.3s;
-
-    &:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-
-    &:hover:not(:disabled) {
-      transform: translateY(-2px);
-    }
-  }
-
   @media (max-width: 768px) {
-    width: calc(100% - 24px);
-
-    max-height: 72vh;
-
-    padding: 18px;
-
     .modal_header {
-      h2 {
-        font-size: 20px;
-      }
-
       p {
         font-size: 12px;
       }
@@ -406,11 +172,9 @@
 
     .selection_item {
       padding: 10px 12px;
-
       .icon {
         width: 38px;
         height: 38px;
-
         svg {
           font-size: 18px;
         }
@@ -426,10 +190,6 @@
         }
       }
     }
-
-    .confirm_btn {
-      height: 44px;
-    }
   }
 }
 
@@ -437,21 +197,15 @@
 .back_btn {
   width: 42px;
   height: 42px;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   border: 1px solid $ds-stroke-light;
   border-radius: $ds-radius-md;
-
   background: $ds-surface-elevated;
   color: $ds-text-primary;
-
   cursor: pointer;
-
   transition: all 0.25s ease;
-
   svg {
     font-size: 20px;
     transition: transform 0.25s ease;

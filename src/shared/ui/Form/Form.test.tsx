@@ -133,6 +133,21 @@ describe('field errors and required marks', () => {
     expect(ref.current).toBe(screen.getByRole('textbox', { name: 'Full name' }));
   });
 
+  it('shows a decorative icon without changing the name or the error link', () => {
+    render(
+      <FormInput
+        id="birth"
+        label="Date of birth"
+        icon={<svg data-testid="calendar" />}
+        error="Date of birth is required."
+      />
+    );
+    const input = screen.getByRole('textbox', { name: 'Date of birth' });
+    expect(input).toHaveClass('form_input', 'form_input--with-icon');
+    expect(screen.getByTestId('calendar').parentElement).toHaveAttribute('aria-hidden', 'true');
+    expect(input).toHaveAccessibleDescription('Date of birth is required.');
+  });
+
   it('wires textarea and select errors the same way', () => {
     renderWithIntl(
       <>

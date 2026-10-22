@@ -1,4 +1,4 @@
-@use 'tokens/tokens' as *;
+@use "tokens/tokens" as *;
 
 // Common / Button
 .btn {
@@ -25,7 +25,7 @@
   }
 
   &::after {
-    content: '';
+    content: "";
 
     position: absolute;
     inset: 0;
@@ -66,6 +66,7 @@
   }
 
   &-outline {
+    border: 1px solid $ds-action-primary;
     &::after {
       background: $ds-action-primary;
     }

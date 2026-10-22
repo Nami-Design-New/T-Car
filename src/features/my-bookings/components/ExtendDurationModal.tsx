@@ -1,8 +1,13 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
 import { useTranslations } from 'next-intl';
+import { useFieldErrorMessage } from '@/shared/hooks/useErrorMessage';
+import { Button } from '@/shared/ui/Button';
 import { Dialog } from '@/shared/ui/Dialog';
+import { extendBookingSchema, type ExtendBookingFormValues } from '../validation';
 
 interface Props {
   open: boolean;
@@ -24,28 +29,42 @@ export default function ExtendDurationModal({
   loading = false,
   error,
 }: Props) {
-  const [days, setDays] = useState(currentDays);
   const t = useTranslations('myBookings.extend');
+  const fieldError = useFieldErrorMessage();
+  const {
+    handleSubmit,
+    reset,
+    setValue,
+    watch,
+    formState: { errors },
+  } = useForm<ExtendBookingFormValues>({
+    resolver: zodResolver(extendBookingSchema),
+    mode: 'onBlur',
+    reValidateMode: 'onChange',
+    defaultValues: { days: currentDays },
+  });
+  const days = watch('days');
 
   useEffect(() => {
-    setDays(currentDays);
-  }, [currentDays, open]);
+    if (open) reset({ days: currentDays });
+  }, [currentDays, open, reset]);
 
   const increment = () => {
-    setDays((d) => d + 1);
+    setValue('days', days + 1, { shouldDirty: true, shouldValidate: true });
   };
 
   const decrement = () => {
-    setDays((d) => Math.max(1, d - 1));
+    setValue('days', Math.max(1, days - 1), { shouldDirty: true, shouldValidate: true });
   };
 
   const subtotal = days * pricePerDay;
   const vat = Math.round(subtotal * 0.05);
   const total = subtotal + vat;
+  const submit = handleSubmit(({ days: nextDays }) => onConfirm(nextDays));
 
   return (
-    <Dialog open={open} onClose={onClose} placement="bottom-sheet" label="Extend booking">
-      <div className="selection_modal extend_modal">
+    <Dialog open={open} onClose={onClose} placement="bottom-sheet" label={t('title')}>
+      <form className="selection_modal extend_modal" onSubmit={submit} noValidate>
         {/* Close */}
         {/* Header */}
         <div className="modal_header">
@@ -70,6 +89,11 @@ export default function ExtendDurationModal({
           </div>
 
           <p className="note">{t('note')}</p>
+          {errors.days && (
+            <p className="form_error" role="alert">
+              {fieldError(errors.days.message)}
+            </p>
+          )}
         </div>
 
         {/* Price Details */}
@@ -139,15 +163,14 @@ export default function ExtendDurationModal({
         )}
 
         {/* Confirm */}
-        <button
-          type="button"
+        <Button
+          type="submit"
           className="confirm_btn"
-          onClick={() => onConfirm(days)}
-          disabled={loading}
+          loading={loading}
         >
           {loading ? t('extending') : t('confirm')}
-        </button>
-      </div>
+        </Button>
+      </form>
     </Dialog>
   );
 }

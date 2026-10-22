@@ -1,20 +1,18 @@
 import type { ReactNode } from "react";
 import { getTranslations } from "next-intl/server";
-import { getPoints } from "@/features/points/queries";
 import { BackButton } from "@/shared/ui/BackButton";
-import PointsSummaryCard from "@/features/points/components/PointsSummaryCard";
+import { PointsSummaryCard, type PointsSummary } from "@/features/points";
 import AccountNav from "./AccountNav";
 
 /** The account shell: title and section links stay while a section loads or fails. */
 export default async function AccountLayout({
   children,
+  pointsSummary,
 }: {
   children: ReactNode;
+  pointsSummary: PointsSummary;
 }) {
-  const [t, points] = await Promise.all([
-    getTranslations("account"),
-    getPoints(),
-  ]);
+  const t = await getTranslations("account");
 
   return (
     <section className="section account-page">
@@ -23,7 +21,7 @@ export default async function AccountLayout({
           <BackButton className="account-back-button" />
           <h1 className="account-page-title">{t("title")}</h1>
         </div>
-        <PointsSummaryCard summary={points.summary} />
+        <PointsSummaryCard summary={pointsSummary} />
 
         <div className="account-grid">
           <AccountNav />

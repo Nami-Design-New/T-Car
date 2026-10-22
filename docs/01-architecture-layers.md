@@ -164,9 +164,13 @@ already does conceptually through `walletService.getBankAccounts()`.
    `@services/*`, `@app-types/*`, `@locales/*`, and the others from
    `tsconfig.json` once they are no longer used. That leaves one way to write
    every import and makes the lint rule below simple.
-2. **Lint rule.** Add
-   [`eslint-plugin-boundaries`](https://github.com/javierbrea/eslint-plugin-boundaries)
-   or, with no new dependency, `no-restricted-imports` patterns:
+2. **Lint rule.** `eslint-plugin-boundaries` is the authoritative resolved-path
+   guard. It classifies `app`, each named `feature`, `shared`, `services`, and
+   the cross-cutting folders, then defaults local dependencies to disallowed.
+   Its allow-list permits the dependency table above, including only a feature's
+   `index.ts` / `queries.ts` from `app`, only another feature's `index.ts` from a
+   feature, and `features/*/model.ts` from `services`. `no-restricted-imports`
+   remains as a targeted, readable alias-pattern guard:
 
    ```jsonc
    // .eslintrc.json (sketch)
@@ -186,6 +190,16 @@ already does conceptually through `walletService.getBankAccounts()`.
    `import 'server-only'` at the top of every `queries.ts` and
    `services/http/server.ts`, so any accidental client import fails at build
    time.
+
+### Lint rules
+
+| Rule | Severity | Responsibility |
+| ---- | -------- | -------------- |
+| `boundaries/dependencies` | error | Resolves aliases and relative paths; blocks imports outside the `app` / `feature` / `shared` / `services` allow-list. |
+| `no-restricted-imports` | warning | Gives focused migration guidance for direct forbidden aliases and deep feature paths. It remains a warning while legacy aliases exist. |
+| `no-restricted-syntax` | error | Bans static or dynamic image imports and `/mock/` literals outside mock services. |
+| `no-console` | warning | Disallows browser debugging output while permitting `console.error` for reported failures. |
+| `server-only` | build error | Makes Next.js reject a client import of server reads such as `queries.ts`; this is a compile-time guard, not an ESLint rule. |
 
 ## 1.4 Migration steps
 
@@ -245,12 +259,19 @@ change. Each item says why.
    rules such as `normalizeIban`). `model.ts` has no React and no I/O, so this
    does not create a cycle through the UI.
 
-3. **What the lint rule actually enforces** (`.eslintrc.json`, warnings):
-   pages may import a feature's `index.ts` or its `queries`, nothing deeper;
-   `services` may not import feature components or hooks. ESLint 8's patterns
-   use gitignore syntax, so a bare `@/features/x` import from `services` is not
-   caught. `eslint-plugin-boundaries` or `import/no-restricted-paths` would close
-   that gap.
+3. **What the lint rule actually enforces** (`.eslintrc.json`):
+   `boundaries/dependencies` resolves both aliases and relative paths, so pages
+   may import only a feature's `index.ts` or `queries.ts`; a feature may import
+   only another feature's `index.ts`; and `services` may import only a feature's
+   `model.ts` plus `shared/lib` or `shared/config`. The global
+   `types/next-auth.d.ts` declaration may type-import a feature `model.ts`.
+   The boundary rule is an error by user decision, so the editor and `next lint`
+   mark the current non-conforming feature imports as errors. The existing
+   `no-restricted-imports` overrides remain warnings as targeted diagnostics.
+   This closes the earlier bare-`@/features/x` gap from ESLint 8's gitignore-style
+   patterns. The follow-up is to migrate the reported feature-to-feature deep
+   imports, then promote the legacy alias restrictions to errors after their
+   remaining callers are gone.
 
 4. **`AppError` is in `shared/lib/errors.ts`**, not `services/http/errors.ts`
    (as [doc 3](03-error-handling.md) already had it).

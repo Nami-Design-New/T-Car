@@ -1,14 +1,13 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { useTranslations } from 'next-intl';
+import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 
 interface Props {
-  pickupDateTime: string;
   targetDateTime: string;
 }
 
-function getState(start: Date, target: Date) {
+function getState(target: Date) {
   const now = Date.now();
 
   const diff = Math.max(0, target.getTime() - now);
@@ -28,64 +27,59 @@ function getState(start: Date, target: Date) {
 }
 
 export default function BookingCountdown({
-  pickupDateTime,
   targetDateTime,
 }: Props) {
-  const t = useTranslations('myBookings.countdown');
-  const start = new Date(pickupDateTime);
-  const target = new Date(targetDateTime);
+  const t = useTranslations("myBookings.countdown");
 
-  const [state, setState] = useState(() =>
-    getState(start, target)
-  );
+  const [state, setState] = useState(() => getState(new Date(targetDateTime)));
 
   useEffect(() => {
+    const target = new Date(targetDateTime);
+
+    setState(getState(target));
+
     const interval = setInterval(() => {
-      setState(getState(start, target));
+      setState(getState(target));
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [pickupDateTime, targetDateTime]);
+  }, [targetDateTime]);
 
   if (state.expired) {
     return (
       <div className="booking-countdown expired">
-        <p>{t('expired')}</p>
+        <p>{t("expired")}</p>
       </div>
     );
   }
 
   return (
     <div className="booking-countdown">
-      <h3>{t('remaining')}</h3>
+      <h3>{t("remaining")}</h3>
 
       <div className="countdown-units">
         <div className="unit">
-          <span className="number">
-            {String(state.days).padStart(2, '0')}
-          </span>
+          <span className="number">{String(state.days).padStart(2, "0")}</span>
 
-          <span className="label">{t('days')}</span>
+          <span className="label">{t("days")}</span>
+        </div>
+
+        <span className="separator">:</span>
+
+        <div className="unit">
+          <span className="number">{String(state.hours).padStart(2, "0")}</span>
+
+          <span className="label">{t("hours")}</span>
         </div>
 
         <span className="separator">:</span>
 
         <div className="unit">
           <span className="number">
-            {String(state.hours).padStart(2, '0')}
+            {String(state.minutes).padStart(2, "0")}
           </span>
 
-          <span className="label">{t('hours')}</span>
-        </div>
-
-        <span className="separator">:</span>
-
-        <div className="unit">
-          <span className="number">
-            {String(state.minutes).padStart(2, '0')}
-          </span>
-
-          <span className="label">{t('minutes')}</span>
+          <span className="label">{t("minutes")}</span>
         </div>
       </div>
     </div>

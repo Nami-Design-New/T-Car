@@ -38,45 +38,72 @@
 }
 
 .wallet_topup_input_group {
-  display: flex;
-  align-items: center;
-  height: 46px;
-  padding: 0 10px;
-  border: 1px solid $ds-stroke-light;
-  border-radius: $ds-radius-sm;
-  color: $ds-text-subtle;
-}
-
-.wallet_topup_input_group .currency_icon {
-  flex-shrink: 0;
-  object-fit: contain;
-  opacity: 0.7;
-}
-
-// The currency icon sits on the start side and the value on the end side, so
-// the field mirrors itself between RTL and LTR without direction rules.
-.wallet_topup_input_group input {
-  min-width: 0;
-  flex: 1;
-  padding: 0 8px;
-  border: 0;
-  outline: 0;
-  background: transparent;
-  color: $ds-text-primary;
-  font-size: 14px;
-  text-align: end;
-  appearance: textfield;
-  -moz-appearance: textfield;
-
-  &::-webkit-outer-spin-button,
-  &::-webkit-inner-spin-button {
+  .form_group {
     margin: 0;
-    -webkit-appearance: none;
   }
-}
 
-.wallet_topup_input_group input::placeholder {
-  color: $ds-text-placeholder;
+  .form_label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+  }
+
+  .form_input_wrapper {
+    display: flex;
+    align-items: center;
+    height: 46px;
+    padding: 0 10px;
+    border: 1px solid $ds-stroke-light;
+    border-radius: $ds-radius-sm;
+    color: $ds-text-subtle;
+  }
+
+  .form_input_icon {
+    order: -1;
+    flex-shrink: 0;
+  }
+
+  .currency_icon {
+    display: block;
+    object-fit: contain;
+    opacity: 0.7;
+  }
+
+  .wallet_topup_input {
+    min-width: 0;
+    flex: 1;
+    padding: 0 8px;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    color: $ds-text-primary;
+    font-size: 14px;
+    text-align: end;
+    appearance: textfield;
+    -moz-appearance: textfield;
+
+    &::-webkit-outer-spin-button,
+    &::-webkit-inner-spin-button {
+      margin: 0;
+      -webkit-appearance: none;
+    }
+
+    &::placeholder {
+      color: $ds-text-placeholder;
+    }
+  }
+
+  .form_input_wrapper:has(.form_input[aria-invalid='true']) {
+    border-color: $ds-status-error;
+  }
+
+  .form_error {
+    margin-top: 5px;
+  }
 }
 
 .wallet_topup_hint {
@@ -105,14 +132,6 @@
 .wallet_topup_submit:disabled {
   background: $ds-surface-disabled;
   color: $ds-text-on-action;
-}
-
-.wallet_topup_input_group.invalid {
-  border-color: $ds-status-error;
-}
-
-.wallet_topup_hint.invalid {
-  color: $ds-status-error;
 }
 
 .bank_select_modal {

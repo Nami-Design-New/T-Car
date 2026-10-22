@@ -1,4 +1,4 @@
-import type { WalletSummary, WalletTransaction } from '@/features/wallet/model';
+import { MAX_TOP_UP, type WalletSummary, type WalletTransaction } from '@/features/wallet/model';
 import { AppError } from '@/shared/lib/errors';
 import { bankAccountsApi } from '../bankAccounts.api';
 import type { WalletApi } from '../wallet.api';
@@ -21,9 +21,6 @@ export const MOCK_WALLET_TRANSACTIONS: WalletTransaction[] = [
 let summary: WalletSummary = { ...MOCK_WALLET_SUMMARY };
 let transactions: WalletTransaction[] = [...MOCK_WALLET_TRANSACTIONS];
 
-/** Mock only: top-ups above this fail, so the failure state can be exercised. */
-const MOCK_MAX_TOP_UP = 10000;
-
 const delay = (ms = 600) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const randomReference = () =>
@@ -45,6 +42,7 @@ function record(type: WalletTransaction['type'], amount: number) {
   ];
 }
 
+/** Mock failure rule: top-ups above MAX_TOP_UP are rejected. */
 export const walletMock: WalletApi = {
   async getWallet() {
     await delay(300);
@@ -57,7 +55,7 @@ export const walletMock: WalletApi = {
 
   async topUp(amount) {
     await delay();
-    if (amount > MOCK_MAX_TOP_UP) throw new AppError('conflict', 'wallet.topUpRejected');
+    if (amount > MAX_TOP_UP) throw new AppError('conflict', 'wallet.topUpRejected');
 
     summary = {
       ...summary,

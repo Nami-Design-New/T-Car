@@ -1,5 +1,30 @@
 {
   "extends": ["next/core-web-vitals"],
+  "plugins": ["boundaries"],
+  "settings": {
+    "import/resolver": {
+      "typescript": {
+        "project": "./tsconfig.json"
+      }
+    },
+    "boundaries/elements": [
+      { "type": "app", "pattern": "src/app", "partialMatch": false },
+      {
+        "type": "feature",
+        "pattern": "src/features/*",
+        "capture": ["feature"],
+        "partialMatch": false
+      },
+      { "type": "shared", "pattern": "src/shared", "partialMatch": false },
+      { "type": "service", "pattern": "src/services", "partialMatch": false },
+      {
+        "type": "cross-cutting",
+        "pattern": "src/{i18n,assets}",
+        "partialMatch": false
+      },
+      { "type": "global-type", "pattern": "src/types", "partialMatch": false }
+    ]
+  },
   "rules": {
     "react/no-unescaped-entities": "off",
     "no-console": ["warn", { "allow": ["error"] }],
@@ -17,6 +42,88 @@
         "selector": "TemplateElement[value.raw=/^[\\x2f]mock[\\x2f]/]",
         "message": "Mock image URLs (/mock/...) belong in src/services/mocks only (doc 7 rule 3)."
       }
+    ],
+    "boundaries/dependencies": [
+      "error",
+      {
+        "default": "disallow",
+        "checkInternals": false,
+        "checkUnknownLocals": false,
+        "policies": [
+          {
+            "from": { "element": { "type": "app" } },
+            "allow": {
+              "to": [
+                {
+                  "element": {
+                    "type": "feature",
+                    "fileInternalPath": ["index.ts", "queries.ts"]
+                  }
+                },
+                { "element": { "type": "shared" } },
+                { "element": { "type": "cross-cutting" } }
+              ]
+            }
+          },
+          {
+            "from": { "element": { "type": "feature" } },
+            "allow": {
+              "to": [
+                {
+                  "element": {
+                    "type": "feature",
+                    "fileInternalPath": "index.ts"
+                  }
+                },
+                { "element": { "type": "shared" } },
+                { "element": { "type": "service" } },
+                { "element": { "type": "cross-cutting" } }
+              ]
+            }
+          },
+          {
+            "from": { "element": { "type": "shared" } },
+            "allow": {
+              "to": [
+                { "element": { "type": "shared" } },
+                { "element": { "type": "cross-cutting" } }
+              ]
+            }
+          },
+          {
+            "from": { "element": { "type": "global-type" } },
+            "allow": {
+              "to": {
+                "element": {
+                  "type": "feature",
+                  "fileInternalPath": "model.ts"
+                },
+                "dependency": { "kind": "type" }
+              }
+            }
+          },
+          {
+            "from": { "element": { "type": "service" } },
+            "allow": {
+              "to": [
+                { "element": { "type": "service" } },
+                {
+                  "element": {
+                    "type": "shared",
+                    "fileInternalPath": ["lib/**/*", "config/**/*"]
+                  }
+                },
+                {
+                  "element": {
+                    "type": "feature",
+                    "fileInternalPath": "model.ts"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
     ]
   },
   "overrides": [
@@ -32,10 +139,7 @@
     {
       "files": ["src/app/**"],
       "rules": {
-        "no-restricted-imports": [
-          "warn",
-          { "patterns": ["@/services/*", "@/features/*/*", "!@/features/*/queries"] }
-        ]
+        "no-restricted-imports": ["warn", { "patterns": ["@/services/*", "@/features/*/*", "!@/features/*/queries"] }]
       }
     },
     {

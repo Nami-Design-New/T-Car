@@ -66,11 +66,10 @@ export default function BookingDetailsHeader({ booking }: Props) {
     );
   };
 
-  // The edit form belongs to the booking flow and cannot show an inline error
-  // yet, so a failure closes it and shows the failure dialog instead.
   const handleEdit = async (request: BookingEditRequest) => {
     const result = await requestEdit(request);
-    setFlow({ step: 'result', kind: 'editRequested', error: result.ok ? undefined : result.error });
+    if (result.ok) setFlow({ step: 'result', kind: 'editRequested' });
+    return result;
   };
 
   const handleCancel = async () => {
@@ -149,6 +148,7 @@ export default function BookingDetailsHeader({ booking }: Props) {
         pricePerDay={booking.pricePerDay}
         initialDetails={toEditRequest(booking)}
         onSubmit={handleEdit}
+        loading={submitting}
       />
 
       <CancelBookingModal

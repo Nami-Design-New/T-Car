@@ -1,5 +1,8 @@
-export { default as Hero } from './components/Hero';
-export { default as MapLocationModal } from './components/MapLocationModal';
+export { default as Hero } from "./components/Hero";
 export type {
   RentalSearchOptions,
-  Airport, Branch, Country, LocationData, PickupType, RentalType, Station } from './model';
+  Airport,
+  Country,
+  RentalType,
+  Station,
+} from "./model";

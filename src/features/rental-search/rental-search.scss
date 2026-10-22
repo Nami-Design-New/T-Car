@@ -1,4 +1,4 @@
-@use 'tokens/tokens' as *;
+@use "tokens/tokens" as *;
 
 //////////////////////Hero////////////////////
 .hero_section {
@@ -23,7 +23,12 @@
     z-index: 1;
     pointer-events: none;
     background:
-      linear-gradient(180deg, rgba($ds-surface-brand, 0.64) 0%, rgba($ds-surface-brand, 0.12) 38%, rgba($ds-shadow-color, 0.58) 100%),
+      linear-gradient(
+        180deg,
+        rgba($ds-surface-brand, 0.64) 0%,
+        rgba($ds-surface-brand, 0.12) 38%,
+        rgba($ds-shadow-color, 0.58) 100%
+      ),
       linear-gradient(90deg, rgba($ds-surface-brand, 0.38) 0%, transparent 58%);
   }
 
@@ -42,19 +47,28 @@
     background-repeat: no-repeat;
 
     &::before {
-      content: '';
+      content: "";
       position: absolute;
       inset: 0;
       background:
-        linear-gradient(180deg, rgba($ds-shadow-color, 0.62) 0%, rgba($ds-shadow-color, 0.16) 42%, rgba($ds-shadow-color, 0.58) 100%),
+        linear-gradient(
+          180deg,
+          rgba($ds-shadow-color, 0.62) 0%,
+          rgba($ds-shadow-color, 0.16) 42%,
+          rgba($ds-shadow-color, 0.58) 100%
+        ),
         linear-gradient(90deg, rgba($ds-surface-brand, 0.28), transparent 58%);
     }
 
     &::after {
-      content: '';
+      content: "";
       position: absolute;
       inset: 0;
-      background: linear-gradient(120deg, rgba($ds-white, 0.08), transparent 35%);
+      background: linear-gradient(
+        120deg,
+        rgba($ds-white, 0.08),
+        transparent 35%
+      );
       mix-blend-mode: screen;
       pointer-events: none;
     }
@@ -83,7 +97,7 @@
 
     &::before,
     &::after {
-      content: '';
+      content: "";
       position: absolute;
       top: 50%;
       width: clamp(28px, 9vw, 112px);
@@ -369,7 +383,7 @@
   }
 }
 
-html[dir='rtl'] .hero_filter_drawer {
+html[dir="rtl"] .hero_filter_drawer {
   box-shadow: 18px 0 48px rgba($ds-shadow-color, 0.2);
   animation-name: hero-drawer-slide-in-rtl;
 }
@@ -572,360 +586,15 @@ html[dir='rtl'] .hero_filter_drawer {
     }
   }
 }
-.map_modal {
-  width: min(900px, calc(100% - 32px));
-  background: $ds-surface-elevated;
-  border-radius: $ds-radius-2xl;
-  padding: 32px;
-  position: relative;
-  animation: popup 0.35s ease;
-
-  .modal_header {
-    margin-bottom: 24px;
-
-    h2 {
-      margin-bottom: 8px;
-      color: $ds-text-primary;
-    }
-  }
-  .search_box {
-    position: relative;
-    margin-bottom: 20px;
-    display: flex;
-    align-items: center;
-
-    .search_icon {
-      position: absolute;
-      inset-inline-end: 18px;
-      font-size: 18px;
-      color: $ds-text-placeholder;
-      pointer-events: none;
-    }
-
-    .search_spinner {
-      position: absolute;
-      inset-inline-start: 14px;
-      color: $ds-action-primary;
-      animation: spin 0.8s linear infinite;
-    }
-
-    input {
-      width: 100%;
-      height: 52px;
-      border-radius: $ds-radius-md;
-      border: 1px solid $ds-stroke-light;
-      background: $ds-surface-on-background;
-      padding-block: 0;
-      padding-inline-start: 40px;
-      padding-inline-end: 48px;
-      font-size: 15px;
-      outline: none;
-      transition: 0.25s;
-
-      &:focus {
-        border-color: $ds-action-primary;
-        background: $ds-surface-elevated;
-        box-shadow: 0 0 0 3px rgba($ds-action-primary, 0.1);
-      }
-
-      &::placeholder {
-        color: $ds-text-placeholder;
-      }
-    }
-
-    .clear_search {
-      position: absolute;
-      inset-inline-start: 14px;
-      background: none;
-      border: none;
-      cursor: pointer;
-      color: $ds-text-placeholder;
-      display: flex;
-      align-items: center;
-      font-size: 16px;
-
-      &:hover {
-        color: $ds-text-primary;
-      }
-    }
-
-    .predictions_list {
-      position: absolute;
-      top: calc(100% + 6px);
-      inset-inline: 0;
-      z-index: 20;
-
-      background: $ds-surface-elevated;
-      border-radius: $ds-radius-md;
-      border: 1px solid $ds-stroke-light;
-      box-shadow: 0 8px 24px rgba($ds-shadow-color, 0.1);
-      max-height: 260px;
-      overflow-y: auto;
-
-      list-style: none;
-      margin: 0;
-      padding: 8px;
-
-      li {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        padding: 10px 12px;
-        border-radius: 10px;
-        cursor: pointer;
-        transition: 0.15s;
-
-        svg {
-          font-size: 16px;
-          color: $ds-action-primary;
-          flex-shrink: 0;
-        }
-
-        div {
-          display: flex;
-          flex-direction: column;
-          overflow: hidden;
-        }
-
-        .main_text {
-          font-weight: 600;
-          color: $ds-text-primary;
-          font-size: 14px;
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
-        }
-
-        .secondary_text {
-          font-size: 12px;
-          color: $ds-text-subtle;
-        }
-
-        &:hover,
-        &.active {
-          background: $ds-surface-card-primary;
-        }
-      }
-    }
-
-    .no_results {
-      position: absolute;
-      top: calc(100% + 6px);
-      inset-inline: 0;
-      z-index: 20;
-
-      background: $ds-surface-elevated;
-      border-radius: $ds-radius-md;
-      border: 1px solid $ds-stroke-light;
-      box-shadow: 0 8px 24px rgba($ds-shadow-color, 0.1);
-      padding: 16px;
-      text-align: center;
-      color: $ds-text-placeholder;
-      font-size: 13px;
-    }
-  }
-  .location_error {
-    color: $ds-status-error;
-    font-size: 13px;
-    margin: 8px 0 0;
-  }
-
-  .current_location {
-    &:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-    }
-  }
-
-  .spin {
-    animation: spin 0.8s linear infinite;
-  }
-
-  @keyframes spin {
-    from {
-      transform: rotate(0deg);
-    }
-    to {
-      transform: rotate(360deg);
-    }
-  }
-  .confirm_btn:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-
-  .spin {
-    animation: spin 0.8s linear infinite;
-  }
-
-  @keyframes spin {
-    from {
-      transform: rotate(0deg);
-    }
-    to {
-      transform: rotate(360deg);
-    }
-  }
-  .map_placeholder {
-    height: 420px;
-    border-radius: $ds-radius-xl;
-    border: 2px dashed $ds-stroke-heavy;
-    background: $ds-surface-on-background;
-
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-
-    gap: 16px;
-
-    svg {
-      font-size: 70px;
-      color: $ds-action-primary;
-    }
-
-    span {
-      color: $ds-text-subtle;
-      font-weight: 600;
-    }
-  }
-
-  .location_actions {
-    margin-top: 24px;
-
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-
-    .current_location,
-    .confirm_btn {
-      height: 52px;
-      border-radius: 14px;
-      padding: 0 28px;
-
-      display: flex;
-      align-items: center;
-      gap: 10px;
-
-      cursor: pointer;
-      transition: 0.3s;
-      font-weight: 600;
-    }
-
-    .current_location {
-      background: $ds-surface-card-primary;
-      color: $ds-action-primary;
-      border: 1px solid rgba($ds-action-primary, 0.15);
-
-      &:hover {
-        background: $ds-primary-100;
-      }
-    }
-
-    .confirm_btn {
-      background: $ds-action-primary;
-      color: $ds-text-on-action;
-      border: none;
-
-      &:hover {
-        background: darken($ds-action-primary, 8%);
-      }
-    }
-  }
-}
-
-@media (max-width: 768px) {
-  .map_modal {
-    padding: 24px;
-
-    .map_placeholder {
-      height: 300px;
-    }
-
-    .location_actions {
-      flex-direction: column;
-      gap: 16px;
-
-      button {
-        width: 100%;
-        justify-content: center;
-      }
-    }
-  }
-}
 .branch_modal {
-  width: min(600px, calc(100% - 32px));
-  max-height: 78vh;
-
-  background: $ds-surface-elevated;
-  border-radius: $ds-radius-xl;
-
-  padding: 25px;
-
-  position: relative;
-
-  display: flex;
-  flex-direction: column;
-
-  .modal_header {
-    margin-bottom: 16px;
-
-    h2 {
-      font-size: 22px;
-      margin-bottom: 4px;
-      color: $ds-text-primary;
-    }
-
-    p {
-      font-size: 13px;
-      color: $ds-text-subtle;
-      margin: 0;
-    }
-  }
-
-  .search_box {
-    height: 46px;
-
-    display: flex;
-    align-items: center;
-
-    padding-inline: 14px;
-    margin-bottom: 16px;
-
-    border: 1px solid $ds-stroke-light;
-    border-radius: $ds-radius-md;
-
-    flex-shrink: 0;
-
-    svg {
-      font-size: 18px;
-      color: $ds-action-primary;
-    }
-
-    input {
-      flex: 1;
-
-      border: none;
-      outline: none;
-
-      background: transparent;
-
-      padding-inline: 10px;
-      font-size: 14px;
-    }
-  }
-
   .branch_list {
     flex: 1;
     min-height: 0;
-
+    padding: 1.25rem 0;
     overflow-y: auto;
-
     display: flex;
     flex-direction: column;
     gap: 10px;
-
-    margin-bottom: 18px;
     padding-inline-end: 4px;
 
     &::-webkit-scrollbar {

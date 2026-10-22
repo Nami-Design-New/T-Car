@@ -65,7 +65,7 @@ export default function CarBookingCard({
   const handlePay = async (method: PaymentMethod) => {
     if (!booking || submitting) return;
 
-    const result = await createBooking(booking, method);
+    const result = await createBooking(booking, method, true);
     setFlow(result.ok ? { step: 'success' } : { step: 'payment', error: result.error });
   };
 

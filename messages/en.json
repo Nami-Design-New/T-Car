@@ -73,13 +73,15 @@
       "title": "Edit mobile number",
       "close": "Close",
       "phone": "Mobile number",
-      "sendCode": "Send verification code"
+      "sendCode": "Send verification code",
+      "description": "Enter your new mobile number to receive a verification code.",
+      "countrySearchPlaceholder": "Search countries..."
     },
     "license": {
       "title": "Driving license",
       "close": "Close",
       "uploadPrompt": "Click here to upload a photo of your driving license",
-      "fileTypes": "JPG or PNG",
+      "fileTypes": "JPG or PNG, up to 5 MB",
       "submit": "Upload"
     },
     "verifyPhone": {
@@ -140,10 +142,10 @@
     "subtitle": "Choose from daily, monthly, or airport pickup rentals and enjoy a fast, secure booking experience."
   },
   "rentalTabs": {
-    "daily": "Daily Rental",
-    "monthly": "Monthly Rental",
+    "daily": "Daily",
+    "monthly": "Monthly",
     "airport": "Airport Pickup",
-    "station": "Train Station Pickup",
+    "station": "Train Station",
     "international": "International Rental"
   },
   "rentalSearch": {
@@ -156,25 +158,25 @@
       "title": "Choose an airport",
       "description": "Choose the airport where you would like to pick up the car.",
       "searchPlaceholder": "Search airports...",
-      "confirm": "Continue"
+      "confirm": "Confirm"
     },
     "branch": {
       "title": "Choose a branch",
       "description": "Choose the nearest branch to pick up the car.",
       "searchPlaceholder": "Search for a city or branch...",
-      "confirm": "Continue"
+      "confirm": "Confirm"
     },
     "country": {
       "title": "Choose a country",
       "description": "Choose the country where you would like to pick up the car.",
       "searchPlaceholder": "Search countries...",
-      "confirm": "Continue"
+      "confirm": "Confirm"
     },
     "station": {
       "title": "Choose a train station",
       "description": "Choose the train station where you would like to pick up the car.",
       "searchPlaceholder": "Search stations...",
-      "confirm": "Continue"
+      "confirm": "Confirm"
     },
     "pickup": {
       "title": "Choose a pickup type",
@@ -289,7 +291,12 @@
       "pickup": "Pickup",
       "van": "Van"
     },
-    "cityTypes": { "economy": "Economy", "sedan": "Sedan", "suv": "SUV", "luxury": "Luxury" },
+    "cityTypes": {
+      "economy": "Economy",
+      "sedan": "Sedan",
+      "suv": "SUV",
+      "luxury": "Luxury"
+    },
     "services": {
       "delivery": {
         "title": "Car delivery service",
@@ -327,10 +334,22 @@
     "brand": "T-Car team",
     "descriptionAfterBrand": "will contact you soon.",
     "fields": {
-      "firstName": { "label": "First name", "placeholder": "Enter your first name" },
-      "companyName": { "label": "Company name", "placeholder": "Enter company name" },
-      "headOffice": { "label": "Head office", "placeholder": "City or country" },
-      "contactPerson": { "label": "Contact person", "placeholder": "Full name" },
+      "firstName": {
+        "label": "First name",
+        "placeholder": "Enter your first name"
+      },
+      "companyName": {
+        "label": "Company name",
+        "placeholder": "Enter company name"
+      },
+      "headOffice": {
+        "label": "Head office",
+        "placeholder": "City or country"
+      },
+      "contactPerson": {
+        "label": "Contact person",
+        "placeholder": "Full name"
+      },
       "phone": {
         "label": "Phone number",
         "placeholder": "Phone number",
@@ -339,8 +358,14 @@
       "companySize": { "label": "Company size" },
       "email": { "label": "Email address", "placeholder": "company@email.com" },
       "managerName": { "label": "Company manager name", "placeholder": "Name" },
-      "managerEmail": { "label": "Company manager email", "placeholder": "manager@email.com" },
-      "managerPhone": { "label": "Company manager contact number", "placeholder": "05xxxxxxxx" },
+      "managerEmail": {
+        "label": "Company manager email",
+        "placeholder": "manager@email.com"
+      },
+      "managerPhone": {
+        "label": "Company manager contact number",
+        "placeholder": "05xxxxxxxx"
+      },
       "branches": { "label": "Number of branches", "placeholder": "3" },
       "fleet": { "label": "Total vehicle fleet", "placeholder": "122" }
     },
@@ -474,12 +499,18 @@
     "wallet": {
       "topUpRejected": "The top-up was rejected.",
       "withdrawRejected": "The withdrawal was rejected.",
-      "insufficientBalance": "Your withdrawable balance is not enough."
+      "insufficientBalance": "Your withdrawable balance is not enough.",
+      "amountRequired": "Enter an amount.",
+      "invalidAmount": "Enter a valid amount.",
+      "amountTooLow": "The amount is below the allowed minimum.",
+      "amountTooHigh": "The amount is above the allowed maximum.",
+      "bankAccountRequired": "Choose a bank account."
     },
     "bankAccounts": {
       "notFound": "Bank account not found.",
       "unknownBank": "Choose a bank from the list.",
-      "ibanRequired": "IBAN is required."
+      "ibanRequired": "IBAN is required.",
+      "invalidIban": "Enter a valid Saudi IBAN."
     },
     "bookings": {
       "notFound": "Booking not found.",
@@ -487,13 +518,28 @@
       "extendLimit": "A booking cannot be extended beyond 30 days.",
       "invalidDates": "The return date must be after the pickup date.",
       "cancelNotAllowed": "An overdue booking cannot be cancelled. Return the car first.",
-      "ratingRequired": "Choose a rating from 1 to 5."
+      "ratingRequired": "Choose a rating from 1 to 5.",
+      "invalidExtendDays": "Choose a valid number of extension days.",
+      "invalidReview": "Enter valid review text.",
+      "reviewTooLong": "Reviews must be 1000 characters or fewer."
     },
     "cars": {
       "notFound": "This car is not available or does not exist."
     },
     "booking": {
       "startInPast": "A booking cannot start in the past.",
+      "startDateRequired": "Choose a pickup date",
+      "endDateRequired": "Choose a return date",
+      "timeRequired": "Choose a pickup and drop-off time",
+      "invalidDays": "Choose a valid rental period",
+      "invalidPrice": "The booking price is invalid",
+      "invalidNotes": "Enter valid booking notes",
+      "notesTooLong": "Notes must be 500 characters or fewer",
+      "addressTooLong": "Address must be 200 characters or fewer",
+      "invalidLocation": "Choose a valid location",
+      "paymentMethodRequired": "Choose a payment method",
+      "carRequired": "Choose a car",
+      "termsRequired": "Accept the terms and conditions to continue",
       "carUnavailable": "This car is not available for that long. Choose a shorter rental or another car."
     },
     "cities": {
@@ -501,6 +547,13 @@
     },
     "contact": {
       "phoneRequired": "Enter a valid phone number.",
+      "nameRequired": "Enter your full name.",
+      "emailRequired": "Enter your email address.",
+      "invalidEmail": "Enter a valid email address.",
+      "reasonRequired": "Choose a contact reason.",
+      "invalidReason": "Choose a valid contact reason.",
+      "bookingNumberTooLong": "Booking number is too long.",
+      "messageRequired": "Enter your message.",
       "required": "Complete all required contact fields."
     },
     "account": {
@@ -508,8 +561,16 @@
       "resendLimited": "The code cannot be resent yet. Wait a moment and try again.",
       "licenseRequired": "Choose an image of your driving license.",
       "licenseRejected": "The driving license could not be uploaded. Try another image.",
+      "licenseTooLarge": "The driving license image must be 5 MB or smaller.",
+      "licenseInvalidType": "Choose a JPG or PNG image.",
       "deleteRejected": "The account cannot be deleted while it has active bookings.",
-      "invalidCode": "The verification code is incorrect. Try again."
+      "invalidCode": "The verification code is incorrect. Try again.",
+      "nameRequired": "Full name is required.",
+      "emailRequired": "Email address is required.",
+      "invalidEmail": "Enter a valid email address.",
+      "birthDateRequired": "Date of birth is required.",
+      "invalidBirthDate": "Enter a valid date of birth that is not in the future.",
+      "invalidPhone": "Enter a valid phone number."
     },
     "auth": {
       "invalidPhone": "Enter a valid phone number.",
@@ -662,6 +723,8 @@
       "close": "Close",
       "title": "We value your review",
       "subtitle": "Share your experience with this booking",
+      "ratingLabel": "Rating",
+      "reviewLabel": "Review",
       "stars": "{count} stars",
       "placeholder": "Write about your experience with the car and showroom...",
       "sending": "Sending...",
