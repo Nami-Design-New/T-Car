@@ -264,6 +264,11 @@ cursor, and disabled state now use Tailwind utilities in `RadioCards.tsx`. The
 SCSS file and import are removed; `radio-cards` and `radio-card` marker classes
 remain so feature-specific card styles continue to compose with the primitive.
 
+Tabs audit: `Tabs.tsx` already has no SCSS import or component stylesheet, and
+the repository has no active `.tabs__*` rules or runtime callers requiring a
+style migration. Its Radix roles, keyboard navigation, focus management, and
+test coverage remain unchanged.
+
 - `Button`, `Dialog`, `ConfirmDialog`, `ResultDialog`;
 - `Menu`, `Accordion`, `RadioCards`, `Tabs`;
 - `Skeleton`, `EmptyState`, `ErrorState`, `Loader`, `Price`;
