@@ -259,6 +259,11 @@ height animations, and reduced-motion behavior now use Tailwind utilities in
 classes remain, and Radix keyboard navigation and ARIA state behavior are
 unchanged.
 
+RadioCards progress: the card reset, inherited typography, focus-visible ring,
+cursor, and disabled state now use Tailwind utilities in `RadioCards.tsx`. The
+SCSS file and import are removed; `radio-cards` and `radio-card` marker classes
+remain so feature-specific card styles continue to compose with the primitive.
+
 - `Button`, `Dialog`, `ConfirmDialog`, `ResultDialog`;
 - `Menu`, `Accordion`, `RadioCards`, `Tabs`;
 - `Skeleton`, `EmptyState`, `ErrorState`, `Loader`, `Price`;
