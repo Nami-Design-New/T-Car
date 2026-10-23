@@ -1,26 +1,34 @@
-'use client';
+"use client";
 
-import { useEffect, useRef, useState } from 'react';
-import Image from 'next/image';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { Controller, useForm } from 'react-hook-form';
-import { useTranslations } from 'next-intl';
-import { PiBank } from 'react-icons/pi';
-import { ICONS } from '@/shared/config/assets';
-import { useErrorMessage, useFieldErrorMessage } from '@/shared/hooks/useErrorMessage';
-import type { AppError } from '@/shared/lib/errors';
-import { applyFieldErrors } from '@/shared/lib/validation';
-import { Button } from '@/shared/ui/Button';
-import { Dialog } from '@/shared/ui/Dialog';
-import { FormInput } from '@/shared/ui/Form';
-import { normalizeIban, type Bank, type BankAccount, type BankAccountPayload } from '../model';
-import { bankAccountSchema, type BankAccountFormValues } from '../validation';
+import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Controller, useForm } from "react-hook-form";
+import { useTranslations } from "next-intl";
+import { PiBank } from "react-icons/pi";
+import { ICONS } from "@/shared/config/assets";
+import {
+  useErrorMessage,
+  useFieldErrorMessage,
+} from "@/shared/hooks/useErrorMessage";
+import type { AppError } from "@/shared/lib/errors";
+import { applyFieldErrors } from "@/shared/lib/validation";
+import { Button } from "@/shared/ui/Button";
+import { Dialog } from "@/shared/ui/Dialog";
+import { FormInput } from "@/shared/ui/Form";
+import {
+  normalizeIban,
+  type Bank,
+  type BankAccount,
+  type BankAccountPayload,
+} from "../model";
+import { bankAccountSchema, type BankAccountFormValues } from "../validation";
 
 const arrowDownIcon = ICONS.arrowDown;
 
 interface Props {
   open: boolean;
-  mode: 'add' | 'edit';
+  mode: "add" | "edit";
   banks: Bank[];
   /** The account being edited; its values pre-fill the form. */
   account?: BankAccount;
@@ -31,7 +39,13 @@ interface Props {
 
 function BankLogo({ bank }: { bank: Bank }) {
   return bank.logo ? (
-    <Image src={bank.logo} alt="" width={45} height={20} className="bank_form_logo" />
+    <Image
+      src={bank.logo}
+      alt=""
+      width={45}
+      height={20}
+      className="bank_form_logo"
+    />
   ) : (
     <PiBank className="bank_form_logo_fallback" aria-hidden="true" />
   );
@@ -47,7 +61,7 @@ export default function BankAccountFormModal({
   onClose,
   onConfirm,
 }: Props) {
-  const t = useTranslations('bankAccounts.form');
+  const t = useTranslations("bankAccounts.form");
   const errorMessage = useErrorMessage();
   const fieldError = useFieldErrorMessage();
   const ibanRef = useRef<HTMLInputElement>(null);
@@ -62,17 +76,17 @@ export default function BankAccountFormModal({
     formState: { errors },
   } = useForm<BankAccountFormValues>({
     resolver: zodResolver(bankAccountSchema),
-    mode: 'onBlur',
-    reValidateMode: 'onChange',
-    defaultValues: { bankId: '', iban: '' },
+    mode: "onBlur",
+    reValidateMode: "onChange",
+    defaultValues: { bankId: "", iban: "" },
   });
-  const { ref: registerIbanRef, ...ibanField } = register('iban');
-  const bankId = watch('bankId');
-  const iban = watch('iban');
+  const { ref: registerIbanRef, ...ibanField } = register("iban");
+  const bankId = watch("bankId");
+  const iban = watch("iban");
 
   useEffect(() => {
     if (!open) return;
-    reset({ bankId: account?.bankId ?? '', iban: account?.iban ?? '' });
+    reset({ bankId: account?.bankId ?? "", iban: account?.iban ?? "" });
     setPickerOpen(false);
   }, [account, open, reset]);
 
@@ -80,17 +94,22 @@ export default function BankAccountFormModal({
   const submitLabel = t(`${mode}.submit`);
   const selectedBank = banks.find((bank) => bank.id === bankId);
   const unchanged =
-    mode === 'edit' && account?.bankId === bankId && account?.iban === normalizeIban(iban ?? '');
+    mode === "edit" &&
+    account?.bankId === bankId &&
+    account?.iban === normalizeIban(iban ?? "");
   const bankError = fieldError(errors.bankId?.message);
   const ibanError = fieldError(errors.iban?.message);
   const submitError = errors.root?.server?.message;
-  const bankErrorId = 'bank-form-bank-error';
+  const bankErrorId = "bank-form-bank-error";
 
   const submit = handleSubmit(async (values) => {
     if (loading) return;
     const error = await onConfirm(values);
-    if (error && !applyFieldErrors(error, setError, ['bankId', 'iban'])) {
-      setError('root.server', { type: error.kind, message: errorMessage(error) });
+    if (error && !applyFieldErrors(error, setError, ["bankId", "iban"])) {
+      setError("root.server", {
+        type: error.kind,
+        message: errorMessage(error),
+      });
     }
   });
 
@@ -107,13 +126,10 @@ export default function BankAccountFormModal({
       closeOnEscape={!loading}
       closeOnBackdrop={!loading}
       label={title}
-      className="bank_form_modal bg-white"
     >
-      <span className="wallet_topup_drag_handle" aria-hidden="true" />
-
-      <Dialog.Header className="wallet_topup_header flex items-center justify-between">
-        <Dialog.Title className="m-0">{title}</Dialog.Title>
-      <Dialog.Close className="wallet_topup_close btn bg-transparent grid p-0" />
+      <Dialog.Header>
+        <Dialog.Title>{title}</Dialog.Title>
+        <Dialog.Close />
       </Dialog.Header>
 
       <form onSubmit={submit} noValidate>
@@ -123,13 +139,13 @@ export default function BankAccountFormModal({
           render={({ field }) => (
             <div className="bank_form_field">
               <span className="bank_form_label" id="bank_form_bank_label">
-                {t('bankName')}
+                {t("bankName")}
               </span>
               <div className="bank_form_picker">
                 <button
                   type="button"
                   role="combobox"
-                  className={`bank_form_control ${pickerOpen ? 'open' : ''}`}
+                  className={`bank_form_control ${pickerOpen ? "open" : ""}`}
                   aria-haspopup="listbox"
                   aria-controls="bank_form_bank_options"
                   aria-expanded={pickerOpen}
@@ -145,7 +161,9 @@ export default function BankAccountFormModal({
                       {selectedBank.name}
                     </span>
                   ) : (
-                    <span className="bank_form_placeholder">{t('chooseBank')}</span>
+                    <span className="bank_form_placeholder">
+                      {t("chooseBank")}
+                    </span>
                   )}
                   <Image
                     src={arrowDownIcon}
@@ -164,10 +182,14 @@ export default function BankAccountFormModal({
                     aria-labelledby="bank_form_bank_label"
                   >
                     {banks.map((bank) => (
-                      <li key={bank.id} role="option" aria-selected={bank.id === field.value}>
+                      <li
+                        key={bank.id}
+                        role="option"
+                        aria-selected={bank.id === field.value}
+                      >
                         <button
                           type="button"
-                          className={`bank_form_option ${bank.id === field.value ? 'selected' : ''}`}
+                          className={`bank_form_option ${bank.id === field.value ? "selected" : ""}`}
                           onClick={() => {
                             field.onChange(bank.id);
                             setPickerOpen(false);
@@ -199,7 +221,7 @@ export default function BankAccountFormModal({
             }}
             id="bank_form_iban"
             className="bank_form_control bank_form_input"
-            label={t('iban')}
+            label={t("iban")}
             type="text"
             dir="ltr"
             autoComplete="off"
@@ -218,9 +240,10 @@ export default function BankAccountFormModal({
 
         <Button
           type="submit"
-          className="wallet_topup_submit w-full"
+          className="w-full"
           disabled={unchanged}
           loading={loading}
+          size="lg"
         >
           {submitLabel}
         </Button>

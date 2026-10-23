@@ -235,6 +235,12 @@ ConfirmDialog progress: the cancel/confirm actions, danger tone, pending
 disabled state, and error text now use Tailwind utilities in `ConfirmDialog.tsx`.
 Its SCSS file and import are removed; marker classes remain for compatibility.
 
+ResultDialog progress: the body alignment, responsive padding, animation sizing,
+description typography, and action button now use Tailwind utilities in
+`ResultDialog.tsx`. The SCSS file and import are removed; `result-dialog__*`
+marker classes remain for compatibility. The existing bottom-sheet placement,
+auto-close behavior, and action callback are unchanged.
+
 - `Button`, `Dialog`, `ConfirmDialog`, `ResultDialog`;
 - `Menu`, `Accordion`, `RadioCards`, `Tabs`;
 - `Skeleton`, `EmptyState`, `ErrorState`, `Loader`, `Price`;
