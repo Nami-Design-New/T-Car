@@ -4,7 +4,7 @@
   "private": true,
   "description": "T-Car is a modern car rental platform that allows users to browse and rent the latest car models for business trips, family vacations, and personal transportation.",
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
@@ -26,7 +26,6 @@
     "@radix-ui/react-tabs": "1.1.21",
     "@react-google-maps/api": "^2.20.8",
     "@tailwindcss/postcss": "4.3",
-    "bootstrap": "^5.3.8",
     "clsx": "^2.1.1",
     "lottie-react": "^2.4.1",
     "next": "15.0.8",

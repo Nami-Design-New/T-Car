@@ -108,7 +108,7 @@ export default function BookingReviewModal({ submitting = false, onSubmit, onClo
         />
 
         {errors.root?.server?.message && (
-          <p className="text-danger small mb-2" role="alert">
+          <p className="text-status-error text-sm mb-2" role="alert">
             {errors.root.server.message}
           </p>
         )}

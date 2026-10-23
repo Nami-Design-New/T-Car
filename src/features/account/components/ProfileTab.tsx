@@ -351,19 +351,19 @@ export default function ProfileTab({ profile }: Props) {
         <Button
           type="submit"
           size="lg"
-          className="w-100 mt-2"
+          className="w-full mt-2"
           loading={pendingAction === "save"}
         >
           {t("save")}
         </Button>
 
         {saveError && (
-          <p className="text-danger small mt-2 mb-0" role="alert">
+          <p className="text-status-error text-sm mt-2 mb-0" role="alert">
             {saveError}
           </p>
         )}
         {saved && (
-          <p className="text-success small mt-2 mb-0" role="status">
+          <p className="text-status-success text-sm mt-2 mb-0" role="status">
             {t("saved")}
           </p>
         )}

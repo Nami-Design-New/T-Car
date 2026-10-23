@@ -171,7 +171,7 @@ export default function VerifyPhoneModal({
               {t('sentTo')} <bdi dir="ltr">{phone}</bdi>
             </p>
 
-            <div className="d-flex align-items-center justify-content-center">
+            <div className="flex items-center justify-center">
               <Controller
                 name="code"
                 control={control}
@@ -201,7 +201,7 @@ export default function VerifyPhoneModal({
             </div>
 
             {formError && (
-              <p className="text-danger small mt-0 mb-3" role="alert">
+              <p className="text-status-error text-sm mt-0 mb-4" role="alert">
                 {formError}
               </p>
             )}
@@ -209,7 +209,7 @@ export default function VerifyPhoneModal({
             <Button
               type="submit"
               size="lg"
-              className="w-100"
+              className="w-full"
               disabled={!isComplete}
               loading={loading}
             >

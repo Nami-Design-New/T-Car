@@ -132,7 +132,7 @@ export default function LicenseModal({
           {uploadError && (
             <p
               id="license-file-error"
-              className="text-danger small mt-2 mb-0"
+              className="text-status-error text-sm mt-2 mb-0"
               role="alert"
             >
               {uploadError}

@@ -101,7 +101,7 @@ export default async function Footer() {
         </div>
       </div>
 
-      <div className="footer_bottom container">
+      <div className="footer_bottom container-tcar">
         <div className="footer_copy">
           © {year} T-Car. {t('footer.rights')}
         </div>

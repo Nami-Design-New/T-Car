@@ -105,7 +105,7 @@ export default function BankAccountsTab({
 
       <button
         type="button"
-        className="bank_accounts_add wallet_topup_submit btn w-100"
+        className="bank_accounts_add wallet_topup_submit btn w-full"
         onClick={onAdd}
       >
         {t('add')}

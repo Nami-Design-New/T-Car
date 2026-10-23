@@ -93,9 +93,9 @@ export default function WalletAmountModal({
       closeOnBackdrop={!loading}
     >
       <span className="wallet_topup_drag_handle" aria-hidden="true" />
-      <Dialog.Header className="wallet_topup_header d-flex align-items-center justify-content-between">
+      <Dialog.Header className="wallet_topup_header flex items-center justify-between">
         <Dialog.Title>{title}</Dialog.Title>
-        <Dialog.Close className="wallet_topup_close btn btn-light d-grid p-0" />
+        <Dialog.Close className="wallet_topup_close btn bg-transparent grid p-0" />
       </Dialog.Header>
 
       <Dialog.Body className="wallet_topup_body">
@@ -127,11 +127,11 @@ export default function WalletAmountModal({
               : t('rangeWithMax', { min: formatAmount(min), max: formatAmount(max) })}
           </small>
           {submitError && (
-            <p className="text-danger small mt-2 mb-0" role="alert">
+            <p className="text-status-error text-sm mt-2 mb-0" role="alert">
               {submitError}
             </p>
           )}
-          <Button type="submit" className="wallet_topup_submit w-100" disabled={!valid} loading={loading}>
+          <Button type="submit" className="wallet_topup_submit w-full" disabled={!valid} loading={loading}>
             {submitLabel}
           </Button>
         </form>

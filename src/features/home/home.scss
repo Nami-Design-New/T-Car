@@ -656,7 +656,7 @@
     border-radius: $ds-radius-xl;
     box-shadow: 0 20px 50px rgba($ds-shadow-color, 0.05);
     border: 1px solid $ds-stroke-light;
-    .row {
+    .contact-form-row {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
       gap: 20px;
@@ -699,7 +699,7 @@
     .contact_form {
       padding: 25px;
 
-      .row {
+      .contact-form-row {
         grid-template-columns: 1fr;
       }
     }

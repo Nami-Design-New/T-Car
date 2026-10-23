@@ -73,7 +73,7 @@ export function AlertModal({
         {title && <Dialog.Title>{title}</Dialog.Title>}
         {description && <Dialog.Description>{description}</Dialog.Description>}
         {error && (
-          <p className="text-danger small mt-2 mb-0" role="alert">
+          <p className="text-status-error text-sm mt-2 mb-0" role="alert">
             {error}
           </p>
         )}

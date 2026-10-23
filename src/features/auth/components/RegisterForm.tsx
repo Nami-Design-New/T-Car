@@ -110,12 +110,12 @@ export default function RegisterForm({ onBack, onSubmit, loading = false }: Prop
       />
 
       {formError && (
-        <p className="text-danger small mt-2 mb-0" role="alert">
+        <p className="text-status-error text-sm mt-2 mb-0" role="alert">
           {formError}
         </p>
       )}
 
-      <Button type="submit" size="lg" className="w-100" loading={loading}>
+      <Button type="submit" size="lg" className="w-full" loading={loading}>
         {t('auth.register.submit')}
       </Button>
     </form>

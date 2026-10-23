@@ -92,7 +92,7 @@ export default function CancelBookingModal({
         </div>
 
         {error && (
-          <p className="text-danger small mb-2" role="alert">
+          <p className="text-status-error text-sm mb-2" role="alert">
             {error}
           </p>
         )}

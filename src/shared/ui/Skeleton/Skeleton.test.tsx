@@ -37,7 +37,7 @@ describe('PageSkeleton', () => {
     const region = container.firstChild as HTMLElement;
     expect(region).toHaveAttribute('aria-busy', 'true');
     expect(region).toHaveClass('page-skeleton--page', 'section');
-    expect(screen.getByText('states.loading')).toHaveClass('visually-hidden');
+    expect(screen.getByText('states.loading')).toHaveClass('sr-only');
     expect(container.querySelectorAll('.page-skeleton__card')).toHaveLength(6);
   });
 

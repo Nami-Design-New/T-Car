@@ -24,12 +24,12 @@ export default function InsufficientBalanceModal({ open , onClose, onConfirm }: 
     >
       <span className="insufficient_balance_drag_handle" aria-hidden="true" />
 
-      <Dialog.Header className="insufficient_balance_header d-flex align-items-center justify-content-between">
+      <Dialog.Header className="insufficient_balance_header flex items-center justify-between">
         <Dialog.Title className="insufficient_balance_title">{t('title')}</Dialog.Title>
-        <Dialog.Close className="insufficient_balance_close btn btn-light d-grid p-0" />
+        <Dialog.Close className="insufficient_balance_close btn bg-transparent grid p-0" />
       </Dialog.Header>
 
-      <div className="insufficient_balance_illustration d-flex align-items-center justify-content-center">
+      <div className="insufficient_balance_illustration flex items-center justify-center">
         <Image src={walletIcon} alt="" width={150} height={150} />
       </div>
 
@@ -40,7 +40,7 @@ export default function InsufficientBalanceModal({ open , onClose, onConfirm }: 
 
       <button
         type="button"
-        className="insufficient_balance_topup_btn btn w-100"
+        className="insufficient_balance_topup_btn btn w-full"
         onClick={onConfirm}
       >
         {t('topUp')}

@@ -100,12 +100,12 @@ export default function EditPhoneModal({
           </div>
 
           {formError && (
-            <p className="text-danger small mt-1 mb-3" role="alert">
+            <p className="text-status-error text-sm mt-1 mb-4" role="alert">
               {formError}
             </p>
           )}
 
-          <Button type="submit" className="w-100" size="lg" loading={loading}>
+          <Button type="submit" className="w-full" size="lg" loading={loading}>
             {t('sendCode')}
           </Button>
         </form>

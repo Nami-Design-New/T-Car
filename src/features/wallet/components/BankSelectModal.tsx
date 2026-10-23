@@ -19,9 +19,9 @@ export default function BankSelectModal({ open, accounts, onClose, onSelect }: P
   return (
     <Dialog open={open} onClose={onClose} className="bank_select_modal" placement="bottom-sheet">
       <span className="wallet_topup_drag_handle" aria-hidden="true" />
-      <Dialog.Header className="wallet_topup_header d-flex align-items-center justify-content-between">
+      <Dialog.Header className="wallet_topup_header flex items-center justify-between">
         <Dialog.Title>{t('title')}</Dialog.Title>
-        <Dialog.Close className="wallet_topup_close btn btn-light d-grid p-0" />
+        <Dialog.Close className="wallet_topup_close btn bg-transparent grid p-0" />
       </Dialog.Header>
 
       <Dialog.Body>

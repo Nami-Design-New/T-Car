@@ -1,7 +1,7 @@
 # 9. Tailwind CSS 4.3 migration
 
-> **Status (2026-10-23):** Fraction 1 complete; Fraction 2 in progress
-> (global reset/layout ported; Bootstrap and feature SCSS still active).
+> **Status (2026-10-23):** Fraction 1 complete; Fraction 2 is pending only
+> visual review after the global layer and Bootstrap replacement.
 >
 > This document supersedes the SCSS end state in [08-styles-and-scss.md](08-styles-and-scss.md)
 > if the migration is approved. The existing SCSS work remains valid until the
@@ -142,6 +142,57 @@ utility-class inventory is migrated and verified.
 Verification checkpoint: TypeScript, ESLint, and `next build` pass after this
 change. The full test suite and route smoke test remain pending until the
 Bootstrap utility migration is complete.
+
+Next substep: migrate the plain Bootstrap utility classes in active components
+to Tailwind utilities. The structural `.row`, form-switch, and `btn-light`
+classes are intentionally deferred to focused replacements because they carry
+component-specific Bootstrap behavior.
+
+Progress update: active components now use Tailwind equivalents for flex/grid,
+alignment, direction, width, spacing, and semantic status colors. Remaining
+Bootstrap consumers are structural `.row`/grid markup, `.form-check` and
+`.form-switch`, `.btn-light`, `.small`, `.visually-hidden`, and the shared
+button component's own `btn-*` API. TypeScript, ESLint, and `next build` pass
+after this update.
+
+Next focused replacement: remove the generic helpers and give the contact form
+and extend-booking price rows feature-owned class names. Their existing layout
+rules will move with the names; payment switch styling remains deferred.
+
+Spacing convention update: use Tailwind's standard scale (`mt-1`, `mt-2`,
+`mt-4`, `gap-1`, `gap-2`, `gap-4`) instead of arbitrary rem values when the
+standard utility expresses the intended spacing. The design-system spacing
+values are namespaced as `--spacing-ds-*` so they do not override Tailwind's
+standard scale.
+
+Next focused replacement: replace the payment points switch's Bootstrap
+`.form-check`/`.form-switch` markup with an owned switch class and remove the
+Bootstrap form-check partial.
+
+Progress update: the points switch now uses `.points-switch` and
+`.points-switch-input` from the Tailwind component layer, and the Bootstrap
+form-check partial is no longer imported. The remaining Bootstrap entry still
+owns the phone input control, buttons, and grid. The visually-hidden helper is
+now unused and will be removed with the remaining Bootstrap entry cleanup.
+
+Next cleanup substep: move the shared `Button` base, variants, and sizes into
+the Tailwind component layer. `PhoneField` already owns its rendered input
+styles, so the Bootstrap form-control partial can be removed with the other
+unused Bootstrap partials.
+
+Progress update: the shared button base, variants, and sizes now live in the
+Tailwind component layer. The Bootstrap stylesheet, its unused partials, and
+the `bootstrap` package have been removed. The remaining SCSS is feature and
+shared-component styling, which is handled by later migration fractions.
+
+Verification checkpoint: TypeScript, ESLint, `next build`, the full test suite
+(66 files / 306 tests), and route smoke tests pass with no Bootstrap stylesheet
+or dependency. The final visual review at 360px and 1280px in both locales
+remains before Fraction 2 is complete.
+
+Current status: Bootstrap is removed from `package.json`, `package-lock.json`,
+layout imports, and `src/styles`. Fraction 2 is pending only the visual pass
+and review.
 
 - Replace reset, body, typography, layout, button, loader, and visually-hidden
   rules used by the global shell.

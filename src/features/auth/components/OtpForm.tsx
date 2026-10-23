@@ -92,7 +92,7 @@ export default function OtpForm({ phone, onBack, onVerify, onResend, loading = f
         <h3>{t('auth.otp.subtitle')}</h3>
         <p className="otp_description">{t('auth.otp.description', { phone })}</p>
       </div>
-      <div className={'d-flex align-items-center justify-content-center'}>
+      <div className={'flex items-center justify-center'}>
         <Controller
           name="code"
           control={control}
@@ -122,7 +122,7 @@ export default function OtpForm({ phone, onBack, onVerify, onResend, loading = f
       </div>
 
       {formError && (
-        <p className="text-danger small mt-2 mb-0" role="alert">
+        <p className="text-status-error text-sm mt-2 mb-0" role="alert">
           {formError}
         </p>
       )}
@@ -130,7 +130,7 @@ export default function OtpForm({ phone, onBack, onVerify, onResend, loading = f
       <Button
         type="submit"
         size="lg"
-        className="w-100"
+        className="w-full"
         disabled={!isComplete}
         loading={loading}
       >

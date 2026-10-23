@@ -77,12 +77,12 @@ export default function LoginForm({ onNext, loading = false }: Props) {
       </div>
 
       {formError && (
-        <p className="text-danger small mt-1 mb-0" role="alert">
+        <p className="text-status-error text-sm mt-1 mb-0" role="alert">
           {formError}
         </p>
       )}
 
-      <Button type="submit" size="lg" className="w-100" loading={loading}>
+      <Button type="submit" size="lg" className="w-full" loading={loading}>
         <span className="auth_btn_icon" aria-hidden="true">
           <Image src={whatsappIcon} alt="" width={18} height={18} />
         </span>

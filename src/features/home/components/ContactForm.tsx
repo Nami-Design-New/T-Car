@@ -72,7 +72,7 @@ export default function ContactForm() {
 
   return (
     <form className="contact_form" onSubmit={submit} noValidate>
-      <div className="row">
+      <div className="contact-form-row">
         <FormInput
           id="name"
           label={t("contact.name")}
@@ -94,7 +94,7 @@ export default function ContactForm() {
         />
       </div>
 
-      <div className="row">
+      <div className="contact-form-row">
         <FormSelect
           id="contactReason"
           label={t("contact.reason")}
@@ -130,12 +130,12 @@ export default function ContactForm() {
       />
 
       {formError && !sent && (
-        <p className="text-danger small mt-3 mb-0" role="alert">
+        <p className="text-status-error text-sm mt-4 mb-0" role="alert">
           {formError}
         </p>
       )}
       {sent && (
-        <p className="text-success small mt-3 mb-0" role="status">
+        <p className="text-status-success text-sm mt-4 mb-0" role="status">
           {t("contact.sent")}
         </p>
       )}

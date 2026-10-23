@@ -38,7 +38,7 @@ export async function PageSkeleton({ variant = 'page' }: Props) {
       aria-busy="true"
       aria-live="polite"
     >
-      <span className="visually-hidden">{t('loading')}</span>
+      <span className="sr-only">{t('loading')}</span>
 
       {variant === 'page' ? (
         <div className="container-tcar">

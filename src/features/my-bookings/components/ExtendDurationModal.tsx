@@ -101,7 +101,7 @@ export default function ExtendDurationModal({
           <h3 className="details_title">{t('priceDetails')}</h3>
 
           {/* السعر */}
-          <div className="row">
+          <div className="price-row">
             <span className="label">{t('price')}</span>
 
             <span className="calculation"></span>
@@ -112,7 +112,7 @@ export default function ExtendDurationModal({
           </div>
 
           {/* المجموع الفرعي */}
-          <div className="row">
+          <div className="price-row">
             <span className="label">{t('subtotal')}</span>
 
             <span className="calculation">
@@ -125,7 +125,7 @@ export default function ExtendDurationModal({
           </div>
 
           {/* غرامة التأخير */}
-          <div className="row late_fee">
+          <div className="price-row late_fee">
             <span className="label">{t('lateFee')}</span>
 
             <span className="calculation">{t('oneDay')}</span>
@@ -134,7 +134,7 @@ export default function ExtendDurationModal({
           </div>
 
           {/* الضريبة */}
-          <div className="row">
+          <div className="price-row">
             <span className="label">{t('vat')}</span>
 
             <span className="calculation">5%</span>
@@ -145,7 +145,7 @@ export default function ExtendDurationModal({
           </div>
 
           {/* الإجمالي */}
-          <div className="row total">
+          <div className="price-row total">
             <span className="label">{t('total')}</span>
 
             <span className="calculation"></span>
@@ -157,7 +157,7 @@ export default function ExtendDurationModal({
         </div>
 
         {error && (
-          <p className="text-danger small mb-2" role="alert">
+          <p className="text-status-error text-sm mb-2" role="alert">
             {error}
           </p>
         )}
