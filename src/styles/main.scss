@@ -1,9 +1,6 @@
 // Bootstrap is its own stylesheet (styles/vendor/bootstrap.scss), loaded first by the layout.
 // Global layer: reset, layout, buttons, typography (docs/08 step 6).
-@use 'base/reset';
-@use 'base/layout';
 @use 'base/buttons';
-@use 'base/typography';
 // Legacy styles until doc 4 / the feature moves replace them.
 @use 'legacy/dialogs';
 @use 'legacy/components';

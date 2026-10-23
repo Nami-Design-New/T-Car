@@ -94,3 +94,66 @@
   --breakpoint-lg: 992px;
   --breakpoint-xl: 1200px;
 }
+
+@layer base {
+  :root {
+    --font-primary: var(--font-expo);
+  }
+
+  html,
+  body {
+    padding: 0;
+    margin: 0;
+    font-family: var(--font-primary), sans-serif;
+    color: var(--color-text-primary);
+    background-color: var(--color-surface-background);
+    scroll-behavior: smooth;
+  }
+
+  body:dir(rtl) {
+    font-family: var(--font-expo), sans-serif;
+  }
+
+  *,
+  ::before,
+  ::after {
+    box-sizing: border-box;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  button {
+    font-family: inherit;
+  }
+
+  img {
+    display: block;
+    max-width: 100%;
+  }
+}
+
+@layer components {
+  .mirror-in-rtl:dir(rtl) {
+    transform: scaleX(-1);
+  }
+
+  .section {
+    padding-block: 5rem;
+  }
+
+  .container-tcar {
+    width: 100%;
+    max-width: 1280px;
+    margin-inline: auto;
+    padding-inline: 1rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .section {
+    padding-block: 3rem;
+  }
+}

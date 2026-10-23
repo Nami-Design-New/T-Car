@@ -1,6 +1,7 @@
 # 9. Tailwind CSS 4.3 migration
 
-> **Status (2026-10-23):** proposed. No implementation has started.
+> **Status (2026-10-23):** Fraction 1 complete; Fraction 2 in progress
+> (global reset/layout ported; Bootstrap and feature SCSS still active).
 >
 > This document supersedes the SCSS end state in [08-styles-and-scss.md](08-styles-and-scss.md)
 > if the migration is approved. The existing SCSS work remains valid until the
@@ -131,7 +132,16 @@ or a small helper with explicit complete class names.
   not change the rendered UI.
 - Add a small proof component or migrated primitive to verify token generation.
 
-### Fraction 2: Global layer and Bootstrap replacement
+### Fraction 2: Global layer and Bootstrap replacement — in progress
+
+Progress update: the reset, direction-aware base rules, typography defaults,
+section spacing, and `container-tcar` are now owned by `tailwind.css`. The
+SCSS button layer, Bootstrap entry, and feature styles remain active until the
+utility-class inventory is migrated and verified.
+
+Verification checkpoint: TypeScript, ESLint, and `next build` pass after this
+change. The full test suite and route smoke test remain pending until the
+Bootstrap utility migration is complete.
 
 - Replace reset, body, typography, layout, button, loader, and visually-hidden
   rules used by the global shell.
