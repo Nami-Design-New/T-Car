@@ -241,6 +241,12 @@ description typography, and action button now use Tailwind utilities in
 marker classes remain for compatibility. The existing bottom-sheet placement,
 auto-close behavior, and action callback are unchanged.
 
+Menu progress: the dropdown surface, item states, danger tone, separator,
+reduced-motion behavior, and enter animation now use Tailwind utilities in
+`Menu.tsx`. The SCSS file and import are removed; `menu__*` marker classes
+remain for compatibility. Radix keyboard navigation, focus return, collision
+positioning, and outside-click dismissal are unchanged.
+
 - `Button`, `Dialog`, `ConfirmDialog`, `ResultDialog`;
 - `Menu`, `Accordion`, `RadioCards`, `Tabs`;
 - `Skeleton`, `EmptyState`, `ErrorState`, `Loader`, `Price`;
