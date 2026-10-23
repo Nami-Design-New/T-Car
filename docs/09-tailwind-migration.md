@@ -253,6 +253,12 @@ utilities in `AlertDialog.tsx`. The component stylesheet is removed, the test
 now targets `AlertDialog`, and the existing auto-close, loading, focus, and
 callback behavior is unchanged.
 
+Accordion progress: the structural heading reset, content overflow, open/close
+height animations, and reduced-motion behavior now use Tailwind utilities in
+`Accordion.tsx`. The SCSS file and import are removed; `accordion__*` marker
+classes remain, and Radix keyboard navigation and ARIA state behavior are
+unchanged.
+
 - `Button`, `Dialog`, `ConfirmDialog`, `ResultDialog`;
 - `Menu`, `Accordion`, `RadioCards`, `Tabs`;
 - `Skeleton`, `EmptyState`, `ErrorState`, `Loader`, `Price`;

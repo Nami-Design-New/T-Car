@@ -194,6 +194,26 @@
     }
   }
 
+  @keyframes accordion-open {
+    from {
+      height: 0;
+    }
+
+    to {
+      height: var(--radix-accordion-content-height);
+    }
+  }
+
+  @keyframes accordion-close {
+    from {
+      height: var(--radix-accordion-content-height);
+    }
+
+    to {
+      height: 0;
+    }
+  }
+
   .points-switch {
     display: block;
     margin: 0;
