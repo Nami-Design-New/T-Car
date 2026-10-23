@@ -281,6 +281,12 @@ validation messages, phone-widget overrides, OTP inputs, calendar cells, time
 slots, and picker actions. Their repo-owned SCSS files and imports are removed;
 the phone component's required vendor stylesheet remains external.
 
+Grouped navigation/map progress: `BackButton` and `MapLocationModal` now use
+Tailwind utilities for the button focus state, search controls, prediction
+list, map placeholder, errors, and footer actions. Their SCSS files and imports
+are removed; router behavior, Google Maps loading, prediction selection, and
+location confirmation remain unchanged.
+
 - `Button`, `Dialog`, `ConfirmDialog`, `ResultDialog`;
 - `Menu`, `Accordion`, `RadioCards`, `Tabs`;
 - `Skeleton`, `EmptyState`, `ErrorState`, `Loader`, `Price`;

@@ -14,7 +14,6 @@ import { Dialog } from "@/shared/ui/Dialog";
 import { FormInput } from "../Form";
 import { Button } from "../Button";
 import type { LocationData } from "@/shared/lib/location";
-import "./MapLocationModal.scss";
 
 export interface MapLocationModalProps {
   open: boolean;
@@ -206,8 +205,8 @@ export default function MapLocationModal({
         <Dialog.Close />
       </Dialog.Header>
       <Dialog.Body>
-        <div className="search_box">
-          <div className="search_input">
+        <div className="search_box relative mb-5 flex w-full items-center">
+          <div className="search_input flex-1">
             <FormInput
               type="text"
               value={search}
@@ -219,7 +218,7 @@ export default function MapLocationModal({
           {search && (
             <button
               type="button"
-              className="clear_search"
+              className="clear_search absolute end-7 flex cursor-pointer items-center border-0 bg-transparent text-base text-text-placeholder hover:text-text-primary"
               onClick={() => {
                 setSearch("");
                 setPredictions(null);
@@ -230,19 +229,20 @@ export default function MapLocationModal({
           )}
 
           {predictions && predictions.length > 0 && (
-            <ul className="predictions_list">
+            <ul className="predictions_list absolute inset-x-0 top-[calc(100%+6px)] z-20 m-0 max-h-[260px] list-none overflow-y-auto rounded-md border border-stroke-light bg-surface-elevated p-2 shadow-[0_8px_24px_rgba(30,30,30,0.1)]">
               {predictions.map((p) => (
                 <li
                   key={p.place_id}
+                  className="flex cursor-pointer items-center gap-3 rounded-[10px] px-3 py-2.5 transition duration-150 hover:bg-surface-card-primary"
                   onClick={() => selectPrediction(p.place_id, p.description)}
                 >
-                  <FiMapPin />
-                  <div>
-                    <span className="main_text">
+                  <FiMapPin className="shrink-0 text-action-primary" />
+                  <div className="flex min-w-0 flex-col overflow-hidden">
+                    <span className="main_text overflow-hidden text-ellipsis whitespace-nowrap text-sm font-semibold text-text-primary">
                       {p.structured_formatting?.main_text || p.description}
                     </span>
                     {p.structured_formatting?.secondary_text && (
-                      <span className="secondary_text">
+                      <span className="secondary_text text-xs text-text-subtle">
                         {p.structured_formatting.secondary_text}
                       </span>
                     )}
@@ -253,7 +253,7 @@ export default function MapLocationModal({
           )}
         </div>
 
-        <div className="map_placeholder">
+        <div className="map_placeholder flex h-[420px] flex-col items-center justify-center gap-4 rounded-xl border-2 border-dashed border-stroke-heavy bg-surface-on-background max-md:h-[300px]">
           {isLoaded ? (
             <GoogleMap
               mapContainerStyle={containerStyle}
@@ -269,18 +269,22 @@ export default function MapLocationModal({
             </GoogleMap>
           ) : (
             <>
-              <FiMapPin />
-              <span>{t("loading")}</span>
+              <FiMapPin className="text-[70px] text-action-primary" />
+              <span className="font-semibold text-text-subtle">{t("loading")}</span>
             </>
           )}
         </div>
 
         {address && <p className="selected_address">{address}</p>}
-        {locationError && <p className="location_error">{locationError}</p>}
+        {locationError && (
+          <p className="location_error mt-2 mb-0 text-[13px] text-status-error">
+            {locationError}
+          </p>
+        )}
       </Dialog.Body>
 
       <Dialog.Footer>
-        <div className="location_actions">
+        <div className="location_actions mt-6 flex items-center justify-between gap-4">
           <Button
             type="button"
             variant="outline"

@@ -227,8 +227,8 @@ proceeds in [09-tailwind-migration.md](09-tailwind-migration.md). Fractions 1–
 are complete; Fraction 3 is migrating the shared UI primitives, with `Button`,
 `Dialog`, `ConfirmDialog`, `ResultDialog`, `Menu`, `Accordion`, `RadioCards`,
 `Tabs`, `EmptyState`, `ErrorState`, `Loader`, and `Price` complete.
-The next grouped shared-UI fraction covers `Form`, `PhoneField`, `OtpInput`,
-and `DateTimePicker`.
+The current grouped shared-UI fraction covers `Form`, `PhoneField`, `OtpInput`,
+`DateTimePicker`, `BackButton`, and `MapLocationModal`.
 
 ### Features
 
