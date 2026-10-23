@@ -231,6 +231,10 @@ button, focus-visible state, and animation classes now live in `Dialog.tsx`.
 The Dialog SCSS file and import are removed; marker classes remain so existing
 feature-specific overrides continue to work.
 
+ConfirmDialog progress: the cancel/confirm actions, danger tone, pending
+disabled state, and error text now use Tailwind utilities in `ConfirmDialog.tsx`.
+Its SCSS file and import are removed; marker classes remain for compatibility.
+
 - `Button`, `Dialog`, `ConfirmDialog`, `ResultDialog`;
 - `Menu`, `Accordion`, `RadioCards`, `Tabs`;
 - `Skeleton`, `EmptyState`, `ErrorState`, `Loader`, `Price`;

@@ -1,7 +1,7 @@
 'use client';
 
 import { Dialog } from '@/shared/ui/Dialog';
-import './ConfirmDialog.scss';
+import { cn } from '@/shared/lib/cn';
 
 export interface Props {
   open: boolean;
@@ -43,17 +43,25 @@ export function ConfirmDialog({
       </Dialog.Header>
       {description && <Dialog.Description>{description}</Dialog.Description>}
       {error && (
-        <p className="confirm-dialog__error" role="alert">
+        <p className="confirm-dialog__error mx-6 text-sm text-status-error" role="alert">
           {error}
         </p>
       )}
       <Dialog.Footer>
-        <button type="button" className="confirm-dialog__cancel" disabled={pending} onClick={onCancel}>
+        <button
+          type="button"
+          className="confirm-dialog__cancel min-h-11 cursor-pointer rounded-md border border-stroke-light bg-surface-elevated px-5 font-semibold text-text-primary disabled:cursor-not-allowed disabled:opacity-[0.55]"
+          disabled={pending}
+          onClick={onCancel}
+        >
           {cancelLabel}
         </button>
         <button
           type="button"
-          className={`confirm-dialog__confirm confirm-dialog__confirm--${tone}`}
+          className={cn(
+            'confirm-dialog__confirm min-h-11 cursor-pointer rounded-md border-0 bg-action-primary px-5 font-semibold text-text-on-action disabled:cursor-not-allowed disabled:opacity-[0.55]',
+            tone === 'danger' && 'confirm-dialog__confirm--danger bg-status-error',
+          )}
           disabled={pending}
           aria-busy={pending}
           onClick={onConfirm}
