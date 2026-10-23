@@ -275,6 +275,12 @@ presentation, loader animation, and reduced-motion behavior through Tailwind
 utilities. Their four SCSS files and imports are removed; existing marker
 classes, public props, accessibility behavior, and tests remain unchanged.
 
+Grouped form-control progress: `Form`, `PhoneField`, `OtpInput`, and
+`DateTimePicker` now use Tailwind classes for field layout, control states,
+validation messages, phone-widget overrides, OTP inputs, calendar cells, time
+slots, and picker actions. Their repo-owned SCSS files and imports are removed;
+the phone component's required vendor stylesheet remains external.
+
 - `Button`, `Dialog`, `ConfirmDialog`, `ResultDialog`;
 - `Menu`, `Accordion`, `RadioCards`, `Tabs`;
 - `Skeleton`, `EmptyState`, `ErrorState`, `Loader`, `Price`;

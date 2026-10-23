@@ -84,9 +84,9 @@ export function OtpInput({
   };
 
   return (
-    <div className="otp-field">
+    <div className="otp-field flex flex-col">
       <div
-        className="otp-inputs"
+        className="otp-inputs mb-6 flex gap-3 direction-ltr max-md:gap-2"
         onPaste={handlePaste}
         dir="ltr"
         role="group"
@@ -104,6 +104,7 @@ export function OtpInput({
             pattern="[0-9]*"
             maxLength={length}
             value={value[index] ?? ''}
+            className="h-14 w-14 rounded-md border border-stroke-light bg-surface-card-primary px-0 text-center text-[22px] font-bold tabular-nums text-text-primary caret-action-primary outline-none transition duration-300 focus:border-action-primary focus:bg-surface-elevated focus:ring-4 focus:ring-action-primary/15 disabled:cursor-not-allowed disabled:opacity-60 max-md:size-[50px] max-md:text-xl"
             disabled={disabled}
             aria-label={digitAriaLabel(index + 1, length)}
             aria-invalid={error ? true : undefined}
@@ -114,7 +115,7 @@ export function OtpInput({
         ))}
       </div>
       {error && (
-        <p id={errorId} className="otp-field__error" role="alert">
+        <p id={errorId} className="otp-field__error -mt-4 mb-4 text-center text-[13px] text-status-error" role="alert">
           {error}
         </p>
       )}
