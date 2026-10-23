@@ -214,6 +214,26 @@
     }
   }
 
+  @keyframes carMove {
+    from {
+      transform: translateX(calc(-50% - 100vw));
+    }
+
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
+  @keyframes carMoveInline {
+    from {
+      transform: translateX(calc(-50% - 300px));
+    }
+
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
   .points-switch {
     display: block;
     margin: 0;

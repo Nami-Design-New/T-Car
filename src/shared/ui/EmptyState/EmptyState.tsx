@@ -1,7 +1,6 @@
 import type { ReactNode } from 'react';
 import { cn } from '@/shared/lib/cn';
 import { Illustration, type IllustrationName } from '@/shared/ui/Illustration';
-import './EmptyState.scss';
 
 export interface Props {
   title: string;
@@ -26,15 +25,43 @@ export function EmptyState({
   className,
 }: Props) {
   const Heading = size === 'inline' ? 'p' : 'h3';
+  const sizeClasses = {
+    page: 'empty-state--page min-h-[50vh] justify-center px-4 py-10',
+    section: 'empty-state--section px-4 py-6',
+    inline: 'empty-state--inline p-3',
+  };
 
   return (
-    <div className={cn('empty-state', `empty-state--${size}`, className)}>
-      {illustration && size !== 'inline' && (
-        <Illustration name={illustration} className="empty-state__illustration" />
+    <div
+      className={cn(
+        'empty-state flex flex-col items-center gap-2 text-center text-text-primary',
+        sizeClasses[size],
+        className,
       )}
-      <Heading className="empty-state__title">{title}</Heading>
-      {description && <p className="empty-state__description">{description}</p>}
-      {action && <div className="empty-state__action">{action}</div>}
+    >
+      {illustration && size !== 'inline' && (
+        <Illustration
+          name={illustration}
+          className={cn(
+            'empty-state__illustration min-h-[120px] w-40',
+            size === 'page' && 'w-[220px]',
+          )}
+        />
+      )}
+      <Heading
+        className={cn(
+          'empty-state__title m-0 text-[1.1rem] font-semibold',
+          size === 'inline' && 'text-[0.95rem] font-medium text-text-subtle',
+        )}
+      >
+        {title}
+      </Heading>
+      {description && (
+        <p className="empty-state__description m-0 max-w-lg text-[0.9rem] text-text-subtle">
+          {description}
+        </p>
+      )}
+      {action && <div className="empty-state__action mt-2">{action}</div>}
     </div>
   );
 }

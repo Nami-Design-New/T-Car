@@ -269,6 +269,12 @@ the repository has no active `.tabs__*` rules or runtime callers requiring a
 style migration. Its Radix roles, keyboard navigation, focus management, and
 test coverage remain unchanged.
 
+Grouped state/utility progress: `EmptyState`, `ErrorState`, `Loader`, and
+`Price` now own their layout, responsive variants, state styling, currency
+presentation, loader animation, and reduced-motion behavior through Tailwind
+utilities. Their four SCSS files and imports are removed; existing marker
+classes, public props, accessibility behavior, and tests remain unchanged.
+
 - `Button`, `Dialog`, `ConfirmDialog`, `ResultDialog`;
 - `Menu`, `Accordion`, `RadioCards`, `Tabs`;
 - `Skeleton`, `EmptyState`, `ErrorState`, `Loader`, `Price`;

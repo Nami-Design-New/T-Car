@@ -1,16 +1,16 @@
-'use client';
+"use client";
 
-import Image from 'next/image';
-import { useTranslations } from 'next-intl';
-import { FiLock } from 'react-icons/fi';
-import { formatTransactionDate } from '@/shared/lib/format';
-import { EmptyState } from '@/shared/ui/EmptyState';
-import { ErrorState } from '@/shared/ui/ErrorState';
-import { Price } from '@/shared/ui/Price';
-import type { WalletSummary, WalletTransaction } from '../model';
-import { Loader } from '@/shared/ui/Loader';
+import Image from "next/image";
+import { useTranslations } from "next-intl";
+import { FiLock } from "react-icons/fi";
+import { formatTransactionDate } from "@/shared/lib/format";
+import { EmptyState } from "@/shared/ui/EmptyState";
+import { ErrorState } from "@/shared/ui/ErrorState";
+import { Price } from "@/shared/ui/Price";
+import type { WalletSummary, WalletTransaction } from "../model";
+import { Loader } from "@/shared/ui/Loader";
 
-import { ICONS } from '@/shared/config/assets';
+import { ICONS } from "@/shared/config/assets";
 const walletIcon = ICONS.money;
 const coinIcon = ICONS.coin;
 const balanceIcon = ICONS.balance;
@@ -35,7 +35,7 @@ export default function WalletTab({
   onTopUp,
   onWithdraw,
 }: Props) {
-  const t = useTranslations('wallet');
+  const t = useTranslations("wallet");
   if (loading) {
     return (
       <div className="account-panel">
@@ -57,7 +57,7 @@ export default function WalletTab({
       <div className="wallet_balance_card">
         <div className="wallet_balance_label">
           <Image src={walletIcon} alt="" width={22} height={22} />
-          <span>{t('totalBalance')}</span>
+          <span>{t("totalBalance")}</span>
         </div>
 
         <div className="wallet_balance_amount">
@@ -65,8 +65,12 @@ export default function WalletTab({
         </div>
 
         <div className="wallet_balance_actions">
-          <button type="button" className="wallet_action_btn primary" onClick={onTopUp}>
-            {t('addBalance')}
+          <button
+            type="button"
+            className="wallet_action_btn primary"
+            onClick={onTopUp}
+          >
+            {t("addBalance")}
           </button>
           <button
             type="button"
@@ -74,7 +78,7 @@ export default function WalletTab({
             onClick={onWithdraw}
             disabled={summary.withdrawable <= 0}
           >
-            {t('withdrawBalance')}
+            {t("withdrawBalance")}
           </button>
         </div>
 
@@ -82,32 +86,42 @@ export default function WalletTab({
           <div className="wallet_breakdown_item">
             <span className="wallet_breakdown_label">
               <Image src={coinIcon} alt="" width={18} height={18} />
-              {t('withdrawableBalance')}
+              {t("withdrawableBalance")}
             </span>
-            <Price amount={summary.withdrawable} size="md" className="wallet_amount" />
+            <Price
+              amount={summary.withdrawable}
+              size="md"
+              className="wallet_amount"
+            />
           </div>
 
           <div className="wallet_breakdown_item">
             <span className="wallet_breakdown_label">
               <Image src={balanceIcon} alt="" width={18} height={18} />
-              {t('nonWithdrawableBalance')}
+              {t("nonWithdrawableBalance")}
             </span>
-            <Price amount={summary.nonWithdrawable} size="md" className="wallet_amount" />
+            <Price
+              amount={summary.nonWithdrawable}
+              size="md"
+              className="wallet_amount"
+            />
           </div>
         </div>
       </div>
 
       <div className="wallet_history">
-        <h3 className="wallet_history_title">{t('history')}</h3>
+        <h3 className="wallet_history_title">{t("history")}</h3>
 
         {transactions.length === 0 ? (
-          <EmptyState title={t('empty.history')} size="section" />
+          <EmptyState title={t("empty.history")} size="section" />
         ) : (
           <ul className="wallet_history_list">
             {transactions.map((tx) => (
               <li key={tx.id} className={`wallet_history_item ${tx.type}`}>
                 <div className="wallet_history_item_body">
-                  <span className="wallet_history_item_title">{t(`transaction.${tx.type}`)}</span>
+                  <span className="wallet_history_item_title">
+                    {t(`transaction.${tx.type}`)}
+                  </span>
                   <span className="wallet_history_item_meta">
                     {formatTransactionDate(tx.createdAt)}
                   </span>
@@ -115,9 +129,15 @@ export default function WalletTab({
 
                 <div className="wallet_history_item_side">
                   <span className="wallet_history_item_amount">
-                    <Price amount={tx.amount} size="sm" className="wallet_amount" />
+                    <Price
+                      amount={tx.amount}
+                      size="sm"
+                      className="wallet_amount"
+                    />
                   </span>
-                  <span className="wallet_history_item_meta">#{tx.reference}</span>
+                  <span className="wallet_history_item_meta">
+                    #{tx.reference}
+                  </span>
                 </div>
               </li>
             ))}

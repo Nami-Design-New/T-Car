@@ -4,7 +4,6 @@ import { cn } from '@/shared/lib/cn';
 import { formatAmount } from '@/shared/lib/format';
 import { ICONS } from '@/shared/config/assets';
 const sarIcon = ICONS.riyal;
-import './Price.scss';
 
 const ICON_SIZES = { sm: 14, md: 16, lg: 20, xl: 30 } as const;
 
@@ -23,14 +22,21 @@ export function Price({ amount, size = 'md', strike = false, className }: Props)
   const Wrapper = strike ? 'del' : 'span';
 
   return (
-    <Wrapper className={cn('price', `price--${size}`, strike && 'price--strike', className)}>
+    <Wrapper
+      className={cn(
+        'price inline-flex items-center gap-1.5 whitespace-nowrap',
+        `price--${size}`,
+        strike && 'price--strike text-text-subtle line-through',
+        className,
+      )}
+    >
       <span className="price__amount">{formatAmount(amount)}</span>
       <Image
         src={sarIcon}
         alt={t('sar')}
         width={iconSize}
         height={iconSize}
-        className="price__currency currency_icon"
+        className="price__currency currency_icon shrink-0 object-contain"
       />
     </Wrapper>
   );

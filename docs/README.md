@@ -226,7 +226,7 @@ complete and remains active while the replacement migration to Tailwind CSS 4.3
 proceeds in [09-tailwind-migration.md](09-tailwind-migration.md). Fractions 1–2
 are complete; Fraction 3 is migrating the shared UI primitives, with `Button`,
 `Dialog`, `ConfirmDialog`, `ResultDialog`, `Menu`, `Accordion`, `RadioCards`,
-and `Tabs` complete.
+`Tabs`, `EmptyState`, `ErrorState`, `Loader`, and `Price` complete.
 
 ### Features
 
