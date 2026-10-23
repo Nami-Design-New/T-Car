@@ -1,6 +1,5 @@
 import type { CSSProperties } from 'react';
 import { cn } from '@/shared/lib/cn';
-import './Skeleton.scss';
 
 export interface Props {
   shape?: 'text' | 'rect' | 'circle';
@@ -21,5 +20,17 @@ export function Skeleton({ shape = 'text', width, height, size, aspectRatio, cla
   const style: CSSProperties =
     shape === 'circle' ? { width: size, height: size } : { width, height, aspectRatio };
 
-  return <span aria-hidden="true" className={cn('skeleton', `skeleton--${shape}`, className)} style={style} />;
+  return (
+    <span
+      aria-hidden="true"
+      className={cn(
+        'skeleton block animate-[skeleton-shimmer_1.4s_ease-in-out_infinite] bg-[linear-gradient(90deg,var(--color-neutral-200)_0%,var(--color-neutral-100)_50%,var(--color-neutral-200)_100%)] bg-[length:200%_100%] motion-reduce:animate-none',
+        shape === 'text' && 'skeleton--text h-[1em] rounded-xs',
+        shape === 'rect' && 'skeleton--rect w-full rounded-md',
+        shape === 'circle' && 'skeleton--circle shrink-0 rounded-full',
+        className,
+      )}
+      style={style}
+    />
+  );
 }

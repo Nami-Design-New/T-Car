@@ -228,7 +228,8 @@ are complete; Fraction 3 is migrating the shared UI primitives, with `Button`,
 `Dialog`, `ConfirmDialog`, `ResultDialog`, `Menu`, `Accordion`, `RadioCards`,
 `Tabs`, `EmptyState`, `ErrorState`, `Loader`, and `Price` complete.
 The current grouped shared-UI fraction covers `Form`, `PhoneField`, `OtpInput`,
-`DateTimePicker`, `BackButton`, and `MapLocationModal`.
+`DateTimePicker`, `BackButton`, `MapLocationModal`, `Skeleton`, `PageSkeleton`,
+and `SectionTitle`.
 
 ### Features
 

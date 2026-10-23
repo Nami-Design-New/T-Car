@@ -1,7 +1,8 @@
 # 9. Tailwind CSS 4.3 migration
 
 > **Status (2026-10-23):** Fractions 1–2 complete; Fraction 3 (shared UI)
-> is in progress, starting with `Button`.
+> is in progress. The current fraction covers `Skeleton`, `PageSkeleton`, and
+> `SectionTitle`.
 >
 > This document supersedes the SCSS end state in [08-styles-and-scss.md](08-styles-and-scss.md)
 > if the migration is approved. The existing SCSS work remains valid until the
@@ -286,6 +287,12 @@ Tailwind utilities for the button focus state, search controls, prediction
 list, map placeholder, errors, and footer actions. Their SCSS files and imports
 are removed; router behavior, Google Maps loading, prediction selection, and
 location confirmation remain unchanged.
+
+Grouped loading/title progress: `Skeleton`, `PageSkeleton`, and `SectionTitle`
+now use Tailwind utilities for shimmer loading states, responsive skeleton
+grids, title alignment, eyebrow styling, and subtitle typography. Their SCSS
+files and imports are removed; loading variants, dimensions, accessibility,
+and existing component props remain unchanged.
 
 - `Button`, `Dialog`, `ConfirmDialog`, `ResultDialog`;
 - `Menu`, `Accordion`, `RadioCards`, `Tabs`;
