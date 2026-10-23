@@ -221,6 +221,16 @@ Size behavior: `sm`, `md`, and `lg` now each provide explicit Tailwind size
 utilities. The `md` size previously relied only on the shared base class, so its
 `btn-md` marker had no size utilities of its own.
 
+Dialog animation behavior: the default dialog is centered at `50%`/`50%` and
+opens with a shadcn-style centered fade/zoom from `scale(0.95)`; the backdrop
+fades independently. The bottom-sheet animation remains opt-in through the
+existing `placement="bottom-sheet"` prop.
+
+Dialog progress: the shared Dialog layout, sizes, placement behavior, close
+button, focus-visible state, and animation classes now live in `Dialog.tsx`.
+The Dialog SCSS file and import are removed; marker classes remain so existing
+feature-specific overrides continue to work.
+
 - `Button`, `Dialog`, `ConfirmDialog`, `ResultDialog`;
 - `Menu`, `Accordion`, `RadioCards`, `Tabs`;
 - `Skeleton`, `EmptyState`, `ErrorState`, `Loader`, `Price`;
