@@ -151,78 +151,10 @@
     padding-inline: 1rem;
   }
 
-  .btn {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-    isolation: isolate;
-    min-height: 38px;
-    padding: 0.375rem 0.75rem;
-    border: 1px solid transparent;
-    border-radius: var(--radius-md);
-    background: transparent;
-    color: inherit;
-    font-size: 1rem;
-    line-height: 1.5;
-    transition: 0.35s;
-  }
-
-  .btn-sm {
-    min-height: 31px;
-    padding: 0.25rem 0.5rem;
-    font-size: 0.875rem;
-  }
-
-  .btn-lg {
-    min-height: 48px;
-    padding: 0.5rem 1rem;
-    font-size: 1.25rem;
-  }
-
-  .btn > span {
-    position: relative;
-    z-index: 2;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    transition: 0.3s;
-  }
-
-  .btn::after {
-    position: absolute;
-    inset: 0;
-    z-index: 1;
-    width: 0;
-    background: color-mix(in srgb, currentColor 18%, transparent);
-    content: '';
-    transition: width 0.35s ease;
-  }
-
-  .btn:hover::after {
-    width: 100%;
-  }
-
-  .btn:hover > span {
-    animation: btn-scale 0.3s;
-  }
-
-  .btn-primary {
-    border-color: var(--color-action-primary);
-    background: var(--color-action-primary);
-    color: var(--color-text-on-action);
-  }
-
-  .btn-secondary {
-    border-color: var(--color-brand);
-    background: var(--color-brand);
-    color: var(--color-text-on-brand);
-  }
-
-  .btn-outline {
-    border-color: var(--color-action-primary);
-    color: var(--color-action-primary);
+  @keyframes btn-spin {
+    to {
+      transform: rotate(360deg);
+    }
   }
 
   @keyframes btn-scale {

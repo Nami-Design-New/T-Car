@@ -1,7 +1,6 @@
 import { Slot } from "@radix-ui/react-slot";
 import type { ButtonHTMLAttributes, ReactNode } from "react";
 import { cn } from "@/shared/lib/cn";
-import "./Button.scss";
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   children: ReactNode;
@@ -30,12 +29,30 @@ export function Button({
   disabled,
   ...rest
 }: ButtonProps) {
+  const baseClasses =
+    "group relative cursor-pointer isolate inline-flex min-h-[38px] items-center justify-center overflow-hidden rounded-md border px-3 py-1.5 text-base leading-6 transition duration-[350ms] after:absolute after:inset-0 after:z-[1] after:w-0 after:bg-current after:opacity-[0.18] after:content-[''] after:transition-[width] after:duration-300 after:ease-in-out hover:after:w-full";
+
+  const variantClasses = {
+    primary: "border-action-primary bg-action-primary text-text-on-action",
+    secondary: "border-brand bg-brand text-text-on-brand",
+    outline: "border border-action-primary bg-transparent text-action-primary",
+  };
+
+  const sizeClasses = {
+    sm: "min-h-8 px-2 py-1 text-sm",
+    md: "min-h-[38px] px-3 py-1.5 text-base",
+    lg: "min-h-12 px-4 py-2 text-xl",
+  };
+
   const classes = cn(
-    "btn",
+    "btn", // semantic class for styling
     `btn-${variant}`,
     `btn-${size}`,
-    Boolean(icon) && "btn--with-icon",
-    loading && "btn--loading",
+    baseClasses,
+    variantClasses[variant],
+    sizeClasses[size],
+    Boolean(icon) && "btn--with-icon gap-2",
+    loading && "btn--loading gap-2",
     className,
   );
 
@@ -55,17 +72,38 @@ export function Button({
       {...rest}
     >
       {icon && iconPosition === "start" && (
-        <span className="btn__icon btn__icon--start" aria-hidden="true">
+        <span
+          className={cn(
+            "btn__icon btn__icon--start relative z-2 inline-flex shrink-0 items-center leading-none [&>svg]:block",
+          )}
+          aria-hidden="true"
+        >
           {icon}
         </span>
       )}
-      <span className="btn__label">{children}</span>
+      <span
+        className={cn(
+          "btn__label relative z-2 inline-flex items-center gap-2 transition duration-300 group-hover:animate-[btn-scale_0.3s]",
+        )}
+      >
+        {children}
+      </span>
       {icon && iconPosition === "end" && (
-        <span className="btn__icon btn__icon--end" aria-hidden="true">
+        <span
+          className={cn(
+            "btn__icon btn__icon--end relative z-2 inline-flex shrink-0 items-center leading-none [&>svg]:block",
+          )}
+          aria-hidden="true"
+        >
           {icon}
         </span>
       )}
-      {loading && <span className="btn__spinner" aria-hidden="true" />}
+      {loading && (
+        <span
+          className="btn__spinner inline-block size-[1.1em] shrink-0 rounded-full border-2 border-current border-r-transparent motion-reduce:animate-[btn-spin_1.6s_linear_infinite] animate-[btn-spin_0.7s_linear_infinite]"
+          aria-hidden="true"
+        />
+      )}
     </button>
   );
 }

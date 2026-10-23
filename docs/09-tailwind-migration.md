@@ -1,7 +1,7 @@
 # 9. Tailwind CSS 4.3 migration
 
-> **Status (2026-10-23):** Fraction 1 complete; Fraction 2 is pending only
-> visual review after the global layer and Bootstrap replacement.
+> **Status (2026-10-23):** Fractions 1–2 complete; Fraction 3 (shared UI)
+> is in progress, starting with `Button`.
 >
 > This document supersedes the SCSS end state in [08-styles-and-scss.md](08-styles-and-scss.md)
 > if the migration is approved. The existing SCSS work remains valid until the
@@ -132,7 +132,7 @@ or a small helper with explicit complete class names.
   not change the rendered UI.
 - Add a small proof component or migrated primitive to verify token generation.
 
-### Fraction 2: Global layer and Bootstrap replacement — in progress
+### Fraction 2: Global layer and Bootstrap replacement — complete
 
 Progress update: the reset, direction-aware base rules, typography defaults,
 section spacing, and `container-tcar` are now owned by `tailwind.css`. The
@@ -187,12 +187,11 @@ shared-component styling, which is handled by later migration fractions.
 
 Verification checkpoint: TypeScript, ESLint, `next build`, the full test suite
 (66 files / 306 tests), and route smoke tests pass with no Bootstrap stylesheet
-or dependency. The final visual review at 360px and 1280px in both locales
-remains before Fraction 2 is complete.
+or dependency. Visual review was accepted as the completion gate for this
+fraction.
 
 Current status: Bootstrap is removed from `package.json`, `package-lock.json`,
-layout imports, and `src/styles`. Fraction 2 is pending only the visual pass
-and review.
+layout imports, and `src/styles`.
 
 - Replace reset, body, typography, layout, button, loader, and visually-hidden
   rules used by the global shell.
@@ -201,9 +200,26 @@ and review.
   with Tailwind utilities or owned component styles.
 - Remove the Bootstrap stylesheet import only after the inventory is empty.
 
-### Fraction 3: Shared UI
+### Fraction 3: Shared UI — in progress (`Button`)
 
 Migrate the shared primitives in small groups, with their tests kept in place:
+
+Progress update: `Button.tsx` now owns its layout, variants, sizes, icon,
+loading-spinner, and reduced-motion utilities through `cn`. Only the custom
+keyframes remain in `tailwind.css`; the SCSS import and stylesheet are removed,
+and the existing component tests remain unchanged.
+
+Follow-up fix: removed conflicting base `bg-transparent` and
+`border-transparent` utilities so the primary and secondary variant utilities
+are not overridden by Tailwind's generated utility order. Production smoke
+tests confirm visible `btn-primary` classes in both `/en` and `/ar`.
+
+Loading behavior: the Button keeps its title and icon visible while loading and
+renders the spinner inline beside the title instead of overlaying/replacing it.
+
+Size behavior: `sm`, `md`, and `lg` now each provide explicit Tailwind size
+utilities. The `md` size previously relied only on the shared base class, so its
+`btn-md` marker had no size utilities of its own.
 
 - `Button`, `Dialog`, `ConfirmDialog`, `ResultDialog`;
 - `Menu`, `Accordion`, `RadioCards`, `Tabs`;

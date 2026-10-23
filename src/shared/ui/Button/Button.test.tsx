@@ -27,6 +27,17 @@ describe('Button', () => {
     expect(onClick).not.toHaveBeenCalled();
   });
 
+  it('keeps the title visible and places the spinner beside it while loading', () => {
+    render(<Button loading>Save</Button>);
+    const button = screen.getByRole('button', { name: 'Save' });
+    const label = screen.getByText('Save');
+    const spinner = button.querySelector('.btn__spinner');
+
+    expect(label).not.toHaveClass('invisible');
+    expect(spinner).toHaveClass('inline-block');
+    expect(spinner?.previousElementSibling).toBe(label);
+  });
+
   it('renders its icon at the start by default', () => {
     render(
       <Button icon={<svg data-testid="icon" />}>
