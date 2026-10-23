@@ -7,6 +7,7 @@ import { getDirection } from '@/shared/config/languages';
 import { DirectionProvider } from '@/shared/ui/DirectionProvider';
 import NextTopLoader from 'nextjs-toploader';
 import localFont from 'next/font/local';
+import '../../styles/tailwind.css';
 import '../../styles/vendor/bootstrap.scss';
 import '../../styles/main.scss';
 
@@ -93,7 +94,7 @@ export default async function RootLayout({
 
   return (
     <html lang={locale} dir={dir} className={expo.variable}>
-      <body>
+      <body className="antialiased">
         <NextIntlClientProvider>
           <DirectionProvider dir={dir}>
             <NextTopLoader color="#1f7ffa" height={3} showSpinner={false} />

@@ -25,14 +25,14 @@ describe('CountryModal', () => {
     expect(screen.getByRole('searchbox')).toHaveFocus();
   });
 
-  it('filters countries and continues with the selected country', async () => {
+  it('filters countries and confirms the selected country', async () => {
     const { onSelect, user } = renderCountryModal();
     await user.type(screen.getByRole('searchbox'), 'emirates');
     expect(screen.queryByRole('button', { name: 'Saudi Arabia' })).not.toBeInTheDocument();
     const country = screen.getByRole('button', { name: 'United Arab Emirates' });
     await user.click(country);
     expect(country).toHaveAttribute('aria-pressed', 'true');
-    await user.click(screen.getByRole('button', { name: 'Continue' }));
+    await user.click(screen.getByRole('button', { name: 'Confirm' }));
     expect(onSelect).toHaveBeenCalledWith(countries[1]);
   });
 

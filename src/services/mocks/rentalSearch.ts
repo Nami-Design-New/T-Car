@@ -7,32 +7,6 @@ const flag4 = "/mock/flags/flag-4.png";
 const flag5 = "/mock/flags/flag-5.png";
 
 const MOCK_OPTIONS: RentalSearchOptions = {
-  branches: [
-    {
-      id: 1,
-      city: "الرياض",
-      branch: "فرع العليا",
-      address: "طريق الملك فهد",
-    },
-    {
-      id: 2,
-      city: "جدة",
-      branch: "فرع الروضة",
-      address: "شارع الأمير سلطان",
-    },
-    {
-      id: 3,
-      city: "الدمام",
-      branch: "فرع الفيصلية",
-      address: "شارع الخليج",
-    },
-    {
-      id: 4,
-      city: "المدينة",
-      branch: "فرع العزيزية",
-      address: "طريق الملك عبدالله",
-    },
-  ],
   airports: [
     {
       id: 1,

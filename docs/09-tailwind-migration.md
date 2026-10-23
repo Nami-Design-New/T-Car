@@ -1,0 +1,270 @@
+# 9. Tailwind CSS 4.3 migration
+
+> **Status (2026-10-23):** proposed. No implementation has started.
+>
+> This document supersedes the SCSS end state in [08-styles-and-scss.md](08-styles-and-scss.md)
+> if the migration is approved. The existing SCSS work remains valid until the
+> first Tailwind fraction is merged locally.
+
+## 9.1 Objective
+
+Replace the repository's SCSS and trimmed Bootstrap styling with Tailwind CSS
+4.3 while preserving behavior and the current visual system in both locales.
+The migration is a styling implementation change, not a redesign.
+
+The target is:
+
+- Tailwind CSS 4.3 with the Next.js/PostCSS integration.
+- `clsx` for readable conditional class composition in React components.
+- A CSS-first Tailwind entry point and `@theme` tokens derived from the existing
+  design tokens.
+- Utility classes in component markup for component and feature styling.
+- Small, intentional CSS components only where a utility class would make the
+  behavior less readable or impossible to express, such as complex keyframes,
+  third-party markup, and SVG animation.
+- No Sass dependency, `.scss` source, Bootstrap stylesheet, generated CSS source,
+  Sass watcher, or SCSS-specific check remaining after completion.
+
+Tailwind 4.3 is a suitable target because it provides logical RTL-aware
+utilities and the current CSS-first/PostCSS setup. See the official
+[Tailwind CSS 4.3 release notes](https://tailwindcss.com/blog/tailwindcss-v4-3).
+
+## 9.2 Current scope
+
+The repository currently contains approximately:
+
+| Area | Count |
+| --- | ---: |
+| SCSS files under `src/` | 45 |
+| SCSS lines | 12,995 |
+| TSX files | 197 |
+| TSX lines containing `className` | 1,053 |
+
+The largest style owners are `my-bookings`, `cars`, `booking`, `car-details`,
+`layout`, `home`, and `rental-search`. The styles also include:
+
+- design tokens in `styles/tokens/_tokens.scss`;
+- global reset, typography, layout, and button rules;
+- trimmed Bootstrap partials and utility classes;
+- legacy dialog and component selectors;
+- feature-level styles;
+- shared UI component styles;
+- Arabic/English direction rules and responsive breakpoints;
+- date-picker, phone-input, Swiper, Google Maps, Lottie, and SVG-specific rules.
+
+The worktree already contains unrelated, uncommitted auth changes. The Tailwind
+migration must not overwrite or mix those changes into its fractions.
+
+## 9.3 Design-system mapping
+
+The existing design tokens remain the source of truth for values. They should be
+ported to Tailwind theme variables rather than renamed opportunistically.
+
+| Existing source | Tailwind target |
+| --- | --- |
+| `$ds-*` colors | `--color-*` theme variables |
+| `$ds-radius-*` | `--radius-*` theme variables |
+| spacing values | Tailwind spacing variables or explicit arbitrary values when required |
+| `$breakpoint-*` | Tailwind breakpoint variables |
+| Expo Arabic fonts | `@font-face` plus `--font-*` theme variables |
+| Sass mixins/placeholders | utilities, component classes, or small explicit CSS rules |
+| `dir="rtl"` / `:dir(rtl)` rules | `rtl:` variants, logical utilities, or scoped CSS where necessary |
+| SCSS keyframes | CSS `@keyframes`, `animate-*` theme entries, or component CSS |
+
+Do not recreate the old token names as a large compatibility layer unless a
+component still needs them during an intermediate fraction. Compatibility CSS
+must have a removal owner and fraction.
+
+## 9.4 Migration rules
+
+1. Preserve behavior, routes, accessibility, translations, and component APIs.
+2. Migrate one coherent surface at a time; do not rewrite all markup and styles
+   in one unreviewable change.
+3. Each fraction is one local commit, following the repository workflow.
+4. Before each commit, run the full verification checklist and wait for explicit
+   user approval. Approval for one fraction does not approve the next.
+5. Keep styles close to the component that owns them. Do not move feature rules
+   into `main.scss` or create a new global stylesheet as a substitute for SCSS.
+6. Prefer logical properties and Tailwind direction variants for RTL behavior.
+   Avoid hard-coded `left`/`right` values when the behavior is directional.
+7. Do not use `@apply` as a way to hide large SCSS translations. Use it only
+   for a small, repeated component primitive with a clear owner.
+8. Keep third-party selectors scoped and documented. Do not edit package output.
+9. Remove a Sass/Bootstrap dependency only after all consumers have moved and
+   the build proves that no stylesheet still requires it.
+
+### Conditional classes
+
+Use `clsx` when a component's Tailwind classes depend on props or state:
+
+```tsx
+import clsx from 'clsx';
+
+<button
+  className={clsx(
+    'inline-flex items-center rounded-md px-4 py-2',
+    'bg-brand text-white',
+    disabled && 'cursor-not-allowed opacity-50',
+    active ? 'ring-2 ring-brand/30' : 'hover:bg-brand/90',
+  )}
+>
+  Save
+</button>
+```
+
+Keep stable classes as strings and use boolean expressions or object syntax for
+state-dependent classes. Avoid assembling Tailwind class fragments dynamically,
+such as `` `bg-${color}-500` ``, because Tailwind cannot reliably detect those
+class names during compilation. For repeated combinations, create a component
+or a small helper with explicit complete class names.
+
+## 9.5 Fractions
+
+### Fraction 1: Tailwind foundation
+
+- Add `tailwindcss` 4.3 and the required Next.js PostCSS integration.
+- Add `clsx` and use it for conditional Tailwind classes.
+- Add the Tailwind CSS entry point and import it from the locale layout.
+- Port colors, radius, spacing, breakpoints, fonts, and motion tokens.
+- Establish the direction strategy for `en` and `ar`.
+- Keep the existing SCSS entry points active temporarily so this fraction does
+  not change the rendered UI.
+- Add a small proof component or migrated primitive to verify token generation.
+
+### Fraction 2: Global layer and Bootstrap replacement
+
+- Replace reset, body, typography, layout, button, loader, and visually-hidden
+  rules used by the global shell.
+- Inventory every Bootstrap class still rendered at runtime.
+- Replace Bootstrap grid, form, button, spacing, display, and utility classes
+  with Tailwind utilities or owned component styles.
+- Remove the Bootstrap stylesheet import only after the inventory is empty.
+
+### Fraction 3: Shared UI
+
+Migrate the shared primitives in small groups, with their tests kept in place:
+
+- `Button`, `Dialog`, `ConfirmDialog`, `ResultDialog`;
+- `Menu`, `Accordion`, `RadioCards`, `Tabs`;
+- `Skeleton`, `EmptyState`, `ErrorState`, `Loader`, `Price`;
+- `Form`, `PhoneField`, `OtpInput`, `DateTimePicker`;
+- `BackButton`, `MapLocationModal`, and remaining shared UI.
+
+Each group must preserve focus behavior, loading states, portal layering,
+keyboard interaction, and RTL layout.
+
+### Fractions 4–8: Feature surfaces
+
+Migrate one feature per fraction, in this order:
+
+1. `layout` and `home`;
+2. `rental-search`, `cars`, and `cities`;
+3. `car-details` and `booking`;
+4. `account`, `wallet`, `bank-accounts`, and `points`;
+5. `my-bookings` and `auth`.
+
+The legacy rules used by each feature move with that feature. A fraction is not
+complete while its old SCSS remains the active source for that surface.
+
+### Fraction 9: Legacy cleanup and stylesheet removal
+
+- Convert remaining legal pages, not-found animations, third-party overrides,
+  and legacy dialog selectors.
+- Remove every SCSS import.
+- Delete all `.scss` files under `src/`.
+- Remove `sass`, Bootstrap, SCSS-specific Next configuration, and obsolete
+  scripts/checks from `package.json` and the repository.
+- Rename or replace `check:css` with a guard that prevents accidental re-entry
+  of SCSS and verifies the Tailwind entry point.
+- Update docs 8 and 9 plus the phase/status tables.
+
+## 9.6 Verification for every fraction
+
+Run these checks in the repository's required order:
+
+```text
+npm run test
+npx tsc --noEmit -p .
+npx next lint
+npx next build
+npx next start -p 3123
+```
+
+While the server is running, curl affected routes and verify:
+
+- expected page markup is present in the HTML;
+- unknown resource IDs carry `NEXT_NOT_FOUND` in the rendered response;
+- both `/en` and `/ar` routes render;
+- the affected route's loading, error, empty, and not-found states remain valid.
+
+Also perform a visual pass at 360px and 1280px for both locales, including:
+
+- header, footer, home hero, car rails, filters, and search;
+- account sections and booking details;
+- dialogs, forms, validation errors, loaders, and result states;
+- RTL ordering, icons, arrows, spacing, focus rings, and responsive wrapping.
+
+Stop the server after the smoke test and run:
+
+```text
+git checkout tsconfig.tsbuildinfo
+```
+
+No fraction is committed until the user explicitly approves it.
+
+## 9.7 Acceptance criteria
+
+The migration is complete when:
+
+- no `.scss` files remain in the repository;
+- `sass` and Bootstrap are no longer dependencies or build inputs;
+- all styles are produced from the Tailwind CSS entry point and intentionally
+  scoped component CSS, if any remains;
+- no runtime class depends on a removed Bootstrap utility;
+- the existing design tokens, Arabic/English layouts, and responsive behavior
+  are preserved;
+- `npm run test`, typecheck, lint, build, and route smoke tests pass;
+- the CSS bundle is measured before and after, with any meaningful increase
+  explained;
+- docs 8, 9, and the migration status table describe the final architecture;
+- each fraction is represented by its own approved local commit.
+
+## 9.8 Risks and decisions
+
+### Visual drift
+
+The largest risk is not Tailwind setup; it is translating nested SCSS selectors,
+Bootstrap cascade behavior, and legacy specificity without changing the UI.
+Computed-style snapshots or targeted browser screenshots should be used for
+high-risk surfaces.
+
+### RTL and responsive behavior
+
+Existing rules use both direction-aware selectors and physical properties.
+Every physical property must be reviewed rather than mechanically converted.
+
+### Third-party markup
+
+Phone input, Swiper, Google Maps, date picker, and animation libraries render or
+depend on classes outside the normal component tree. Their selectors need an
+explicit owner and regression check.
+
+### Tailwind utility readability
+
+Some 1,500-line feature stylesheets may produce unwieldy class strings. The
+preferred solution is a small semantic component boundary, not a return to a
+large global stylesheet.
+
+### Documentation conflict
+
+Phase 8 currently records the SCSS architecture as complete. Until this proposal
+is accepted, that status remains historical. Once implementation starts, update
+the phase entry to identify the Tailwind migration as the active follow-up and
+mark the old SCSS target as superseded.
+
+## 9.9 Effort estimate
+
+Expected engineering effort is **7–10 working days** for a functional migration
+and **10–15 working days** for close visual parity with full responsive and RTL
+verification. Because the repository requires approval between fractions, the
+calendar duration may be two to three weeks even when engineering time is lower.
