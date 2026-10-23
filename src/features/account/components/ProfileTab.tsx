@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
 import dynamic from "next/dynamic";
 import { useRouter } from "@/i18n/navigation";
-import { AlertModal } from "@/shared/ui/AlertModal";
+import { AlertDialog } from "@/shared/ui/AlertDialog";
 import { Button } from "@/shared/ui/Button";
 import { FormInput } from "@/shared/ui/Form";
 import {
@@ -409,7 +409,7 @@ export default function ProfileTab({ profile }: Props) {
 
       {/* ==================== Delete Account Modal ==================== */}
 
-      <AlertModal
+      <AlertDialog
         open={showDeleteModal}
         title={t("deleteConfirmTitle")}
         description={t("deleteConfirmDescription")}

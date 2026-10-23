@@ -247,6 +247,12 @@ reduced-motion behavior, and enter animation now use Tailwind utilities in
 remain for compatibility. Radix keyboard navigation, focus return, collision
 positioning, and outside-click dismissal are unchanged.
 
+AlertDialog progress: the failure icon, account-delete content, responsive
+dialog surface, error message, and confirm/cancel actions now use Tailwind
+utilities in `AlertDialog.tsx`. The component stylesheet is removed, the test
+now targets `AlertDialog`, and the existing auto-close, loading, focus, and
+callback behavior is unchanged.
+
 - `Button`, `Dialog`, `ConfirmDialog`, `ResultDialog`;
 - `Menu`, `Accordion`, `RadioCards`, `Tabs`;
 - `Skeleton`, `EmptyState`, `ErrorState`, `Loader`, `Price`;

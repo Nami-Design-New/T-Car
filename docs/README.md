@@ -389,7 +389,7 @@ extensions over 30 days, and so on) are documented in each `services/mocks/*.ts`
    from `public/animations/`; `BookingDetailsHeader` and the remaining result
    callers use it directly without local success/failure wrappers, and it has
    no visible title. Account deletion keeps the old failure/confirmation surface
-   under the clearer `shared/ui/AlertModal` name; bank-account deletion uses
+   under the clearer `shared/ui/AlertDialog` name; bank-account deletion uses
    `ConfirmDialog`. `JoinUsForm` now lives in `features/home/components` beside
    its only caller.
 - Formatting (2026-10-04): the existing, consistent formatting is kept (no
