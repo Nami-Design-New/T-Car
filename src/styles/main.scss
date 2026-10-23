@@ -1,26 +1,29 @@
 // Global legacy layer: dialogs, components, and feature styles remain here
 // until their owners move to Tailwind CSS.
 // Legacy styles until doc 4 / the feature moves replace them.
-@use 'legacy/dialogs';
-@use 'legacy/components';
+@use "legacy/dialogs";
+@use "legacy/components";
 // Features: one stylesheet per feature (doc 8 step 6 plan, stage 1).
-@use '../features/cities/cities';
-@use '../features/home/home';
-@use '../features/layout/layout' as layout-feature; // `base/layout` already uses the namespace `layout`
-@use '../features/rental-search/rental-search';
-@use '../features/cars/cars';
-@use '../features/car-details/car-details';
-@use '../features/booking/booking';
-@use '../features/auth/auth';
-@use '../shared/ui/OtpInput/OtpInput';
-@use '../shared/ui/BackButton/BackButton';
-@use '../features/account/account';
-@use '../features/points/points';
-@use '../features/bank-accounts/bank-accounts';
-@use '../features/wallet/wallet';
-@use '../features/my-bookings/my-bookings';
+@use "../features/cities/cities";
+@use "../features/home/home";
+@use "../features/layout/layout" as layout-feature; // `base/layout` already uses the namespace `layout`
 
-@use 'tokens/tokens' as *;
+@use "../features/rental-search/rental-search";
+
+@use "../features/cars/cars";
+
+@use "../features/car-details/car-details";
+
+@use "../features/booking/booking";
+@use "../features/auth/auth";
+@use "../shared/ui/OtpInput/OtpInput";
+@use "../features/account/account";
+@use "../features/points/points";
+@use "../features/bank-accounts/bank-accounts";
+@use "../features/wallet/wallet";
+@use "../features/my-bookings/my-bookings";
+
+@use "tokens/tokens" as *;
 // App pages without a feature of their own stay here (decided 2026-10-05): the not-found page
 // and the legal pages (privacy, terms).
 
