@@ -322,6 +322,11 @@ range controls. The remaining mobile filter-sheet behavior and office-row
 responsive details are now also represented by Tailwind utilities. The
 `cars.scss` feature stylesheet and its import are removed.
 
+Car-details progress: the page grid, sticky booking column, gallery frame, and
+quick-information facts now use Tailwind utilities. The remaining car-details
+sections (pickup information, warranties, addons, insurance, reviews, and
+branches) stay on the next subfraction.
+
 - `Button`, `Dialog`, `ConfirmDialog`, `ResultDialog`;
 - `Menu`, `Accordion`, `RadioCards`, `Tabs`;
 - `Skeleton`, `EmptyState`, `ErrorState`, `Loader`, `Price`;

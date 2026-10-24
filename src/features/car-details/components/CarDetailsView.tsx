@@ -17,8 +17,8 @@ export default function CarDetailsView({ car }: Props) {
     <>
       <section className="section car-details-page">
         <div className="container-tcar">
-          <div className="car-details-grid">
-            <div className="car-details-main">
+          <div className="car-details-grid grid grid-cols-[minmax(0,1fr)_360px] items-start gap-8 max-lg:grid-cols-1">
+            <div className="car-details-main min-w-0">
               <CarGallery image={car.images[0]} alt={`${car.brand} ${car.name}`} />
               <CarQuickInfo car={car} />
               {car.pickupPoint && (
@@ -33,7 +33,7 @@ export default function CarDetailsView({ car }: Props) {
               <InsuranceOptions option={car.insuranceOptions[0]} />
             </div>
 
-            <div className="car-details-side">
+            <div className="car-details-side sticky top-[100px] max-lg:static max-lg:top-auto">
               <CarBookingCard
                 carId={car.id}
                 carName={car.name}
