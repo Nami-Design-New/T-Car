@@ -273,6 +273,16 @@ breakdown, terms, scroll area, and payment footer styles. `PaymentMethodModal`
 also uses utility-owned payment options, points switch, and confirmation action
 styles; its legacy booking SCSS block is removed.
 
+The account fraction has started with `AccountLayout` and `AccountNav` migrated
+to Tailwind. The responsive shell, sticky sidebar, mobile navigation, and
+active navigation state now use utilities; profile panels and account dialogs
+remain for later fractions.
+
+The legacy `BookingModal` and `BookingMonthlyModal` follow-up now uses Tailwind
+utilities, Swiper time pickers, the shared `Button`, and utility-owned calendar,
+monthly range, address, notes, and total sections. The booking feature
+stylesheet and legacy monthly picker block were removed.
+
 ### Features
 
 **Phase 1 import-boundary remediation (2026-10-20):** The account shell now receives points data from its App Router section layout and imports the summary card through `features/points/index.ts`. The root layout now supplies the authenticated notifications count to the layout feature. `MapLocationModal` and `LocationData` now live in `shared/ui` and `shared/lib`, respectively, with every caller using that shared API. Rental search now consumes the cars feature only through its public index; that index no longer exposes the server-only `getOffices` read, which the home route imports directly. The initial lint audit is reduced from nine to two boundary errors; both remaining violations are in wallet's bank-account action dependency.

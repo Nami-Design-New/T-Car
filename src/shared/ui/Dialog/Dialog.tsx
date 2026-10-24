@@ -33,6 +33,8 @@ export interface DialogProps {
   placement?: "center" | "bottom-sheet";
   closeOnEscape?: boolean;
   closeOnBackdrop?: boolean;
+  /** Allow preview/tooling controls outside the surface to receive pointer events. */
+  modal?: boolean;
   /** First element to focus on open; defaults to the first focusable one. */
   initialFocusRef?: RefObject<HTMLElement | null>;
   /** Accessible name when the dialog has no visible Dialog.Title. */
@@ -54,6 +56,7 @@ function DialogRoot({
   placement = "center",
   closeOnEscape = true,
   closeOnBackdrop = true,
+  modal = true,
   initialFocusRef,
   label,
   className,
@@ -63,6 +66,7 @@ function DialogRoot({
   return (
     <RadixDialog.Root
       open={open}
+      modal={modal}
       onOpenChange={(next) => {
         if (!next) onClose();
       }}

@@ -12,7 +12,6 @@
   background: $ds-surface-elevated;
   overflow: hidden;
 }
-
 .insufficient_balance_drag_handle {
   display: block;
   width: 86px;
@@ -675,121 +674,5 @@
     .form_grid {
       grid-template-columns: 1fr;
     }
-  }
-}
-
-// --- components/modals/BookingMonthlyModal: the month picker (was inline styles). The colours are
-// the component's own one-off values, kept as they were; --month-progress (0-100%) is set inline.
-.booking_modal .booking_monthly_picker {
-  padding: 20px 22px;
-  border-radius: 14px;
-  background: #eaf3ff;
-  text-align: center;
-
-  .booking_monthly_label {
-    margin-bottom: 8px;
-    color: #101820;
-    font-size: 14px;
-  }
-
-  .booking_monthly_stepper {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    max-width: 225px;
-    margin: 0 auto 18px;
-  }
-
-  .booking_monthly_step {
-    width: 28px;
-    height: 28px;
-    border: 0;
-    border-radius: 6px;
-    background: $ds-white;
-    color: #101820;
-    font-size: 22px;
-    line-height: 1;
-    cursor: pointer;
-    opacity: 1;
-
-    &:disabled {
-      cursor: not-allowed;
-      opacity: 0.5;
-    }
-  }
-
-  .booking_monthly_count {
-    color: #101820;
-    font-size: 32px;
-    line-height: 1;
-  }
-
-  .booking_monthly_track {
-    position: relative;
-    height: 60px;
-    margin-bottom: 14px;
-    overflow: hidden;
-    border-radius: 13px;
-    background: #a4a4a4;
-    color: $ds-white;
-  }
-
-  .booking_monthly_fill {
-    position: absolute;
-    top: 0;
-    inset-inline-start: 0;
-    width: var(--month-progress);
-    height: 100%;
-    border-radius: 13px;
-    background: #287ff0;
-    transition: width 0.2s ease;
-  }
-
-  .booking_monthly_value {
-    position: absolute;
-    inset: 0;
-    display: grid;
-    place-items: center;
-    font-size: 14px;
-    pointer-events: none;
-  }
-
-  .booking_monthly_thumb {
-    position: absolute;
-    inset-inline-start: calc(var(--month-progress) - 28px);
-    top: 50%;
-    display: flex;
-    align-items: center;
-    gap: 3px;
-    transform: translateY(-50%);
-    color: $ds-white;
-    font-size: 15px;
-    transition: inset-inline-start 0.2s ease;
-    pointer-events: none;
-  }
-
-  .booking_monthly_knob {
-    width: 24px;
-    height: 24px;
-    border: 2px solid $ds-white;
-    border-radius: 50%;
-    background: #287ff0;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.18);
-  }
-
-  .booking_monthly_range {
-    position: absolute;
-    inset: 0;
-    z-index: 2;
-    width: 100%;
-    height: 100%;
-    margin: 0;
-    opacity: 0;
-    cursor: pointer;
-  }
-
-  .booking_monthly_dates {
-    color: #101820;
-    font-size: 13px;
   }
 }

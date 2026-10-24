@@ -337,6 +337,17 @@ scroll area, and payment footer. `PaymentMethodModal` now uses Tailwind
 utilities for payment options, the points switch, and the confirmation action;
 its legacy booking SCSS block was removed.
 
+Account progress: `AccountLayout` and `AccountNav` now use Tailwind utilities
+for the account header, responsive two-column shell, sticky sidebar, mobile
+horizontal navigation, and active navigation state. Their legacy layout and
+sidebar rules were removed from `account.scss`; profile panels and account
+dialogs remain for later fractions.
+
+Legacy booking follow-up: `BookingModal` and `BookingMonthlyModal` now use
+Tailwind utilities, Swiper time pickers, the shared `Button`, and utility-owned
+calendar, monthly range, address, notes, and total sections. The booking
+feature stylesheet and the legacy monthly picker block were removed.
+
 - `Button`, `Dialog`, `ConfirmDialog`, `ResultDialog`;
 - `Menu`, `Accordion`, `RadioCards`, `Tabs`;
 - `Skeleton`, `EmptyState`, `ErrorState`, `Loader`, `Price`;
