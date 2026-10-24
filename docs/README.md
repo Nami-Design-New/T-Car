@@ -221,6 +221,11 @@ merged or pushed yet.
 | 7. Images and assets | Complete (4 fractions + 2 audit follow-ups) | [Doc 7](07-images-and-assets.md): UI icons, static images, API-bound mock URLs, animations, cleanup, and image-weight reductions are complete (fractions 1–4). `cta.png` and `notlogin.png` are retained under `public/images/unused/`, excluded from the registry, pending design confirmation before deletion. **Audit follow-ups (2026-10-04):** (5) ✅ brand filter options come from `carsApi.listBrands()` via `getCarBrands()` instead of `/mock/` paths in `CarFilters` / `CityFilters`, and a lint rule keeps `/mock/…` literals inside `services/mocks`. (6) ✅ removed the duplicate `src/assets/images/logo.png` and unused `brand/logo.svg` (`src/assets/` is now `fonts/` + `animations/`); the image import ban moved to `no-restricted-syntax` so the per-folder lint overrides no longer drop it, and it now covers every image extension. (7) Not pursued (user decision): `payment/wallet.svg` (62 KB) and `payment/tamara.svg` (259 KB) wrap raster images but stay SVG, not WebP. Step 6 (narrow `remotePatterns`, delete `public/mock/`) waits for the API phase |
 | 8. Styles compiled from SCSS | Done (7 of 7; optional stage 2 not started) | [Doc 8](08-styles-and-scss.md): drift check done (0 rules differ in meaning between `main.scss` and the committed `main.css`). (1) ✅ Sass pinned to exactly `1.105.0` (the lockfile already resolved it; emitted CSS byte-identical). (2) ✅ the layout imports `main.scss`; Next now compiles all styles. Emitted CSS: 0 rules differ in meaning, 60 differ only in notation, 5 legacy prefixes dropped ([doc 8 step 2 results](08-styles-and-scss.md#step-2-results-2026-10-04)); dev style reload ~1.4 s → ~5 s until step 4. (3) ✅ deleted `main.css`, `main.css.map`, `scripts/sync-office-css.mjs`, and the `css:sync-office` script; `.gitignore` ignores `src/styles/**/*.css` and `*.css.map`; the root plans that pointed at the sync script now point at doc 8. Emitted CSS byte-identical to fraction 2. (4) ✅ Bootstrap is its own stylesheet (`styles/vendor/bootstrap.scss`), loaded before `main.scss`; dev reload after a style edit back to ~1.4 s. 114 app rules lost a `.hN` / `.small` copy that Bootstrap's `@extend` used to add; no visible effect found ([doc 8 step 4 results](08-styles-and-scss.md#step-4-results-2026-10-04)). (5) ✅ Bootstrap trimmed to the partials and 14 of 97 utility groups the markup uses: 228 KB → 62 KB (31 → 10 KB gzip), no remaining rule changed ([doc 8 step 5 results](08-styles-and-scss.md#step-5-results-2026-10-04)). Fix: `.visually-hidden` (loading-screen label) was missed by the inventory and is restored. (6.1) ✅ the global layer (reset, layout, buttons, loader, typography) moved from `main.scss` into `styles/base/`; emitted CSS byte-identical ([doc 8 step 6](08-styles-and-scss.md#step-6-progress)). Plan for the rest of step 6 agreed ([doc 8 step 6 plan](08-styles-and-scss.md#step-6-plan-agreed-2026-10-04)): (step 1) ✅ `shared/ui` normalized to `<Name>/<Name>.tsx` + `.scss` + `.test.tsx` + `index.ts` with named exports and props types (doc 4 §4.4); (step 2) ✅ every `shared/ui` component has tests (43 new, 107 in total); (step 3) ✅ `Form`, `DateTimePicker`, `PhoneField`, `Loader`, `SectionTitle` styles live next to the component (computed styles unchanged in headless Chrome); (step 4) ✅ shared legacy dialog styles in `styles/legacy/_dialogs.scss`, styles of the old `src/components/*` in `styles/legacy/_components.scss`; (5) one `features/<x>/<x>.scss` per feature: ✅ `cities`, ✅ `home`, ✅ `layout`, ✅ `rental-search`, ✅ `cars`, ✅ `car-details`, ✅ `booking`, ✅ `auth`, ✅ `account`, ✅ `bank-accounts`, ✅ `wallet`, ✅ `my-bookings`; (6) ✅ `main.scss` is the `@use` lines plus the not-found and legal page styles (kept there by decision), tokens via `@use`, not-found keyframes moved out of `base/_reset`; (7) ✅ `npm run check:css` (first in `npm run check`) fails when git tracks a `.css` under `src/` or any `.css.map`. Optional stage 2 (each feature's components import their own stylesheet) is not started. Component styles from phase 1 already compile from SCSS |
 
+**Tailwind replacement status (2026-10-24):** The SCSS architecture above is
+the historical baseline. The Tailwind 4.3 replacement has migrated the `cars`
+surface and removed `features/cars/cars.scss`; the remaining feature surfaces
+continue in [09-tailwind-migration.md](09-tailwind-migration.md).
+
 **Styling follow-up (2026-10-23):** The current phase 8 SCSS architecture is
 complete and remains active while the replacement migration to Tailwind CSS 4.3
 proceeds in [09-tailwind-migration.md](09-tailwind-migration.md). Fractions 1–2
@@ -239,13 +244,20 @@ The next feature fraction, `rental-search`, is now migrated to Tailwind
 utilities for the hero, rental tabs, search bar, and filter drawer. Its feature
 SCSS file is removed; focused rental-search tests are the verification step.
 
-The `cars` fraction has started with `CarCard`, `CarOfficeRow`, and
-`CarsRail`. Their Tailwind utilities are in place, and `CarsRail` now uses
-Swiper with RTL direction and pause-on-hover autoplay. `cars.scss` remains for
-the listing shell, sort bar, and filter controls until the next cars subfraction.
+The `cars` fraction is now migrated: `CarCard`, `CarOfficeRow`, and `CarsRail`
+use Tailwind utilities, and `CarsRail` uses Swiper with RTL direction and
+pause-on-hover autoplay. The listing shell, sort bar, filter controls, mobile
+filter sheet, and office-row responsive details are also migrated; `cars.scss`
+and its import are removed.
 
 The cars listing shell and `SortBar` are now also using Tailwind utilities on
 the `/cars` and `/cities/[slug]` routes. The filter panel remains to be migrated.
+
+`FilterPanel`, `CheckboxGroup`, `BrandGrid`, `PriceRangeSlider`, and the
+`CarFilters` brand/type chips now use Tailwind utilities for the cars filter
+shell and controls. Mobile filter-sheet behavior and responsive details are
+also utility-owned; the `cars.scss` feature stylesheet and its import are
+removed.
 
 ### Features
 

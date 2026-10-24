@@ -1,8 +1,8 @@
 # 9. Tailwind CSS 4.3 migration
 
-> **Status (2026-10-23):** Fractions 1–2 complete; Fraction 3 (shared UI)
-> is in progress. The current fraction covers `Skeleton`, `PageSkeleton`, and
-> `SectionTitle`.
+> **Status (2026-10-24):** Fractions 1–3 complete; feature-surface migration is
+> in progress. `layout`, `home`, `rental-search`, and `cars` are migrated to
+> Tailwind utilities.
 >
 > This document supersedes the SCSS end state in [08-styles-and-scss.md](08-styles-and-scss.md)
 > if the migration is approved. The existing SCSS work remains valid until the
@@ -308,14 +308,19 @@ modal flow, Swiper behavior, and RTL drawer direction remain unchanged.
 Cars progress: `CarCard`, `CarOfficeRow`, and `CarsRail` now carry their card,
 office-row, and horizontal-rail presentation in Tailwind utilities. `CarsRail`
 now uses Swiper with RTL direction, responsive auto-width slides, looping, and
-pause-on-hover autoplay. The `cars.scss` file remains active for the listing
-shell, sort bar, and filter controls, which are the remaining parts of this
-feature fraction.
+pause-on-hover autoplay.
 
 Cars listing progress: the `/cars` and `/cities/[slug]` listing shells now use
 Tailwind utilities for their responsive two-column layout, page heading/back
-control, office rows, and `SortBar`. The filter panel and its controls remain
-on the next cars subfraction.
+control, office rows, and `SortBar`.
+
+Cars filter progress: `FilterPanel`, `CheckboxGroup`, `BrandGrid`,
+`PriceRangeSlider`, and the `CarFilters` brand/type chips now use Tailwind
+utilities for the filter shell, search controls, overlay, action buttons,
+checkbox rows, service descriptions, expand controls, chips, brand cards, and
+range controls. The remaining mobile filter-sheet behavior and office-row
+responsive details are now also represented by Tailwind utilities. The
+`cars.scss` feature stylesheet and its import are removed.
 
 - `Button`, `Dialog`, `ConfirmDialog`, `ResultDialog`;
 - `Menu`, `Accordion`, `RadioCards`, `Tabs`;

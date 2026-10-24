@@ -60,7 +60,7 @@ export default function CarOfficeRow({ office, cars, className }: CarOfficeRowPr
 
   return (
     <section className={cn('office-row min-w-0', className)} aria-labelledby={titleId}>
-      <header className="office-row__header mb-5 flex min-h-[82px] items-center gap-5 overflow-hidden">{title}</header>
+      <header className="office-row__header mb-5 flex min-h-[82px] items-center gap-5 overflow-hidden max-md:flex-wrap max-md:gap-3 max-md:min-h-[72px] max-md:p-4">{title}</header>
 
       <Swiper
         onSwiper={(swiper) => {
