@@ -312,6 +312,11 @@ pause-on-hover autoplay. The `cars.scss` file remains active for the listing
 shell, sort bar, and filter controls, which are the remaining parts of this
 feature fraction.
 
+Cars listing progress: the `/cars` and `/cities/[slug]` listing shells now use
+Tailwind utilities for their responsive two-column layout, page heading/back
+control, office rows, and `SortBar`. The filter panel and its controls remain
+on the next cars subfraction.
+
 - `Button`, `Dialog`, `ConfirmDialog`, `ResultDialog`;
 - `Menu`, `Accordion`, `RadioCards`, `Tabs`;
 - `Skeleton`, `EmptyState`, `ErrorState`, `Loader`, `Price`;

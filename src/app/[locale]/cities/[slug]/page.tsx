@@ -38,14 +38,14 @@ export default async function CityDetailsPage({ params, searchParams }: Props) {
     <>
       <CityHero city={city} />
 
-      <section className="section city-listings">
+      <section className="section city-listings pt-0">
         <div className="container-tcar">
           {/* <SortBar resultsCount={officeGroups.reduce((count, group) => count + group.cars.length)} value={filters.sort} /> */}
 
-          <div className="city-listings-grid">
+          <div className="city-listings-grid grid grid-cols-[280px_1fr] items-start gap-8 max-lg:grid-cols-1">
             <CarFilters brands={brands} />
 
-            <div className="office-rows">
+            <div className="office-rows flex min-w-0 flex-col gap-3">
               {officeGroups.map(({ office, cars }) => (
                 <CarOfficeRow key={office.id} office={office} cars={cars} />
               ))}

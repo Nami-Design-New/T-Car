@@ -25,21 +25,21 @@ export default function SortBar({ resultsCount, value = 'recommended' }: Props) 
     router.replace(`${pathname}${params.toString() ? `?${params}` : ''}`, { scroll: false });
   };
   return (
-    <div className="sort-bar">
-      <button type="button" className="sort-bar-filter-toggle">
+    <div className="sort-bar mb-6 flex items-center gap-4">
+      <button type="button" className="sort-bar-filter-toggle hidden items-center gap-1.5 rounded-md border border-stroke-light bg-surface-elevated px-3.5 py-2 text-sm font-semibold text-text-primary lg:hidden">
         <FiSliders />
         {t('filter')}
       </button>
-      <span className="sort-bar-count">{t('results', { count: resultsCount })}</span>
-      <div className="sort-bar-select">
-        <select value={value} onChange={(event) => updateSort(event.target.value)}>
+      <span className="sort-bar-count me-auto text-sm text-text-subtle">{t('results', { count: resultsCount })}</span>
+      <div className="sort-bar-select relative">
+        <select className="appearance-none rounded-md border border-stroke-light bg-surface-elevated py-2 pe-[34px] ps-3.5 text-sm font-semibold text-text-primary" value={value} onChange={(event) => updateSort(event.target.value)}>
           {options.map((option) => (
             <option key={option.value} value={option.value}>
               {option.label}
             </option>
           ))}
         </select>
-        <FiChevronDown className="sort-bar-select-icon" />
+        <FiChevronDown className="sort-bar-select-icon pointer-events-none absolute start-3 top-1/2 -translate-y-1/2 text-text-subtle" />
       </div>
     </div>
   );
