@@ -294,6 +294,12 @@ grids, title alignment, eyebrow styling, and subtitle typography. Their SCSS
 files and imports are removed; loading variants, dimensions, accessibility,
 and existing component props remain unchanged.
 
+Feature surface progress: `layout` and `home` now use Tailwind utilities in
+their header, navigation, footer, location, contact, FAQ, partners, CTA,
+download, and feature-card markup. Their feature SCSS files and the home FAQ
+stylesheet are removed; navigation state, translations, forms, links, and
+responsive layouts remain unchanged.
+
 - `Button`, `Dialog`, `ConfirmDialog`, `ResultDialog`;
 - `Menu`, `Accordion`, `RadioCards`, `Tabs`;
 - `Skeleton`, `EmptyState`, `ErrorState`, `Loader`, `Price`;

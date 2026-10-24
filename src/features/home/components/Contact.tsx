@@ -19,7 +19,7 @@ export default function Contact() {
           subtitle={t('contact.subtitle')}
         />
 
-        <div className="contact_wrapper">
+        <div className="contact_wrapper grid grid-cols-[380px_1fr] gap-[35px] max-lg:grid-cols-1">
           <ContactInfo />
           <ContactForm />
         </div>

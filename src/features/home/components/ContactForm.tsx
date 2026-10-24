@@ -71,8 +71,8 @@ export default function ContactForm() {
   const sent = errors.root?.server?.type === "success";
 
   return (
-    <form className="contact_form" onSubmit={submit} noValidate>
-      <div className="contact-form-row">
+    <form className="contact_form flex flex-col gap-5 rounded-xl border border-stroke-light bg-surface-elevated p-10 shadow-[0_20px_50px_rgba(30,30,30,0.05)] max-md:p-[25px]" onSubmit={submit} noValidate>
+      <div className="contact-form-row grid grid-cols-2 gap-5 [&>*]:min-w-0 [&>*]:p-0 max-md:grid-cols-1">
         <FormInput
           id="name"
           label={t("contact.name")}
@@ -94,7 +94,7 @@ export default function ContactForm() {
         />
       </div>
 
-      <div className="contact-form-row">
+      <div className="contact-form-row grid grid-cols-2 gap-5 [&>*]:min-w-0 [&>*]:p-0 max-md:grid-cols-1">
         <FormSelect
           id="contactReason"
           label={t("contact.reason")}
@@ -126,6 +126,7 @@ export default function ContactForm() {
         rows={6}
         required
         error={fieldError(errors.message?.message)}
+        className="min-h-[148px] resize-y"
         {...register("message")}
       />
 
@@ -144,7 +145,7 @@ export default function ContactForm() {
         type="submit"
         variant="primary"
         size="md"
-        className="contact_btn"
+        className="contact_btn mt-1 min-h-[46px] w-full"
         loading={submitting}
       >
         {t("contact.send")}

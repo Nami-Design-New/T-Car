@@ -5,9 +5,6 @@
 @use "legacy/components";
 // Features: one stylesheet per feature (doc 8 step 6 plan, stage 1).
 @use "../features/cities/cities";
-@use "../features/home/home";
-@use "../features/layout/layout" as layout-feature; // `base/layout` already uses the namespace `layout`
-
 @use "../features/rental-search/rental-search";
 
 @use "../features/cars/cars";
