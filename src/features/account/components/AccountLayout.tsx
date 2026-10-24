@@ -15,17 +15,17 @@ export default async function AccountLayout({
   const t = await getTranslations("account");
 
   return (
-    <section className="section account-page">
-      <div className="container-tcar">
-        <div className="account-header">
-          <BackButton className="account-back-button" />
-          <h1 className="account-page-title">{t("title")}</h1>
+    <section className="py-20 max-md:py-12">
+      <div className="mx-auto w-full max-w-7xl px-4">
+        <div className="mb-6 flex items-center gap-2.5">
+          <BackButton />
+          <h1 className="m-0">{t("title")}</h1>
         </div>
         <PointsSummaryCard summary={pointsSummary} />
 
-        <div className="account-grid">
+        <div className="grid items-start gap-8 max-lg:grid-cols-1 lg:grid-cols-[260px_minmax(0,1fr)]">
           <AccountNav />
-          <div className="account-content">{children}</div>
+          <div className="min-w-0">{children}</div>
         </div>
       </div>
     </section>

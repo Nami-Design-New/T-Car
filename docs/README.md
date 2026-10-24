@@ -284,6 +284,12 @@ to Tailwind. The responsive shell, sticky sidebar, mobile navigation, and
 active navigation state now use utilities; profile panels and account dialogs
 remain for later fractions.
 
+Account progress update: `ProfileTab`, `NotificationsTab`, and `LicenseModal`
+now use Tailwind utilities for profile actions, notifications, and license
+upload. The account stylesheet keeps only a temporary `.account-panel`
+compatibility rule for the later wallet and bank-account fractions; phone and
+verification dialogs still consume the shared auth styles.
+
 The legacy `BookingModal` and `BookingMonthlyModal` follow-up now uses Tailwind
 utilities, Swiper time pickers, the shared `Button`, and utility-owned calendar,
 monthly range, address, notes, and total sections. The booking feature

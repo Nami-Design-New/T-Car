@@ -343,6 +343,15 @@ horizontal navigation, and active navigation state. Their legacy layout and
 sidebar rules were removed from `account.scss`; profile panels and account
 dialogs remain for later fractions.
 
+Account progress update: `AccountLayout`, `AccountNav`, `ProfileTab`,
+`NotificationsTab`, and `LicenseModal` now use Tailwind utilities for the
+account header, responsive shell, navigation, profile actions, notification
+list, license upload state, and account panel surfaces. The account-specific
+profile, notification, and license rules were removed from `account.scss`;
+only the temporary `.account-panel` compatibility rule remains for the
+wallet and bank-account fractions. Phone and verification dialogs continue to
+use the shared auth dialog styles until that shared surface is migrated.
+
 Cities progress: the popular-cities rail, city hero, date search card, and
 city listing shells now use Tailwind utilities. The city feature stylesheet
 and its import were removed; carousel behavior, date filtering, image loading,
