@@ -38,6 +38,8 @@ export default function CarDetailsView({ car }: Props) {
                 carId={car.id}
                 carName={car.name}
                 carBrand={car.brand}
+                carYear={car.year}
+                showroomLogo={car.showroomLogo}
                 carImage={car.image}
                 showroom={car.showroom}
                 rating={car.rating}

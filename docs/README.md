@@ -264,11 +264,13 @@ column, gallery frame, and quick-information facts migrated to Tailwind. The
 remaining pickup information, warranties, addons, insurance, reviews, and
 branches sections are planned for the next subfraction.
 
-The booking fraction has started with `CarBookingCard` and `BookingDailyModal`
-migrated to Tailwind. `BookingDailyModal` uses the shared form controls and
-button, keeps pickup/drop-off fields in a responsive row, and owns its calendar,
-address cards, time selector, and sticky total footer. `BookingConfirmModal` and
-`PaymentMethodModal` remain for the next subfraction.
+The booking fraction has started with `CarBookingCard`, `BookingDailyModal`, and
+`BookingConfirmModal` migrated to Tailwind. `BookingDailyModal` uses the shared
+form controls and button, keeps pickup/drop-off fields in a responsive row, and
+owns its calendar, address cards, time selector, and sticky total footer.
+`BookingConfirmModal` uses utility-owned summary, booking details, price
+breakdown, terms, scroll area, and payment footer styles. `PaymentMethodModal`
+remains for the next subfraction.
 
 ### Features
 

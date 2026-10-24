@@ -331,8 +331,10 @@ Booking progress: `CarBookingCard` now uses Tailwind utilities for its price
 summary, booking CTA, and payment note. `BookingDailyModal` now uses the shared
 `FormInput`, `FormTextarea`, and `Button`, keeps pickup/drop-off fields in a
 responsive row, and owns its calendar, address cards, time selector, and
-sticky total footer with Tailwind utilities. `BookingConfirmModal` and
-`PaymentMethodModal` remain for the next booking subfraction.
+sticky total footer with Tailwind utilities. `BookingConfirmModal` now uses
+Tailwind utilities for its summary, booking details, price breakdown, terms,
+scroll area, and payment footer. `PaymentMethodModal` remains for the next
+booking subfraction.
 
 - `Button`, `Dialog`, `ConfirmDialog`, `ResultDialog`;
 - `Menu`, `Accordion`, `RadioCards`, `Tabs`;

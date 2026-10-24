@@ -39,6 +39,8 @@ interface Props {
   carId: string;
   carName: string;
   carBrand: string;
+  carYear: number;
+  showroomLogo?: string;
   carImage: string;
   showroom: string;
   rating: number;
@@ -50,6 +52,8 @@ export default function CarBookingCard({
   carId,
   carName,
   carBrand,
+  carYear,
+  showroomLogo,
   carImage,
   showroom,
   rating,
@@ -132,6 +136,8 @@ export default function CarBookingCard({
           onContinue={() => setStep("payment")}
           carName={carName}
           carBrand={carBrand}
+          carYear={carYear}
+          showroomLogo={showroomLogo}
           carImage={carImage}
           showroom={showroom}
           rating={rating}

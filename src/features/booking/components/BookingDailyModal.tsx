@@ -5,12 +5,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
-import {
-  FiChevronRight,
-  FiChevronLeft,
-  FiClock,
-  FiMapPin,
-} from "react-icons/fi";
+import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/css";
+import { FiChevronRight, FiChevronLeft, FiMapPin } from "react-icons/fi";
 import { formatCurrency } from "@/shared/lib/format";
 import {
   useErrorMessage,
@@ -285,7 +282,7 @@ export default function BookingDailyModal({
     <Dialog
       open={open}
       onClose={onClose}
-      size="xl"
+      size="lg"
       label={mode === "edit" ? t("editBooking") : t("newBooking")}
     >
       <Dialog.Header>
@@ -360,22 +357,19 @@ export default function BookingDailyModal({
                     key={i}
                     className={cn(
                       "cell flex h-10 items-center justify-center",
-                      inRange && "bg-action-primary/10",
-                      isStart &&
-                        !isEnd &&
-                        "bg-[linear-gradient(to_right,rgba(31,127,250,0.08)_50%,transparent_50%)]",
-                      isEnd &&
-                        !isStart &&
-                        "bg-[linear-gradient(to_left,rgba(31,127,250,0.08)_50%,transparent_50%)]",
+                      inRange && "bg-action-primary/15",
+                      isStart && "rounded-s-md bg-action-primary/15",
+                      isEnd && "rounded-e-md bg-action-primary/15",
                     )}
                   >
                     <button
                       type="button"
                       disabled={disabled}
+                      aria-pressed={Boolean(isStart || isEnd)}
                       className={cn(
-                        "size-8.5 rounded-full border-0 bg-transparent text-text-primary transition hover:bg-surface-card-primary disabled:cursor-not-allowed disabled:text-text-placeholder",
+                        "size-full rounded-md border-0 bg-transparent text-sm font-semibold text-text-primary transition hover:bg-surface-card-primary disabled:cursor-not-allowed disabled:text-text-placeholder",
                         (isStart || isEnd) &&
-                          "selected bg-action-primary font-bold text-text-on-action",
+                          "selected !bg-action-primary font-bold !text-text-on-action hover:!bg-action-primary",
                       )}
                       onClick={() => handlePick(day)}
                     >
@@ -402,24 +396,44 @@ export default function BookingDailyModal({
             )}
           </div>
 
-          <div className=" mb-4.5">
-            <label className="mb-2 block text-[0.82rem] font-semibold text-text-subtle">
+          <div className="mb-4.5">
+            <label className="mb-2 block text-start text-sm font-bold text-text-primary">
               {t("pickupDropoffTime")}
             </label>
-            <div className=" flex h-12 items-center gap-2.5 rounded-md border border-stroke-light px-3.5 transition focus-within:border-action-primary">
-              <FiClock className="shrink-0 text-action-primary" />
-              <select
-                className="flex-1 border-0 bg-transparent text-[0.9rem] text-text-primary outline-none"
-                {...register("time")}
-                value={time}
-              >
-                {TIME_SLOTS.map((slot) => (
-                  <option key={slot} value={slot}>
-                    {slot}
-                  </option>
-                ))}
-              </select>
-            </div>
+            <Swiper
+              slidesPerView={4.5}
+              spaceBetween={6}
+              watchOverflow
+              className="time-swiper p-1.5"
+            >
+              {TIME_SLOTS.map((slot) => {
+                const [hour, period] = slot.split(" ");
+
+                return (
+                  <SwiperSlide key={slot} className="!h-auto">
+                    <button
+                      type="button"
+                      aria-label={slot}
+                      aria-pressed={time === slot}
+                      className={cn(
+                        "flex min-h-9 cursor-pointer w-full items-center justify-center gap-1 rounded-md border-0 px-2 py-2 text-xs text-text-primary transition",
+                        time === slot &&
+                          "!bg-action-primary font-bold !text-text-on-action shadow-[0_3px_8px_rgba(31,127,250,0.2)]",
+                      )}
+                      onClick={() =>
+                        setValue("time", slot as (typeof TIME_SLOTS)[number], {
+                          shouldDirty: true,
+                          shouldValidate: true,
+                        })
+                      }
+                    >
+                      <span dir="ltr">{hour}</span>
+                      <small className="text-[10px] opacity-80">{period}</small>
+                    </button>
+                  </SwiperSlide>
+                );
+              })}
+            </Swiper>
             {errors.time && (
               <p className="form_error" role="alert">
                 {fieldError(errors.time.message)}

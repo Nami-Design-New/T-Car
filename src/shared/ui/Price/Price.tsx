@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { useTranslations } from "next-intl";
+import type { ReactNode } from "react";
 import { cn } from "@/shared/lib/cn";
 import { formatAmount } from "@/shared/lib/format";
 import { ICONS } from "@/shared/config/assets";
@@ -13,6 +14,8 @@ export interface Props {
   /** A crossed-out previous price, e.g. before a discount. */
   strike?: boolean;
   className?: string;
+  suffix?: ReactNode;
+  amountText?: ReactNode;
   amountClassName?: string;
 }
 
@@ -21,6 +24,8 @@ export function Price({
   amount,
   size = "md",
   strike = false,
+  suffix,
+  amountText,
   amountClassName,
   className,
 }: Props) {
@@ -37,7 +42,9 @@ export function Price({
         className,
       )}
     >
-      <span className={amountClassName}>{formatAmount(amount)}</span>
+      <span className={cn("price__amount", amountClassName)}>
+        {amountText ?? formatAmount(amount)}
+      </span>
       <Image
         src={sarIcon}
         alt={t("sar")}
@@ -45,6 +52,7 @@ export function Price({
         height={iconSize}
         className="price__currency currency_icon shrink-0 object-contain"
       />
+      {suffix ? <span className="price__suffix">{suffix}</span> : null}
     </Wrapper>
   );
 }

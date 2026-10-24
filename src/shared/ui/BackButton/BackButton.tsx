@@ -12,11 +12,23 @@ export interface BackButtonProps extends Omit<
   "children" | "onClick"
 > {
   label?: string;
+  onClick: () => void;
 }
 
-export function BackButton({ label, className, ...rest }: BackButtonProps) {
+export function BackButton({
+  label,
+  className,
+  onClick,
+  ...rest
+}: BackButtonProps) {
   const router = useRouter();
-
+  const handleOnClick = () => {
+    if (onClick) {
+      onClick();
+    } else {
+      router.back();
+    }
+  };
   return (
     <button
       type="button"
@@ -24,7 +36,7 @@ export function BackButton({ label, className, ...rest }: BackButtonProps) {
         "back-button inline-flex cursor-pointer items-center justify-center rounded-md border border-stroke-light bg-surface-background p-[3px] hover:text-action-primary focus-visible:rounded-md focus-visible:outline-2 focus-visible:outline-action-primary focus-visible:outline-offset-3",
         className,
       )}
-      onClick={() => router.back()}
+      onClick={handleOnClick}
       {...rest}
     >
       <Image

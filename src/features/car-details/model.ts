@@ -47,6 +47,7 @@ export interface CarPickupInfo {
 export interface CarDetails extends CarListing {
   images: string[];
   showroom: string;
+  showroomLogo?: string;
   quickFacts: { icon: 'shield' | 'delivery' | 'distance'; label: string }[];
   warranties: CarWarranty[];
   addons: AddonService[];
