@@ -270,7 +270,8 @@ form controls and button, keeps pickup/drop-off fields in a responsive row, and
 owns its calendar, address cards, time selector, and sticky total footer.
 `BookingConfirmModal` uses utility-owned summary, booking details, price
 breakdown, terms, scroll area, and payment footer styles. `PaymentMethodModal`
-remains for the next subfraction.
+also uses utility-owned payment options, points switch, and confirmation action
+styles; its legacy booking SCSS block is removed.
 
 ### Features
 

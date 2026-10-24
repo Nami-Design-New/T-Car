@@ -154,7 +154,7 @@ function Description({ children, className }: PartProps) {
 function Body({ children, className }: PartProps) {
   return (
     <div
-      className={cn("dialog__body min-h-0 flex-1 overflow-y-auto", className)}
+      className={cn("scrollbar-none min-h-0 flex-1 overflow-y-auto", className)}
     >
       {children}
     </div>

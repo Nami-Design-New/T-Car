@@ -410,7 +410,7 @@ export default function BookingDailyModal({
                 const [hour, period] = slot.split(" ");
 
                 return (
-                  <SwiperSlide key={slot} className="!h-auto">
+                  <SwiperSlide key={slot} className="h-auto!">
                     <button
                       type="button"
                       aria-label={slot}
@@ -418,7 +418,7 @@ export default function BookingDailyModal({
                       className={cn(
                         "flex min-h-9 cursor-pointer w-full items-center justify-center gap-1 rounded-md border-0 px-2 py-2 text-xs text-text-primary transition",
                         time === slot &&
-                          "!bg-action-primary font-bold !text-text-on-action shadow-[0_3px_8px_rgba(31,127,250,0.2)]",
+                          "bg-action-primary! font-bold text-text-on-action! shadow-[0_3px_8px_rgba(31,127,250,0.2)]",
                       )}
                       onClick={() =>
                         setValue("time", slot as (typeof TIME_SLOTS)[number], {

@@ -1,21 +1,19 @@
 "use client";
 
-import { useState } from "react";
-import { useTranslations } from "next-intl";
-import dynamic from "next/dynamic";
-import { formatCurrency } from "@/shared/lib/format";
 import { useErrorMessage } from "@/shared/hooks/useErrorMessage";
 import type { AppError } from "@/shared/lib/errors";
 import { ResultDialog } from "@/shared/ui/ResultDialog";
+import { useTranslations } from "next-intl";
+import dynamic from "next/dynamic";
+import { useState } from "react";
 
-import Image from "next/image";
 import { ICONS } from "@/shared/config/assets";
-const RiyalIcon = ICONS.riyal;
 import type { BookingDetails, PaymentMethod } from "../model";
+const RiyalIcon = ICONS.riyal;
 
-import { useCreateBooking } from "../hooks/useCreateBooking";
-import { Price } from "@/shared/ui/Price";
 import { Button } from "@/shared/ui/Button";
+import { Price } from "@/shared/ui/Price";
+import { useCreateBooking } from "../hooks/useCreateBooking";
 
 const BookingDailyModal = dynamic(() => import("./BookingDailyModal"), {
   ssr: false,
@@ -165,8 +163,7 @@ export default function CarBookingCard({
         open={step === "success"}
         status="success"
         description={t("successDescription")}
-        action={{ label: t("goNow"), onClick: handleBookingSuccess }}
-        autoCloseMs={3000}
+        autoCloseMs={1500}
         onClose={handleBookingSuccess}
       />
     </aside>

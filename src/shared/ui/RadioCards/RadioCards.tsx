@@ -27,7 +27,7 @@ function Item({
   return (
     <RadixRadioGroup.Item
       className={cn(
-        "radio-card m-0 w-full cursor-pointer border-0 bg-transparent text-start text-inherit font-inherit focus-visible:outline-2 focus-visible:outline-action-primary focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-60",
+        "m-0 w-full cursor-pointer text-start text-inherit font-inherit focus-visible:outline-2 focus-visible:outline-action-primary focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-60",
         className,
       )}
       {...props}
