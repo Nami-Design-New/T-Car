@@ -343,6 +343,11 @@ horizontal navigation, and active navigation state. Their legacy layout and
 sidebar rules were removed from `account.scss`; profile panels and account
 dialogs remain for later fractions.
 
+Cities progress: the popular-cities rail, city hero, date search card, and
+city listing shells now use Tailwind utilities. The city feature stylesheet
+and its import were removed; carousel behavior, date filtering, image loading,
+and RTL direction are unchanged.
+
 Legacy booking follow-up: `BookingModal` and `BookingMonthlyModal` now use
 Tailwind utilities, Swiper time pickers, the shared `Button`, and utility-owned
 calendar, monthly range, address, notes, and total sections. The booking

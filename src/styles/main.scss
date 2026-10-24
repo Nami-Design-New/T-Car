@@ -4,9 +4,6 @@
 @use "legacy/dialogs";
 @use "legacy/components";
 // Features: one stylesheet per feature (doc 8 step 6 plan, stage 1).
-@use "../features/cities/cities";
-
-
 @use "../features/auth/auth";
 @use "../features/account/account";
 @use "../features/points/points";

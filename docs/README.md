@@ -259,6 +259,12 @@ shell and controls. Mobile filter-sheet behavior and responsive details are
 also utility-owned; the `cars.scss` feature stylesheet and its import are
 removed.
 
+The cities fraction is now migrated: `PopularCities`, `CityHero`, and both
+city route shells use Tailwind utilities for the rail, cards, hero, date search
+surface, and listing container. `features/cities/cities.scss` and its import
+were removed; Swiper-free rail controls, image behavior, date filtering, and
+RTL direction remain unchanged.
+
 The `car-details` fraction has started with the page grid, sticky booking
 column, gallery frame, and quick-information facts migrated to Tailwind. The
 remaining pickup information, warranties, addons, insurance, reviews, and
