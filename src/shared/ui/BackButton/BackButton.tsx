@@ -12,7 +12,7 @@ export interface BackButtonProps extends Omit<
   "children" | "onClick"
 > {
   label?: string;
-  onClick: () => void;
+  onClick?: () => void;
 }
 
 export function BackButton({
