@@ -96,7 +96,7 @@ export default function PaymentMethodModal({
           <RadioCards.Item
             value="wallet"
             className={cn(
-              "flex min-h-14.5 items-center justify-between gap-4 rounded-sm border  bg-surface-elevated px-3 py-2 text-start transition-[border-color,background-color] hover:  border-action-primary/50",
+              "flex min-h-14.5 items-center justify-between gap-4 rounded-sm border border-stroke-light bg-surface-elevated px-3 py-2 text-start transition-[border-color,background-color] hover:border-action-primary/50",
               method === "wallet" &&
                 "border-action-primary/50 bg-surface-card-primary",
             )}
@@ -130,7 +130,7 @@ export default function PaymentMethodModal({
               className={cn(
                 "flex min-h-14.5 items-center justify-between gap-4 rounded-sm border border-stroke-light bg-surface-elevated px-3 py-2 text-start transition-[border-color,background-color] hover:border-action-primary/50",
                 method === option.id &&
-                  "border-action-primary/50! bg-surface-card-primary!",
+                  "border-action-primary/50 bg-surface-card-primary",
               )}
             >
               <span className="flex min-w-0 flex-col gap-1">
@@ -171,7 +171,7 @@ export default function PaymentMethodModal({
                 checked={usePoints}
                 onChange={(e) => setUsePoints(e.target.checked)}
               />
-              <span className="relative h-6 w-11 rounded-full bg-surface-disabled transition-colors peer-checked:bg-action-primary peer-focus-visible:outline-2 peer-focus-visible:outline-action-primary peer-focus-visible:outline-offset-2 after:absolute after:start-0.5 after:top-0.5 after:size-5 after:rounded-full after:bg-white after:shadow-sm after:transition-transform peer-checked:after:translate-x-5 rtl:peer-checked:after:-translate-x-5" />
+              <span className="relative h-6 w-11 rounded-full bg-surface-disabled transition-colors peer-checked:bg-action-primary peer-focus-visible:outline-2 peer-focus-visible:outline-action-primary peer-focus-visible:outline-offset-2 after:absolute after:inset-s-0.5 after:top-0.5 after:size-5 after:rounded-full after:bg-white after:shadow-sm after:transition-transform peer-checked:after:translate-x-5 rtl:peer-checked:after:-translate-x-5" />
             </span>
             <span className="flex flex-col items-start gap-0.5" dir="rtl">
               <small className="text-[10px] text-text-primary">
