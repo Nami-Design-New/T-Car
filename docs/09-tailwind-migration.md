@@ -327,6 +327,13 @@ quick-information facts now use Tailwind utilities. The remaining car-details
 sections (pickup information, warranties, addons, insurance, reviews, and
 branches) stay on the next subfraction.
 
+Booking progress: `CarBookingCard` now uses Tailwind utilities for its price
+summary, booking CTA, and payment note. `BookingDailyModal` now uses the shared
+`FormInput`, `FormTextarea`, and `Button`, keeps pickup/drop-off fields in a
+responsive row, and owns its calendar, address cards, time selector, and
+sticky total footer with Tailwind utilities. `BookingConfirmModal` and
+`PaymentMethodModal` remain for the next booking subfraction.
+
 - `Button`, `Dialog`, `ConfirmDialog`, `ResultDialog`;
 - `Menu`, `Accordion`, `RadioCards`, `Tabs`;
 - `Skeleton`, `EmptyState`, `ErrorState`, `Loader`, `Price`;

@@ -1,8 +1,8 @@
-import Image from 'next/image';
-import { useTranslations } from 'next-intl';
-import { cn } from '@/shared/lib/cn';
-import { formatAmount } from '@/shared/lib/format';
-import { ICONS } from '@/shared/config/assets';
+import Image from "next/image";
+import { useTranslations } from "next-intl";
+import { cn } from "@/shared/lib/cn";
+import { formatAmount } from "@/shared/lib/format";
+import { ICONS } from "@/shared/config/assets";
 const sarIcon = ICONS.riyal;
 
 const ICON_SIZES = { sm: 14, md: 16, lg: 20, xl: 30 } as const;
@@ -13,27 +13,34 @@ export interface Props {
   /** A crossed-out previous price, e.g. before a discount. */
   strike?: boolean;
   className?: string;
+  amountClassName?: string;
 }
 
 /** An amount in SAR: the number with the riyal sign (the app's only currency). */
-export function Price({ amount, size = 'md', strike = false, className }: Props) {
-  const t = useTranslations('states.price');
+export function Price({
+  amount,
+  size = "md",
+  strike = false,
+  amountClassName,
+  className,
+}: Props) {
+  const t = useTranslations("states.price");
   const iconSize = ICON_SIZES[size];
-  const Wrapper = strike ? 'del' : 'span';
+  const Wrapper = strike ? "del" : "span";
 
   return (
     <Wrapper
       className={cn(
-        'price inline-flex items-center gap-1.5 whitespace-nowrap',
+        "price inline-flex items-center gap-1.5 whitespace-nowrap",
         `price--${size}`,
-        strike && 'price--strike text-text-subtle line-through',
+        strike && "price--strike text-text-subtle line-through",
         className,
       )}
     >
-      <span className="price__amount">{formatAmount(amount)}</span>
+      <span className={amountClassName}>{formatAmount(amount)}</span>
       <Image
         src={sarIcon}
-        alt={t('sar')}
+        alt={t("sar")}
         width={iconSize}
         height={iconSize}
         className="price__currency currency_icon shrink-0 object-contain"
