@@ -300,6 +300,11 @@ download, and feature-card markup. Their feature SCSS files and the home FAQ
 stylesheet are removed; navigation state, translations, forms, links, and
 responsive layouts remain unchanged.
 
+Feature surface progress: `rental-search` now uses Tailwind utilities for the
+hero carousel overlays, search bar, rental tabs, filter drawer, and drawer
+motion. Its feature stylesheet is removed; search navigation, filter state,
+modal flow, Swiper behavior, and RTL drawer direction remain unchanged.
+
 - `Button`, `Dialog`, `ConfirmDialog`, `ResultDialog`;
 - `Menu`, `Accordion`, `RadioCards`, `Tabs`;
 - `Skeleton`, `EmptyState`, `ErrorState`, `Loader`, `Price`;

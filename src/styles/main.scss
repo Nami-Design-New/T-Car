@@ -5,8 +5,6 @@
 @use "legacy/components";
 // Features: one stylesheet per feature (doc 8 step 6 plan, stage 1).
 @use "../features/cities/cities";
-@use "../features/rental-search/rental-search";
-
 @use "../features/cars/cars";
 
 @use "../features/car-details/car-details";

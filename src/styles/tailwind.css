@@ -244,6 +244,48 @@
     }
   }
 
+  @keyframes hero-image-drift {
+    from {
+      transform: scale(1.02);
+    }
+
+    to {
+      transform: scale(1.08);
+    }
+  }
+
+  @keyframes hero-content-in {
+    from {
+      opacity: 0;
+      transform: translateY(22px);
+    }
+  }
+
+  @keyframes hero-filter-in {
+    from {
+      opacity: 0;
+      transform: translate(-50%, 24px);
+    }
+  }
+
+  @keyframes hero-drawer-fade-in {
+    from {
+      opacity: 0;
+    }
+  }
+
+  @keyframes hero-drawer-slide-in {
+    from {
+      transform: translateX(100%);
+    }
+  }
+
+  @keyframes hero-drawer-slide-in-rtl {
+    from {
+      transform: translateX(-100%);
+    }
+  }
+
   .points-switch {
     display: block;
     margin: 0;
