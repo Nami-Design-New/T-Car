@@ -305,6 +305,13 @@ hero carousel overlays, search bar, rental tabs, filter drawer, and drawer
 motion. Its feature stylesheet is removed; search navigation, filter state,
 modal flow, Swiper behavior, and RTL drawer direction remain unchanged.
 
+Cars progress: `CarCard`, `CarOfficeRow`, and `CarsRail` now carry their card,
+office-row, and horizontal-rail presentation in Tailwind utilities. `CarsRail`
+now uses Swiper with RTL direction, responsive auto-width slides, looping, and
+pause-on-hover autoplay. The `cars.scss` file remains active for the listing
+shell, sort bar, and filter controls, which are the remaining parts of this
+feature fraction.
+
 - `Button`, `Dialog`, `ConfirmDialog`, `ResultDialog`;
 - `Menu`, `Accordion`, `RadioCards`, `Tabs`;
 - `Skeleton`, `EmptyState`, `ErrorState`, `Loader`, `Price`;

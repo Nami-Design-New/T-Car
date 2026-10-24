@@ -47,20 +47,20 @@ export default function CarOfficeRow({ office, cars, className }: CarOfficeRowPr
   };
 
   const title = (
-    <h2 className="office-row__title" id={titleId}>
-      <span className="office-row__logo" aria-hidden="true">
-        <Image src={office.logo} alt="" width={56} height={56} />
+    <h2 className="office-row__title flex min-w-0 items-center gap-4" id={titleId}>
+      <span className="office-row__logo grid size-14 shrink-0 place-items-center overflow-hidden rounded-md border border-stroke-light bg-surface-on-background p-3" aria-hidden="true">
+        <Image src={office.logo} alt="" width={56} height={56} className="h-full w-full object-contain" />
       </span>
-      <span className="office-row__copy">
-        <span className="office-row__label">{t('office')}</span>
-        <span className="office-row__name">{office.name}</span>
+      <span className="office-row__copy flex min-w-0 gap-0.5 overflow-hidden text-ellipsis whitespace-nowrap text-[1.35rem] font-extrabold leading-[1.35]">
+        <span className="office-row__label text-action-primary">{t('office')}</span>
+        <span className="office-row__name truncate text-text-primary">{office.name}</span>
       </span>
     </h2>
   );
 
   return (
-    <section className={cn('office-row', className)} aria-labelledby={titleId}>
-      <header className="office-row__header">{title}</header>
+    <section className={cn('office-row min-w-0', className)} aria-labelledby={titleId}>
+      <header className="office-row__header mb-5 flex min-h-[82px] items-center gap-5 overflow-hidden">{title}</header>
 
       <Swiper
         onSwiper={(swiper) => {
@@ -77,14 +77,14 @@ export default function CarOfficeRow({ office, cars, className }: CarOfficeRowPr
         speed={500}
         grabCursor={!nav.isLocked}
         watchOverflow
-        className="office-row__swiper"
+        className="office-row__swiper min-w-0 px-0.5 pb-1.5 active:cursor-grabbing [&_.swiper-slide]:h-auto [&_.swiper-slide_.car-card]:h-full"
         breakpoints={{
           576: { slidesPerView: 2, spaceBetween: 18 },
           992: { slidesPerView: 3, spaceBetween: 20 },
         }}
       >
         {cars.map((car) => (
-          <SwiperSlide key={car.id} className="office-row__slide">
+          <SwiperSlide key={car.id} className="office-row__slide !h-auto">
             <CarCard
               car={car}
               imageSizes="(max-width: 575px) 84vw, (max-width: 991px) 44vw, 300px"
