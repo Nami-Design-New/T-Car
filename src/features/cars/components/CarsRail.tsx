@@ -2,11 +2,13 @@
 
 import { useLocale, useTranslations } from 'next-intl';
 import { FiChevronRight } from 'react-icons/fi';
+import { Autoplay } from 'swiper/modules';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import 'swiper/css';
 
 import CarCard from './CarCard';
 import { SectionTitle } from '@/shared/ui/SectionTitle';
 import type { CarListing } from '../model';
-import { useCarouselRail } from '@/shared/hooks/useCarouselRail';
 import { Link } from '@/i18n/navigation';
 import { getDirection } from '@/shared/config/languages';
 
@@ -29,38 +31,44 @@ export default function CarsRail({
   const locale = useLocale();
   const isRTL = getDirection(locale) === 'rtl';
 
-  const { trackRef, pause, resume } = useCarouselRail({ isRTL });
-
   if (cars.length === 0) return null;
 
   return (
-    <section className="section cars-rail" id={id}>
-      <div className="container-tcar">
-        <div className="cars-rail-header">
+    <section className="pb-0 pt-12" id={id}>
+      <div className="mx-auto w-full max-w-[1280px] px-4">
+        <div className="cars-rail-header mb-6 flex items-start justify-between gap-4 max-md:mb-3">
           <SectionTitle title={title} subtitle={subtitle} align="left" />
 
-          <Link href={seeAllHref} className="cars-rail-see-all">
+          <Link href={seeAllHref} className="group cars-rail-see-all inline-flex min-h-11 shrink-0 items-center gap-1.5 rounded-full border border-stroke-light bg-surface-elevated px-[18px] font-semibold text-text-primary transition duration-300 hover:-translate-y-0.5 hover:border-action-primary hover:bg-action-primary hover:text-text-on-action hover:shadow-[0_10px_20px_rgba(31,127,250,0.18)] focus-visible:outline-3 focus-visible:outline-action-primary/20 focus-visible:outline-offset-3">
             {t('seeAll')}
-            <FiChevronRight className="cars-rail-see-all-icon mirror-in-rtl" />
+            <FiChevronRight className="cars-rail-see-all-icon rtl:scale-x-[-1] text-xl transition duration-300 group-hover:me-0.5" />
           </Link>
         </div>
 
-        <div
-          className="cars-rail-track"
-          ref={trackRef}
-          onMouseEnter={pause}
-          onMouseLeave={resume}
+        <Swiper
+          modules={[Autoplay]}
           dir={isRTL ? 'rtl' : 'ltr'}
+          slidesPerView="auto"
+          spaceBetween={24}
+          loop={cars.length > 3}
+          speed={700}
+          autoplay={{
+            delay: 3500,
+            disableOnInteraction: false,
+            pauseOnMouseEnter: true,
+          }}
+          className="cars-rail-swiper w-full !overflow-hidden [&_.swiper-slide]:!h-auto"
         >
           {cars.map((car) => (
-            <CarCard
-              key={car.id}
-              car={car}
-              className="cars-rail-item"
-              imageSizes="(max-width: 767px) 78vw, 340px"
-            />
+            <SwiperSlide key={car.id} className="cars-rail-item !h-auto !w-80 max-md:!w-[78vw]">
+              <CarCard
+                car={car}
+                className="h-full"
+                imageSizes="(max-width: 767px) 78vw, 340px"
+              />
+            </SwiperSlide>
           ))}
-        </div>
+        </Swiper>
       </div>
     </section>
   );

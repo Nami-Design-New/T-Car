@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import Image from 'next/image';
-import { useTranslations } from 'next-intl';
-import { Dialog } from '@/shared/ui/Dialog';
+import Image from "next/image";
+import { useTranslations } from "next-intl";
+import { Dialog } from "@/shared/ui/Dialog";
 
-import { IMAGES } from '@/shared/config/assets';
+import { IMAGES } from "@/shared/config/assets";
 const cancelBookingImage = IMAGES.cancelBooking;
 
 interface Props {
@@ -31,84 +31,114 @@ export default function CancelBookingModal({
   error,
 }: Props) {
   const refundedAmount = bookingAmount - cancellationFee;
-  const t = useTranslations('myBookings.cancel');
+  const t = useTranslations("myBookings.cancel");
 
   return (
-    <Dialog open={open} onClose={onClose} placement="bottom-sheet" label={t('dialogLabel')}>
-      <div className=" selection_modal cancel_booking_modal">
+    <Dialog
+      open={open}
+      onClose={onClose}
+      placement="bottom-sheet"
+      label={t("dialogLabel")}
+    >
+      <div className="relative box-border max-h-[92vh] w-[600px] max-w-full rounded-xl bg-surface-elevated px-6 pt-10 pb-6 shadow-[0_20px_50px_rgba(30,30,30,0.15)] max-[620px]:pt-8">
         {/* Close */}
-        <div className="cancel_booking_modal_header">
-          <Dialog.Title>{t('title')}</Dialog.Title>
-          <Dialog.Close className="close_btn" />
+        <div className="mb-1 flex items-center justify-between">
+          <Dialog.Title className="py-2.5 text-[22px] text-text-primary">
+            {t("title")}
+          </Dialog.Title>
+          <Dialog.Close />
         </div>
 
-        <div className="cancel_booking_modal_illustration">
-          <Image src={cancelBookingImage} alt={t('title')} width={140} height={110} />
+        <div className="mb-3 flex h-[120px] w-full items-center justify-center">
+          <Image
+            src={cancelBookingImage}
+            alt={t("title")}
+            width={140}
+            height={110}
+          />
         </div>
 
-        <div className="cancel_booking_modal_question">
-          <h3>{t('question')}</h3>
+        <div className="mb-3.5 text-center">
+          <h3 className="m-0 text-[15px] font-bold leading-relaxed text-text-primary">
+            {t("question")}
+          </h3>
         </div>
 
-        <div className="cancel_booking_modal_warning">
-          <p>{t('warning', { percent: cancellationPercent })}</p>
+        <div className="mb-[18px] w-full rounded-sm bg-status-error-background px-4 py-3 text-center">
+          <p className="m-0 text-[11.5px] leading-relaxed text-text-subtle">
+            {t("warning", { percent: cancellationPercent })}
+          </p>
         </div>
 
-        <div className="cancel_booking_modal_price_details">
-          <h3 className="cancel_booking_modal_details_title">{t('amountDetails')}</h3>
+        <div className="mb-4 w-full">
+          <h3 className="mb-1.5 text-end text-[15px] font-bold text-text-primary">
+            {t("amountDetails")}
+          </h3>
 
-          <div className="cancel_booking_modal_row">
-            <span>{t('paid')}</span>
-            <strong>
-              {bookingAmount} {t('currency')}
+          <div className="flex min-h-9 w-full flex-nowrap items-center justify-between gap-2 border-b border-dashed border-stroke-light px-1">
+            <span className="min-w-0 text-[13px] text-text-subtle">
+              {t("paid")}
+            </span>
+            <strong className="min-w-0 whitespace-nowrap text-[13px] font-medium text-text-primary">
+              {bookingAmount} {t("currency")}
             </strong>
           </div>
 
-          <div className="cancel_booking_modal_row cancel_booking_modal_row--danger">
-            <span>{t('discountPercent')}</span>
-            <strong>{cancellationPercent}%</strong>
-          </div>
-
-          <div className="cancel_booking_modal_row cancel_booking_modal_row--danger">
-            <span>{t('cancellationFee')}</span>
-            <strong>
-              -{cancellationFee} {t('currency')}
+          <div className="flex min-h-9 w-full flex-nowrap items-center justify-between gap-2 border-b border-dashed border-stroke-light px-1 text-status-error">
+            <span className="min-w-0 text-[13px]">{t("discountPercent")}</span>
+            <strong className="min-w-0 whitespace-nowrap text-[13px] font-medium">
+              {cancellationPercent}%
             </strong>
           </div>
 
-          <div className="cancel_booking_modal_row cancel_booking_modal_row--strong">
-            <span>{t('refunded')}</span>
-            <strong>
-              {refundedAmount} {t('currency')}
+          <div className="flex min-h-9 w-full flex-nowrap items-center justify-between gap-2 border-b border-dashed border-stroke-light px-1 text-status-error">
+            <span className="min-w-0 text-[13px]">{t("cancellationFee")}</span>
+            <strong className="min-w-0 whitespace-nowrap text-[13px] font-medium">
+              -{cancellationFee} {t("currency")}
+            </strong>
+          </div>
+
+          <div className="flex min-h-9 w-full flex-nowrap items-center justify-between gap-2 border-b border-dashed border-stroke-light px-1 last:border-0">
+            <span className="min-w-0 text-[13px] text-text-subtle">
+              {t("refunded")}
+            </span>
+            <strong className="min-w-0 whitespace-nowrap text-[13px] font-semibold text-text-primary">
+              {refundedAmount} {t("currency")}
             </strong>
           </div>
         </div>
 
-        <div className="cancel_booking_modal_refund_box">
-          <span>{t('refundedToYou')}</span>
-          <strong>
-            {refundedAmount} {t('currency')}
+        <div className="mb-4 flex w-full flex-col items-center justify-center rounded-sm bg-surface-card-primary p-3 text-center">
+          <span className="mb-1 text-[11px] text-text-subtle">
+            {t("refundedToYou")}
+          </span>
+          <strong className="text-xl font-bold text-text-primary">
+            {refundedAmount} {t("currency")}
           </strong>
         </div>
 
         {error && (
-          <p className="text-danger small mb-2" role="alert">
+          <p className="text-status-error text-sm mb-2" role="alert">
             {error}
           </p>
         )}
 
-        <div className="cancel_booking_modal_actions">
+        <div className="flex w-full items-stretch gap-2">
           <button
             type="button"
-            className="cancel_booking_modal_confirm_btn"
+            className="order-1 h-[46px] min-w-0 flex-1 cursor-pointer rounded-sm border-0 bg-action-primary text-[13px] font-semibold text-white transition hover:opacity-90 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
             onClick={onConfirm}
             disabled={loading}
           >
-            {loading ? t('cancelling') : t('confirm')}
+            {loading ? t("cancelling") : t("confirm")}
           </button>
 
-          <button type="button" className="cancel_booking_modal_back_btn" onClick={onClose}>
-            {t('back')}
+          <button
+            type="button"
+            className="order-2 h-[46px] w-20 shrink-0 cursor-pointer rounded-sm border border-stroke-heavy bg-surface-elevated text-[13px] font-semibold text-text-subtle transition hover:opacity-90 active:scale-[0.98]"
+            onClick={onClose}
+          >
+            {t("back")}
           </button>
         </div>
       </div>

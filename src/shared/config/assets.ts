@@ -13,6 +13,9 @@ export const ICONS = {
   riyalAlt: { src: "/icons/ryal.svg", width: 16, height: 16 },
   whatsapp: { src: "/icons/whatsapp.svg", width: 24, height: 24 },
   chevron: { src: "/icons/chevron.svg", width: 28, height: 28 },
+  timeline: { src: "/icons/timeline.svg", width: 4, height: 120 },
+  locationChip: { src: "/icons/location-chip.svg", width: 14, height: 14 },
+  starFill: { src: "/icons/star-fill.svg", width: 16, height: 16 },
 } as const;
 
 export const POINTS_ICONS = {

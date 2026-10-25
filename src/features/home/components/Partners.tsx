@@ -18,8 +18,8 @@ export default function Partners({ offices }: Props) {
 
 
   return (
-    <section className="partners section" id="partners">
-      <div className="container-tcar">
+    <section className="py-20" id="partners">
+      <div className="mx-auto w-full max-w-[1280px] px-4">
         <SectionTitle
           smallTitle={t('partners.smallTitle')}
           title={t('partners.title')}
@@ -53,12 +53,12 @@ export default function Partners({ offices }: Props) {
               slidesPerView: 6,
             },
           }}
-          className="partners_swiper"
+          className="partners_swiper mt-[50px] py-[15px]"
         >
           {offices.map((office) => (
             <SwiperSlide key={office.id}>
-              <div className="partner_logo">
-                <Image src={office.logo} alt={office.name} width={140} height={70} />
+              <div className="partner_logo mx-auto flex h-[110px] w-full max-w-[220px] items-center justify-center rounded-2xl border border-stroke-light bg-surface-elevated transition duration-300 hover:-translate-y-1.5 hover:border-action-primary hover:shadow-[0_15px_35px_rgba(31,127,250,0.15)]">
+                <Image src={office.logo} alt={office.name} width={140} height={70} className="h-auto max-h-[60px] w-auto max-w-[130px] opacity-70 transition duration-300 hover:scale-105 hover:opacity-100" />
               </div>
             </SwiperSlide>
           ))}

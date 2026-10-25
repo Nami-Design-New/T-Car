@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
 import dynamic from "next/dynamic";
 import { useRouter } from "@/i18n/navigation";
-import { AlertModal } from "@/shared/ui/AlertModal";
+import { AlertDialog } from "@/shared/ui/AlertDialog";
 import { Button } from "@/shared/ui/Button";
 import { FormInput } from "@/shared/ui/Form";
 import {
@@ -224,10 +224,10 @@ export default function ProfileTab({ profile }: Props) {
   const saveError = errors.root?.server?.message;
 
   return (
-    <div className="account-panel profile_tab">
+    <div className="flex w-full flex-col rounded-xl border border-stroke-light bg-surface-elevated p-6 max-md:p-4">
       {/* The form closes before the dialogs below: their submit events would
           otherwise bubble through the portals into this form. */}
-      <form className="profile_form" onSubmit={handleSaveProfile} noValidate>
+      <form className="contents" onSubmit={handleSaveProfile} noValidate>
         {/* ==================== Full Name ==================== */}
 
         <FormInput
@@ -269,24 +269,28 @@ export default function ProfileTab({ profile }: Props) {
 
         {/* ==================== Phone ==================== */}
 
-        <div className="profile_action_field">
+        <div className="mb-3 w-full rounded-sm bg-surface-elevated transition-colors">
           <button
             type="button"
-            className="profile_action_btn"
+            className="flex min-h-[62px] w-full items-center justify-between gap-3 border-0 bg-transparent px-3 py-2 text-start transition-opacity hover:opacity-85 max-md:min-h-[58px] max-md:px-2.5"
             onClick={() => setPhoneStep("edit")}
           >
-            <div className="profile_action_content">
-              <span className="profile_action_title">{t("phone")}</span>
+            <div className="flex min-w-0 flex-1 flex-col gap-1.5">
+              <span className="text-[13px] font-semibold leading-[1.4] text-text-primary max-md:text-xs">
+                {t("phone")}
+              </span>
 
-              <div className="profile_action_value">
-                <FiCheck />
+              <div className="flex min-w-0 items-center gap-1.5 text-[11px] leading-[1.5] text-text-subtle max-md:text-[10px] [&>svg]:shrink-0 [&>svg]:text-sm [&>svg]:text-status-success">
+                <FiCheck aria-hidden="true" />
 
-                <span dir="ltr">{form.phone}</span>
+                <span className="min-w-0 [overflow-wrap:anywhere]" dir="ltr">
+                  {form.phone}
+                </span>
               </div>
             </div>
 
             <FiChevronRight
-              className="arrow mirror-in-rtl"
+              className="rtl:scale-x-[-1] shrink-0 text-lg text-text-subtle max-md:text-base"
               aria-hidden="true"
             />
           </button>
@@ -295,36 +299,45 @@ export default function ProfileTab({ profile }: Props) {
         {/* ==================== License ==================== */}
 
         {form.licenseUploaded ? (
-          <div className="profile_action_field">
-            <div className="profile_action_btn" role="status">
-              <div className="profile_action_content">
-                <span className="profile_action_title">{t("license")}</span>
+          <div className="mb-3 w-full rounded-sm bg-surface-elevated transition-colors">
+            <div
+              className="flex min-h-[62px] w-full items-center justify-between gap-3 px-3 py-2 max-md:min-h-[58px] max-md:px-2.5"
+              role="status"
+            >
+              <div className="flex min-w-0 flex-1 flex-col gap-1.5">
+                <span className="text-[13px] font-semibold leading-[1.4] text-text-primary max-md:text-xs">
+                  {t("license")}
+                </span>
 
-                <div className="profile_action_value verified">
-                  <FiCheck />
+                <div className="flex min-w-0 items-center gap-1.5 text-[11px] leading-[1.5] text-text-subtle max-md:text-[10px] [&>svg]:shrink-0 [&>svg]:text-sm [&>svg]:text-status-success">
+                  <FiCheck aria-hidden="true" />
                   <span>{t("licenseVerified")}</span>
                 </div>
               </div>
             </div>
           </div>
         ) : (
-          <div className="profile_action_field warning">
+          <div className="mb-3 w-full rounded-sm bg-status-error-background transition-colors">
             <button
               type="button"
-              className="profile_action_btn"
+              className="flex min-h-[62px] w-full items-center justify-between gap-3 border-0 bg-transparent px-3 py-2 text-start transition-opacity hover:opacity-85 max-md:min-h-[58px] max-md:px-2.5"
               onClick={() => setShowLicenseModal(true)}
             >
-              <div className="profile_action_content">
-                <span className="profile_action_title">{t("license")}</span>
+              <div className="flex min-w-0 flex-1 flex-col gap-1.5">
+                <span className="text-[13px] font-semibold leading-[1.4] text-text-primary max-md:text-xs">
+                  {t("license")}
+                </span>
 
-                <div className="profile_action_value">
-                  <FiAlertCircle />
-                  <span>{t("licenseRequired")}</span>
+                <div className="flex min-w-0 items-center gap-1.5 text-[11px] leading-[1.5] text-text-subtle max-md:text-[10px] [&>svg]:shrink-0 [&>svg]:text-sm [&>svg]:text-status-error">
+                  <FiAlertCircle aria-hidden="true" />
+                  <span className="min-w-0 [overflow-wrap:anywhere]">
+                    {t("licenseRequired")}
+                  </span>
                 </div>
               </div>
 
               <FiChevronRight
-                className="arrow mirror-in-rtl"
+                className="rtl:scale-x-[-1] shrink-0 text-lg text-text-subtle max-md:text-base"
                 aria-hidden="true"
               />
             </button>
@@ -335,7 +348,7 @@ export default function ProfileTab({ profile }: Props) {
 
         <button
           type="button"
-          className="delete_account_btn mb-2"
+          className="mb-2 flex w-full items-center justify-start gap-1.5 border-0 bg-transparent px-0 py-1 text-end text-sm font-semibold text-status-error transition-opacity hover:opacity-80 max-md:text-xs [&>svg]:text-[17px] max-md:[&>svg]:text-[15px]"
           onClick={() => {
             setDeleteError(null);
             setShowDeleteModal(true);
@@ -351,19 +364,19 @@ export default function ProfileTab({ profile }: Props) {
         <Button
           type="submit"
           size="lg"
-          className="w-100 mt-2"
+          className="mt-2 w-full"
           loading={pendingAction === "save"}
         >
           {t("save")}
         </Button>
 
         {saveError && (
-          <p className="text-danger small mt-2 mb-0" role="alert">
+          <p className="mt-2 mb-0 text-sm text-status-error" role="alert">
             {saveError}
           </p>
         )}
         {saved && (
-          <p className="text-success small mt-2 mb-0" role="status">
+          <p className="mt-2 mb-0 text-sm text-status-success" role="status">
             {t("saved")}
           </p>
         )}
@@ -409,7 +422,7 @@ export default function ProfileTab({ profile }: Props) {
 
       {/* ==================== Delete Account Modal ==================== */}
 
-      <AlertModal
+      <AlertDialog
         open={showDeleteModal}
         title={t("deleteConfirmTitle")}
         description={t("deleteConfirmDescription")}

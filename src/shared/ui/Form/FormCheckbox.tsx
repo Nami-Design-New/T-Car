@@ -3,7 +3,6 @@
 import { InputHTMLAttributes, ReactNode, Ref } from 'react';
 import { cn } from '@/shared/lib/cn';
 import { useFieldA11y } from './useFieldA11y';
-import './Form.scss';
 
 export interface FormCheckboxProps
   extends Omit<InputHTMLAttributes<HTMLInputElement>, 'type'> {
@@ -25,14 +24,19 @@ export function FormCheckbox({
   const field = useFieldA11y({ id, error, required, describedBy: props['aria-describedby'] });
 
   return (
-    <div className={cn('form_group', className)}>
-      <label htmlFor={field.id} className="form_check">
-        <input type="checkbox" {...props} {...field.controlProps} />
+    <div className={cn('form_group flex flex-col gap-2', className)}>
+      <label htmlFor={field.id} className="form_check flex cursor-pointer items-center gap-2.5">
+        <input
+          type="checkbox"
+          className="size-[18px] accent-action-primary"
+          {...props}
+          {...field.controlProps}
+        />
         <span>{label}</span>
       </label>
 
       {error && (
-        <small id={field.errorId} className="form_error">
+        <small id={field.errorId} className="form_error text-[13px] text-status-error">
           {error}
         </small>
       )}

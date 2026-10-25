@@ -1,9 +1,9 @@
-import { isRentalRunning, type BookingDetailsView } from '../model';
-import BookingDetailsHeader from './BookingDetailsHeader';
-import BookingHero from './BookingHero';
-import BookingDatesInfo from './BookingDatesInfo';
-import BookingCountdown from './BookingCountdown';
-import BookingSidebar from './BookingSidebar';
+import { isRentalRunning, type BookingDetailsView } from "../model";
+import BookingDetailsHeader from "./BookingDetailsHeader";
+import BookingHero from "./BookingHero";
+import BookingDatesInfo from "./BookingDatesInfo";
+import BookingCountdown from "./BookingCountdown";
+import BookingSidebar from "./BookingSidebar";
 
 interface Props {
   booking: BookingDetailsView;
@@ -11,9 +11,9 @@ interface Props {
 
 export default function BookingDetailsScreen({ booking }: Props) {
   return (
-    <section className="section booking-details-page">
-      <div className="container-tcar">
-        <div className="booking-details-container">
+    <section className="bg-surface-on-background py-8 pb-16">
+      <div className="mx-auto w-full max-w-[1280px] px-4">
+        <div className="mx-auto flex max-w-270 flex-col gap-6">
           <BookingDetailsHeader booking={booking} />
 
           <BookingHero
@@ -29,8 +29,8 @@ export default function BookingDetailsScreen({ booking }: Props) {
             dropoffDateTime={booking.dropoffDateTime}
           />
 
-          <div className="booking-grid">
-            <div className="booking-main">
+          <div className="grid grid-cols-[1fr_340px] items-start gap-6 max-[860px]:grid-cols-1">
+            <div className="flex min-w-0 flex-col gap-6">
               <BookingDatesInfo
                 pickupLocation={booking.pickupLocation}
                 dropoffLocation={booking.dropoffLocation}
@@ -40,9 +40,7 @@ export default function BookingDetailsScreen({ booking }: Props) {
               />
 
               {isRentalRunning(booking.status) && (
-                <BookingCountdown
-                  targetDateTime={booking.dropoffDateTime}
-                />
+                <BookingCountdown targetDateTime={booking.dropoffDateTime} />
               )}
             </div>
 

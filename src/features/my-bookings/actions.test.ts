@@ -66,16 +66,19 @@ describe("booking action validation", () => {
     expect(extendBooking).not.toHaveBeenCalled();
   });
 
-  it("normalizes review text before calling the service", async () => {
+  it("forwards both review ratings to the service", async () => {
     await expect(
-      submitBookingReviewAction("booking-1", { rating: 5, review: " Great  " }),
+      submitBookingReviewAction("booking-1", {
+        showroomRating: 4,
+        driverRating: 5,
+      }),
     ).resolves.toEqual({
       ok: true,
       data: undefined,
     });
     expect(submitReview).toHaveBeenCalledWith("booking-1", {
-      rating: 5,
-      review: "Great",
+      showroomRating: 4,
+      driverRating: 5,
     });
   });
 

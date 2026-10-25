@@ -2,16 +2,16 @@ import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 import { renderWithIntl } from '@/shared/test/render';
-import { AlertModal } from './AlertModal';
+import { AlertDialog } from './AlertDialog';
 
-describe('AlertModal', () => {
+describe('AlertDialog', () => {
   it('renders the account confirmation actions', async () => {
     const onPrimary = vi.fn();
     const onSecondary = vi.fn();
     const user = userEvent.setup();
 
     renderWithIntl(
-      <AlertModal
+      <AlertDialog
         open
         title="Delete account"
         description="This cannot be undone."

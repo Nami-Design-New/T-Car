@@ -1,13 +1,16 @@
-'use client';
+"use client";
 
-import { useEffect } from 'react';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-import { useTranslations } from 'next-intl';
-import { useFieldErrorMessage } from '@/shared/hooks/useErrorMessage';
-import { Button } from '@/shared/ui/Button';
-import { Dialog } from '@/shared/ui/Dialog';
-import { extendBookingSchema, type ExtendBookingFormValues } from '../validation';
+import { useEffect } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { useTranslations } from "next-intl";
+import { useFieldErrorMessage } from "@/shared/hooks/useErrorMessage";
+import { Button } from "@/shared/ui/Button";
+import { Dialog } from "@/shared/ui/Dialog";
+import {
+  extendBookingSchema,
+  type ExtendBookingFormValues,
+} from "../validation";
 
 interface Props {
   open: boolean;
@@ -29,7 +32,7 @@ export default function ExtendDurationModal({
   loading = false,
   error,
 }: Props) {
-  const t = useTranslations('myBookings.extend');
+  const t = useTranslations("myBookings.extend");
   const fieldError = useFieldErrorMessage();
   const {
     handleSubmit,
@@ -39,22 +42,25 @@ export default function ExtendDurationModal({
     formState: { errors },
   } = useForm<ExtendBookingFormValues>({
     resolver: zodResolver(extendBookingSchema),
-    mode: 'onBlur',
-    reValidateMode: 'onChange',
+    mode: "onBlur",
+    reValidateMode: "onChange",
     defaultValues: { days: currentDays },
   });
-  const days = watch('days');
+  const days = watch("days");
 
   useEffect(() => {
     if (open) reset({ days: currentDays });
   }, [currentDays, open, reset]);
 
   const increment = () => {
-    setValue('days', days + 1, { shouldDirty: true, shouldValidate: true });
+    setValue("days", days + 1, { shouldDirty: true, shouldValidate: true });
   };
 
   const decrement = () => {
-    setValue('days', Math.max(1, days - 1), { shouldDirty: true, shouldValidate: true });
+    setValue("days", Math.max(1, days - 1), {
+      shouldDirty: true,
+      shouldValidate: true,
+    });
   };
 
   const subtotal = days * pricePerDay;
@@ -63,32 +69,59 @@ export default function ExtendDurationModal({
   const submit = handleSubmit(({ days: nextDays }) => onConfirm(nextDays));
 
   return (
-    <Dialog open={open} onClose={onClose} placement="bottom-sheet" label={t('title')}>
-      <form className="selection_modal extend_modal" onSubmit={submit} noValidate>
+    <Dialog
+      open={open}
+      onClose={onClose}
+      placement="bottom-sheet"
+      label={t("title")}
+    >
+      <form
+        className="flex w-full max-w-[420px] flex-col rounded-xl bg-surface-elevated p-5 max-[768px]:px-4 max-[768px]:pt-[42px] max-[768px]:pb-[18px]"
+        onSubmit={submit}
+        noValidate
+      >
         {/* Close */}
         {/* Header */}
-        <div className="modal_header">
-          <Dialog.Title>{t('title')}</Dialog.Title>
-          <Dialog.Close className="close_btn" />
+        <div className="flex items-center justify-between">
+          <Dialog.Title className="py-2.5 text-[22px] text-text-primary max-[768px]:text-[17px]">
+            {t("title")}
+          </Dialog.Title>
+          <Dialog.Close />
         </div>
 
         {/* Duration */}
-        <div className="duration_picker">
-          <p className="label">{t('selectDays')}</p>
+        <div className="mb-[18px] rounded-md bg-surface-card-primary px-3.5 pt-4 pb-3 text-center">
+          <p className="mb-2 text-sm font-medium leading-normal text-text-primary">
+            {t("selectDays")}
+          </p>
 
-          <div className="picker_controls">
-            <button type="button" className="plus" onClick={increment} aria-label={t('increase')}>
+          <div className="flex items-center justify-between gap-3 [direction:ltr]">
+            <button
+              type="button"
+              className="grid size-9 shrink-0 place-items-center rounded border-0 bg-surface-elevated text-[21px] text-text-primary"
+              onClick={increment}
+              aria-label={t("increase")}
+            >
               +
             </button>
 
-            <div className="days_display">{days}</div>
+            <div className="flex h-12 flex-1 items-center justify-center text-[30px] font-bold leading-none text-text-primary">
+              {days}
+            </div>
 
-            <button type="button" className="minus" onClick={decrement} aria-label={t('decrease')}>
+            <button
+              type="button"
+              className="grid size-9 shrink-0 place-items-center rounded border-0 bg-surface-elevated text-[21px] text-text-primary"
+              onClick={decrement}
+              aria-label={t("decrease")}
+            >
               −
             </button>
           </div>
 
-          <p className="note">{t('note')}</p>
+          <p className="mt-2 mb-0 text-[11px] leading-normal text-text-primary">
+            {t("note")}
+          </p>
           {errors.days && (
             <p className="form_error" role="alert">
               {fieldError(errors.days.message)}
@@ -97,67 +130,83 @@ export default function ExtendDurationModal({
         </div>
 
         {/* Price Details */}
-        <div className="price_details">
-          <h3 className="details_title">{t('priceDetails')}</h3>
+        <div className="mb-[18px]">
+          <h3 className="mb-2 text-end text-sm font-bold text-text-primary">
+            {t("priceDetails")}
+          </h3>
 
           {/* السعر */}
-          <div className="row">
-            <span className="label">{t('price')}</span>
+          <div className="grid min-h-[34px] grid-cols-[1fr_auto_auto] items-center gap-3 border-b border-dashed border-stroke-light px-2.5 last:border-0">
+            <span className="text-end text-sm text-text-subtle">
+              {t("price")}
+            </span>
 
-            <span className="calculation"></span>
+            <span className="text-center text-sm text-text-subtle"></span>
 
-            <strong>
-              {pricePerDay} {t('currency')}
+            <strong className="whitespace-nowrap text-left text-sm font-medium text-text-primary">
+              {pricePerDay} {t("currency")}
             </strong>
           </div>
 
           {/* المجموع الفرعي */}
-          <div className="row">
-            <span className="label">{t('subtotal')}</span>
+          <div className="grid min-h-[34px] grid-cols-[1fr_auto_auto] items-center gap-3 border-b border-dashed border-stroke-light px-2.5 last:border-0">
+            <span className="text-end text-sm text-text-subtle">
+              {t("subtotal")}
+            </span>
 
-            <span className="calculation">
+            <span className="whitespace-nowrap text-center text-sm text-text-subtle">
               {days} × {pricePerDay}
             </span>
 
-            <strong>
-              {subtotal} {t('currency')}
+            <strong className="whitespace-nowrap text-left text-sm font-medium text-text-primary">
+              {subtotal} {t("currency")}
             </strong>
           </div>
 
           {/* غرامة التأخير */}
-          <div className="row late_fee">
-            <span className="label">{t('lateFee')}</span>
+          <div className="grid min-h-[34px] grid-cols-[1fr_auto_auto] items-center gap-3 border-b border-dashed border-stroke-light px-2.5 text-status-error last:border-0">
+            <span className="text-end text-sm">{t("lateFee")}</span>
 
-            <span className="calculation">{t('oneDay')}</span>
+            <span className="whitespace-nowrap text-center text-sm">
+              {t("oneDay")}
+            </span>
 
-            <strong>0 {t('currency')}</strong>
+            <strong className="whitespace-nowrap text-left text-sm font-medium">
+              0 {t("currency")}
+            </strong>
           </div>
 
           {/* الضريبة */}
-          <div className="row">
-            <span className="label">{t('vat')}</span>
+          <div className="grid min-h-[34px] grid-cols-[1fr_auto_auto] items-center gap-3 border-b border-dashed border-stroke-light px-2.5 last:border-0">
+            <span className="text-end text-sm text-text-subtle">
+              {t("vat")}
+            </span>
 
-            <span className="calculation">5%</span>
+            <span className="whitespace-nowrap text-center text-sm text-text-subtle">
+              5%
+            </span>
 
-            <strong>
-              {vat} {t('currency')}
+            <strong className="whitespace-nowrap text-left text-sm font-medium text-text-primary">
+              {vat} {t("currency")}
             </strong>
           </div>
 
           {/* الإجمالي */}
-          <div className="row total">
-            <span className="label">{t('total')}</span>
+          <div className="mt-1 grid grid-cols-[1fr_auto_auto] items-center gap-3 border-0 border-t border-dashed border-stroke-light px-2.5 pt-2">
+            <span className="text-end text-sm text-text-subtle">
+              {t("total")}
+            </span>
 
-            <span className="calculation"></span>
+            <span className="text-center text-sm"></span>
 
-            <strong>
-              {total} {t('currency')}
+            <strong className="whitespace-nowrap text-left text-lg font-bold text-action-primary">
+              {total} {t("currency")}
             </strong>
           </div>
         </div>
 
         {error && (
-          <p className="text-danger small mb-2" role="alert">
+          <p className="text-status-error text-sm mb-2" role="alert">
             {error}
           </p>
         )}
@@ -165,10 +214,10 @@ export default function ExtendDurationModal({
         {/* Confirm */}
         <Button
           type="submit"
-          className="confirm_btn"
+          className="h-12 w-full cursor-pointer rounded-sm border-0 bg-action-primary text-sm font-semibold text-white transition hover:opacity-90"
           loading={loading}
         >
-          {loading ? t('extending') : t('confirm')}
+          {loading ? t("extending") : t("confirm")}
         </Button>
       </form>
     </Dialog>

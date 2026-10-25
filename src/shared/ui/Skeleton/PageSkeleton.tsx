@@ -1,7 +1,6 @@
 import { getTranslations } from 'next-intl/server';
 import { cn } from '@/shared/lib/cn';
 import { Skeleton } from './Skeleton';
-import './PageSkeleton.scss';
 
 export interface Props {
   /**
@@ -21,9 +20,14 @@ export async function PageSkeleton({ variant = 'page' }: Props) {
   const t = await getTranslations('states');
 
   const cards = (
-    <div className="page-skeleton__grid">
+    <div
+      className={cn(
+        'mt-10 grid grid-cols-[repeat(auto-fill,minmax(240px,1fr))] gap-6',
+        variant === 'section' && 'mt-6',
+      )}
+    >
       {Array.from({ length: variant === 'page' ? 6 : 3 }, (_, index) => (
-        <div key={index} className="page-skeleton__card">
+        <div key={index} className="flex flex-col gap-4">
           <Skeleton shape="rect" aspectRatio="16/10" />
           <Skeleton width="70%" height={18} />
           <Skeleton width="45%" height={14} />
@@ -34,16 +38,19 @@ export async function PageSkeleton({ variant = 'page' }: Props) {
 
   return (
     <div
-      className={cn('page-skeleton', `page-skeleton--${variant}`, variant === 'page' && 'section')}
+      className={cn(
+        variant === 'page' && 'min-h-[60vh] py-20 max-md:py-12',
+        variant === 'section' && 'p-6',
+      )}
       aria-busy="true"
       aria-live="polite"
     >
-      <span className="visually-hidden">{t('loading')}</span>
+      <span className="sr-only">{t('loading')}</span>
 
       {variant === 'page' ? (
-        <div className="container-tcar">
+        <div className="mx-auto w-full max-w-[1280px] px-4">
           <Skeleton width="40%" height={32} />
-          <Skeleton width="60%" height={16} className="page-skeleton__subtitle" />
+          <Skeleton width="60%" height={16} className="mt-4" />
           {cards}
         </div>
       ) : (

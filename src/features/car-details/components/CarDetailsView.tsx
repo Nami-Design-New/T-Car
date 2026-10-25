@@ -15,10 +15,10 @@ interface Props {
 export default function CarDetailsView({ car }: Props) {
   return (
     <>
-      <section className="section car-details-page">
-        <div className="container-tcar">
-          <div className="car-details-grid">
-            <div className="car-details-main">
+      <section className="py-20 max-md:py-12">
+        <div className="mx-auto w-full max-w-[1280px] px-4">
+          <div className="car-details-grid grid grid-cols-[minmax(0,1fr)_360px] items-start gap-8 max-lg:grid-cols-1">
+            <div className="car-details-main min-w-0">
               <CarGallery image={car.images[0]} alt={`${car.brand} ${car.name}`} />
               <CarQuickInfo car={car} />
               {car.pickupPoint && (
@@ -33,11 +33,13 @@ export default function CarDetailsView({ car }: Props) {
               <InsuranceOptions option={car.insuranceOptions[0]} />
             </div>
 
-            <div className="car-details-side">
+            <div className="car-details-side sticky top-[100px] max-lg:static max-lg:top-auto">
               <CarBookingCard
                 carId={car.id}
                 carName={car.name}
                 carBrand={car.brand}
+                carYear={car.year}
+                showroomLogo={car.showroomLogo}
                 carImage={car.image}
                 showroom={car.showroom}
                 rating={car.rating}

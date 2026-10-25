@@ -1,16 +1,19 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { Controller, useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useTranslations } from 'next-intl';
-import { FiArrowLeft } from 'react-icons/fi';
-import { Button } from '@/shared/ui/Button';
-import { OtpInput } from '@/shared/ui/OtpInput';
-import { useErrorMessage, useFieldErrorMessage } from '@/shared/hooks/useErrorMessage';
-import type { AppError } from '@/shared/lib/errors';
-import { applyFieldErrors } from '@/shared/lib/validation';
-import { OTP_LENGTH, otpCodeSchema, type OtpCodeValues } from '../validation';
+import { useEffect, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useTranslations } from "next-intl";
+import { FiArrowLeft } from "react-icons/fi";
+import { Button } from "@/shared/ui/Button";
+import { OtpInput } from "@/shared/ui/OtpInput";
+import {
+  useErrorMessage,
+  useFieldErrorMessage,
+} from "@/shared/hooks/useErrorMessage";
+import type { AppError } from "@/shared/lib/errors";
+import { applyFieldErrors } from "@/shared/lib/validation";
+import { OTP_LENGTH, otpCodeSchema, type OtpCodeValues } from "../validation";
 
 type Props = {
   phone: string;
@@ -23,7 +26,13 @@ type Props = {
 
 const OTP_RESEND_SECONDS = 30;
 
-export default function OtpForm({ phone, onBack, onVerify, onResend, loading = false }: Props) {
+export default function OtpForm({
+  phone,
+  onBack,
+  onVerify,
+  onResend,
+  loading = false,
+}: Props) {
   const t = useTranslations();
   const errorMessage = useErrorMessage();
   const fieldError = useFieldErrorMessage();
@@ -40,9 +49,9 @@ export default function OtpForm({ phone, onBack, onVerify, onResend, loading = f
     formState: { errors },
   } = useForm<OtpCodeValues>({
     resolver: zodResolver(otpCodeSchema),
-    mode: 'onBlur',
-    reValidateMode: 'onChange',
-    defaultValues: { code: '' },
+    mode: "onBlur",
+    reValidateMode: "onChange",
+    defaultValues: { code: "" },
   });
 
   useEffect(() => {
@@ -52,13 +61,16 @@ export default function OtpForm({ phone, onBack, onVerify, onResend, loading = f
   }, [timer]);
 
   const showServerError = (error: AppError) => {
-    if (!applyFieldErrors(error, setError, ['code'])) {
-      setError('root.server', { type: error.kind, message: errorMessage(error) });
+    if (!applyFieldErrors(error, setError, ["code"])) {
+      setError("root.server", {
+        type: error.kind,
+        message: errorMessage(error),
+      });
     }
   };
 
   const handleResend = async () => {
-    resetField('code');
+    resetField("code");
     clearErrors();
     setTimer(OTP_RESEND_SECONDS);
     const error = await onResend?.();
@@ -71,28 +83,38 @@ export default function OtpForm({ phone, onBack, onVerify, onResend, loading = f
     if (error) showServerError(error);
   });
 
-  const isComplete = watch('code').length === OTP_LENGTH;
+  const isComplete = watch("code").length === OTP_LENGTH;
   const formError = errors.root?.server?.message;
 
   return (
-    <form className="otp_form" onSubmit={onSubmit} noValidate>
-      <div className="otp_header">
+    <form
+      className="relative flex w-full flex-col text-center"
+      onSubmit={onSubmit}
+      noValidate
+    >
+      <div className="mb-6 flex items-center gap-2">
         <button
           type="button"
-          className="back_btn"
+          className="grid size-9 shrink-0 place-items-center rounded-md border border-stroke-light text-text-primary transition hover:bg-surface-on-background focus-visible:outline-2 focus-visible:outline-action-primary"
           onClick={onBack}
-          aria-label={t('auth.otp.backLabel')}
+          aria-label={t("auth.otp.backLabel")}
         >
-          <FiArrowLeft className="mirror-in-rtl" aria-hidden="true" />
+          <FiArrowLeft className="rtl:scale-x-[-1]" aria-hidden="true" />
         </button>
 
-        <h2>{t('auth.otp.title')}</h2>
+        <h2 className="mb-0 text-xl font-extrabold leading-relaxed text-text-primary">
+          {t("auth.otp.title")}
+        </h2>
       </div>
       <div className="">
-        <h3>{t('auth.otp.subtitle')}</h3>
-        <p className="otp_description">{t('auth.otp.description', { phone })}</p>
+        <h3 className="text-start text-2xl font-semibold text-text-primary">
+          {t("auth.otp.subtitle")}
+        </h3>
+        <p className="mb-4 text-start text-base leading-relaxed text-text-subtle">
+          {t("auth.otp.description", { phone })}
+        </p>
       </div>
-      <div className={'d-flex align-items-center justify-content-center'}>
+      <div className={"flex items-center justify-center"}>
         <Controller
           name="code"
           control={control}
@@ -102,27 +124,41 @@ export default function OtpForm({ phone, onBack, onVerify, onResend, loading = f
               onChange={field.onChange}
               length={OTP_LENGTH}
               autoFocus
-              ariaLabel={t('auth.otp.codeLabel')}
-              digitAriaLabel={(position, total) => t('auth.otp.digitLabel', { position, total })}
+              ariaLabel={t("auth.otp.codeLabel")}
+              digitAriaLabel={(position, total) =>
+                t("auth.otp.digitLabel", { position, total })
+              }
               error={fieldError(errors.code?.message)}
             />
           )}
         />
       </div>
 
-      <div className="otp_resend_status" aria-live="polite">
-        <p className="timer">{t('auth.otp.resendIn')}</p>
+      <div
+        className="mb-3 flex min-h-11 items-center justify-between"
+        aria-live="polite"
+      >
+        <p className="m-0 text-sm leading-relaxed text-action-primary">
+          {t("auth.otp.resendIn")}
+        </p>
         {timer > 0 ? (
-          <span className="timer"> 00:{timer} </span>
+          <span className="text-sm leading-relaxed text-action-primary">
+            {" "}
+            00:{timer}{" "}
+          </span>
         ) : (
-          <button type="button" className="resend" onClick={handleResend}>
-            {t('auth.otp.resend')}
+          <button
+            type="button"
+            className="cursor-pointer border-0 bg-transparent text-xs font-bold text-text-primary underline"
+            onClick={handleResend}
+          >
+            {t("auth.otp.resend")}
           </button>
         )}
       </div>
 
       {formError && (
-        <p className="text-danger small mt-2 mb-0" role="alert">
+        <p className="text-status-error text-sm mt-2 mb-0" role="alert">
           {formError}
         </p>
       )}
@@ -130,11 +166,11 @@ export default function OtpForm({ phone, onBack, onVerify, onResend, loading = f
       <Button
         type="submit"
         size="lg"
-        className="w-100"
+        className="w-full"
         disabled={!isComplete}
         loading={loading}
       >
-        {t('auth.otp.verify')}
+        {t("auth.otp.verify")}
       </Button>
     </form>
   );

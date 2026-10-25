@@ -2,7 +2,6 @@
 import type { Ref } from 'react';
 import { useTranslations } from 'next-intl';
 import { useFieldA11y } from './useFieldA11y';
-import './Form.scss';
 interface Option {
   value: string;
   label: string;
@@ -20,12 +19,16 @@ export function FormSelect({ id, label, options, required, error, ...props }: Fo
   const t = useTranslations('common');
   const field = useFieldA11y({ id, error, required, describedBy: props['aria-describedby'] });
   return (
-    <div className="form_group">
-      <label htmlFor={id} className="form_label">
+    <div className="form_group flex flex-col gap-2">
+      <label htmlFor={id} className="form_label text-sm font-semibold text-text-primary">
         {label}
-        {required && <span aria-hidden="true">*</span>}
+        {required && <span className="ms-1 text-status-error" aria-hidden="true">*</span>}
       </label>
-      <select className="form_select" {...props} {...field.controlProps}>
+      <select
+        className="form_select w-full cursor-pointer appearance-none rounded-md border border-stroke-light bg-surface-elevated px-4 py-3.5 text-[15px] transition duration-200 focus:border-action-primary focus:outline-none focus:ring-4 focus:ring-action-primary/15"
+        {...props}
+        {...field.controlProps}
+      >
         <option value="">{t('selectPlaceholder')}</option>
         {options.map((option) => (
           <option key={option.value} value={option.value}>
@@ -34,7 +37,7 @@ export function FormSelect({ id, label, options, required, error, ...props }: Fo
         ))}
       </select>
       {error && (
-        <span id={field.errorId} className="form_error">
+        <span id={field.errorId} className="form_error text-[13px] text-status-error">
           {error}
         </span>
       )}

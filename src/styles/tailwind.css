@@ -1,0 +1,290 @@
+@import 'tailwindcss/theme.css';
+@import 'tailwindcss/utilities.css';
+
+/* Tailwind is the application styling layer. Preflight stays disabled. */
+@theme {
+  --color-neutral-100: #f8f8f8;
+  --color-neutral-200: #e9e9e9;
+  --color-neutral-300: #d6d6d6;
+  --color-neutral-400: #969696;
+  --color-neutral-500: #737373;
+  --color-neutral-600: #545454;
+
+  --color-primary-50: #f3f8ff;
+  --color-primary-100: #e6f0fe;
+  --color-primary-200: #cfe3fe;
+  --color-primary-400: #5195f4;
+  --color-primary-500: #1f7ffa;
+
+  --color-secondary-50: #f0f8ee;
+  --color-secondary-100: #e2f3df;
+  --color-secondary-200: #c7e9c0;
+
+  --color-success-50: #f0fdf4;
+  --color-success-100: #dcfce7;
+  --color-success-500: #22c55e;
+  --color-success-600: #16a34a;
+  --color-success-700: #15803d;
+
+  --color-warning-50: #fffbeb;
+  --color-warning-100: #fef3c7;
+  --color-warning-500: #f59e0b;
+  --color-warning-600: #d97706;
+  --color-warning-700: #b45309;
+
+  --color-error-50: #fff1f2;
+  --color-error-100: #ffe4e6;
+  --color-error-500: #ef4444;
+  --color-error-600: #dc2626;
+  --color-error-700: #b91c1c;
+
+  --color-brand: #0a2540;
+  --color-gauge-amber: #e0993a;
+  --color-white: #ffffff;
+  --color-black: #1e1e1e;
+
+  --color-surface-background: #ffffff;
+  --color-surface-on-background: #f8f8f8;
+  --color-surface-card-primary: #f3f8ff;
+  --color-surface-disabled: #969696;
+  --color-surface-elevated: #ffffff;
+  --color-text-primary: #1e1e1e;
+  --color-text-disabled: #545454;
+  --color-text-subtle: #737373;
+  --color-text-placeholder: #969696;
+  --color-text-option: #d6d6d6;
+  --color-text-on-action: #ffffff;
+  --color-text-on-brand: #ffffff;
+  --color-action-primary: #1f7ffa;
+  --color-action-secondary: #c7e9c0;
+  --color-status-success: #16a34a;
+  --color-status-error: #dc2626;
+  --color-status-error-background: #fff1f2;
+  --color-status-warning: #d97706;
+  --color-stroke-light: #e9e9e9;
+  --color-stroke-heavy: #d6d6d6;
+  --color-shadow: #1e1e1e;
+
+  --spacing-ds-1: 2px;
+  --spacing-ds-2: 4px;
+  --spacing-ds-3: 8px;
+  --spacing-ds-4: 12px;
+  --spacing-ds-5: 16px;
+  --spacing-ds-6: 20px;
+  --spacing-ds-7: 24px;
+  --spacing-ds-8: 32px;
+  --spacing-ds-9: 40px;
+  --spacing-ds-10: 48px;
+  --spacing-ds-11: 64px;
+  --spacing-ds-12: 80px;
+
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-2xl: 32px;
+
+  --font-expo: 'Expo Arabic', sans-serif;
+  --breakpoint-sm: 576px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 992px;
+  --breakpoint-xl: 1200px;
+}
+
+@layer base {
+  :root {
+    --font-primary: var(--font-expo);
+  }
+
+  html,
+  body {
+    padding: 0;
+    margin: 0;
+    font-family: var(--font-primary), sans-serif;
+    color: var(--color-text-primary);
+    background-color: var(--color-surface-background);
+    scroll-behavior: smooth;
+  }
+
+  body:dir(rtl) {
+    font-family: var(--font-expo), sans-serif;
+  }
+
+  *,
+  ::before,
+  ::after {
+    box-sizing: border-box;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  button {
+    font-family: inherit;
+  }
+
+  img {
+    display: block;
+    max-width: 100%;
+  }
+}
+
+@layer components {
+  @keyframes popup {
+    from { opacity: 0; transform: translateY(30px) scale(0.96); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  @keyframes nfSwing {
+    0%, 100% { transform: rotate(-4deg); }
+    50% { transform: rotate(4deg); }
+  }
+
+  @keyframes nfDrift {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+  }
+
+  @keyframes nfFloat {
+    0%, 100% { transform: translateY(0); opacity: 0.6; }
+    50% { transform: translateY(-8px); opacity: 1; }
+  }
+
+  @keyframes btn-spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  @keyframes btn-scale {
+    0%,
+    100% {
+      transform: scale(1);
+    }
+
+    50% {
+      transform: scale(0.95);
+    }
+  }
+
+  @keyframes dialog-fade-in {
+    from {
+      opacity: 0;
+    }
+  }
+
+  @keyframes dialog-pop-in {
+    from {
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(0.95);
+    }
+  }
+
+  @keyframes dialog-sheet-in {
+    from {
+      transform: translateY(100%);
+    }
+  }
+
+  @keyframes menu-in {
+    from {
+      opacity: 0;
+      transform: translateY(-4px);
+    }
+  }
+
+  @keyframes accordion-open {
+    from {
+      height: 0;
+    }
+
+    to {
+      height: var(--radix-accordion-content-height);
+    }
+  }
+
+  @keyframes accordion-close {
+    from {
+      height: var(--radix-accordion-content-height);
+    }
+
+    to {
+      height: 0;
+    }
+  }
+
+  @keyframes carMove {
+    from {
+      transform: translateX(calc(-50% - 100vw));
+    }
+
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
+  @keyframes carMoveInline {
+    from {
+      transform: translateX(calc(-50% - 300px));
+    }
+
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
+  @keyframes skeleton-shimmer {
+    from {
+      background-position: 200% 0;
+    }
+
+    to {
+      background-position: -200% 0;
+    }
+  }
+
+  @keyframes hero-image-drift {
+    from {
+      transform: scale(1.02);
+    }
+
+    to {
+      transform: scale(1.08);
+    }
+  }
+
+  @keyframes hero-content-in {
+    from {
+      opacity: 0;
+      transform: translateY(22px);
+    }
+  }
+
+  @keyframes hero-filter-in {
+    from {
+      opacity: 0;
+      transform: translate(-50%, 24px);
+    }
+  }
+
+  @keyframes hero-drawer-fade-in {
+    from {
+      opacity: 0;
+    }
+  }
+
+  @keyframes hero-drawer-slide-in {
+    from {
+      transform: translateX(100%);
+    }
+  }
+
+  @keyframes hero-drawer-slide-in-rtl {
+    from {
+      transform: translateX(-100%);
+    }
+  }
+}

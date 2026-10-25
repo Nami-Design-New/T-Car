@@ -4,15 +4,14 @@
   "private": true,
   "description": "T-Car is a modern car rental platform that allows users to browse and rent the latest car models for business trips, family vacations, and personal transportation.",
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "check:css": "node scripts/check-no-css.mjs",
-    "check": "npm run check:css && npm run typecheck && npm run lint && npm run test",
+    "check": "npm run typecheck && npm run lint && npm run test",
     "format": "prettier --write"
   },
   "dependencies": {
@@ -25,7 +24,8 @@
     "@radix-ui/react-slot": "1.3.3",
     "@radix-ui/react-tabs": "1.1.21",
     "@react-google-maps/api": "^2.20.8",
-    "bootstrap": "^5.3.8",
+    "@tailwindcss/postcss": "4.3",
+    "clsx": "^2.1.1",
     "lottie-react": "^2.4.1",
     "next": "15.0.8",
     "next-auth": "5.0.0-beta.32",
@@ -37,9 +37,9 @@
     "react-icons": "^5.3.0",
     "react-phone-input-2": "^2.15.1",
     "react-phone-number-input": "^3.4.17",
-    "sass": "1.105.0",
     "server-only": "^0.0.1",
     "swiper": "^14.0.2",
+    "tailwindcss": "4.3",
     "zod": "^4.6.7"
   },
   "devDependencies": {
@@ -58,5 +58,8 @@
     "prettier": "^3.3.3",
     "typescript": "^5.6.2",
     "vitest": "5.0.2"
+  },
+  "allowScripts": {
+    "@parcel/watcher@2.6.0": true
   }
 }

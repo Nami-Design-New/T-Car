@@ -5,6 +5,10 @@ import { renderWithIntl } from "@/shared/test/render";
 import type { BookingDetails } from "../model";
 import BookingConfirmModal from "./BookingConfirmModal";
 
+vi.mock("@/i18n/navigation", () => ({
+  useRouter: () => ({ back: vi.fn() }),
+}));
+
 function booking(): BookingDetails {
   const startDate = new Date();
   startDate.setDate(startDate.getDate() + 1);
@@ -34,6 +38,8 @@ function renderModal() {
       onContinue={onContinue}
       carName="Creta"
       carBrand="Hyundai"
+      carYear={2024}
+      showroomLogo="https://example.com/office-1.webp"
       carImage="https://example.com/creta.jpg"
       showroom="Riyadh branch"
       rating={4.5}
@@ -65,5 +71,18 @@ describe("BookingConfirmModal", () => {
     await user.keyboard("{Enter}");
 
     expect(onContinue).toHaveBeenCalledOnce();
+  });
+
+  it("keeps the confirmation content scrollable inside the dialog body", () => {
+    renderModal();
+
+    const dialog = screen.getByRole("dialog");
+    const form = dialog.querySelector("form");
+    const body = form?.parentElement?.parentElement;
+    const scrollArea = form?.firstElementChild;
+
+    expect(body).toHaveClass("overflow-hidden");
+    expect(form).toHaveClass("min-h-0");
+    expect(scrollArea).toHaveClass("min-h-0", "overflow-y-auto");
   });
 });

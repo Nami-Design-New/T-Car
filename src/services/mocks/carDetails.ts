@@ -3,6 +3,7 @@ import type { CarListing } from '@/features/cars/model';
 import { AppError } from '@/shared/lib/errors';
 import type { CarDetailsApi } from '../carDetails.api';
 import { getCarListingById } from './cars';
+import { MOCK_OFFICES } from './offices';
 const car1 = '/mock/cars/creta.jpg';
 
 /** Everything the details page shows beyond the listing; the same for every mock car. */
@@ -143,6 +144,10 @@ export const carDetailsMock: CarDetailsApi = {
     const listing = getCarListingById(id);
     if (!listing) throw new AppError('not_found', 'cars.notFound');
 
-    return { ...listing, ...MOCK_DETAILS_EXTRAS };
+    return {
+      ...listing,
+      ...MOCK_DETAILS_EXTRAS,
+      showroomLogo: MOCK_OFFICES.find((office) => office.showroom === listing.showroom)?.logo,
+    };
   },
 };

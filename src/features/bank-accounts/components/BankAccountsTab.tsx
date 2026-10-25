@@ -1,14 +1,15 @@
-'use client';
+"use client";
 
-import Image from 'next/image';
-import { useTranslations } from 'next-intl';
-import { PiBank } from 'react-icons/pi';
-import type { BankAccount } from '../model';
-import { Loader } from '@/shared/ui/Loader';
-import { EmptyState } from '@/shared/ui/EmptyState';
-import { ErrorState } from '@/shared/ui/ErrorState';
+import Image from "next/image";
+import { useTranslations } from "next-intl";
+import { PiBank } from "react-icons/pi";
+import type { BankAccount } from "../model";
+import { Loader } from "@/shared/ui/Loader";
+import { EmptyState } from "@/shared/ui/EmptyState";
+import { ErrorState } from "@/shared/ui/ErrorState";
 
-import { ICONS } from '@/shared/config/assets';
+import { ICONS } from "@/shared/config/assets";
+import { Button } from "@/shared/ui/Button";
 const deleteIcon = ICONS.bankDelete;
 const editIcon = ICONS.bankEdit;
 
@@ -32,10 +33,10 @@ export default function BankAccountsTab({
   onEdit,
   onDelete,
 }: Props) {
-  const t = useTranslations('bankAccounts');
+  const t = useTranslations("bankAccounts");
   if (loading) {
     return (
-      <div className="account-panel">
+      <div className="rounded-xl border border-stroke-light bg-surface-elevated p-6">
         <Loader fullScreen={false} />
       </div>
     );
@@ -43,59 +44,84 @@ export default function BankAccountsTab({
 
   if (error) {
     return (
-      <div className="account-panel bank_accounts_panel">
-        <h3 className="bank_accounts_title">{t('title')}</h3>
+      <div className=" flex flex-col gap-5 rounded-xl border border-stroke-light bg-surface-elevated p-6">
+        <h3 className=" m-0 text-base font-semibold leading-5.75 text-text-primary">
+          {t("title")}
+        </h3>
         <ErrorState error={error} onRetry={onRetry} size="section" />
       </div>
     );
   }
 
   return (
-    <div className="account-panel bank_accounts_panel">
-      <h3 className="bank_accounts_title">{t('title')}</h3>
+    <div className=" flex flex-col gap-5 rounded-xl border border-stroke-light bg-surface-elevated p-6">
+      <h3 className=" m-0 text-base font-semibold leading-5.75 text-text-primary">
+        {t("title")}
+      </h3>
 
       {accounts.length === 0 ? (
-        <EmptyState title={t('title')} size="section" />
+        <EmptyState title={t("title")} size="section" />
       ) : (
-        <ul className="bank_accounts_list">
+        <ul className=" m-0 flex list-none flex-col gap-3 p-0">
           {accounts.map((account) => (
-            <li key={account.id} className="bank_account_card">
-              <div className="bank_account_info">
-                <div className="bank_account_bank">
+            <li
+              key={account.id}
+              className=" flex  items-center gap-3 rounded-md border border-dashed border-stroke-light bg-surface-on-background p-4"
+            >
+              <div className=" flex min-w-0 flex-1 flex-col items-start gap-3">
+                <div className=" flex items-center gap-2 text-xs font-semibold leading-4.25 text-text-primary">
                   {account.logo ? (
                     <Image
                       src={account.logo}
                       alt=""
                       width={45}
                       height={20}
-                      className="bank_account_logo"
+                      className="bank_account_logo object-cover"
                     />
                   ) : (
-                    <PiBank className="bank_account_logo_fallback" aria-hidden="true" />
+                    <PiBank
+                      className=" text-xl text-status-success"
+                      aria-hidden="true"
+                    />
                   )}
                   <span>{account.bankName}</span>
                 </div>
-                <span className="bank_account_number" dir="ltr">
+                <span
+                  className=" text-base leading-5.75 text-text-primary"
+                  dir="ltr"
+                >
                   {account.maskedNumber}
                 </span>
               </div>
 
-              <div className="bank_account_actions">
+              <div className="flex shrink-0 items-center gap-2">
                 <button
                   type="button"
-                  className="bank_account_action"
+                  className="grid size-7 shrink-0 place-items-center rounded-md border-0 bg-surface-background p-0 transition-shadow hover:shadow-[0_0_0_1px_var(--color-stroke-light)] focus-visible:shadow-[0_0_0_1px_var(--color-stroke-light)] focus-visible:outline-none"
                   onClick={() => onEdit(account)}
-                  aria-label={t('edit', { bank: account.bankName })}
+                  aria-label={t("edit", { bank: account.bankName })}
                 >
-                  <Image src={editIcon} alt="" width={20} height={20} />
+                  <Image
+                    src={editIcon}
+                    className="size-5 max-w-none shrink-0"
+                    alt=""
+                    width={20}
+                    height={20}
+                  />
                 </button>
                 <button
                   type="button"
-                  className="bank_account_action"
+                  className="grid size-7 shrink-0 place-items-center rounded-md border-0 bg-surface-background p-0 transition-shadow hover:shadow-[0_0_0_1px_var(--color-stroke-light)] focus-visible:shadow-[0_0_0_1px_var(--color-stroke-light)] focus-visible:outline-none"
                   onClick={() => onDelete(account)}
-                  aria-label={t('delete', { bank: account.bankName })}
+                  aria-label={t("delete", { bank: account.bankName })}
                 >
-                  <Image src={deleteIcon} alt="" width={20} height={20} />
+                  <Image
+                    src={deleteIcon}
+                    alt=""
+                    className="size-5 max-w-none shrink-0"
+                    width={20}
+                    height={20}
+                  />
                 </button>
               </div>
             </li>
@@ -103,13 +129,9 @@ export default function BankAccountsTab({
         </ul>
       )}
 
-      <button
-        type="button"
-        className="bank_accounts_add wallet_topup_submit btn w-100"
-        onClick={onAdd}
-      >
-        {t('add')}
-      </button>
+      <Button type="button" className=" w-full" size="lg" onClick={onAdd}>
+        {t("add")}
+      </Button>
     </div>
   );
 }

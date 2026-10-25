@@ -7,6 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { FiUploadCloud } from "react-icons/fi";
 import { Dialog } from "@/shared/ui/Dialog";
 import { Button } from "@/shared/ui/Button";
+import { cn } from "@/shared/lib/cn";
 
 import {
   useErrorMessage,
@@ -80,7 +81,7 @@ export default function LicenseModal({
     <Dialog
       open={open}
       onClose={onClose}
-      className="selection_modal license_modal"
+      className="max-w-[420px] rounded-lg bg-surface-elevated max-[480px]:w-[calc(100%-30px)] max-[480px]:max-w-[350px]"
       closeOnEscape={!loading}
       closeOnBackdrop={!loading}
     >
@@ -89,22 +90,31 @@ export default function LicenseModal({
         <Dialog.Close />
       </Dialog.Header>
 
-      <Dialog.Body className="modal_body">
+      <Dialog.Body className="flex flex-col max-[480px]:p-2.5">
         <form onSubmit={submit} noValidate>
           <button
             type="button"
-            className={`license_upload_area ${file ? "has_file" : ""}`}
+            className={cn(
+              "flex min-h-[100px] w-full cursor-pointer flex-col items-center justify-center gap-1.5 rounded-sm border border-dashed border-stroke-heavy bg-surface-elevated p-[15px] text-text-placeholder transition-colors hover:border-action-primary hover:bg-surface-on-background max-[480px]:min-h-[85px]",
+              file && "border-action-primary text-action-primary",
+            )}
             onClick={() => inputRef.current?.click()}
           >
-            <FiUploadCloud />
+            <FiUploadCloud className="size-[22px] stroke-[1.4]" />
 
             {file ? (
-              <span className="file_name">{file.name}</span>
+              <span className="max-w-[90%] overflow-hidden text-ellipsis whitespace-nowrap text-text-primary">
+                {file.name}
+              </span>
             ) : (
               <>
-                <span>{t("uploadPrompt")}</span>
+                <span className="text-xs max-[480px]:text-[8px]">
+                  {t("uploadPrompt")}
+                </span>
 
-                <small>{t("fileTypes")}</small>
+                <small className="text-[10px] text-text-placeholder max-[480px]:text-[7px]">
+                  {t("fileTypes")}
+                </small>
               </>
             )}
           </button>
@@ -121,8 +131,7 @@ export default function LicenseModal({
 
           <Button
             type="submit"
-            className="mt-2"
-
+            className="mt-3 h-[38px] w-full text-xs max-[480px]:h-[34px] max-[480px]:text-[9px]"
             disabled={!file || loading}
             aria-busy={loading}
           >
@@ -132,7 +141,7 @@ export default function LicenseModal({
           {uploadError && (
             <p
               id="license-file-error"
-              className="text-danger small mt-2 mb-0"
+              className="text-status-error text-sm mt-2 mb-0"
               role="alert"
             >
               {uploadError}

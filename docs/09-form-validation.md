@@ -74,7 +74,7 @@ the authoritative rule.
 | Join-us dialog | No validation implementation yet | It prevents submission and has no action. Add RHF/Zod only with an approved write contract, recipient, retention policy, success state, and field limits. |
 | Daily booking create/edit | RHF + Zod when submitted | Valid ordered, non-past date range; known time slot; bounded notes; pickup/drop-off only after product decides whether they are mandatory. Availability, price, duration, and service area are server rules. |
 | Booking terms and payment | RHF + Zod checkout step | Terms must be true before payment; one known payment method required. Provider eligibility, wallet balance, and payment result are server/provider rules. Never collect card data without an approved provider contract. |
-| Booking review | RHF + Zod | Rating integer 1-5; optional bounded review. Completion/one-review eligibility is server authorization. |
+| Booking review | RHF + Zod | Showroom and driver ratings are integers from 1 to 5. Completion/one-review eligibility is server authorization. |
 | Booking extend/edit/cancel | Schema only for entered values | Date/range follows booking rules. A button-only cancellation has no RHF form; action enforces authorization, cutoff, and fees. |
 | Car/city filters, range, sort, hero search | URL parsing, not RHF | Parse known enums, finite prices, `min <= max`, and bounded trimmed query before navigation and in server queries. Ignore/default invalid state rather than showing field errors. |
 | Rental-search option and map pickers | Controlled selection, not RHF | Selection id must be displayed; coordinates finite. Validate availability and serviceability when the server consumes it. |

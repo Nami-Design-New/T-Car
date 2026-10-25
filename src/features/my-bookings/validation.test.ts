@@ -12,34 +12,37 @@ function fieldErrors(result: {
 }
 
 describe("my-bookings validation", () => {
-  it("normalizes optional review text and accepts a whole-number extension", () => {
+  it("accepts the two ratings and a whole-number extension", () => {
     expect(
-      bookingReviewSchema.parse({ rating: 4, review: "  Helpful showroom  " }),
+      bookingReviewSchema.parse({ showroomRating: 4, driverRating: 5 }),
     ).toEqual({
-      rating: 4,
-      review: "Helpful showroom",
+      showroomRating: 4,
+      driverRating: 5,
     });
     expect(extendBookingSchema.parse({ days: 6 })).toEqual({ days: 6 });
   });
 
-  it("requires a rating and rejects invalid extension days", () => {
+  it("requires both ratings and rejects invalid extension days", () => {
     expect(
-      fieldErrors(bookingReviewSchema.safeParse({ rating: 0, review: "" })),
+      fieldErrors(
+        bookingReviewSchema.safeParse({ showroomRating: 0, driverRating: 0 }),
+      ),
     ).toEqual({
-      rating: "bookings.ratingRequired",
+      showroomRating: "bookings.ratingRequired",
+      driverRating: "bookings.ratingRequired",
     });
     expect(fieldErrors(extendBookingSchema.safeParse({ days: 1.5 }))).toEqual({
       days: "bookings.invalidExtendDays",
     });
   });
 
-  it("bounds review text", () => {
+  it("rejects a rating outside the allowed range", () => {
     expect(
       fieldErrors(
-        bookingReviewSchema.safeParse({ rating: 5, review: "x".repeat(1001) }),
+        bookingReviewSchema.safeParse({ showroomRating: 5, driverRating: 6 }),
       ),
     ).toEqual({
-      review: "bookings.reviewTooLong",
+      driverRating: "bookings.ratingRequired",
     });
   });
 });

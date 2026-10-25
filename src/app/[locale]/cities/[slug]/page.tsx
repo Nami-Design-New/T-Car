@@ -6,7 +6,10 @@ import {
   SortBar,
   parseCarSearchParams,
 } from "@/features/cars";
-import { getCarBrands, getOfficeCarGroupsForCity } from "@/features/cars/queries";
+import {
+  getCarBrands,
+  getOfficeCarGroupsForCity,
+} from "@/features/cars/queries";
 import { CityHero } from "@/features/cities";
 import { getCityDetails } from "@/features/cities/queries";
 
@@ -38,14 +41,14 @@ export default async function CityDetailsPage({ params, searchParams }: Props) {
     <>
       <CityHero city={city} />
 
-      <section className="section city-listings">
-        <div className="container-tcar">
+      <section className="py-20 pt-0 max-md:py-12 max-md:pt-0">
+        <div className="mx-auto w-full max-w-[1280px] px-4">
           {/* <SortBar resultsCount={officeGroups.reduce((count, group) => count + group.cars.length)} value={filters.sort} /> */}
 
-          <div className="city-listings-grid">
+          <div className="city-listings-grid grid grid-cols-[280px_1fr] items-start gap-8 max-lg:grid-cols-1">
             <CarFilters brands={brands} />
 
-            <div className="office-rows">
+            <div className="office-rows flex min-w-0 flex-col gap-3">
               {officeGroups.map(({ office, cars }) => (
                 <CarOfficeRow key={office.id} office={office} cars={cars} />
               ))}

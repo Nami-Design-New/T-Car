@@ -2,87 +2,106 @@ import {
   isActiveBooking,
   type BookingDetailsView,
   type UserBooking,
-} from '@/features/my-bookings/model';
-import { AppError } from '@/shared/lib/errors';
-import type { BookingsApi } from '../bookings.api';
-const car1 = '/mock/cars/creta.jpg';
+} from "@/features/my-bookings/model";
+import { AppError } from "@/shared/lib/errors";
+import type { BookingsApi } from "../bookings.api";
+import { MOCK_OFFICES } from "./offices";
+const car1 = "/mock/cars/creta.jpg";
+
+function getShowroomLogo(showroom: string): string | undefined {
+  return (
+    MOCK_OFFICES.find((office) => office.showroom === showroom)?.logo ??
+    MOCK_OFFICES[0]?.logo
+  );
+}
 
 export const MOCK_BOOKINGS: UserBooking[] = [
   {
-    id: '1',
-    carName: 'ماليبو',
-    carBrand: 'شيفروليه',
+    id: "1",
+    carName: "ماليبو",
+    carBrand: "شيفروليه",
     carImage: car1,
     year: 2022,
     rating: 4.4,
-    showroom: 'معرض القدس',
-    status: 'current',
-    statusLabel: 'حالي',
-    dateLabel: '30 يونيو 2026، 11:46 م',
+    showroom: "معرض القدس",
+    showroomLogo: getShowroomLogo("معرض القدس"),
+    status: "current",
+    statusLabel: "حالي",
+    dateLabel: "30 يونيو 2026، 11:46 م",
   },
   {
-    id: '2',
-    carName: 'ألتيما',
-    carBrand: 'نيسان',
+    id: "2",
+    carName: "ألتيما",
+    carBrand: "نيسان",
     carImage: car1,
     year: 2022,
     rating: 4.5,
-    showroom: 'معرض الخليج',
-    status: 'upcoming',
-    statusLabel: 'قادم',
-    dateLabel: '18 يوليو 2026، 01:15 م',
+    showroom: "معرض الخليج",
+    showroomLogo: getShowroomLogo("معرض الخليج"),
+    status: "upcoming",
+    statusLabel: "قادم",
+    dateLabel: "18 يوليو 2026، 01:15 م",
   },
   {
-    id: '3',
-    carName: 'أكورد',
-    carBrand: 'هوندا',
+    id: "3",
+    carName: "أكورد",
+    carBrand: "هوندا",
     carImage: car1,
     year: 2023,
     rating: 4.6,
-    showroom: 'معرض العروبة',
-    status: 'late',
-    statusLabel: 'متأخر عن التسليم',
-    dateLabel: '30 يونيو 2026، 11:46 م',
+    showroom: "معرض العروبة",
+    showroomLogo: getShowroomLogo("معرض العروبة"),
+    status: "late",
+    statusLabel: "متأخر عن التسليم",
+    dateLabel: "30 يونيو 2026، 11:46 م",
   },
   {
-    id: '4',
-    carName: 'مازدا 6',
-    carBrand: 'مازدا',
+    id: "4",
+    carName: "مازدا 6",
+    carBrand: "مازدا",
     carImage: car1,
     year: 2024,
     rating: 4.8,
-    showroom: 'معرض النخبة',
-    status: 'completed',
-    statusLabel: 'مكتمل',
-    dateLabel: '8 أبريل 2026، 12:00 م',
+    showroom: "معرض النخبة",
+    showroomLogo: getShowroomLogo("معرض النخبة"),
+    status: "completed",
+    statusLabel: "مكتمل",
+    dateLabel: "8 أبريل 2026، 12:00 م",
   },
   {
-    id: '5',
-    carName: 'إمبالا',
-    carBrand: 'شيفروليه',
+    id: "5",
+    carName: "إمبالا",
+    carBrand: "شيفروليه",
     carImage: car1,
     year: 2021,
     rating: 4.2,
-    showroom: 'معرض القدس',
-    status: 'cancelled',
-    statusLabel: 'ملغي',
-    dateLabel: '22 مارس 2026، 07:45 م',
+    showroom: "معرض القدس",
+    showroomLogo: getShowroomLogo("معرض القدس"),
+    status: "cancelled",
+    statusLabel: "ملغي",
+    dateLabel: "22 مارس 2026، 07:45 م",
   },
 ];
 
 /** Dates, prices, and places shared by every mock booking; the car and status come from the list. */
 const MOCK_DETAILS_BASE: Omit<
   BookingDetailsView,
-  'id' | 'carName' | 'carBrand' | 'carImage' | 'showroom' | 'status' | 'statusLabel'
+  | "id"
+  | "carName"
+  | "carBrand"
+  | "carImage"
+  | "showroom"
+  | "status"
+  | "statusLabel"
 > = {
-  reference: '2383',
+  reference: "2383",
   pricePerDay: 500,
   originalPrice: 600,
-  pickupDateTime: '2026-08-13T16:30:00',
-  dropoffDateTime: '2026-08-24T16:30:00',
-  pickupLocation: 'الرياض، شارع الملك عبدالله الدولي المحدودة',
-  dropoffLocation: 'الرياض، أبي بكر الرازي',
-  warrantyNote: 'الضِّمن السيارة تكون جاهزة قبل الموعد',
+  pickupDateTime: "2026-08-13T16:30:00",
+  dropoffDateTime: "2026-08-24T16:30:00",
+  pickupLocation: "الرياض، شارع الملك عبدالله الدولي المحدودة",
+  dropoffLocation: "الرياض، أبي بكر الرازي",
+  warrantyNote: "الضِّمن السيارة تكون جاهزة قبل الموعد",
   pointsUsed: 100,
   days: 5,
   subtotal: 2500,
@@ -99,13 +118,14 @@ const delay = (ms = 300) => new Promise((resolve) => setTimeout(resolve, ms));
 
 function findBooking(id: string): UserBooking {
   const booking = MOCK_BOOKINGS.find((item) => item.id === id);
-  if (!booking) throw new AppError('not_found', 'bookings.notFound');
+  if (!booking) throw new AppError("not_found", "bookings.notFound");
   return booking;
 }
 
 function findActiveBooking(id: string): UserBooking {
   const booking = findBooking(id);
-  if (!isActiveBooking(booking.status)) throw new AppError('conflict', 'bookings.notActive');
+  if (!isActiveBooking(booking.status))
+    throw new AppError("conflict", "bookings.notActive");
   return booking;
 }
 
@@ -121,22 +141,33 @@ export const bookingsMock: BookingsApi = {
     await delay();
     const booking = findBooking(id);
 
-    const { carName, carBrand, carImage, showroom, status, statusLabel } = booking;
-    return { ...MOCK_DETAILS_BASE, id, carName, carBrand, carImage, showroom, status, statusLabel };
+    const { carName, carBrand, carImage, showroom, status, statusLabel } =
+      booking;
+    return {
+      ...MOCK_DETAILS_BASE,
+      id,
+      carName,
+      carBrand,
+      carImage,
+      showroom,
+      status,
+      statusLabel,
+    };
   },
 
   async extendBooking(id, days) {
     await delay(600);
     findActiveBooking(id);
-    if (days > MOCK_MAX_RENTAL_DAYS) throw new AppError('conflict', 'bookings.extendLimit');
+    if (days > MOCK_MAX_RENTAL_DAYS)
+      throw new AppError("conflict", "bookings.extendLimit");
   },
 
   async requestBookingEdit(id, request) {
     await delay(600);
     findActiveBooking(id);
     if (request.endDate <= request.startDate) {
-      throw new AppError('validation', 'bookings.invalidDates', undefined, {
-        endDate: 'bookings.invalidDates',
+      throw new AppError("validation", "bookings.invalidDates", undefined, {
+        endDate: "bookings.invalidDates",
       });
     }
   },
@@ -145,15 +176,29 @@ export const bookingsMock: BookingsApi = {
     await delay(600);
     const booking = findActiveBooking(id);
     // The car is already overdue with the customer, so it has to be returned first.
-    if (booking.status === 'late') throw new AppError('conflict', 'bookings.cancelNotAllowed');
+    if (booking.status === "late")
+      throw new AppError("conflict", "bookings.cancelNotAllowed");
   },
 
-  async submitReview(id, { rating }) {
+  async submitReview(id, { showroomRating, driverRating }) {
     await delay(600);
     findBooking(id);
-    if (!Number.isInteger(rating) || rating < 1 || rating > 5) {
-      throw new AppError('validation', 'bookings.ratingRequired', undefined, {
-        rating: 'bookings.ratingRequired',
+    if (
+      !Number.isInteger(showroomRating) ||
+      showroomRating < 1 ||
+      showroomRating > 5
+    ) {
+      throw new AppError("validation", "bookings.ratingRequired", undefined, {
+        showroomRating: "bookings.ratingRequired",
+      });
+    }
+    if (
+      !Number.isInteger(driverRating) ||
+      driverRating < 1 ||
+      driverRating > 5
+    ) {
+      throw new AppError("validation", "bookings.ratingRequired", undefined, {
+        driverRating: "bookings.ratingRequired",
       });
     }
   },
@@ -163,12 +208,13 @@ export const bookingsMock: BookingsApi = {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     if (details.startDate < today) {
-      throw new AppError('validation', 'booking.startInPast', undefined, {
-        startDate: 'booking.startInPast',
+      throw new AppError("validation", "booking.startInPast", undefined, {
+        startDate: "booking.startInPast",
       });
     }
     // Mock only: the car is booked again after this many days, so the
     // "no longer available" failure can be exercised.
-    if (details.days > MOCK_MAX_RENTAL_DAYS) throw new AppError('conflict', 'booking.carUnavailable');
+    if (details.days > MOCK_MAX_RENTAL_DAYS)
+      throw new AppError("conflict", "booking.carUnavailable");
   },
 };

@@ -30,7 +30,7 @@ describe("BookingDailyModal", () => {
     const dates = futureDateButtons();
     await user.click(dates[0]);
     await user.click(dates[1]);
-    await user.selectOptions(screen.getByRole("combobox"), "10:00 AM");
+    await user.click(screen.getByRole("button", { name: /10:00 AM/ }));
     await user.type(
       screen.getByPlaceholderText("Write any notes or special requests..."),
       " Need help ",
