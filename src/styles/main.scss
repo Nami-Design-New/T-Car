@@ -5,10 +5,6 @@
 @use "legacy/components";
 // Features: one stylesheet per feature (doc 8 step 6 plan, stage 1).
 @use "../features/auth/auth";
-@use "../features/account/account";
-@use "../features/points/points";
-@use "../features/bank-accounts/bank-accounts";
-@use "../features/wallet/wallet";
 @use "../features/my-bookings/my-bookings";
 
 @use "tokens/tokens" as *;

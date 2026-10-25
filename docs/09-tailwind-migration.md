@@ -1,12 +1,14 @@
 # 9. Tailwind CSS 4.3 migration
 
-> **Status (2026-10-24):** Fractions 1–3 complete; feature-surface migration is
-> in progress. `layout`, `home`, `rental-search`, and `cars` are migrated to
-> Tailwind utilities.
+> **Status (2026-10-25):** Fractions 1–3 complete; feature-surface migration is
+> in progress. `layout`, `home`, `rental-search`, `cars`, `cities`,
+> `car-details`, `booking`, `account`, `wallet`, `bank-accounts`, and `points`
+> are migrated to Tailwind utilities. The remaining feature SCSS is in
+> `auth` and `my-bookings`.
 >
-> This document supersedes the SCSS end state in [08-styles-and-scss.md](08-styles-and-scss.md)
-> if the migration is approved. The existing SCSS work remains valid until the
-> first Tailwind fraction is merged locally.
+> This document supersedes the SCSS end state in [08-styles-and-scss.md](08-styles-and-scss.md).
+> Phase 8 records the completed historical SCSS architecture; the active
+> styling target is Tailwind CSS 4.3.
 
 ## 9.1 Objective
 
@@ -201,7 +203,7 @@ layout imports, and `src/styles`.
   with Tailwind utilities or owned component styles.
 - Remove the Bootstrap stylesheet import only after the inventory is empty.
 
-### Fraction 3: Shared UI — in progress (`Button`)
+### Fraction 3: Shared UI — complete
 
 Migrate the shared primitives in small groups, with their tests kept in place:
 
@@ -322,10 +324,10 @@ range controls. The remaining mobile filter-sheet behavior and office-row
 responsive details are now also represented by Tailwind utilities. The
 `cars.scss` feature stylesheet and its import are removed.
 
-Car-details progress: the page grid, sticky booking column, gallery frame, and
-quick-information facts now use Tailwind utilities. The remaining car-details
-sections (pickup information, warranties, addons, insurance, reviews, and
-branches) stay on the next subfraction.
+Car-details progress: the page grid, sticky booking column, gallery frame,
+quick-information facts, pickup information, warranties, addons, insurance,
+reviews, and branches now use Tailwind utilities. The feature has no remaining
+SCSS stylesheet.
 
 Booking progress: `CarBookingCard` now uses Tailwind utilities for its price
 summary, booking CTA, and payment note. `BookingDailyModal` now uses the shared
@@ -337,20 +339,13 @@ scroll area, and payment footer. `PaymentMethodModal` now uses Tailwind
 utilities for payment options, the points switch, and the confirmation action;
 its legacy booking SCSS block was removed.
 
-Account progress: `AccountLayout` and `AccountNav` now use Tailwind utilities
-for the account header, responsive two-column shell, sticky sidebar, mobile
-horizontal navigation, and active navigation state. Their legacy layout and
-sidebar rules were removed from `account.scss`; profile panels and account
-dialogs remain for later fractions.
-
-Account progress update: `AccountLayout`, `AccountNav`, `ProfileTab`,
-`NotificationsTab`, and `LicenseModal` now use Tailwind utilities for the
-account header, responsive shell, navigation, profile actions, notification
-list, license upload state, and account panel surfaces. The account-specific
-profile, notification, and license rules were removed from `account.scss`;
-only the temporary `.account-panel` compatibility rule remains for the
-wallet and bank-account fractions. Phone and verification dialogs continue to
-use the shared auth dialog styles until that shared surface is migrated.
+Account, wallet, bank-accounts, and points progress: account layout,
+navigation, profile, notifications, license, wallet balance/history and amount
+flows, bank-account list and form flows, and the points summary/history now use
+Tailwind utilities. The four feature SCSS files and imports are removed; the
+temporary `.account-panel` compatibility rule is gone. Account phone and
+verification dialogs still use shared auth styles and remain with the auth
+fraction.
 
 Cities progress: the popular-cities rail, city hero, date search card, and
 city listing shells now use Tailwind utilities. The city feature stylesheet
@@ -375,11 +370,11 @@ keyboard interaction, and RTL layout.
 
 Migrate one feature per fraction, in this order:
 
-1. `layout` and `home`;
-2. `rental-search`, `cars`, and `cities`;
-3. `car-details` and `booking`;
-4. `account`, `wallet`, `bank-accounts`, and `points`;
-5. `my-bookings` and `auth`.
+1. `layout` and `home` — complete;
+2. `rental-search`, `cars`, and `cities` — complete;
+3. `car-details` and `booking` — complete;
+4. `account`, `wallet`, `bank-accounts`, and `points` — complete;
+5. `my-bookings` and `auth` — next.
 
 The legacy rules used by each feature move with that feature. A fraction is not
 complete while its old SCSS remains the active source for that surface.

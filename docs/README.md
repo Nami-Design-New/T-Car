@@ -221,79 +221,18 @@ merged or pushed yet.
 | 7. Images and assets | Complete (4 fractions + 2 audit follow-ups) | [Doc 7](07-images-and-assets.md): UI icons, static images, API-bound mock URLs, animations, cleanup, and image-weight reductions are complete (fractions 1–4). `cta.png` and `notlogin.png` are retained under `public/images/unused/`, excluded from the registry, pending design confirmation before deletion. **Audit follow-ups (2026-10-04):** (5) ✅ brand filter options come from `carsApi.listBrands()` via `getCarBrands()` instead of `/mock/` paths in `CarFilters` / `CityFilters`, and a lint rule keeps `/mock/…` literals inside `services/mocks`. (6) ✅ removed the duplicate `src/assets/images/logo.png` and unused `brand/logo.svg` (`src/assets/` is now `fonts/` + `animations/`); the image import ban moved to `no-restricted-syntax` so the per-folder lint overrides no longer drop it, and it now covers every image extension. (7) Not pursued (user decision): `payment/wallet.svg` (62 KB) and `payment/tamara.svg` (259 KB) wrap raster images but stay SVG, not WebP. Step 6 (narrow `remotePatterns`, delete `public/mock/`) waits for the API phase |
 | 8. Styles compiled from SCSS | Done (7 of 7; optional stage 2 not started) | [Doc 8](08-styles-and-scss.md): drift check done (0 rules differ in meaning between `main.scss` and the committed `main.css`). (1) ✅ Sass pinned to exactly `1.105.0` (the lockfile already resolved it; emitted CSS byte-identical). (2) ✅ the layout imports `main.scss`; Next now compiles all styles. Emitted CSS: 0 rules differ in meaning, 60 differ only in notation, 5 legacy prefixes dropped ([doc 8 step 2 results](08-styles-and-scss.md#step-2-results-2026-10-04)); dev style reload ~1.4 s → ~5 s until step 4. (3) ✅ deleted `main.css`, `main.css.map`, `scripts/sync-office-css.mjs`, and the `css:sync-office` script; `.gitignore` ignores `src/styles/**/*.css` and `*.css.map`; the root plans that pointed at the sync script now point at doc 8. Emitted CSS byte-identical to fraction 2. (4) ✅ Bootstrap is its own stylesheet (`styles/vendor/bootstrap.scss`), loaded before `main.scss`; dev reload after a style edit back to ~1.4 s. 114 app rules lost a `.hN` / `.small` copy that Bootstrap's `@extend` used to add; no visible effect found ([doc 8 step 4 results](08-styles-and-scss.md#step-4-results-2026-10-04)). (5) ✅ Bootstrap trimmed to the partials and 14 of 97 utility groups the markup uses: 228 KB → 62 KB (31 → 10 KB gzip), no remaining rule changed ([doc 8 step 5 results](08-styles-and-scss.md#step-5-results-2026-10-04)). Fix: `.visually-hidden` (loading-screen label) was missed by the inventory and is restored. (6.1) ✅ the global layer (reset, layout, buttons, loader, typography) moved from `main.scss` into `styles/base/`; emitted CSS byte-identical ([doc 8 step 6](08-styles-and-scss.md#step-6-progress)). Plan for the rest of step 6 agreed ([doc 8 step 6 plan](08-styles-and-scss.md#step-6-plan-agreed-2026-10-04)): (step 1) ✅ `shared/ui` normalized to `<Name>/<Name>.tsx` + `.scss` + `.test.tsx` + `index.ts` with named exports and props types (doc 4 §4.4); (step 2) ✅ every `shared/ui` component has tests (43 new, 107 in total); (step 3) ✅ `Form`, `DateTimePicker`, `PhoneField`, `Loader`, `SectionTitle` styles live next to the component (computed styles unchanged in headless Chrome); (step 4) ✅ shared legacy dialog styles in `styles/legacy/_dialogs.scss`, styles of the old `src/components/*` in `styles/legacy/_components.scss`; (5) one `features/<x>/<x>.scss` per feature: ✅ `cities`, ✅ `home`, ✅ `layout`, ✅ `rental-search`, ✅ `cars`, ✅ `car-details`, ✅ `booking`, ✅ `auth`, ✅ `account`, ✅ `bank-accounts`, ✅ `wallet`, ✅ `my-bookings`; (6) ✅ `main.scss` is the `@use` lines plus the not-found and legal page styles (kept there by decision), tokens via `@use`, not-found keyframes moved out of `base/_reset`; (7) ✅ `npm run check:css` (first in `npm run check`) fails when git tracks a `.css` under `src/` or any `.css.map`. Optional stage 2 (each feature's components import their own stylesheet) is not started. Component styles from phase 1 already compile from SCSS |
 
-**Tailwind replacement status (2026-10-24):** The SCSS architecture above is
-the historical baseline. The Tailwind 4.3 replacement has migrated the `cars`
-surface and removed `features/cars/cars.scss`; the remaining feature surfaces
-continue in [09-tailwind-migration.md](09-tailwind-migration.md).
+**Tailwind replacement status (2026-10-25):** The SCSS architecture described
+above is the historical baseline. The Tailwind 4.3 migration has completed
+fractions 1–3 and migrated `layout`, `home`, `rental-search`, `cars`, `cities`,
+`car-details`, and `booking`. Their feature SCSS stylesheets have been removed.
+Shared UI primitives have also moved to Tailwind utilities; see
+[09-tailwind-migration.md](09-tailwind-migration.md) for the fraction details.
 
-**Styling follow-up (2026-10-23):** The current phase 8 SCSS architecture is
-complete and remains active while the replacement migration to Tailwind CSS 4.3
-proceeds in [09-tailwind-migration.md](09-tailwind-migration.md). Fractions 1–2
-are complete; Fraction 3 is migrating the shared UI primitives, with `Button`,
-`Dialog`, `ConfirmDialog`, `ResultDialog`, `Menu`, `Accordion`, `RadioCards`,
-`Tabs`, `EmptyState`, `ErrorState`, `Loader`, and `Price` complete.
-The current grouped shared-UI fraction covers `Form`, `PhoneField`, `OtpInput`,
-`DateTimePicker`, `BackButton`, `MapLocationModal`, `Skeleton`, `PageSkeleton`,
-and `SectionTitle`.
-
-The first feature-surface group, `layout` and `home`, is now migrated to
-Tailwind utilities; their feature SCSS files and the home FAQ stylesheet are
-removed. Focused layout/home tests pass.
-
-The next feature fraction, `rental-search`, is now migrated to Tailwind
-utilities for the hero, rental tabs, search bar, and filter drawer. Its feature
-SCSS file is removed; focused rental-search tests are the verification step.
-
-The `cars` fraction is now migrated: `CarCard`, `CarOfficeRow`, and `CarsRail`
-use Tailwind utilities, and `CarsRail` uses Swiper with RTL direction and
-pause-on-hover autoplay. The listing shell, sort bar, filter controls, mobile
-filter sheet, and office-row responsive details are also migrated; `cars.scss`
-and its import are removed.
-
-The cars listing shell and `SortBar` are now also using Tailwind utilities on
-the `/cars` and `/cities/[slug]` routes. The filter panel remains to be migrated.
-
-`FilterPanel`, `CheckboxGroup`, `BrandGrid`, `PriceRangeSlider`, and the
-`CarFilters` brand/type chips now use Tailwind utilities for the cars filter
-shell and controls. Mobile filter-sheet behavior and responsive details are
-also utility-owned; the `cars.scss` feature stylesheet and its import are
-removed.
-
-The cities fraction is now migrated: `PopularCities`, `CityHero`, and both
-city route shells use Tailwind utilities for the rail, cards, hero, date search
-surface, and listing container. `features/cities/cities.scss` and its import
-were removed; Swiper-free rail controls, image behavior, date filtering, and
-RTL direction remain unchanged.
-
-The `car-details` fraction has started with the page grid, sticky booking
-column, gallery frame, and quick-information facts migrated to Tailwind. The
-remaining pickup information, warranties, addons, insurance, reviews, and
-branches sections are planned for the next subfraction.
-
-The booking fraction has started with `CarBookingCard`, `BookingDailyModal`, and
-`BookingConfirmModal` migrated to Tailwind. `BookingDailyModal` uses the shared
-form controls and button, keeps pickup/drop-off fields in a responsive row, and
-owns its calendar, address cards, time selector, and sticky total footer.
-`BookingConfirmModal` uses utility-owned summary, booking details, price
-breakdown, terms, scroll area, and payment footer styles. `PaymentMethodModal`
-also uses utility-owned payment options, points switch, and confirmation action
-styles; its legacy booking SCSS block is removed.
-
-The account fraction has started with `AccountLayout` and `AccountNav` migrated
-to Tailwind. The responsive shell, sticky sidebar, mobile navigation, and
-active navigation state now use utilities; profile panels and account dialogs
-remain for later fractions.
-
-Account progress update: `ProfileTab`, `NotificationsTab`, and `LicenseModal`
-now use Tailwind utilities for profile actions, notifications, and license
-upload. The account stylesheet keeps only a temporary `.account-panel`
-compatibility rule for the later wallet and bank-account fractions; phone and
-verification dialogs still consume the shared auth styles.
-
-The legacy `BookingModal` and `BookingMonthlyModal` follow-up now uses Tailwind
-utilities, Swiper time pickers, the shared `Button`, and utility-owned calendar,
-monthly range, address, notes, and total sections. The booking feature
-stylesheet and legacy monthly picker block were removed.
+The `account`, `wallet`, `bank-accounts`, and `points` surfaces are now
+migrated, and their feature SCSS files and imports are removed. The temporary
+`.account-panel` compatibility rule is gone. Account phone and verification
+dialogs continue to use shared auth styles. The remaining feature SCSS files
+are in `my-bookings` and `auth`; those are the next feature fraction.
 
 ### Features
 

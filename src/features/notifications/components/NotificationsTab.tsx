@@ -10,9 +10,9 @@ export default function NotificationsTab({ notifications }: Props) {
   const t = useTranslations("account.notifications");
 
   return (
-    <div className="account-panel rounded-xl border border-stroke-light bg-surface-elevated p-6">
+    <div className="rounded-xl border border-stroke-light bg-surface-elevated p-6">
       <div className="mb-4 flex items-center justify-between">
-        <h3 className="m-0 text-[1.05rem] font-bold text-text-primary">
+        <h3 className="m-0 text-base font-bold text-text-primary">
           {t("title")}
         </h3>
         <button

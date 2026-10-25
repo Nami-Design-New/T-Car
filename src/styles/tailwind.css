@@ -2,8 +2,8 @@
 @import 'tailwindcss/utilities.css';
 
 /*
- * Fraction 1 only: Tailwind is available alongside the existing SCSS layer.
- * Preflight stays disabled until the global layer is migrated deliberately.
+ * Tailwind utilities now own migrated shared and feature surfaces alongside
+ * the remaining SCSS layer. Preflight stays disabled during the migration.
  */
 @theme {
   --color-neutral-100: #f8f8f8;

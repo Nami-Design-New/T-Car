@@ -98,7 +98,7 @@ export default function PaymentMethodModal({
             className={cn(
               "flex min-h-14.5 items-center justify-between gap-4 rounded-sm border border-stroke-light bg-surface-elevated px-3 py-2 text-start transition-[border-color,background-color] hover:border-action-primary/50",
               method === "wallet" &&
-                "border-action-primary/50 bg-surface-card-primary",
+                "!border-action-primary/50 !bg-surface-card-primary",
             )}
           >
             <span className="flex min-w-0 flex-col gap-1">
@@ -130,7 +130,7 @@ export default function PaymentMethodModal({
               className={cn(
                 "flex min-h-14.5 items-center justify-between gap-4 rounded-sm border border-stroke-light bg-surface-elevated px-3 py-2 text-start transition-[border-color,background-color] hover:border-action-primary/50",
                 method === option.id &&
-                  "border-action-primary/50 bg-surface-card-primary",
+                  "!border-action-primary/50 !bg-surface-card-primary",
               )}
             >
               <span className="flex min-w-0 flex-col gap-1">

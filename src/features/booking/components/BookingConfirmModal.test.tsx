@@ -39,7 +39,7 @@ function renderModal() {
       carName="Creta"
       carBrand="Hyundai"
       carYear={2024}
-      showroomLogo="/mock/offices/office-1.webp"
+      showroomLogo="https://example.com/office-1.webp"
       carImage="https://example.com/creta.jpg"
       showroom="Riyadh branch"
       rating={4.5}
