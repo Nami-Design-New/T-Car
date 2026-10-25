@@ -1,19 +1,21 @@
-import type { BookingDetails } from '@/features/booking';
+import type { BookingDetails } from "@/features/booking";
 
-export type BookingStatus = 'current' | 'upcoming' | 'late' | 'completed' | 'cancelled';
+export type BookingStatus =
+  "current" | "upcoming" | "late" | "completed" | "cancelled";
 
-export type BookingTab = 'active' | 'past';
+export type BookingTab = "active" | "past";
 
 /** Reads ?status= from the URL; anything else means the default, 'active'. */
-export const parseBookingTab = (value: unknown): BookingTab => (value === 'past' ? 'past' : 'active');
+export const parseBookingTab = (value: unknown): BookingTab =>
+  value === "past" ? "past" : "active";
 
 /** The bookings list for a status; 'active' is the default, so it needs no parameter. */
 export const bookingsListPath = (status: BookingTab) =>
-  status === 'active' ? '/account/bookings' : '/account/bookings?status=past';
+  status === "active" ? "/account/bookings" : "/account/bookings?status=past";
 
 /** Which list a booking belongs to, e.g. for the details page's back link. */
 export const bookingTabFor = (status: BookingStatus): BookingTab =>
-  isActiveBooking(status) ? 'active' : 'past';
+  isActiveBooking(status) ? "active" : "past";
 
 export interface UserBooking {
   id: string;
@@ -21,6 +23,7 @@ export interface UserBooking {
   carBrand: string;
   carImage: string;
   showroom: string;
+  showroomLogo?: string;
   year: number;
   rating: number;
   status: BookingStatus;
@@ -60,17 +63,23 @@ export type BookingEditRequest = BookingDetails;
 
 export interface BookingReviewInput {
   /** 1 to 5 */
-  rating: number;
-  review: string;
+  showroomRating: number;
+  driverRating: number;
 }
 
-const ACTIVE_STATUSES: readonly BookingStatus[] = ['current', 'upcoming', 'late'];
+const ACTIVE_STATUSES: readonly BookingStatus[] = [
+  "current",
+  "upcoming",
+  "late",
+];
 
 /** Not finished yet: the customer can still edit, extend, or cancel it. */
-export const isActiveBooking = (status: BookingStatus) => ACTIVE_STATUSES.includes(status);
+export const isActiveBooking = (status: BookingStatus) =>
+  ACTIVE_STATUSES.includes(status);
 
 /** The car is out with the customer, so the return countdown applies. */
-export const isRentalRunning = (status: BookingStatus) => status === 'current' || status === 'late';
+export const isRentalRunning = (status: BookingStatus) =>
+  status === "current" || status === "late";
 
 export function cancellationFee(amount: number, percent: number): number {
   return Math.round((amount * percent) / 100);
@@ -85,8 +94,11 @@ export function toEditRequest(booking: BookingDetailsView): BookingEditRequest {
     startDate,
     endDate,
     time: booking.pickupDateTime.slice(11, 16),
-    notes: '',
-    days: Math.max(1, Math.round((endDate.getTime() - startDate.getTime()) / 86400000)),
+    notes: "",
+    days: Math.max(
+      1,
+      Math.round((endDate.getTime() - startDate.getTime()) / 86400000),
+    ),
     pricePerDay: booking.pricePerDay,
     subtotal: booking.subtotal,
     vat: booking.vat,

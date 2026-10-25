@@ -1,13 +1,14 @@
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
+import { within } from "@testing-library/react";
 import { AppError } from "@/shared/lib/errors";
 import { renderWithIntl } from "@/shared/test/render";
 import { ok } from "@/shared/lib/result";
 import BookingReviewModal from "./BookingReviewModal";
 
 describe("BookingReviewModal", () => {
-  it("submits the selected rating and normalized review text", async () => {
+  it("submits separate showroom and driver ratings", async () => {
     const user = userEvent.setup();
     const onSubmit = vi.fn().mockResolvedValue(ok(undefined));
     const onClose = vi.fn();
@@ -16,21 +17,30 @@ describe("BookingReviewModal", () => {
       <BookingReviewModal onSubmit={onSubmit} onClose={onClose} />,
     );
 
-    await user.click(screen.getByRole("radio", { name: "4 stars" }));
-    await user.type(
-      screen.getByRole("textbox", { name: "Review" }),
-      "  Helpful showroom  ",
+    expect(
+      screen.getByRole("heading", { name: "Rate us" }),
+    ).toBeInTheDocument();
+    expect(screen.queryByRole("textbox")).not.toBeInTheDocument();
+    await user.click(
+      within(
+        screen.getByRole("radiogroup", { name: "Showroom rating" }),
+      ).getByRole("radio", { name: "4 stars" }),
+    );
+    await user.click(
+      within(
+        screen.getByRole("radiogroup", { name: "Driver rating" }),
+      ).getByRole("radio", { name: "5 stars" }),
     );
     await user.click(screen.getByRole("button", { name: "Send" }));
 
     expect(onSubmit).toHaveBeenCalledWith({
-      rating: 4,
-      review: "Helpful showroom",
+      showroomRating: 4,
+      driverRating: 5,
     });
     expect(onClose).toHaveBeenCalledOnce();
   });
 
-  it("keeps the dialog open and the entered text after a failed submit", async () => {
+  it("keeps the dialog open and the selected ratings after a failed submit", async () => {
     const user = userEvent.setup();
     const onSubmit = vi.fn().mockResolvedValue({
       ok: false,
@@ -41,14 +51,30 @@ describe("BookingReviewModal", () => {
       <BookingReviewModal onSubmit={onSubmit} onClose={vi.fn()} />,
     );
 
-    await user.click(screen.getByRole("radio", { name: "5 stars" }));
-    const textbox = screen.getByRole("textbox", { name: "Review" });
-    await user.type(textbox, "Still here");
+    await user.click(
+      within(
+        screen.getByRole("radiogroup", { name: "Showroom rating" }),
+      ).getByRole("radio", { name: "5 stars" }),
+    );
+    await user.click(
+      within(
+        screen.getByRole("radiogroup", { name: "Driver rating" }),
+      ).getByRole("radio", { name: "4 stars" }),
+    );
     await user.click(screen.getByRole("button", { name: "Send" }));
 
     expect(screen.getByRole("alert")).toHaveTextContent(
       "This booking is no longer active.",
     );
-    expect(textbox).toHaveValue("Still here");
+    expect(
+      within(
+        screen.getByRole("radiogroup", { name: "Showroom rating" }),
+      ).getByRole("radio", { name: "5 stars" }),
+    ).toHaveAttribute("aria-checked", "true");
+    expect(
+      within(
+        screen.getByRole("radiogroup", { name: "Driver rating" }),
+      ).getByRole("radio", { name: "4 stars" }),
+    ).toHaveAttribute("aria-checked", "true");
   });
 });

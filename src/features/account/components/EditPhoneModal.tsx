@@ -1,17 +1,20 @@
-'use client';
+"use client";
 
-import { useEffect } from 'react';
-import { Controller, useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useTranslations } from 'next-intl';
+import { useEffect } from "react";
+import { Controller, useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useTranslations } from "next-intl";
 
-import { PhoneField } from '@/shared/ui/PhoneField';
-import { Dialog } from '@/shared/ui/Dialog';
-import { Button } from '@/shared/ui/Button';
-import { useErrorMessage, useFieldErrorMessage } from '@/shared/hooks/useErrorMessage';
-import type { AppError } from '@/shared/lib/errors';
-import { applyFieldErrors } from '@/shared/lib/validation';
-import { phoneChangeSchema, type PhoneChangeValues } from '../validation';
+import { PhoneField } from "@/shared/ui/PhoneField";
+import { Dialog } from "@/shared/ui/Dialog";
+import { Button } from "@/shared/ui/Button";
+import {
+  useErrorMessage,
+  useFieldErrorMessage,
+} from "@/shared/hooks/useErrorMessage";
+import type { AppError } from "@/shared/lib/errors";
+import { applyFieldErrors } from "@/shared/lib/validation";
+import { phoneChangeSchema, type PhoneChangeValues } from "../validation";
 
 interface Props {
   open: boolean;
@@ -25,11 +28,11 @@ interface Props {
 export default function EditPhoneModal({
   open,
   onClose,
-  currentPhone = '',
+  currentPhone = "",
   onSendCode,
   loading = false,
 }: Props) {
-  const t = useTranslations('account.editPhone');
+  const t = useTranslations("account.editPhone");
   const errorMessage = useErrorMessage();
   const fieldError = useFieldErrorMessage();
 
@@ -41,8 +44,8 @@ export default function EditPhoneModal({
     formState: { errors },
   } = useForm<PhoneChangeValues>({
     resolver: zodResolver(phoneChangeSchema),
-    mode: 'onBlur',
-    reValidateMode: 'onChange',
+    mode: "onBlur",
+    reValidateMode: "onChange",
     defaultValues: { phone: currentPhone },
   });
 
@@ -55,8 +58,11 @@ export default function EditPhoneModal({
   const handleSend = handleSubmit(async ({ phone }) => {
     if (loading) return;
     const error = await onSendCode(phone);
-    if (error && !applyFieldErrors(error, setError, ['phone'])) {
-      setError('root.server', { type: error.kind, message: errorMessage(error) });
+    if (error && !applyFieldErrors(error, setError, ["phone"])) {
+      setError("root.server", {
+        type: error.kind,
+        message: errorMessage(error),
+      });
     }
   });
 
@@ -66,32 +72,38 @@ export default function EditPhoneModal({
     <Dialog
       open={open}
       onClose={onClose}
-      className="auth_modal_wrapper"
+      className="overflow-hidden rounded-xl border-0 p-0"
       closeOnEscape={!loading}
       closeOnBackdrop={!loading}
     >
-      <Dialog.Header className="auth_modal_header">
+      <Dialog.Header className="border-0 px-10 pt-3">
         <Dialog.Close />
       </Dialog.Header>
 
       {/* Same layout as the sign-in step (features/auth LoginForm). */}
-      <Dialog.Body className="auth_modal">
-        <form className="login_form" onSubmit={handleSend} noValidate>
-          <Dialog.Title>{t('title')}</Dialog.Title>
-          <p>{t('description')}</p>
+      <Dialog.Body className="px-10 pt-0 pb-10">
+        <form
+          className="flex w-full flex-col items-center"
+          onSubmit={handleSend}
+          noValidate
+        >
+          <Dialog.Title className="text-text-primary">
+            {t("title")}
+          </Dialog.Title>
+          <p className="mb-7 text-text-subtle">{t("description")}</p>
 
-          <div className="phone_wrapper">
+          <div className="mb-6 w-full">
             <Controller
               name="phone"
               control={control}
               render={({ field }) => (
                 <PhoneField
-                  label={t('phone')}
+                  label={t("phone")}
                   value={field.value}
                   onChange={field.onChange}
                   onBlur={field.onBlur}
-                  searchPlaceholder={t('countrySearchPlaceholder')}
-                  inputAriaLabel={t('phone')}
+                  searchPlaceholder={t("countrySearchPlaceholder")}
+                  inputAriaLabel={t("phone")}
                   required
                   error={fieldError(errors.phone?.message)}
                 />
@@ -106,7 +118,7 @@ export default function EditPhoneModal({
           )}
 
           <Button type="submit" className="w-full" size="lg" loading={loading}>
-            {t('sendCode')}
+            {t("sendCode")}
           </Button>
         </form>
       </Dialog.Body>

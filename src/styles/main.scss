@@ -4,8 +4,6 @@
 @use "legacy/dialogs";
 @use "legacy/components";
 // Features: one stylesheet per feature (doc 8 step 6 plan, stage 1).
-@use "../features/auth/auth";
-@use "../features/my-bookings/my-bookings";
 
 @use "tokens/tokens" as *;
 // App pages without a feature of their own stay here (decided 2026-10-05): the not-found page

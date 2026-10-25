@@ -1,18 +1,18 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useTranslations } from 'next-intl';
+import { useState } from "react";
+import { useTranslations } from "next-intl";
 
-import { useRouter } from '@/i18n/navigation';
-import type { AppError } from '@/shared/lib/errors';
-import { fromActionResult } from '@/shared/lib/result';
-import { Dialog } from '@/shared/ui/Dialog';
-import { ResultDialog } from '@/shared/ui/ResultDialog';
-import { registerAction, requestOtpAction, verifyOtpAction } from '../actions';
-import type { RegisterFormValues } from '../validation';
-import LoginForm from './LoginForm';
-import OtpForm from './OtpForm';
-import RegisterForm from './RegisterForm';
+import { useRouter } from "@/i18n/navigation";
+import type { AppError } from "@/shared/lib/errors";
+import { fromActionResult } from "@/shared/lib/result";
+import { Dialog } from "@/shared/ui/Dialog";
+import { ResultDialog } from "@/shared/ui/ResultDialog";
+import { registerAction, requestOtpAction, verifyOtpAction } from "../actions";
+import type { RegisterFormValues } from "../validation";
+import LoginForm from "./LoginForm";
+import OtpForm from "./OtpForm";
+import RegisterForm from "./RegisterForm";
 
 type Props = {
   show: boolean;
@@ -21,20 +21,20 @@ type Props = {
   next?: string;
 };
 
-type Step = 'login' | 'otp' | 'register' | 'success';
+type Step = "login" | "otp" | "register" | "success";
 
 export default function AuthModal({ show, onHide, next }: Props) {
-  const t = useTranslations('authSuccess');
+  const t = useTranslations("authSuccess");
   const router = useRouter();
 
-  const [step, setStep] = useState<Step>('login');
-  const [phone, setPhone] = useState('');
-  const [code, setCode] = useState('');
+  const [step, setStep] = useState<Step>("login");
+  const [phone, setPhone] = useState("");
+  const [code, setCode] = useState("");
   const [pending, setPending] = useState(false);
 
   const reset = () => {
-    setStep('login');
-    setCode('');
+    setStep("login");
+    setCode("");
   };
 
   const close = () => {
@@ -66,7 +66,7 @@ export default function AuthModal({ show, onHide, next }: Props) {
       const result = fromActionResult(await requestOtpAction(value));
       if (!result.ok) return result.error;
       setPhone(value);
-      setStep('otp');
+      setStep("otp");
     });
 
   const handleResend = () =>
@@ -80,48 +80,50 @@ export default function AuthModal({ show, onHide, next }: Props) {
       const result = fromActionResult(await verifyOtpAction(phone, value));
       if (!result.ok) return result.error;
       setCode(value);
-      if (result.data.registrationRequired) setStep('register');
+      if (result.data.registrationRequired) setStep("register");
       else finish();
     });
 
   const handleRegister = (values: RegisterFormValues) =>
     run(async () => {
-      const result = fromActionResult(await registerAction({ phone, code, ...values }));
+      const result = fromActionResult(
+        await registerAction({ phone, code, ...values }),
+      );
       if (!result.ok) return result.error;
-      setStep('success');
+      setStep("success");
     });
 
   const renderStep = () => {
     switch (step) {
-      case 'login':
+      case "login":
         return <LoginForm onNext={handleRequestOtp} loading={pending} />;
 
-      case 'otp':
+      case "otp":
         return (
           <OtpForm
             phone={phone}
-            onBack={() => setStep('login')}
+            onBack={() => setStep("login")}
             onVerify={handleVerify}
             onResend={handleResend}
             loading={pending}
           />
         );
 
-      case 'register':
+      case "register":
         return (
           <RegisterForm
-            onBack={() => setStep('otp')}
+            onBack={() => setStep("otp")}
             onSubmit={handleRegister}
             loading={pending}
           />
         );
 
-      case 'success':
+      case "success":
         return (
           <ResultDialog
             open
             status="success"
-            description={t('description')}
+            description={t("description")}
             onClose={finish}
           />
         );
@@ -132,15 +134,15 @@ export default function AuthModal({ show, onHide, next }: Props) {
     <Dialog
       open={show}
       onClose={close}
-      className="auth_modal_wrapper"
+      className="overflow-hidden rounded-xl border-0 p-0"
       closeOnEscape={!pending}
       closeOnBackdrop={!pending}
       label="Authentication"
     >
-      <Dialog.Header className="auth_modal_header">
+      <Dialog.Header className="border-0 px-10 pt-3">
         <Dialog.Close />
       </Dialog.Header>
-      <Dialog.Body className="auth_modal">{renderStep()}</Dialog.Body>
+      <Dialog.Body className="px-10 pt-0 pb-10">{renderStep()}</Dialog.Body>
     </Dialog>
   );
 }

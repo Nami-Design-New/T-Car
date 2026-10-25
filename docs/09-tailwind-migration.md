@@ -2,9 +2,9 @@
 
 > **Status (2026-10-25):** Fractions 1–3 complete; feature-surface migration is
 > in progress. `layout`, `home`, `rental-search`, `cars`, `cities`,
-> `car-details`, `booking`, `account`, `wallet`, `bank-accounts`, and `points`
-> are migrated to Tailwind utilities. The remaining feature SCSS is in
-> `auth` and `my-bookings`.
+> `car-details`, `booking`, `account`, `wallet`, `bank-accounts`, `points`,
+> `my-bookings`, and `auth` are migrated to Tailwind utilities. Protected route
+> smoke checks pass in both locales; visual review for this fraction is pending.
 >
 > This document supersedes the SCSS end state in [08-styles-and-scss.md](08-styles-and-scss.md).
 > Phase 8 records the completed historical SCSS architecture; the active
@@ -37,12 +37,12 @@ utilities and the current CSS-first/PostCSS setup. See the official
 
 The repository currently contains approximately:
 
-| Area | Count |
-| --- | ---: |
-| SCSS files under `src/` | 45 |
-| SCSS lines | 12,995 |
-| TSX files | 197 |
-| TSX lines containing `className` | 1,053 |
+| Area                             |  Count |
+| -------------------------------- | -----: |
+| SCSS files under `src/`          |     45 |
+| SCSS lines                       | 12,995 |
+| TSX files                        |    197 |
+| TSX lines containing `className` |  1,053 |
 
 The largest style owners are `my-bookings`, `cars`, `booking`, `car-details`,
 `layout`, `home`, and `rental-search`. The styles also include:
@@ -64,16 +64,16 @@ migration must not overwrite or mix those changes into its fractions.
 The existing design tokens remain the source of truth for values. They should be
 ported to Tailwind theme variables rather than renamed opportunistically.
 
-| Existing source | Tailwind target |
-| --- | --- |
-| `$ds-*` colors | `--color-*` theme variables |
-| `$ds-radius-*` | `--radius-*` theme variables |
-| spacing values | Tailwind spacing variables or explicit arbitrary values when required |
-| `$breakpoint-*` | Tailwind breakpoint variables |
-| Expo Arabic fonts | `@font-face` plus `--font-*` theme variables |
-| Sass mixins/placeholders | utilities, component classes, or small explicit CSS rules |
-| `dir="rtl"` / `:dir(rtl)` rules | `rtl:` variants, logical utilities, or scoped CSS where necessary |
-| SCSS keyframes | CSS `@keyframes`, `animate-*` theme entries, or component CSS |
+| Existing source                 | Tailwind target                                                       |
+| ------------------------------- | --------------------------------------------------------------------- |
+| `$ds-*` colors                  | `--color-*` theme variables                                           |
+| `$ds-radius-*`                  | `--radius-*` theme variables                                          |
+| spacing values                  | Tailwind spacing variables or explicit arbitrary values when required |
+| `$breakpoint-*`                 | Tailwind breakpoint variables                                         |
+| Expo Arabic fonts               | `@font-face` plus `--font-*` theme variables                          |
+| Sass mixins/placeholders        | utilities, component classes, or small explicit CSS rules             |
+| `dir="rtl"` / `:dir(rtl)` rules | `rtl:` variants, logical utilities, or scoped CSS where necessary     |
+| SCSS keyframes                  | CSS `@keyframes`, `animate-*` theme entries, or component CSS         |
 
 Do not recreate the old token names as a large compatibility layer unless a
 component still needs them during an intermediate fraction. Compatibility CSS
@@ -102,18 +102,18 @@ must have a removal owner and fraction.
 Use `clsx` when a component's Tailwind classes depend on props or state:
 
 ```tsx
-import clsx from 'clsx';
+import clsx from "clsx";
 
 <button
   className={clsx(
-    'inline-flex items-center rounded-md px-4 py-2',
-    'bg-brand text-white',
-    disabled && 'cursor-not-allowed opacity-50',
-    active ? 'ring-2 ring-brand/30' : 'hover:bg-brand/90',
+    "inline-flex items-center rounded-md px-4 py-2",
+    "bg-brand text-white",
+    disabled && "cursor-not-allowed opacity-50",
+    active ? "ring-2 ring-brand/30" : "hover:bg-brand/90",
   )}
 >
   Save
-</button>
+</button>;
 ```
 
 Keep stable classes as strings and use boolean expressions or object syntax for
@@ -374,10 +374,19 @@ Migrate one feature per fraction, in this order:
 2. `rental-search`, `cars`, and `cities` — complete;
 3. `car-details` and `booking` — complete;
 4. `account`, `wallet`, `bank-accounts`, and `points` — complete;
-5. `my-bookings` and `auth` — next.
+5. `my-bookings` and `auth` — migrated; protected-route smoke checks pass in
+   both locales, visual review pending.
 
 The legacy rules used by each feature move with that feature. A fraction is not
 complete while its old SCSS remains the active source for that surface.
+
+Latest feature progress: booking cards and tabs, booking details, status and
+price summaries, countdown, review, extend, and cancel dialogs now use Tailwind
+utilities. The `my-bookings` and `auth` feature stylesheets and the local
+bookings-tabs stylesheet have been removed. Login, OTP, registration, and the
+account phone edit/verification dialogs now own their layout and states in
+Tailwind classes. The review dialog collects separate showroom and driver
+ratings through the shared `StarRating` control; the mock action validates both.
 
 ### Fraction 9: Legacy cleanup and stylesheet removal
 

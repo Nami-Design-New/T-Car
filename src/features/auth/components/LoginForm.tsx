@@ -1,18 +1,21 @@
-'use client';
+"use client";
 
-import Image from 'next/image';
-import { Controller, useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useTranslations } from 'next-intl';
-import { Button } from '@/shared/ui/Button';
-import { PhoneField } from '@/shared/ui/PhoneField';
-import { useErrorMessage, useFieldErrorMessage } from '@/shared/hooks/useErrorMessage';
-import type { AppError } from '@/shared/lib/errors';
-import { applyFieldErrors } from '@/shared/lib/validation';
-import { phoneSchema, type PhoneFormValues } from '../validation';
-import { IMAGES } from '@/shared/config/assets';
+import Image from "next/image";
+import { Controller, useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useTranslations } from "next-intl";
+import { Button } from "@/shared/ui/Button";
+import { PhoneField } from "@/shared/ui/PhoneField";
+import {
+  useErrorMessage,
+  useFieldErrorMessage,
+} from "@/shared/hooks/useErrorMessage";
+import type { AppError } from "@/shared/lib/errors";
+import { applyFieldErrors } from "@/shared/lib/validation";
+import { phoneSchema, type PhoneFormValues } from "../validation";
+import { IMAGES } from "@/shared/config/assets";
 const logo = IMAGES.brandMark;
-import { ICONS } from '@/shared/config/assets';
+import { ICONS } from "@/shared/config/assets";
 const whatsappIcon = ICONS.whatsapp;
 
 type Props = {
@@ -33,42 +36,54 @@ export default function LoginForm({ onNext, loading = false }: Props) {
     formState: { errors },
   } = useForm<PhoneFormValues>({
     resolver: zodResolver(phoneSchema),
-    mode: 'onBlur',
-    reValidateMode: 'onChange',
-    defaultValues: { phone: '+966' },
+    mode: "onBlur",
+    reValidateMode: "onChange",
+    defaultValues: { phone: "+966" },
   });
 
   const onSubmit = handleSubmit(async ({ phone }) => {
     if (loading) return;
     const error = await onNext(phone);
-    if (error && !applyFieldErrors(error, setError, ['phone'])) {
-      setError('root.server', { type: error.kind, message: errorMessage(error) });
+    if (error && !applyFieldErrors(error, setError, ["phone"])) {
+      setError("root.server", {
+        type: error.kind,
+        message: errorMessage(error),
+      });
     }
   });
 
   const formError = errors.root?.server?.message;
 
   return (
-    <form className="login_form" onSubmit={onSubmit} noValidate>
-      <div className="logo">
-        <Image src={logo} alt={t('auth.login.logoAlt')} width={70} height={70} />
+    <form
+      className="flex w-full flex-col items-center"
+      onSubmit={onSubmit}
+      noValidate
+    >
+      <div className="mb-6">
+        <Image
+          src={logo}
+          alt={t("auth.login.logoAlt")}
+          width={70}
+          height={70}
+        />
       </div>
 
-      <h2>{t('auth.login.title')}</h2>
-      <p>{t('auth.login.description')}</p>
+      <h2 className="text-text-primary">{t("auth.login.title")}</h2>
+      <p className="mb-7 text-text-subtle">{t("auth.login.description")}</p>
 
-      <div className="phone_wrapper">
+      <div className="mb-6 w-full">
         <Controller
           name="phone"
           control={control}
           render={({ field }) => (
             <PhoneField
-              label={t('auth.login.phoneLabel')}
+              label={t("auth.login.phoneLabel")}
               value={field.value}
               onChange={field.onChange}
               onBlur={field.onBlur}
-              searchPlaceholder={t('auth.login.countrySearchPlaceholder')}
-              inputAriaLabel={t('auth.login.phoneLabel')}
+              searchPlaceholder={t("auth.login.countrySearchPlaceholder")}
+              inputAriaLabel={t("auth.login.phoneLabel")}
               required
               error={fieldError(errors.phone?.message)}
             />
@@ -83,10 +98,13 @@ export default function LoginForm({ onNext, loading = false }: Props) {
       )}
 
       <Button type="submit" size="lg" className="w-full" loading={loading}>
-        <span className="auth_btn_icon" aria-hidden="true">
+        <span
+          className="grid size-[30px] shrink-0 place-items-center rounded-sm border border-white/20 bg-white/10"
+          aria-hidden="true"
+        >
           <Image src={whatsappIcon} alt="" width={18} height={18} />
         </span>
-        {t('auth.login.sendViaWhatsApp')}
+        {t("auth.login.sendViaWhatsApp")}
       </Button>
     </form>
   );

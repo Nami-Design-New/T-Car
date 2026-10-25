@@ -519,9 +519,7 @@
       "invalidDates": "The return date must be after the pickup date.",
       "cancelNotAllowed": "An overdue booking cannot be cancelled. Return the car first.",
       "ratingRequired": "Choose a rating from 1 to 5.",
-      "invalidExtendDays": "Choose a valid number of extension days.",
-      "invalidReview": "Enter valid review text.",
-      "reviewTooLong": "Reviews must be 1000 characters or fewer."
+      "invalidExtendDays": "Choose a valid number of extension days."
     },
     "cars": {
       "notFound": "This car is not available or does not exist."
@@ -721,12 +719,10 @@
     "review": {
       "dialogLabel": "Booking review",
       "close": "Close",
-      "title": "We value your review",
-      "subtitle": "Share your experience with this booking",
-      "ratingLabel": "Rating",
-      "reviewLabel": "Review",
+      "title": "Rate us",
+      "showroomRating": "Showroom rating",
+      "driverRating": "Driver rating",
       "stars": "{count} stars",
-      "placeholder": "Write about your experience with the car and showroom...",
       "sending": "Sending...",
       "submit": "Send"
     },

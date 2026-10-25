@@ -1,7 +1,6 @@
-import { Link } from '@/i18n/navigation';
-import { useTranslations } from 'next-intl';
-import { bookingsListPath, type BookingTab } from '../model';
-import './BookingsTabs.scss';
+import { Link } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
+import { bookingsListPath, type BookingTab } from "../model";
 
 interface Props {
   active: BookingTab;
@@ -10,8 +9,8 @@ interface Props {
 }
 
 const TABS: { id: BookingTab; label: string }[] = [
-  { id: 'active', label: 'active' },
-  { id: 'past', label: 'past' },
+  { id: "active", label: "active" },
+  { id: "past", label: "past" },
 ];
 
 /**
@@ -20,22 +19,30 @@ const TABS: { id: BookingTab; label: string }[] = [
  * page can link back to the right list.
  */
 export default function BookingsTabs({ active, activeCount, pastCount }: Props) {
-  const t = useTranslations('myBookings.tabs');
-  const counts: Record<BookingTab, number> = { active: activeCount, past: pastCount };
+  const t = useTranslations("myBookings.tabs");
+  const counts: Record<BookingTab, number> = {
+    active: activeCount,
+    past: pastCount,
+  };
 
   return (
-    <nav className="bookings-tabs" aria-label={t('title')}>
+    <nav
+      className="mb-4 flex w-full items-center rounded-lg border border-stroke-light bg-surface-elevated p-1.5 shadow-sm"
+      aria-label={t("title")}
+    >
       {TABS.map(({ id, label }) => (
         <Link
           key={id}
           href={bookingsListPath(id)}
-          className={active === id ? 'active' : ''}
-          aria-current={active === id ? 'page' : undefined}
+          className={`flex h-13.75 flex-1 items-center justify-center gap-2.5 rounded-md text-[0.95rem] font-bold text-text-primary no-underline transition hover:bg-surface-card-primary focus-visible:outline-2 focus-visible:outline-action-primary ${active === id ? "bg-action-primary text-text-on-action hover:bg-action-primary" : ""}`}
+          aria-current={active === id ? "page" : undefined}
           // A filter of the same page: no new scroll position.
           scroll={false}
         >
           {t(label)}
-          <span className="count">{counts[id]}</span>
+          <span className="grid size-6 place-items-center rounded-full bg-surface-card-primary text-xs font-bold text-text-subtle">
+            {counts[id]}
+          </span>
         </Link>
       ))}
     </nav>

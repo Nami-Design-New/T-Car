@@ -1,19 +1,26 @@
-'use client';
+"use client";
 
-import React, { useEffect, useState } from 'react';
-import { Controller, useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useTranslations } from 'next-intl';
-import { FiArrowLeft } from 'react-icons/fi';
+import React, { useEffect, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useTranslations } from "next-intl";
+import { FiArrowLeft } from "react-icons/fi";
 
-import { Button } from '@/shared/ui/Button';
-import { Dialog } from '@/shared/ui/Dialog';
-import { OtpInput } from '@/shared/ui/OtpInput';
-import { ResultDialog } from '@/shared/ui/ResultDialog';
-import { useErrorMessage, useFieldErrorMessage } from '@/shared/hooks/useErrorMessage';
-import type { AppError } from '@/shared/lib/errors';
-import { applyFieldErrors } from '@/shared/lib/validation';
-import { PHONE_CODE_LENGTH, phoneCodeSchema, type PhoneCodeValues } from '../validation';
+import { Button } from "@/shared/ui/Button";
+import { Dialog } from "@/shared/ui/Dialog";
+import { OtpInput } from "@/shared/ui/OtpInput";
+import { ResultDialog } from "@/shared/ui/ResultDialog";
+import {
+  useErrorMessage,
+  useFieldErrorMessage,
+} from "@/shared/hooks/useErrorMessage";
+import type { AppError } from "@/shared/lib/errors";
+import { applyFieldErrors } from "@/shared/lib/validation";
+import {
+  PHONE_CODE_LENGTH,
+  phoneCodeSchema,
+  type PhoneCodeValues,
+} from "../validation";
 
 interface Props {
   open: boolean;
@@ -33,14 +40,14 @@ const INITIAL_SECONDS = 30;
 export default function VerifyPhoneModal({
   open,
   onClose,
-  phone = '',
+  phone = "",
   onEditPhone,
   onVerified,
   onResendCode,
   onVerifyCode,
   loading = false,
 }: Props) {
-  const t = useTranslations('account.verifyPhone');
+  const t = useTranslations("account.verifyPhone");
   const errorMessage = useErrorMessage();
   const fieldError = useFieldErrorMessage();
   const [successOpen, setSuccessOpen] = useState(false);
@@ -56,9 +63,9 @@ export default function VerifyPhoneModal({
     formState: { errors },
   } = useForm<PhoneCodeValues>({
     resolver: zodResolver(phoneCodeSchema),
-    mode: 'onBlur',
-    reValidateMode: 'onChange',
-    defaultValues: { code: '' },
+    mode: "onBlur",
+    reValidateMode: "onChange",
+    defaultValues: { code: "" },
   });
 
   /* =========================
@@ -68,7 +75,7 @@ export default function VerifyPhoneModal({
   useEffect(() => {
     if (!open) return;
 
-    reset({ code: '' });
+    reset({ code: "" });
     setTimer(INITIAL_SECONDS);
   }, [open, reset]);
 
@@ -94,8 +101,11 @@ export default function VerifyPhoneModal({
   }, [open, timer]);
 
   const showServerError = (error: AppError) => {
-    if (!applyFieldErrors(error, setError, ['code'])) {
-      setError('root.server', { type: error.kind, message: errorMessage(error) });
+    if (!applyFieldErrors(error, setError, ["code"])) {
+      setError("root.server", {
+        type: error.kind,
+        message: errorMessage(error),
+      });
     }
   };
 
@@ -127,7 +137,7 @@ export default function VerifyPhoneModal({
     if (error) return showServerError(error);
 
     setTimer(INITIAL_SECONDS);
-    reset({ code: '' });
+    reset({ code: "" });
   };
 
   const handleSuccessDone = () => {
@@ -135,7 +145,7 @@ export default function VerifyPhoneModal({
     onVerified?.(phone);
   };
 
-  const isComplete = watch('code').length === PHONE_CODE_LENGTH;
+  const isComplete = watch("code").length === PHONE_CODE_LENGTH;
   const formError = errors.root?.server?.message;
 
   return (
@@ -143,32 +153,38 @@ export default function VerifyPhoneModal({
       <Dialog
         open={open}
         onClose={onClose}
-        className="auth_modal_wrapper"
+        className="overflow-hidden rounded-xl border-0 p-0"
         closeOnEscape={!loading}
         closeOnBackdrop={!loading}
       >
-        <Dialog.Header className="auth_modal_header">
+        <Dialog.Header className="border-0 px-10 pt-3">
           <Dialog.Close />
         </Dialog.Header>
 
         {/* Same layout as the sign-in code step (features/auth OtpForm). */}
-        <Dialog.Body className="auth_modal">
-          <form className="otp_form" onSubmit={handleVerify} noValidate>
-            <div className="otp_header">
+        <Dialog.Body className="px-10 pt-0 pb-10">
+          <form
+            className="relative flex w-full flex-col text-center"
+            onSubmit={handleVerify}
+            noValidate
+          >
+            <div className="mb-6 flex items-center gap-2">
               <button
                 type="button"
-                className="back_btn"
+                className="grid size-9 shrink-0 place-items-center rounded-md border border-stroke-light text-text-primary transition hover:bg-surface-on-background focus-visible:outline-2 focus-visible:outline-action-primary"
                 onClick={() => (onEditPhone ? onEditPhone() : onClose())}
-                aria-label={t('editPhone')}
+                aria-label={t("editPhone")}
               >
                 <FiArrowLeft className="mirror-in-rtl" aria-hidden="true" />
               </button>
 
-              <Dialog.Title>{t('title')}</Dialog.Title>
+              <Dialog.Title className="mb-0 text-xl font-extrabold leading-relaxed text-text-primary">
+                {t("title")}
+              </Dialog.Title>
             </div>
 
-            <p className="otp_description">
-              {t('sentTo')} <bdi dir="ltr">{phone}</bdi>
+            <p className="mb-4 text-start text-base leading-relaxed text-text-subtle">
+              {t("sentTo")} <bdi dir="ltr">{phone}</bdi>
             </p>
 
             <div className="flex items-center justify-center">
@@ -181,8 +197,10 @@ export default function VerifyPhoneModal({
                     onChange={field.onChange}
                     length={PHONE_CODE_LENGTH}
                     autoFocus={open}
-                    ariaLabel={t('codeLabel')}
-                    digitAriaLabel={(position) => t('digitLabel', { index: position })}
+                    ariaLabel={t("codeLabel")}
+                    digitAriaLabel={(position) =>
+                      t("digitLabel", { index: position })
+                    }
                     disabled={loading}
                     error={fieldError(errors.code?.message)}
                   />
@@ -190,12 +208,22 @@ export default function VerifyPhoneModal({
               />
             </div>
 
-            <div className="otp_resend_status" aria-live="polite">
+            <div
+              className="mb-3 flex min-h-11 items-center justify-between"
+              aria-live="polite"
+            >
               {timer > 0 ? (
-                <p className="timer">{t('resendIn', { seconds: timer })}</p>
+                <p className="m-0 text-sm leading-relaxed text-action-primary">
+                  {t("resendIn", { seconds: timer })}
+                </p>
               ) : (
-                <button type="button" className="resend" onClick={handleResend} disabled={loading}>
-                  {t('resend')}
+                <button
+                  type="button"
+                  className="cursor-pointer border-0 bg-transparent text-xs font-bold text-text-primary underline disabled:cursor-not-allowed disabled:opacity-50"
+                  onClick={handleResend}
+                  disabled={loading}
+                >
+                  {t("resend")}
                 </button>
               )}
             </div>
@@ -213,7 +241,7 @@ export default function VerifyPhoneModal({
               disabled={!isComplete}
               loading={loading}
             >
-              {t('verify')}
+              {t("verify")}
             </Button>
           </form>
         </Dialog.Body>
@@ -223,7 +251,7 @@ export default function VerifyPhoneModal({
         open={successOpen}
         status="success"
 
-        description={t('successDescription')}
+        description={t("successDescription")}
         onClose={handleSuccessDone}
       />
     </>

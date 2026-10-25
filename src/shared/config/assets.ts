@@ -14,6 +14,7 @@ export const ICONS = {
   whatsapp: { src: "/icons/whatsapp.svg", width: 24, height: 24 },
   chevron: { src: "/icons/chevron.svg", width: 28, height: 28 },
   timeline: { src: "/icons/timeline.svg", width: 4, height: 120 },
+  starFill: { src: "/icons/star-fill.svg", width: 16, height: 16 },
 } as const;
 
 export const POINTS_ICONS = {
