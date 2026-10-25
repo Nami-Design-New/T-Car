@@ -30,8 +30,8 @@ export default function RouteError({ error, reset }: Props) {
     });
 
   return (
-    <section className="section">
-      <div className="container-tcar">
+    <section className="py-20 max-md:py-12">
+      <div className="mx-auto w-full max-w-[1280px] px-4">
         <ErrorState size="page" error={error} onRetry={retry} reference={error.digest} />
       </div>
     </section>

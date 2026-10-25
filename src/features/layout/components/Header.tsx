@@ -24,7 +24,7 @@ export default async function Header({ hasSession, signedIn, unreadCount }: Prop
 
   return (
     <header className="header sticky top-0 z-[100] border-b border-black/5 bg-surface-background/95 shadow-[0_4px_20px_rgba(30,30,30,0.06)] backdrop-blur-[12px]">
-      <div className="container-tcar header-inner flex h-20 items-center justify-between">
+      <div className="mx-auto w-full max-w-[1280px] px-4 header-inner flex h-20 items-center justify-between">
         <div className="header-brand flex min-w-0 items-center gap-[clamp(12px,2vw,24px)]">
           <Link href="/" className="header-logo group flex min-w-0 flex-[0_1_clamp(108px,13vw,160px)] items-center">
             <Image src={logo} alt="T-Car" width={160} height={48} priority className="h-auto w-full transition duration-300 group-hover:scale-105" />

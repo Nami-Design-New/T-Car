@@ -22,12 +22,12 @@ export async function PageSkeleton({ variant = 'page' }: Props) {
   const cards = (
     <div
       className={cn(
-        'page-skeleton__grid mt-10 grid grid-cols-[repeat(auto-fill,minmax(240px,1fr))] gap-6',
+        'mt-10 grid grid-cols-[repeat(auto-fill,minmax(240px,1fr))] gap-6',
         variant === 'section' && 'mt-6',
       )}
     >
       {Array.from({ length: variant === 'page' ? 6 : 3 }, (_, index) => (
-        <div key={index} className="page-skeleton__card flex flex-col gap-4">
+        <div key={index} className="flex flex-col gap-4">
           <Skeleton shape="rect" aspectRatio="16/10" />
           <Skeleton width="70%" height={18} />
           <Skeleton width="45%" height={14} />
@@ -39,9 +39,8 @@ export async function PageSkeleton({ variant = 'page' }: Props) {
   return (
     <div
       className={cn(
-        'page-skeleton',
-        variant === 'page' && 'page-skeleton--page min-h-[60vh] section',
-        variant === 'section' && 'page-skeleton--section p-6',
+        variant === 'page' && 'min-h-[60vh] py-20 max-md:py-12',
+        variant === 'section' && 'p-6',
       )}
       aria-busy="true"
       aria-live="polite"
@@ -49,9 +48,9 @@ export async function PageSkeleton({ variant = 'page' }: Props) {
       <span className="sr-only">{t('loading')}</span>
 
       {variant === 'page' ? (
-        <div className="container-tcar">
+        <div className="mx-auto w-full max-w-[1280px] px-4">
           <Skeleton width="40%" height={32} />
-          <Skeleton width="60%" height={16} className="page-skeleton__subtitle mt-4" />
+          <Skeleton width="60%" height={16} className="mt-4" />
           {cards}
         </div>
       ) : (

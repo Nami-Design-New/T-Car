@@ -133,7 +133,7 @@ export default function BookingModal({
                 aria-label={t("previousMonth")}
                 onClick={() => setCursor(new Date(year, month - 1, 1))}
               >
-                <FiChevronLeft className="mirror-in-rtl" aria-hidden="true" />
+                <FiChevronLeft className="rtl:scale-x-[-1]" aria-hidden="true" />
               </button>
               <span className="text-base font-bold text-text-primary">
                 {t(`months.${MONTHS[month]}`)} {year}
@@ -144,7 +144,7 @@ export default function BookingModal({
                 aria-label={t("nextMonth")}
                 onClick={() => setCursor(new Date(year, month + 1, 1))}
               >
-                <FiChevronRight className="mirror-in-rtl" aria-hidden="true" />
+                <FiChevronRight className="rtl:scale-x-[-1]" aria-hidden="true" />
               </button>
             </div>
             <div className="mb-2 grid grid-cols-7">

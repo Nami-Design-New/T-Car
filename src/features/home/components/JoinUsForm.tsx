@@ -47,28 +47,33 @@ export default function JoinUsForm({ open, onClose }: Props) {
       open={open}
       onClose={onClose}
       size="lg"
-      className="register_showroom join_us_dialog"
+      className="p-0"
       label={t("title")}
     >
-      <Dialog.Header className="join_us_dialog_header">
-        <div className="section_heading">
-          <Dialog.Title>{t("title")}</Dialog.Title>
-          <Dialog.Description>
+      <Dialog.Header className="items-start px-8 pt-7 max-md:px-5">
+        <div className="min-w-0 flex-1 text-start">
+          <Dialog.Title className="mb-2 text-2xl font-bold max-md:text-[26px]">
+            {t("title")}
+          </Dialog.Title>
+          <Dialog.Description className="mx-0 mt-0 max-w-[650px] leading-[1.8]">
             {t("descriptionBeforeBrand")}
-            <span> {t("brand")} </span>
+            <span className="font-bold text-action-primary">
+              {" "}
+              {t("brand")}{" "}
+            </span>
             {t("descriptionAfterBrand")}
           </Dialog.Description>
         </div>
         <Dialog.Close />
       </Dialog.Header>
 
-      <Dialog.Body>
+      <Dialog.Body className="px-8 py-6 max-md:px-5">
         <form
           id="join-us-form"
-          className="register_form flex flex-col"
+          className="flex flex-col"
           onSubmit={(event) => event.preventDefault()}
         >
-          <div className="form_grid">
+          <div className="grid grid-cols-2 gap-[18px] max-md:grid-cols-1">
             <FormInput
               id="firstName"
               name="firstName"
@@ -79,8 +84,8 @@ export default function JoinUsForm({ open, onClose }: Props) {
               required
             />
 
-            <div className="form_group">
-              <label className="form_label">
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-semibold text-text-primary">
                 {t("fields.phone.label")}
                 <span>*</span>
               </label>
@@ -134,7 +139,7 @@ export default function JoinUsForm({ open, onClose }: Props) {
         </form>
       </Dialog.Body>
 
-      <Dialog.Footer>
+      <Dialog.Footer className="px-8 pb-7 max-md:px-5 [&>button]:w-full">
         <Button type="submit" form="join-us-form" size="lg">
           {t("submit")}
         </Button>

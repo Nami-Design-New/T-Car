@@ -8,7 +8,6 @@ import { DirectionProvider } from '@/shared/ui/DirectionProvider';
 import NextTopLoader from 'nextjs-toploader';
 import localFont from 'next/font/local';
 import '../../styles/tailwind.css';
-import '../../styles/main.scss';
 
 const expo = localFont({
   src: [

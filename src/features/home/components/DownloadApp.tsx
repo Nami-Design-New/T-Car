@@ -12,8 +12,8 @@ export default function DownloadApp() {
   const t = useTranslations('downloadApp');
 
   return (
-    <section className="download_app section overflow-visible">
-      <div className="container-tcar">
+    <section className="overflow-visible py-20 max-md:py-12">
+      <div className="mx-auto w-full max-w-[1280px] px-4">
         <div className="download_app_card relative flex min-h-[420px] items-center justify-end overflow-visible rounded-2xl bg-[linear-gradient(135deg,var(--color-brand),#1a6bd4)] px-[70px] py-[60px] text-text-on-brand before:pointer-events-none before:absolute before:inset-0 before:rounded-[inherit] before:bg-[radial-gradient(circle_at_90%_20%,rgba(31,127,250,0.18),transparent_30%),radial-gradient(circle_at_20%_80%,rgba(255,255,255,0.08),transparent_35%)] before:content-[''] max-lg:min-h-0 max-lg:flex-col max-lg:px-[25px] max-lg:py-10 max-lg:text-center">
 
           <div className="download_app_image absolute -top-25 end-[70px] z-[5] w-[380px] max-lg:relative max-lg:inset-auto max-lg:mx-auto max-lg:mb-[25px] max-lg:-mt-25 max-lg:w-[260px]">

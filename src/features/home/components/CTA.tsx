@@ -12,7 +12,7 @@ export default function CTA() {
 
   return (
     <section className="cta mb-[70px]">
-      <div className="container-tcar">
+      <div className="mx-auto w-full max-w-[1280px] px-4">
         <div className="cta_content relative overflow-hidden rounded-2xl bg-[linear-gradient(135deg,var(--color-action-primary),#1a6bd4)] px-[30px] py-[60px] text-center max-md:px-5 max-md:py-[45px] before:absolute before:-start-0.5 before:top-[29%] before:z-[1] before:size-80 before:bg-[url('/images/brand/fav.svg')] before:bg-contain before:bg-center before:bg-no-repeat before:opacity-[0.09] before:brightness-0 before:invert before:content-['']">
           <div className="cta_pattern pointer-events-none absolute inset-0 opacity-[0.08] [background-image:radial-gradient(circle_at_20%_20%,white_2px,transparent_2px),radial-gradient(circle_at_80%_40%,white_2px,transparent_2px),radial-gradient(circle_at_40%_80%,white_2px,transparent_2px)] [background-size:80px_80px]" />
 

@@ -32,7 +32,7 @@ export default function AirportModal({
   );
 
   return (
-    <Dialog open={open} onClose={onClose} size="lg" className="selection_modal">
+    <Dialog open={open} onClose={onClose} size="lg">
       <Dialog.Header>
         <Dialog.Title>{t("title")}</Dialog.Title>
         <Dialog.Close />
@@ -46,20 +46,26 @@ export default function AirportModal({
           onChange={(e) => setSearch(e.target.value)}
         />
 
-        <div className="selection_list">
+        <div className="mt-4 flex max-h-[55vh] flex-col gap-2 overflow-y-auto">
           {filtered.map((airport) => (
             <button
               key={airport.id}
               type="button"
-              className={`selection_item ${selected?.id === airport.id ? "active" : ""}`}
+              className={`flex w-full items-center justify-between gap-4 rounded-lg border p-4 text-start transition hover:border-action-primary ${selected?.id === airport.id ? "border-action-primary bg-surface-card-primary" : "border-stroke-light bg-surface-elevated"}`}
               onClick={() => setSelected(airport)}
             >
-              <div className="content">
-                <h4>{airport.airport}</h4>
-                <p>{airport.city}</p>
+              <div className="min-w-0 flex-1">
+                <h4 className="m-0 font-semibold text-text-primary">
+                  {airport.airport}
+                </h4>
+                <p className="m-0 mt-1 text-sm text-text-subtle">
+                  {airport.city}
+                </p>
               </div>
 
-              <div className="icon">
+              <div
+                className={`flex size-6 shrink-0 items-center justify-center text-xl ${selected?.id === airport.id ? "text-action-primary" : "text-neutral-400"}`}
+              >
                 <CgRadioCheck />
               </div>
             </button>

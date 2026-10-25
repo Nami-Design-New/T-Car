@@ -36,15 +36,14 @@ describe('PageSkeleton', () => {
     const { container } = render(await PageSkeleton({}));
     const region = container.firstChild as HTMLElement;
     expect(region).toHaveAttribute('aria-busy', 'true');
-    expect(region).toHaveClass('page-skeleton--page', 'section');
+    expect(region).toHaveClass('min-h-[60vh]', 'py-20');
     expect(screen.getByText('states.loading')).toHaveClass('sr-only');
-    expect(container.querySelectorAll('.page-skeleton__card')).toHaveLength(6);
+    expect(container.querySelectorAll('[aria-hidden="true"]')).toHaveLength(20);
   });
 
   it('shows three cards inside a section layout', async () => {
     const { container } = render(await PageSkeleton({ variant: 'section' }));
-    expect(container.firstChild).toHaveClass('page-skeleton--section');
-    expect(container.firstChild).not.toHaveClass('section');
-    expect(container.querySelectorAll('.page-skeleton__card')).toHaveLength(3);
+    expect(container.firstChild).toHaveClass('p-6');
+    expect(container.querySelectorAll('[aria-hidden="true"]')).toHaveLength(10);
   });
 });

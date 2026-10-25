@@ -40,13 +40,13 @@ export default function CancelBookingModal({
       placement="bottom-sheet"
       label={t("dialogLabel")}
     >
-      <div className="selection_modal relative box-border max-h-[92vh] w-[600px] max-w-full rounded-xl bg-surface-elevated px-6 pt-10 pb-6 shadow-[0_20px_50px_rgba(30,30,30,0.15)] max-[620px]:pt-8">
+      <div className="relative box-border max-h-[92vh] w-[600px] max-w-full rounded-xl bg-surface-elevated px-6 pt-10 pb-6 shadow-[0_20px_50px_rgba(30,30,30,0.15)] max-[620px]:pt-8">
         {/* Close */}
         <div className="mb-1 flex items-center justify-between">
           <Dialog.Title className="py-2.5 text-[22px] text-text-primary">
             {t("title")}
           </Dialog.Title>
-          <Dialog.Close className="close_btn" />
+          <Dialog.Close />
         </div>
 
         <div className="mb-3 flex h-[120px] w-full items-center justify-center">

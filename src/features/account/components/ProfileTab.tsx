@@ -290,7 +290,7 @@ export default function ProfileTab({ profile }: Props) {
             </div>
 
             <FiChevronRight
-              className="mirror-in-rtl shrink-0 text-lg text-text-subtle max-md:text-base"
+              className="rtl:scale-x-[-1] shrink-0 text-lg text-text-subtle max-md:text-base"
               aria-hidden="true"
             />
           </button>
@@ -337,7 +337,7 @@ export default function ProfileTab({ profile }: Props) {
               </div>
 
               <FiChevronRight
-                className="mirror-in-rtl shrink-0 text-lg text-text-subtle max-md:text-base"
+                className="rtl:scale-x-[-1] shrink-0 text-lg text-text-subtle max-md:text-base"
                 aria-hidden="true"
               />
             </button>

@@ -1,5 +1,11 @@
 # 8. Styles: compile from SCSS, stop committing CSS
 
+> **Historical record — superseded by [Tailwind CSS migration](09-tailwind-migration.md).**
+> The SCSS architecture documented here has been removed. Current styling uses
+> Tailwind CSS 4.3 through `src/styles/tailwind.css`; no Sass dependency or SCSS
+> files remain under `src/`. The steps and measurements below describe the
+> historical migration that preceded the Tailwind replacement.
+
 > **Status (2026-10-04):** in progress, steps 1–5 of 7 done; step 6 started (6.1: base layer). Sass is pinned to
 > `1.105.0`, the layout imports `main.scss`, so Next compiles every
 > stylesheet, and the generated `main.css`, `main.css.map`, and
@@ -293,3 +299,5 @@ therefore gets the rule-by-rule comparison from step 2, not only a hash check.
   rewrites them to `/images/...` when the files move to `public/`.
 - **Doc 4 §4.5** describes the target structure; this document is the plan to
   get there.
+
+\n

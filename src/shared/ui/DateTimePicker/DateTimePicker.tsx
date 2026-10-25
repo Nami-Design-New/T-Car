@@ -73,7 +73,7 @@ export function DateTimePicker({
               onClick={() => setCursor(new Date(year, month - 1, 1))}
               aria-label={t('previousMonth')}
             >
-              <FiChevronLeft className="mirror-in-rtl" />
+              <FiChevronLeft className="rtl:scale-x-[-1]" />
             </button>
             <span className="text-[0.9rem] font-bold text-text-primary">
               {t(`months.${month}`)} {year}
@@ -84,7 +84,7 @@ export function DateTimePicker({
               onClick={() => setCursor(new Date(year, month + 1, 1))}
               aria-label={t('nextMonth')}
             >
-              <FiChevronRight className="mirror-in-rtl" />
+              <FiChevronRight className="rtl:scale-x-[-1]" />
             </button>
           </div>
           <div className="dt-picker-weekdays mb-1 grid grid-cols-7">

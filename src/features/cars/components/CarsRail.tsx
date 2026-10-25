@@ -34,14 +34,14 @@ export default function CarsRail({
   if (cars.length === 0) return null;
 
   return (
-    <section className="section cars-rail pb-0 pt-12" id={id}>
-      <div className="container-tcar">
+    <section className="pb-0 pt-12" id={id}>
+      <div className="mx-auto w-full max-w-[1280px] px-4">
         <div className="cars-rail-header mb-6 flex items-start justify-between gap-4 max-md:mb-3">
           <SectionTitle title={title} subtitle={subtitle} align="left" />
 
           <Link href={seeAllHref} className="group cars-rail-see-all inline-flex min-h-11 shrink-0 items-center gap-1.5 rounded-full border border-stroke-light bg-surface-elevated px-[18px] font-semibold text-text-primary transition duration-300 hover:-translate-y-0.5 hover:border-action-primary hover:bg-action-primary hover:text-text-on-action hover:shadow-[0_10px_20px_rgba(31,127,250,0.18)] focus-visible:outline-3 focus-visible:outline-action-primary/20 focus-visible:outline-offset-3">
             {t('seeAll')}
-            <FiChevronRight className="cars-rail-see-all-icon mirror-in-rtl text-xl transition duration-300 group-hover:me-0.5" />
+            <FiChevronRight className="cars-rail-see-all-icon rtl:scale-x-[-1] text-xl transition duration-300 group-hover:me-0.5" />
           </Link>
         </div>
 

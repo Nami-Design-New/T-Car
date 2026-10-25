@@ -40,7 +40,7 @@ export default function PopularCities({ cities }: Props) {
               onClick={scrollPrev}
               className="flex size-11 items-center justify-center rounded-full border border-stroke-light bg-surface-elevated text-text-primary transition duration-300 hover:-translate-y-0.5 hover:border-action-primary hover:bg-action-primary hover:text-text-on-action hover:shadow-[0_10px_20px_rgba(31,127,250,0.18)]"
             >
-              <FiArrowLeft className="mirror-in-rtl" />
+              <FiArrowLeft className="rtl:scale-x-[-1]" />
             </button>
             <button
               type="button"
@@ -48,7 +48,7 @@ export default function PopularCities({ cities }: Props) {
               onClick={scrollNext}
               className="flex size-11 items-center justify-center rounded-full border border-stroke-light bg-surface-elevated text-text-primary transition duration-300 hover:-translate-y-0.5 hover:border-action-primary hover:bg-action-primary hover:text-text-on-action hover:shadow-[0_10px_20px_rgba(31,127,250,0.18)]"
             >
-              <FiArrowRight className="mirror-in-rtl" />
+              <FiArrowRight className="rtl:scale-x-[-1]" />
             </button>
           </div>
         </div>
@@ -84,7 +84,7 @@ export default function PopularCities({ cities }: Props) {
                 </h3>
                 <span className="inline-flex items-center gap-1.5 text-[0.95rem] font-semibold text-text-on-brand">
                   {t("popularCities.explore")}
-                  <FiArrowRight className="mirror-in-rtl transition-[margin-inline-end] duration-300 group-hover:me-[5px]" />
+                  <FiArrowRight className="rtl:scale-x-[-1] transition-[margin-inline-end] duration-300 group-hover:me-[5px]" />
                 </span>
               </div>
             </Link>

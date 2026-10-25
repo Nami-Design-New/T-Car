@@ -75,7 +75,7 @@ export default function RegisterForm({
           onClick={onBack}
           aria-label={t("auth.register.backLabel")}
         >
-          <FiArrowLeft className="mirror-in-rtl" aria-hidden="true" />
+          <FiArrowLeft className="rtl:scale-x-[-1]" aria-hidden="true" />
         </button>
 
         <h2 className="mb-0 text-xl font-extrabold leading-relaxed text-text-primary">

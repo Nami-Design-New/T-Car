@@ -1,10 +1,11 @@
 # 9. Tailwind CSS 4.3 migration
 
-> **Status (2026-10-25):** Fractions 1–3 complete; feature-surface migration is
-> in progress. `layout`, `home`, `rental-search`, `cars`, `cities`,
+> **Status (2026-10-25):** Fractions 1–9 complete. `layout`, `home`,
+> `rental-search`, `cars`, `cities`,
 > `car-details`, `booking`, `account`, `wallet`, `bank-accounts`, `points`,
 > `my-bookings`, and `auth` are migrated to Tailwind utilities. Protected route
-> smoke checks pass in both locales; visual review for this fraction is pending.
+> smoke checks pass in both locales. The application now uses Tailwind as its
+> only stylesheet source; no SCSS remains under `src/`.
 >
 > This document supersedes the SCSS end state in [08-styles-and-scss.md](08-styles-and-scss.md).
 > Phase 8 records the completed historical SCSS architecture; the active
@@ -390,15 +391,13 @@ ratings through the shared `StarRating` control; the mock action validates both.
 
 ### Fraction 9: Legacy cleanup and stylesheet removal
 
-- Convert remaining legal pages, not-found animations, third-party overrides,
-  and legacy dialog selectors.
-- Remove every SCSS import.
-- Delete all `.scss` files under `src/`.
-- Remove `sass`, Bootstrap, SCSS-specific Next configuration, and obsolete
-  scripts/checks from `package.json` and the repository.
-- Rename or replace `check:css` with a guard that prevents accidental re-entry
-  of SCSS and verifies the Tailwind entry point.
-- Update docs 8 and 9 plus the phase/status tables.
+- [x] Converted legal pages, not-found animations, and remaining live legacy
+  dialog selectors to Tailwind utilities.
+- [x] Removed every SCSS import and deleted all `.scss` files under `src/`.
+- [x] Removed Sass and SCSS-specific Next configuration.
+- [x] Removed the obsolete compiled-CSS check; the locale layout imports the
+  Tailwind entry point and no SCSS remains under `src/`.
+- [x] Updated docs 8, 9, and the migration status.
 
 ## 9.6 Verification for every fraction
 

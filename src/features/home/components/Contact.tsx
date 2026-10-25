@@ -11,8 +11,8 @@ export default function Contact() {
 
 
   return (
-    <section className="contact section" id="contact">
-      <div className="container-tcar">
+    <section className="py-20 max-md:py-12" id="contact">
+      <div className="mx-auto w-full max-w-[1280px] px-4">
         <SectionTitle
           smallTitle={t('contact.smallTitle')}
           title={t('contact.title')}

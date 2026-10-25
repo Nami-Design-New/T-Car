@@ -76,7 +76,7 @@ export default function ExtendDurationModal({
       label={t("title")}
     >
       <form
-        className="selection_modal flex w-full max-w-[420px] flex-col rounded-xl bg-surface-elevated p-5 max-[768px]:px-4 max-[768px]:pt-[42px] max-[768px]:pb-[18px]"
+        className="flex w-full max-w-[420px] flex-col rounded-xl bg-surface-elevated p-5 max-[768px]:px-4 max-[768px]:pt-[42px] max-[768px]:pb-[18px]"
         onSubmit={submit}
         noValidate
       >
@@ -86,7 +86,7 @@ export default function ExtendDurationModal({
           <Dialog.Title className="py-2.5 text-[22px] text-text-primary max-[768px]:text-[17px]">
             {t("title")}
           </Dialog.Title>
-          <Dialog.Close className="close_btn" />
+          <Dialog.Close />
         </div>
 
         {/* Duration */}

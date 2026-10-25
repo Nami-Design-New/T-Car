@@ -37,8 +37,8 @@ export default function FAQ({ faqs }: Props) {
     ));
 
   return (
-    <section className="faqs section bg-surface-on-background" id="faqs">
-      <div className="container-tcar">
+    <section className="bg-surface-on-background py-20 max-md:py-12" id="faqs">
+      <div className="mx-auto w-full max-w-[1280px] px-4">
         <SectionTitle
           smallTitle={t('faq.smallTitle')}
           title={t('faq.title')}

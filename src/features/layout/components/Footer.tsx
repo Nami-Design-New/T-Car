@@ -26,7 +26,7 @@ export default async function Footer() {
   return (
    <footer className="footer bg-brand text-text-on-brand">
       
-      <div className="container-tcar footer_top grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-[50px] py-[70px] max-lg:gap-[35px] max-md:grid-cols-2 max-md:gap-[35px] max-[480px]:grid-cols-1 max-[480px]:gap-[30px]">
+      <div className="mx-auto w-full max-w-[1280px] px-4 footer_top grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-[50px] py-[70px] max-lg:gap-[35px] max-md:grid-cols-2 max-md:gap-[35px] max-[480px]:grid-cols-1 max-[480px]:gap-[30px]">
 
         <div className="footer_brand">
           <Image src={logo} alt="T-Car" width={160} height={48} className="mb-[22px] brightness-0 invert" />
@@ -102,7 +102,7 @@ export default async function Footer() {
         </div>
       </div>
 
-      <div className="footer_bottom container-tcar flex flex-wrap items-center justify-between gap-5 border-t border-text-on-brand/[0.08] py-[22px]">
+      <div className="footer_bottom mx-auto w-full max-w-[1280px] px-4 flex flex-wrap items-center justify-between gap-5 border-t border-text-on-brand/[0.08] py-[22px]">
         <div className="footer_copy text-sm text-text-on-brand/70">
           © {year} T-Car. {t('footer.rights')}
         </div>

@@ -32,10 +32,10 @@ export default function WhyChooseUs() {
   const t = useTranslations('whyChooseUs');
 
   return (
-    <section className="why_choose_us section relative my-[50px] overflow-hidden bg-[linear-gradient(rgba(30,30,30,0.72),rgba(30,30,30,0.72)),url('/images/hero/hero-2.png')] bg-cover bg-center bg-fixed" id="why-choose-us">
+    <section className="relative my-[50px] overflow-hidden bg-[linear-gradient(rgba(30,30,30,0.72),rgba(30,30,30,0.72)),url('/images/hero/hero-2.png')] bg-cover bg-center bg-fixed py-20 max-md:py-12" id="why-choose-us">
       <div className="overlay absolute inset-0 backdrop-blur-[2px]" />
 
-      <div className="container-tcar relative z-[2]">
+      <div className="mx-auto w-full max-w-[1280px] px-4 relative z-[2]">
         <div className="why_choose_us_wrapper grid grid-cols-[320px_1fr] items-center gap-[70px] max-lg:grid-cols-1 max-lg:gap-[50px]">
           <div className="why_left text-text-on-brand">
             <span className="section_label mb-[18px] inline-block rounded-full bg-action-primary/[0.18] px-[18px] py-2 font-bold text-action-primary">{t('smallTitle')}</span>

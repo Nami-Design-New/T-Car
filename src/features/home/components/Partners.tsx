@@ -18,8 +18,8 @@ export default function Partners({ offices }: Props) {
 
 
   return (
-    <section className="partners section py-20" id="partners">
-      <div className="container-tcar">
+    <section className="py-20" id="partners">
+      <div className="mx-auto w-full max-w-[1280px] px-4">
         <SectionTitle
           smallTitle={t('partners.smallTitle')}
           title={t('partners.title')}
