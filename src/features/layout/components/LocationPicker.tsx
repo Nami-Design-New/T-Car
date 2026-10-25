@@ -5,6 +5,9 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { FiChevronDown, FiMapPin } from "react-icons/fi";
 import type { LocationData } from "@/shared/lib/location";
+import { ICONS } from "@/shared/config/assets";
+import Image from "next/image";
+const locationIcon = ICONS.locationChip;
 
 const MapLocationModal = dynamic(
   () =>
@@ -25,20 +28,31 @@ export default function LocationPicker() {
   };
 
   return (
-    <div className="location-picker min-w-0 flex-[0_1_300px] max-xl:basis-[230px] max-md:flex-1">
+    <div className="location-picker min-w-0 flex-[0_1_300px] max-xl:basis-57.5 max-md:flex-1">
       <button
         type="button"
-        className="location-picker-trigger flex h-[52px] w-[min(300px,100%)] items-center gap-2.5 rounded-full bg-surface-card-primary text-text-primary transition duration-300 hover:bg-primary-100/80 hover:text-action-primary focus-visible:outline-3 focus-visible:outline-action-primary/20 focus-visible:outline-offset-3 active:scale-[0.98] max-xl:w-[230px] max-md:h-[46px] max-md:w-full max-md:max-w-[230px] max-md:px-3"
+        className=" flex min-h-8 bg-surface-card-primary! cursor-pointer  w-[min(300px,100%)] outline-0 border-0 items-center gap-2.5 rounded-full  text-text-primary transition duration-300 hover:bg-primary-100/80 hover:text-action-primary focus-visible:outline-3 focus-visible:outline-action-primary/20 focus-visible:outline-offset-3 active:scale-[0.98]  "
         aria-label={t("choose")}
         aria-haspopup="dialog"
         aria-expanded={open}
         onClick={() => setOpen(true)}
       >
-        <FiMapPin className="location-picker-icon shrink-0 text-[28px] text-action-primary max-md:text-2xl" aria-hidden="true" />
-        <span className="location-picker-address min-w-0 overflow-hidden text-ellipsis whitespace-nowrap text-base font-semibold max-md:text-sm">
+        <Image
+          src={locationIcon.src}
+          width={locationIcon.width}
+          height={locationIcon.height}
+          alt={t("locationIconAlt")}
+          className=" shrink-0 size-4 "
+          aria-hidden="true"
+        />
+
+        <span className="location-picker-address min-w-0 overflow-hidden text-ellipsis whitespace-nowrap text-sm font-semibold gap-ds-2 p-ds-3">
           {location?.address || t("default")}
         </span>
-        <FiChevronDown className="location-picker-chevron ms-auto shrink-0 text-xl text-text-subtle" aria-hidden="true" />
+        <FiChevronDown
+          className="location-picker-chevron ms-auto shrink-0 text-xl text-text-subtle"
+          aria-hidden="true"
+        />
       </button>
 
       {open && (
