@@ -140,7 +140,7 @@ export default function AuthModal({ show, onHide, next }: Props) {
       label="Authentication"
     >
       <Dialog.Header>
-        <Dialog.Close />
+        <Dialog.Close className="ms-auto" />
       </Dialog.Header>
       <Dialog.Body>{renderStep()}</Dialog.Body>
     </Dialog>

@@ -13,6 +13,8 @@ import { applyFieldErrors } from "@/shared/lib/validation";
 import { Button } from "@/shared/ui/Button";
 import { FormCheckbox, FormInput } from "@/shared/ui/Form";
 import { registerFormSchema, type RegisterFormValues } from "../validation";
+import { BackButton } from "@/shared/ui/BackButton/BackButton";
+import { Link } from "@/i18n/navigation";
 
 type Props = {
   onBack: () => void;
@@ -64,26 +66,18 @@ export default function RegisterForm({
 
   return (
     <form
-      className="relative flex w-full flex-col [&>p]:mb-6 [&>p]:text-text-subtle"
+      className="[&>p]:text-text-subtle relative flex w-full flex-col [&>p]:mb-6"
       onSubmit={submit}
       noValidate
     >
-      <div className="mb-6 flex items-center gap-2">
-        <button
-          type="button"
-          className="grid size-9 shrink-0 place-items-center rounded-md border border-stroke-light text-text-primary transition hover:bg-surface-on-background focus-visible:outline-2 focus-visible:outline-action-primary"
-          onClick={onBack}
-          aria-label={t("auth.register.backLabel")}
-        >
-          <FiArrowLeft className="rtl:scale-x-[-1]" aria-hidden="true" />
-        </button>
-
-        <h2 className="mb-0 text-xl font-extrabold leading-relaxed text-text-primary">
+      <div className="mt-2 mb-6 flex items-center gap-2">
+        <BackButton onClick={onBack} />
+        <h2 className="text-text-primary mb-0 text-xl leading-relaxed font-extrabold">
           {t("auth.register.title")}
         </h2>
       </div>
 
-      <div className="mb-5 flex flex-col gap-[18px] rounded-lg border border-action-primary/10 bg-surface-card-primary p-[18px]">
+      <div className="mb-5 flex flex-col gap-4.5">
         <FormInput
           id="register-name"
           label={t("auth.register.fullNameLabel")}
@@ -98,7 +92,7 @@ export default function RegisterForm({
         <FormInput
           id="register-email"
           label={t("auth.register.emailLabel")}
-          className="h-14 !border-stroke-light !bg-surface-elevated text-[15px] text-text-primary placeholder:text-text-placeholder hover:!border-action-primary/35 focus:!border-action-primary focus:!ring-4 focus:!ring-action-primary/15 [direction:ltr] text-left"
+          className="!border-stroke-light !bg-surface-elevated text-text-primary placeholder:text-text-placeholder hover:!border-action-primary/35 focus:!border-action-primary focus:!ring-action-primary/15 h-14 text-left text-[15px] [direction:ltr] focus:!ring-4"
           type="email"
           dir="ltr"
           placeholder={t("auth.register.emailPlaceholder")}
@@ -111,7 +105,7 @@ export default function RegisterForm({
         <FormInput
           id="register-birth-date"
           label={t("auth.register.birthDateLabel")}
-          className="h-14 !border-stroke-light !bg-surface-elevated text-[15px] text-text-subtle placeholder:text-text-placeholder hover:!border-action-primary/35 focus:!border-action-primary focus:!ring-4 focus:!ring-action-primary/15 [direction:ltr] tabular-nums"
+          className="!border-stroke-light !bg-surface-elevated text-text-subtle placeholder:text-text-placeholder hover:!border-action-primary/35 focus:!border-action-primary focus:!ring-action-primary/15 h-14 text-[15px] tabular-nums [direction:ltr] focus:!ring-4"
           type="date"
           dir="ltr"
           autoComplete="bday"
@@ -120,18 +114,20 @@ export default function RegisterForm({
           {...register("birthDate")}
         />
       </div>
-
-      <FormCheckbox
-        id="register-terms"
-        className="mb-6 [&_span]:text-sm [&_span]:text-text-subtle [&_span]:leading-relaxed"
-        label={t("auth.register.agreeToTerms")}
-        required
-        error={fieldError(errors.acceptTerms?.message)}
-        {...register("acceptTerms")}
-      />
+      <p className="mt-4 text-center text-sm">
+        <span>بمتابعتك، فإنك توافق على </span>{" "}
+        <Link className="text-action-primary" href="/terms">
+          الشروط والأحكام
+        </Link>{" "}
+        <br />و{" "}
+        <Link className="text-action-primary" href="/privacy">
+          سياسة الخصوصية
+        </Link>{" "}
+        الخاصة بالتطبيق.
+      </p>
 
       {formError && (
-        <p className="text-status-error text-sm mt-2 mb-0" role="alert">
+        <p className="text-status-error mt-2 mb-0 text-sm" role="alert">
           {formError}
         </p>
       )}
