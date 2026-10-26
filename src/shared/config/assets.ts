@@ -16,6 +16,17 @@ export const ICONS = {
   timeline: { src: "/icons/timeline.svg", width: 4, height: 120 },
   locationChip: { src: "/icons/location-chip.svg", width: 14, height: 14 },
   starFill: { src: "/icons/star-fill.svg", width: 16, height: 16 },
+  notification: { src: "/icons/notification.svg", width: 20, height: 20 },
+  langSwitchIcon: {
+    src: "/icons/lang-switch-icon.svg",
+    width: 20,
+    height: 20,
+  },
+  logout: {
+    src: "/icons/logout.svg",
+    width: 16,
+    height: 16,
+  },
 } as const;
 
 export const POINTS_ICONS = {

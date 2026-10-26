@@ -17,7 +17,13 @@
       "logout": "Sign out"
     },
     "mobileNav": {
-      "toggle": "Toggle menu"
+      "toggle": "Open navigation menu",
+      "title": "Navigation menu",
+      "bottomNavigation": "Main navigation",
+      "more": "More"
+    },
+    "languageSwitcher": {
+      "label": "Change language"
     },
     "location": {
       "choose": "Choose your location",

@@ -17,7 +17,13 @@
       "logout": "تسجيل الخروج"
     },
     "mobileNav": {
-      "toggle": "فتح القائمة"
+      "toggle": "فتح القائمة",
+      "title": "قائمة التنقل",
+      "bottomNavigation": "التنقل الرئيسي",
+      "more": "المزيد"
+    },
+    "languageSwitcher": {
+      "label": "تغيير اللغة"
     },
     "location": {
       "choose": "اختيار الموقع",

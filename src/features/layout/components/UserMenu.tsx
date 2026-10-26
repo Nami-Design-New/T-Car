@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
-import { FiChevronDown, FiLogOut } from "react-icons/fi";
+import { FiChevronDown } from "react-icons/fi";
 import { ImUser } from "react-icons/im";
 import { Link } from "@/i18n/navigation";
 import { Menu } from "@/shared/ui/Menu";
@@ -22,15 +22,15 @@ export default function UserMenu({ avatarUrl, onLogout }: Props) {
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="user-menu relative min-w-0">
+    <div className=" relative min-w-0">
       <Menu.Root open={open} onOpenChange={setOpen}>
         <Menu.Trigger asChild>
           <button
             type="button"
-            className="user-menu-trigger flex h-11 items-center gap-2 rounded-md border border-stroke-light bg-surface-background px-2.5 pe-3.5 transition hover:border-action-primary"
+            className=" flex h-11 cursor-pointer items-center gap-2 rounded-md border border-stroke-light bg-surface-background px-2.5 pe-3.5 transition hover:border-action-primary"
             aria-label={t("account")}
           >
-            <span className="user-menu-avatar relative grid size-[33px] shrink-0 place-items-center overflow-hidden rounded-full bg-surface-card-primary text-[22px] text-action-primary">
+            <span className=" relative grid size-8.5 shrink-0 place-items-center overflow-hidden rounded-full bg-surface-card-primary text-[22px] text-action-primary">
               {avatarUrl ? (
                 <Image src={avatarUrl} alt="" fill sizes="32px" />
               ) : (
@@ -48,7 +48,7 @@ export default function UserMenu({ avatarUrl, onLogout }: Props) {
           </button>
         </Menu.Trigger>
 
-        <Menu.Content className="user-menu-list w-[200px]">
+        <Menu.Content className=" w-50">
           <Menu.Item asChild>
             <Link href="/account/profile">
               <Image
@@ -65,7 +65,8 @@ export default function UserMenu({ avatarUrl, onLogout }: Props) {
           <Menu.Separator />
 
           <Menu.Item tone="danger" onSelect={onLogout}>
-            <FiLogOut aria-hidden="true" /> {t("logout")}
+            <Image src={ICONS.logout} alt="logout" width={16} height={16} />
+            {t("logout")}
           </Menu.Item>
         </Menu.Content>
       </Menu.Root>

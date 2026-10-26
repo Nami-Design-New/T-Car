@@ -92,7 +92,7 @@ export default async function RootLayout({
 
   return (
     <html lang={locale} dir={dir} className={expo.variable}>
-      <body className="antialiased">
+      <body className="antialiased max-lg:pb-[calc(5rem+env(safe-area-inset-bottom))]">
         <NextIntlClientProvider>
           <DirectionProvider dir={dir}>
             <NextTopLoader color="#1f7ffa" height={3} showSpinner={false} />
