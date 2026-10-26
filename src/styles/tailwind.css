@@ -266,13 +266,19 @@
   @keyframes hero-filter-in {
     from {
       opacity: 0;
-      transform: translate(-50%, 24px);
+      transform: translateY(24px);
     }
   }
 
-  @keyframes hero-drawer-fade-in {
+  @keyframes drawer-slide-in-right {
     from {
-      opacity: 0;
+      transform: translateX(100%);
+    }
+  }
+
+  @keyframes drawer-slide-in-left {
+    from {
+      transform: translateX(-100%);
     }
   }
 

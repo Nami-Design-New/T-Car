@@ -41,9 +41,15 @@ const CAR_TYPES = [
 interface Props {
   brands: CarBrand[];
   onApply?: (filters: CarFilterDraft) => void;
+  /** Rendered inside a drawer: show the full panel at every width. */
+  embedded?: boolean;
 }
 
-export default function CarFilters({ brands: brandOptions, onApply }: Props) {
+export default function CarFilters({
+  brands: brandOptions,
+  onApply,
+  embedded,
+}: Props) {
   const t = useTranslations("cars");
   const router = useRouter();
   const pathname = usePathname();
@@ -124,6 +130,7 @@ export default function CarFilters({ brands: brandOptions, onApply }: Props) {
       hasActiveFilters={active}
       onClearAll={clearAll}
       onApply={apply}
+      embedded={embedded}
     >
       <section className="filter_group chip_filter_group mb-7 border-b border-stroke-light pb-7 last:mb-0 last:border-0 last:pb-0">
         <div className="filter_title mb-3 flex items-center justify-between">

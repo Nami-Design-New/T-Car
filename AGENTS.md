@@ -1,7 +1,8 @@
 # T-Car: agent notes
 
 The front end is being migrated to the architecture in `docs/` (start at
-`docs/README.md`). Work happens on branch `refactor/architecture-layers`.
+`docs/README.md`). There is no fixed work branch: ask the user which branch to
+work and commit on before starting.
 
 **Migration status** lives in `docs/README.md` → "Migration status" (phase and
 feature tables, and where the code differs from the docs). Read it before
@@ -25,12 +26,12 @@ conventions are in `docs/01-architecture-layers.md` §1.5.
 4. Run `git checkout tsconfig.tsbuildinfo` (tracked build cache), report the
    verified fraction, and **wait for the user's approval before committing**.
    No commit without explicit approval, every time; approval for one commit
-   does not cover the next. Commit on the branch, keep commits local; the user
-   pushes.
+   does not cover the next. Commit on the branch the user named, keep commits
+   local; the user pushes.
 5. Done when the fraction is committed, verified, and the status tables in
    `docs/README.md` reflect it.
 
-Ask the user before: any `git commit`; deleting `BookingModal`, `BookingMonthlyModal`,
+Ask the user before: any `git commit` (and which branch it goes on); deleting `BookingModal`, `BookingMonthlyModal`,
 `InsufficientBalanceModal` (waiting on product); choosing a backend contract
 (no real endpoints exist); anything that contradicts a doc.
 

@@ -26,7 +26,7 @@ export default function PopularCities({ cities }: Props) {
   } = useCarouselRail({ isRTL });
 
   return (
-    <section className="relative pt-[120px] pb-10" id="cities">
+    <section className="relative pt-[120px] pb-10 max-md:pt-10" id="cities">
       <div className="mx-auto w-full max-w-[1280px] px-4">
         <div className="mb-6 flex items-start justify-between max-md:mb-0">
           <SectionTitle
