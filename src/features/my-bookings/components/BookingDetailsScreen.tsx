@@ -12,7 +12,7 @@ interface Props {
 export default function BookingDetailsScreen({ booking }: Props) {
   return (
     <section className="bg-surface-on-background py-8 pb-16">
-      <div className="mx-auto w-full max-w-[1280px] px-4">
+      <div className="mx-auto w-full max-w-7xl px-2">
         <div className="mx-auto flex max-w-270 flex-col gap-6">
           <BookingDetailsHeader booking={booking} />
 

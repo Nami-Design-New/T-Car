@@ -1,12 +1,12 @@
-import { CarBookingCard } from '@/features/booking';
-import type { CarDetails } from '../model';
-import CarGallery from './CarGallery';
-import CarQuickInfo from './CarQuickInfo';
-import WarrantiesList from './WarrantiesList';
-import AddonsGrid from './AddonsGrid';
-import InsuranceOptions from './InsuranceOptions';
-import ReviewsSummaryCard from './ReviewsSummaryCard';
-import StationAndAirportInfo from './StationAndAirportInfo';
+import { CarBookingCard } from "@/features/booking";
+import type { CarDetails } from "../model";
+import CarGallery from "./CarGallery";
+import CarQuickInfo from "./CarQuickInfo";
+import WarrantiesList from "./WarrantiesList";
+import AddonsGrid from "./AddonsGrid";
+import InsuranceOptions from "./InsuranceOptions";
+import ReviewsSummaryCard from "./ReviewsSummaryCard";
+import StationAndAirportInfo from "./StationAndAirportInfo";
 
 interface Props {
   car: CarDetails;
@@ -16,10 +16,13 @@ export default function CarDetailsView({ car }: Props) {
   return (
     <>
       <section className="py-20 max-md:py-12">
-        <div className="mx-auto w-full max-w-[1280px] px-4">
+        <div className="mx-auto w-full max-w-7xl px-2">
           <div className="car-details-grid grid grid-cols-[minmax(0,1fr)_360px] items-start gap-8 max-lg:grid-cols-1">
             <div className="car-details-main min-w-0">
-              <CarGallery image={car.images[0]} alt={`${car.brand} ${car.name}`} />
+              <CarGallery
+                image={car.images[0]}
+                alt={`${car.brand} ${car.name}`}
+              />
               <CarQuickInfo car={car} />
               {car.pickupPoint && (
                 <StationAndAirportInfo

@@ -28,9 +28,9 @@ export default async function Header({
   });
 
   return (
-    <header className="sticky top-0 z-100 border-b border-black/5 bg-surface-background/95 shadow-[0_4px_20px_rgba(30,30,30,0.06)] backdrop-blur-md">
-      <div className="mx-auto w-full max-w-7xl px-4 header-inner flex h-20 items-center justify-between">
-        <div className=" flex min-w-0 items-center gap-[clamp(12px,2vw,24px)]">
+    <header className="bg-surface-background/95 sticky top-0 z-100 border-b border-black/5 shadow-[0_4px_20px_rgba(30,30,30,0.06)] backdrop-blur-md">
+      <div className="header-inner mx-auto flex h-20 w-full max-w-7xl items-center justify-between px-2">
+        <div className="flex min-w-0 items-center gap-[clamp(12px,2vw,24px)]">
           <BrandLogo />
           <LocationPicker />
         </div>
@@ -40,7 +40,7 @@ export default async function Header({
           drawerChildren={
             <>
               <HeaderNavLinks />
-              <div className="mt-8 flex w-full items-center gap-3 border-t border-stroke-light pt-6">
+              <div className="border-stroke-light mt-8 flex w-full items-center gap-3 border-t pt-6">
                 <div className="min-w-0 flex-1 [&>div]:w-full">
                   <LanguageSwitcher />
                 </div>
@@ -56,7 +56,7 @@ export default async function Header({
           }
         >
           <HeaderNavLinks />
-          <div className="flex items-center gap-3 max-lg:mt-8 max-lg:w-full max-lg:flex-col max-lg:items-stretch max-lg:border-t max-lg:border-stroke-light max-lg:pt-6">
+          <div className="max-lg:border-stroke-light flex items-center gap-3 max-lg:mt-8 max-lg:w-full max-lg:flex-col max-lg:items-stretch max-lg:border-t max-lg:pt-6">
             <div className="flex items-center gap-3 max-lg:w-full">
               <LanguageSwitcher />
             </div>
@@ -66,7 +66,7 @@ export default async function Header({
         {hasSession && (
           <Link
             href="/account/notifications"
-            className="relative grid h-11 w-11 shrink-0 ms-3 place-items-center rounded-lg bg-surface-on-background text-text-primary shadow-[inset_0px_8px_12px_0px_#FCFEFA,inset_0px_-4px_4px_0px_#0C0C0C26] transition duration-300 hover:bg-surface-card-primary hover:text-action-primary focus-visible:outline-3 focus-visible:outline-action-primary/20 focus-visible:outline-offset-2"
+            className="bg-surface-on-background text-text-primary hover:bg-surface-card-primary hover:text-action-primary focus-visible:outline-action-primary/20 relative ms-3 grid h-11 w-11 shrink-0 place-items-center rounded-lg shadow-[inset_0px_8px_12px_0px_#FCFEFA,inset_0px_-4px_4px_0px_#0C0C0C26] transition duration-300 focus-visible:outline-3 focus-visible:outline-offset-2"
             aria-label={`${t("account.notifications.title")}: ${notificationCountLabel}`}
           >
             <span className="relative inline-flex shrink-0">
@@ -78,7 +78,7 @@ export default async function Header({
                 alt={t("account.notifications.title")}
               />
               {unreadCount > 0 && (
-                <span className="absolute -inset-e-2 -top-2 grid h-6 w-max min-w-6 shrink-0 place-items-center whitespace-nowrap rounded-full border-2 border-surface-background bg-status-error px-1.5 text-xs font-extrabold leading-none text-text-on-action">
+                <span className="border-surface-background bg-status-error text-text-on-action absolute -inset-e-2 -top-2 grid h-6 w-max min-w-6 shrink-0 place-items-center rounded-full border-2 px-1.5 text-xs leading-none font-extrabold whitespace-nowrap">
                   {unreadCount > 99 ? "99+" : unreadCount}
                 </span>
               )}

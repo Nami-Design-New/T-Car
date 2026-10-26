@@ -16,7 +16,7 @@ export default async function AccountLayout({
 
   return (
     <section className="py-20 max-md:py-12">
-      <div className="mx-auto w-full max-w-7xl px-4">
+      <div className="mx-auto w-full max-w-7xl px-2">
         <div className="mb-6 flex items-center gap-2.5">
           <BackButton />
           <h1 className="m-0">{t("title")}</h1>

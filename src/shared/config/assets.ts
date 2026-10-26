@@ -27,6 +27,11 @@ export const ICONS = {
     width: 16,
     height: 16,
   },
+  chevronLeft: {
+    src: "/icons/chevron-left.svg",
+    width: 12,
+    height: 12,
+  },
 } as const;
 
 export const POINTS_ICONS = {
@@ -66,7 +71,7 @@ export const IMAGES = {
   appPhone: { src: "/images/app/app-phone.png", width: 360, height: 720 },
   appStore: { src: "/images/app/app-store.webp", width: 160, height: 48 },
   googlePlay: { src: "/images/app/google-play.webp", width: 160, height: 48 },
-  gift: { src: "/images/illustrations/gift.webp", width: 48, height: 48 },
+  gift: { src: "/images/illustrations/gift.webp", width: 48, height: 37 },
   cancelBooking: {
     src: "/images/illustrations/cancel-booking.svg",
     width: 140,

@@ -1,5 +1,5 @@
-@import 'tailwindcss/theme.css';
-@import 'tailwindcss/utilities.css';
+@import "tailwindcss/theme.css";
+@import "tailwindcss/utilities.css";
 
 /* Tailwind is the application styling layer. Preflight stays disabled. */
 @theme {
@@ -25,6 +25,8 @@
   --color-success-500: #22c55e;
   --color-success-600: #16a34a;
   --color-success-700: #15803d;
+
+  --color-ds-green: #15803d;
 
   --color-warning-50: #fffbeb;
   --color-warning-100: #fef3c7;
@@ -85,7 +87,7 @@
   --radius-xl: 24px;
   --radius-2xl: 32px;
 
-  --font-expo: 'Expo Arabic', sans-serif;
+  --font-expo: "Expo Arabic", sans-serif;
   --breakpoint-sm: 576px;
   --breakpoint-md: 768px;
   --breakpoint-lg: 992px;
@@ -104,6 +106,7 @@
     font-family: var(--font-primary), sans-serif;
     color: var(--color-text-primary);
     background-color: var(--color-surface-background);
+    background-image: linear-gradient(193.71deg, #f6faff 0%, #eff6fe 144.34%);
     scroll-behavior: smooth;
   }
 
@@ -130,27 +133,86 @@
     display: block;
     max-width: 100%;
   }
+  p {
+    margin: 0;
+  }
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    margin: 0;
+  }
 }
 
 @layer components {
+  .faq-answer {
+    display: grid;
+    grid-template-rows: minmax(0, 0fr);
+    visibility: hidden;
+    opacity: 0;
+    transition:
+      grid-template-rows 300ms ease,
+      opacity 300ms ease,
+      visibility 300ms allow-discrete;
+  }
+  .faq-item[open] > .faq-answer {
+    grid-template-rows: minmax(0, 1fr);
+    visibility: visible;
+    opacity: 1;
+  }
+  .faq-answer > p {
+    min-height: 0;
+    overflow: hidden;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .faq-answer {
+      transition: none;
+    }
+  }
+
   @keyframes popup {
-    from { opacity: 0; transform: translateY(30px) scale(0.96); }
-    to { opacity: 1; transform: translateY(0) scale(1); }
+    from {
+      opacity: 0;
+      transform: translateY(30px) scale(0.96);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
   }
 
   @keyframes nfSwing {
-    0%, 100% { transform: rotate(-4deg); }
-    50% { transform: rotate(4deg); }
+    0%,
+    100% {
+      transform: rotate(-4deg);
+    }
+    50% {
+      transform: rotate(4deg);
+    }
   }
 
   @keyframes nfDrift {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-6px); }
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-6px);
+    }
   }
 
   @keyframes nfFloat {
-    0%, 100% { transform: translateY(0); opacity: 0.6; }
-    50% { transform: translateY(-8px); opacity: 1; }
+    0%,
+    100% {
+      transform: translateY(0);
+      opacity: 0.6;
+    }
+    50% {
+      transform: translateY(-8px);
+      opacity: 1;
+    }
   }
 
   @keyframes btn-spin {

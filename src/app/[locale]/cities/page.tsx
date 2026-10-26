@@ -9,7 +9,7 @@ export default async function CitiesPage() {
   const t = await getTranslations("citiesPage");
   return (
     <section className="py-20 max-md:py-12">
-      <div className="mx-auto w-full max-w-[1280px] px-4">
+      <div className="mx-auto w-full max-w-7xl px-2">
         <SectionTitle title={t("title")} subtitle={t("subtitle")} />
         <PopularCities cities={cities} />
       </div>

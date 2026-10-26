@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useId } from 'react';
-import PhoneInput from 'react-phone-input-2';
-import 'react-phone-input-2/lib/style.css';
+import { useId } from "react";
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/style.css";
 
 export interface PhoneFieldProps {
   value: string;
@@ -22,10 +22,10 @@ export function PhoneField({
   value,
   onChange,
   onBlur,
-  defaultCountry = 'sa',
+  defaultCountry = "sa",
   disabled = false,
-  searchPlaceholder = 'Search countries...',
-  inputAriaLabel = 'Phone number',
+  searchPlaceholder = "Search countries...",
+  inputAriaLabel = "Phone number",
   label,
   required = false,
   error,
@@ -33,8 +33,10 @@ export function PhoneField({
   const errorId = `${useId()}-error`;
 
   return (
-    <div className="phone_field_wrapper flex flex-col gap-1">
-      {label && <label className="phone_field_label font-semibold text-text-primary">{label}</label>}
+    <div className="flex flex-col gap-2">
+      {label && (
+        <label className="text-text-primary font-semibold">{label}</label>
+      )}
       <PhoneInput
         country={defaultCountry}
         value={value}
@@ -46,21 +48,25 @@ export function PhoneField({
         disableSearchIcon
         countryCodeEditable={false}
         inputProps={{
-          name: 'phone',
-          autoComplete: 'tel',
-          'aria-label': inputAriaLabel,
-          'aria-required': required || undefined,
-          'aria-invalid': error ? true : undefined,
-          'aria-describedby': error ? errorId : undefined,
+          name: "phone",
+          autoComplete: "tel",
+          "aria-label": inputAriaLabel,
+          "aria-required": required || undefined,
+          "aria-invalid": error ? true : undefined,
+          "aria-describedby": error ? errorId : undefined,
         }}
         containerClass="phone_field relative w-full direction-ltr"
-        inputClass="phone_input !h-14 !w-full !rounded-md !border !border-stroke-light !pl-4 !pr-4 !text-left !direction-ltr focus:!border-action-primary focus:!outline-none focus:!ring-4 focus:!ring-action-primary/15"
-        buttonClass="country_selector_btn !left-0 !right-auto !h-14 !rounded-l-md !rounded-r-none !border !border-r-0 !border-stroke-light !bg-surface-on-background"
-        dropdownClass="country_dropdown"
-        searchClass="country_search"
+        inputClass="phone_input h-12.5! !w-full !rounded-md !border !border-stroke-light !pl-4 !pr-4 !text-left !direction-ltr focus:!border-action-primary focus:!outline-none focus:!ring-4 focus:!ring-action-primary/15"
+        buttonClass="!h-12.5 "
+        dropdownClass=""
+        searchClass=""
       />
       {error && (
-        <p id={errorId} className="phone_field_error mt-1 mb-0 text-[13px] text-status-error" role="alert">
+        <p
+          id={errorId}
+          className="phone_field_error text-status-error mt-1 mb-0 text-[13px]"
+          role="alert"
+        >
           {error}
         </p>
       )}

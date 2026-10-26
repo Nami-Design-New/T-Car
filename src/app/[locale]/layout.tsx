@@ -1,42 +1,42 @@
-import { auth } from '@/auth';
-import { Footer, Header } from '@/features/layout';
-import { getNotifications } from '@/features/notifications/queries';
-import type { Metadata } from 'next';
-import { NextIntlClientProvider } from 'next-intl';
-import { getDirection } from '@/shared/config/languages';
-import { DirectionProvider } from '@/shared/ui/DirectionProvider';
-import NextTopLoader from 'nextjs-toploader';
-import localFont from 'next/font/local';
-import '../../styles/tailwind.css';
+import { auth } from "@/auth";
+import { Footer, Header } from "@/features/layout";
+import { getNotifications } from "@/features/notifications/queries";
+import type { Metadata } from "next";
+import { NextIntlClientProvider } from "next-intl";
+import { getDirection } from "@/shared/config/languages";
+import { DirectionProvider } from "@/shared/ui/DirectionProvider";
+import NextTopLoader from "nextjs-toploader";
+import localFont from "next/font/local";
+import "../../styles/tailwind.css";
 
 const expo = localFont({
   src: [
     {
-      path: '../../assets/fonts/Expo-Arabic-Light.woff2',
-      weight: '400',
-      style: 'normal',
+      path: "../../assets/fonts/Expo-Arabic-Light.ttf",
+      weight: "400",
+      style: "normal",
     },
     {
-      path: '../../assets/fonts/Expo-Arabic-Medium.woff2',
-      weight: '500',
-      style: 'normal',
+      path: "../../assets/fonts/Expo-Arabic-Medium.ttf",
+      weight: "500",
+      style: "normal",
     },
     {
-      path: '../../assets/fonts/Expo-Arabic-SemiBold.woff2',
-      weight: '600',
-      style: 'normal',
+      path: "../../assets/fonts/Expo-Arabic-SemiBold.ttf",
+      weight: "600",
+      style: "normal",
     },
     {
-      path: '../../assets/fonts/Expo-Arabic-Bold.woff2',
-      weight: '700',
-      style: 'normal',
+      path: "../../assets/fonts/Expo-Arabic-Bold.ttf",
+      weight: "700",
+      style: "normal",
     },
   ],
-  variable: '--font-expo',
-  display: 'swap',
+  variable: "--font-expo",
+  display: "swap",
 });
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -44,32 +44,32 @@ export const metadata: Metadata = {
   // social image yet: add a designed 1200x630 src/app/opengraph-image.jpg and
   // Next links it for Open Graph and X automatically.
   title: {
-    default: 'T-Car | Rent the Latest Cars',
-    template: '%s | T-Car',
+    default: "T-Car | Rent the Latest Cars",
+    template: "%s | T-Car",
   },
   description:
-    'T-Car is a modern car rental platform that allows users to browse and rent the latest car models for business trips, family vacations, and personal transportation.',
+    "T-Car is a modern car rental platform that allows users to browse and rent the latest car models for business trips, family vacations, and personal transportation.",
   keywords: [
-    'car rental',
-    'rent a car',
-    'T-Car',
-    'business trip car rental',
-    'family vacation car rental',
-    'luxury car rental',
+    "car rental",
+    "rent a car",
+    "T-Car",
+    "business trip car rental",
+    "family vacation car rental",
+    "luxury car rental",
   ],
   openGraph: {
-    title: 'T-Car | Rent the Latest Cars',
+    title: "T-Car | Rent the Latest Cars",
     description:
-      'Browse and rent the latest car models for business trips, family vacations, and personal transportation.',
+      "Browse and rent the latest car models for business trips, family vacations, and personal transportation.",
     url: siteUrl,
-    siteName: 'T-Car',
-    type: 'website',
+    siteName: "T-Car",
+    type: "website",
   },
   twitter: {
-    card: 'summary',
-    title: 'T-Car | Rent the Latest Cars',
+    card: "summary",
+    title: "T-Car | Rent the Latest Cars",
     description:
-      'Browse and rent the latest car models for business trips, family vacations, and personal transportation.',
+      "Browse and rent the latest car models for business trips, family vacations, and personal transportation.",
   },
   robots: {
     index: true,
@@ -87,7 +87,8 @@ export default async function RootLayout({
   const [{ locale }, session] = await Promise.all([params, auth()]);
   const dir = getDirection(locale);
   const unreadCount = session
-    ? (await getNotifications()).filter((notification) => !notification.read).length
+    ? (await getNotifications()).filter((notification) => !notification.read)
+        .length
     : 0;
 
   return (

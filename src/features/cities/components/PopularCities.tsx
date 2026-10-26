@@ -26,19 +26,16 @@ export default function PopularCities({ cities }: Props) {
   } = useCarouselRail({ isRTL });
 
   return (
-    <section className="relative pt-[120px] pb-10 max-md:pt-10" id="cities">
-      <div className="mx-auto w-full max-w-[1280px] px-4">
-        <div className="mb-6 flex items-start justify-between max-md:mb-0">
-          <SectionTitle
-            title={t("popularCities.title")}
-            subtitle={t("popularCities.subtitle")}
-          />
-          <div className="flex shrink-0 gap-3">
+    <section className="relative pt-30 max-md:pt-10" id="cities">
+      <div className="mx-auto w-full max-w-7xl px-2">
+        <div className="mb-6 flex items-center justify-between gap-4 max-md:mb-4">
+          <SectionTitle align="left" title={t("popularCities.title")} />
+          <div className="flex shrink-0 gap-3 max-md:gap-2">
             <button
               type="button"
               aria-label="previous"
               onClick={scrollPrev}
-              className="flex size-11 items-center justify-center rounded-full border border-stroke-light bg-surface-elevated text-text-primary transition duration-300 hover:-translate-y-0.5 hover:border-action-primary hover:bg-action-primary hover:text-text-on-action hover:shadow-[0_10px_20px_rgba(31,127,250,0.18)]"
+              className="border-stroke-light bg-surface-elevated text-text-primary hover:border-action-primary hover:bg-action-primary hover:text-text-on-action flex size-11 items-center justify-center rounded-full border transition duration-300 hover:-translate-y-0.5 hover:shadow-[0_10px_20px_rgba(31,127,250,0.18)] max-md:size-10"
             >
               <FiArrowLeft className="rtl:scale-x-[-1]" />
             </button>
@@ -46,7 +43,7 @@ export default function PopularCities({ cities }: Props) {
               type="button"
               aria-label="next"
               onClick={scrollNext}
-              className="flex size-11 items-center justify-center rounded-full border border-stroke-light bg-surface-elevated text-text-primary transition duration-300 hover:-translate-y-0.5 hover:border-action-primary hover:bg-action-primary hover:text-text-on-action hover:shadow-[0_10px_20px_rgba(31,127,250,0.18)]"
+              className="border-stroke-light bg-surface-elevated text-text-primary hover:border-action-primary hover:bg-action-primary hover:text-text-on-action flex size-11 items-center justify-center rounded-full border transition duration-300 hover:-translate-y-0.5 hover:shadow-[0_10px_20px_rgba(31,127,250,0.18)] max-md:size-10"
             >
               <FiArrowRight className="rtl:scale-x-[-1]" />
             </button>
@@ -58,33 +55,33 @@ export default function PopularCities({ cities }: Props) {
           onMouseEnter={stopAutoplay}
           onMouseLeave={startAutoplay}
           dir={isRTL ? "rtl" : "ltr"}
-          className="flex gap-6 overflow-x-auto pb-1 [scroll-snap-type:x_mandatory] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          className="scrollbar:none flex [scroll-snap-type:x_mandatory] gap-6 overflow-x-auto pb-1 [&::-webkit-scrollbar]:hidden"
         >
           {cities.map((city) => (
             <Link
               key={city.id}
               href={`/cities/${city.slug}`}
-              className="group relative block h-[260px] w-[320px] shrink-0 snap-start overflow-hidden rounded-md no-underline max-md:h-[220px] max-md:w-[78vw]"
+              className="group relative block h-65 w-[320px] shrink-0 snap-start overflow-hidden rounded-md no-underline max-md:h-55 max-md:w-[78vw]"
             >
               <Image
                 src={city.image}
                 alt={city.name}
                 fill
                 sizes="(max-width:768px) 80vw,320px"
-                className="object-cover transition-transform duration-[600ms] group-hover:scale-[1.08]"
+                className="object-cover transition-transform duration-600 group-hover:scale-[1.08]"
               />
               <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(30,30,30,0.75)_0%,rgba(30,30,30,0.25)_55%,rgba(30,30,30,0)_100%)]" />
-              <span className="absolute start-4 top-4 z-[2] inline-flex items-center gap-1.5 rounded-full bg-text-on-brand/[0.15] px-3 py-1.5 text-sm font-semibold text-text-on-brand backdrop-blur-[10px]">
+              <span className="bg-text-on-brand/15 text-text-on-brand absolute inset-s-4 top-4 z-2 inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-semibold backdrop-blur-[10px]">
                 <FiMapPin aria-hidden="true" />
                 {city.carsAvailable} {t("popularCities.carsAvailable")}
               </span>
-              <div className="absolute inset-x-0 bottom-0 flex flex-col items-start gap-2 p-[22px]">
-                <h3 className="m-0 text-[1.35rem] font-bold text-text-on-brand">
+              <div className="absolute inset-x-0 bottom-0 flex flex-col items-start gap-2 p-5.5">
+                <h3 className="text-text-on-brand m-0 text-[1.35rem] font-bold">
                   {city.name}
                 </h3>
-                <span className="inline-flex items-center gap-1.5 text-[0.95rem] font-semibold text-text-on-brand">
+                <span className="text-text-on-brand inline-flex items-center gap-1.5 text-[0.95rem] font-semibold">
                   {t("popularCities.explore")}
-                  <FiArrowRight className="rtl:scale-x-[-1] transition-[margin-inline-end] duration-300 group-hover:me-[5px]" />
+                  <FiArrowRight className="transition-[margin-inline-end] duration-300 group-hover:me-1.25 rtl:scale-x-[-1]" />
                 </span>
               </div>
             </Link>

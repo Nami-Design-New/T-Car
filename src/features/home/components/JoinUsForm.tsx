@@ -50,30 +50,18 @@ export default function JoinUsForm({ open, onClose }: Props) {
       className="p-0"
       label={t("title")}
     >
-      <Dialog.Header className="items-start px-8 pt-7 max-md:px-5">
-        <div className="min-w-0 flex-1 text-start">
-          <Dialog.Title className="mb-2 text-2xl font-bold max-md:text-[26px]">
-            {t("title")}
-          </Dialog.Title>
-          <Dialog.Description className="mx-0 mt-0 max-w-[650px] leading-[1.8]">
-            {t("descriptionBeforeBrand")}
-            <span className="font-bold text-action-primary">
-              {" "}
-              {t("brand")}{" "}
-            </span>
-            {t("descriptionAfterBrand")}
-          </Dialog.Description>
-        </div>
+      <Dialog.Header>
+        <Dialog.Title>{t("title")}</Dialog.Title>
         <Dialog.Close />
       </Dialog.Header>
 
-      <Dialog.Body className="px-8 py-6 max-md:px-5">
+      <Dialog.Body className="pt-5 pb-7">
         <form
           id="join-us-form"
           className="flex flex-col"
           onSubmit={(event) => event.preventDefault()}
         >
-          <div className="grid grid-cols-2 gap-[18px] max-md:grid-cols-1">
+          <div className="grid grid-cols-2 gap-4.5 max-md:grid-cols-1">
             <FormInput
               id="firstName"
               name="firstName"
@@ -85,7 +73,7 @@ export default function JoinUsForm({ open, onClose }: Props) {
             />
 
             <div className="flex flex-col gap-2">
-              <label className="text-sm font-semibold text-text-primary">
+              <label className="text-text-primary text-sm font-semibold">
                 {t("fields.phone.label")}
                 <span>*</span>
               </label>
@@ -139,8 +127,8 @@ export default function JoinUsForm({ open, onClose }: Props) {
         </form>
       </Dialog.Body>
 
-      <Dialog.Footer className="px-8 pb-7 max-md:px-5 [&>button]:w-full">
-        <Button type="submit" form="join-us-form" size="lg">
+      <Dialog.Footer>
+        <Button type="submit" className="w-full" form="join-us-form" size="lg">
           {t("submit")}
         </Button>
       </Dialog.Footer>

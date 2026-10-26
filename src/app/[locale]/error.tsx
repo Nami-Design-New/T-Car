@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { startTransition, useEffect } from 'react';
-import { useRouter } from '@/i18n/navigation';
-import { reportError } from '@/shared/lib/report';
-import { ErrorState } from '@/shared/ui/ErrorState';
+import { startTransition, useEffect } from "react";
+import { useRouter } from "@/i18n/navigation";
+import { reportError } from "@/shared/lib/report";
+import { ErrorState } from "@/shared/ui/ErrorState";
 
 interface Props {
   error: Error & { digest?: string };
@@ -19,7 +19,7 @@ export default function RouteError({ error, reset }: Props) {
   const router = useRouter();
 
   useEffect(() => {
-    reportError(error, { scope: 'route', digest: error.digest });
+    reportError(error, { scope: "route", digest: error.digest });
   }, [error]);
 
   // reset() alone only re-renders on the client; refresh re-runs the server render.
@@ -31,8 +31,13 @@ export default function RouteError({ error, reset }: Props) {
 
   return (
     <section className="py-20 max-md:py-12">
-      <div className="mx-auto w-full max-w-[1280px] px-4">
-        <ErrorState size="page" error={error} onRetry={retry} reference={error.digest} />
+      <div className="mx-auto w-full max-w-7xl px-2">
+        <ErrorState
+          size="page"
+          error={error}
+          onRetry={retry}
+          reference={error.digest}
+        />
       </div>
     </section>
   );

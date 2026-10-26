@@ -134,15 +134,15 @@ export default function AuthModal({ show, onHide, next }: Props) {
     <Dialog
       open={show}
       onClose={close}
-      className="overflow-hidden rounded-xl border-0 p-0"
+
       closeOnEscape={!pending}
       closeOnBackdrop={!pending}
       label="Authentication"
     >
-      <Dialog.Header className="border-0 px-10 pt-3">
+      <Dialog.Header>
         <Dialog.Close />
       </Dialog.Header>
-      <Dialog.Body className="px-10 pt-0 pb-10">{renderStep()}</Dialog.Body>
+      <Dialog.Body>{renderStep()}</Dialog.Body>
     </Dialog>
   );
 }

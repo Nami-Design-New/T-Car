@@ -42,7 +42,7 @@ export default async function CityDetailsPage({ params, searchParams }: Props) {
       <CityHero city={city} />
 
       <section className="py-20 pt-0 max-md:py-12 max-md:pt-0">
-        <div className="mx-auto w-full max-w-[1280px] px-4">
+        <div className="mx-auto w-full max-w-7xl px-2">
           {/* <SortBar resultsCount={officeGroups.reduce((count, group) => count + group.cars.length)} value={filters.sort} /> */}
 
           <div className="city-listings-grid grid grid-cols-[280px_1fr] items-start gap-8 max-lg:grid-cols-1">
