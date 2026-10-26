@@ -7,6 +7,11 @@ import { Button } from "@/shared/ui/Button";
 import { Dialog } from "@/shared/ui/Dialog";
 import { FormInput, FormSelect } from "@/shared/ui/Form";
 import { PhoneField } from "@/shared/ui/PhoneField";
+import { phoneCountriesApi } from "@/services/phoneCountries.api";
+import {
+  formatPhoneFieldValue,
+  parsePhoneFieldValue,
+} from "@/shared/lib/phone";
 
 interface JoinUsFormState {
   firstName: string;
@@ -78,11 +83,14 @@ export default function JoinUsForm({ open, onClose }: Props) {
                 <span>*</span>
               </label>
               <PhoneField
-                value={form.phone}
+                value={parsePhoneFieldValue(form.phone)}
                 onChange={(phone) =>
-                  setForm((previous) => ({ ...previous, phone }))
+                  setForm((previous) => ({
+                    ...previous,
+                    phone: formatPhoneFieldValue(phone),
+                  }))
                 }
-                defaultCountry="sa"
+                loadCountries={phoneCountriesApi.listCountries}
                 searchPlaceholder={t("fields.phone.searchPlaceholder")}
                 inputAriaLabel={t("fields.phone.label")}
               />

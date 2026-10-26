@@ -6,6 +6,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
 
 import { PhoneField } from "@/shared/ui/PhoneField";
+import { phoneCountriesApi } from "@/services/phoneCountries.api";
+import {
+  formatPhoneFieldValue,
+  parsePhoneFieldValue,
+} from "@/shared/lib/phone";
 import { Dialog } from "@/shared/ui/Dialog";
 import { Button } from "@/shared/ui/Button";
 import {
@@ -90,7 +95,7 @@ export default function EditPhoneModal({
           <Dialog.Title className="text-text-primary">
             {t("title")}
           </Dialog.Title>
-          <p className="mb-7 text-text-subtle">{t("description")}</p>
+          <p className="text-text-subtle mb-7">{t("description")}</p>
 
           <div className="mb-6 w-full">
             <Controller
@@ -99,8 +104,11 @@ export default function EditPhoneModal({
               render={({ field }) => (
                 <PhoneField
                   label={t("phone")}
-                  value={field.value}
-                  onChange={field.onChange}
+                  value={parsePhoneFieldValue(field.value)}
+                  onChange={(phone) =>
+                    field.onChange(formatPhoneFieldValue(phone))
+                  }
+                  loadCountries={phoneCountriesApi.listCountries}
                   onBlur={field.onBlur}
                   searchPlaceholder={t("countrySearchPlaceholder")}
                   inputAriaLabel={t("phone")}
@@ -112,7 +120,7 @@ export default function EditPhoneModal({
           </div>
 
           {formError && (
-            <p className="text-status-error text-sm mt-1 mb-4" role="alert">
+            <p className="text-status-error mt-1 mb-4 text-sm" role="alert">
               {formError}
             </p>
           )}

@@ -6,6 +6,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
 import { Button } from "@/shared/ui/Button";
 import { PhoneField } from "@/shared/ui/PhoneField";
+import { phoneCountriesApi } from "@/services/phoneCountries.api";
+import {
+  formatPhoneFieldValue,
+  parsePhoneFieldValue,
+} from "@/shared/lib/phone";
 import {
   useErrorMessage,
   useFieldErrorMessage,
@@ -70,7 +75,7 @@ export default function LoginForm({ onNext, loading = false }: Props) {
       </div>
 
       <h2 className="text-text-primary">{t("auth.login.title")}</h2>
-      <p className="mb-7 text-text-subtle">{t("auth.login.description")}</p>
+      <p className="text-text-subtle mb-7">{t("auth.login.description")}</p>
 
       <div className="mb-6 w-full">
         <Controller
@@ -79,8 +84,9 @@ export default function LoginForm({ onNext, loading = false }: Props) {
           render={({ field }) => (
             <PhoneField
               label={t("auth.login.phoneLabel")}
-              value={field.value}
-              onChange={field.onChange}
+              value={parsePhoneFieldValue(field.value)}
+              onChange={(phone) => field.onChange(formatPhoneFieldValue(phone))}
+              loadCountries={phoneCountriesApi.listCountries}
               onBlur={field.onBlur}
               searchPlaceholder={t("auth.login.countrySearchPlaceholder")}
               inputAriaLabel={t("auth.login.phoneLabel")}
@@ -92,7 +98,7 @@ export default function LoginForm({ onNext, loading = false }: Props) {
       </div>
 
       {formError && (
-        <p className="text-status-error text-sm mt-1 mb-0" role="alert">
+        <p className="text-status-error mt-1 mb-0 text-sm" role="alert">
           {formError}
         </p>
       )}

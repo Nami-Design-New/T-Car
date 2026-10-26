@@ -488,7 +488,21 @@
     "browseCities": "Browse Cities",
     "lost": "Where to?"
   },
+  "phoneField": {
+    "phoneNumber": "Phone number",
+    "chooseCountry": "Choose country: {country} {code}",
+    "countries": "Countries and calling codes",
+    "searchPlaceholder": "Search countries or calling codes...",
+    "loading": "Loading countries...",
+    "loadingMore": "Loading more countries...",
+    "empty": "No countries found.",
+    "retry": "Try again"
+  },
   "errors": {
+    "phoneCountries": {
+      "mockFailure": "Countries could not be loaded. Try again.",
+      "invalidCursor": "More countries could not be loaded. Reopen the country list and try again."
+    },
     "network": "Could not connect. Check your internet connection and try again.",
     "timeout": "The request took longer than expected. Try again.",
     "unauthorized": "Your session has expired. Sign in to continue.",
