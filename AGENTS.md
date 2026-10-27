@@ -43,7 +43,10 @@ Ask the user before: any `git commit` (and which branch it goes on); deleting `B
 - **Model**: `model.ts` holds types and pure rules (no React, no I/O).
   `services/` may import `features/*/model` and `shared/{lib,config}`.
 - **Data access**: `services/<x>.api.ts` exports an interface plus, for now,
-  the mock from `services/mocks/<x>.ts`. A mock that runs on the server stays
+  the mock from `services/mocks/<x>.ts`. When a feature is integrated with the
+  API, both move into it (`features/<x>/api.ts`, `features/<x>/api.mock.ts`,
+  mock for tests only, no mock flag); only `services/http/` stays shared
+  (doc 1 §1.5 item 9). A mock that runs on the server stays
   read-only or stateless (module state would be shared between users); each
   mock includes one reproducible failure rule, documented in the file.
 - **Errors**: reads throw `AppError` (`shared/lib/errors.ts`); queries return

@@ -7,7 +7,7 @@ import { Button } from "@/shared/ui/Button";
 import { Dialog } from "@/shared/ui/Dialog";
 import { FormInput, FormSelect } from "@/shared/ui/Form";
 import { PhoneField } from "@/shared/ui/PhoneField";
-import { phoneCountriesApi } from "@/services/phoneCountries.api";
+import { loadPhoneCountries } from "@/features/phone-countries";
 import {
   formatPhoneFieldValue,
   parsePhoneFieldValue,
@@ -90,7 +90,7 @@ export default function JoinUsForm({ open, onClose }: Props) {
                     phone: formatPhoneFieldValue(phone),
                   }))
                 }
-                loadCountries={phoneCountriesApi.listCountries}
+                loadCountries={loadPhoneCountries}
                 searchPlaceholder={t("fields.phone.searchPlaceholder")}
                 inputAriaLabel={t("fields.phone.label")}
               />

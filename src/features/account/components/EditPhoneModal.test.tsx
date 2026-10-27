@@ -5,6 +5,12 @@ import { AppError } from '@/shared/lib/errors';
 import { renderWithIntl } from '@/shared/test/render';
 import EditPhoneModal from './EditPhoneModal';
 
+// The country list comes from the stateless mock instead of the API.
+vi.mock('@/features/phone-countries', async () => {
+  const { phoneCountriesMock } = await import('@/features/phone-countries/api.mock');
+  return { loadPhoneCountries: phoneCountriesMock.listCountries };
+});
+
 function renderModal(overrides: Partial<React.ComponentProps<typeof EditPhoneModal>> = {}) {
   const onSendCode = vi.fn<(phone: string) => Promise<AppError | undefined>>(
     async () => undefined

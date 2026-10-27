@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
 
 import { PhoneField } from "@/shared/ui/PhoneField";
-import { phoneCountriesApi } from "@/services/phoneCountries.api";
+import { loadPhoneCountries } from "@/features/phone-countries";
 import {
   formatPhoneFieldValue,
   parsePhoneFieldValue,
@@ -108,7 +108,7 @@ export default function EditPhoneModal({
                   onChange={(phone) =>
                     field.onChange(formatPhoneFieldValue(phone))
                   }
-                  loadCountries={phoneCountriesApi.listCountries}
+                  loadCountries={loadPhoneCountries}
                   onBlur={field.onBlur}
                   searchPlaceholder={t("countrySearchPlaceholder")}
                   inputAriaLabel={t("phone")}

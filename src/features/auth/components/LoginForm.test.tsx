@@ -5,6 +5,12 @@ import { AppError } from '@/shared/lib/errors';
 import { renderWithIntl } from '@/shared/test/render';
 import LoginForm from './LoginForm';
 
+// The country list comes from the stateless mock instead of the API.
+vi.mock('@/features/phone-countries', async () => {
+  const { phoneCountriesMock } = await import('@/features/phone-countries/api.mock');
+  return { loadPhoneCountries: phoneCountriesMock.listCountries };
+});
+
 function renderForm(overrides: Partial<React.ComponentProps<typeof LoginForm>> = {}) {
   const onNext = vi.fn<(phone: string) => Promise<AppError | undefined>>(async () => undefined);
   const user = userEvent.setup();

@@ -262,6 +262,16 @@ with `code: 422`). `AppError.serverMessage` and the `Result` /
 toasts, and both HTTP clients send `Accept-Language` (doc 3 §6). Every
 service is still on its mock; countries are next (A2).
 
+**Auth API integration, fraction A2 (2026-10-27):** Phone countries are their
+own feature, `features/phone-countries` (first feature to own its data access,
+doc 1 §1.5 item 9): `api.ts` calls the public `GET /countries` from the
+browser and maps it to `PhoneCountry`; `api.mock.ts` (moved from
+`services/mocks`) is used by tests only. `LoginForm`, `EditPhoneModal`, and
+`JoinUsForm` use `loadPhoneCountries`. The backend searches titles only, so a
+calling-code search (how `PhoneField` finds the selected flag) is filtered
+locally. `parsePhoneFieldValue` now knows all 9 API calling codes. A missing
+flag uses `IMAGES.flagPlaceholder`.
+
 | Feature                            | Moved to `features/` |                  Data behind queries / api                  |                             Actions return `Result`                              | Remaining                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | ---------------------------------- | :------------------: | :---------------------------------------------------------: | :------------------------------------------------------------------------------: | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `wallet`, `bank-accounts`          |         Yes          | Client reads over `*.api.ts`; writes through Server Actions |                                       Yes                                        | Fractions 1–3 complete: wallet and bank-account form, confirmation, and result states use shared dialogs. Left: user-scoped reads/API and forms (doc 3 step 7). Form validation fractions 4–5 add RHF + Zod amount and bank-account rules, re-parsed by the actions                                                                                                                                                                                                                                                                          |

@@ -36,11 +36,11 @@
       },
       {
         "selector": "Literal[value=/^[\\x2f]mock[\\x2f]/]",
-        "message": "Mock image URLs (/mock/...) belong in src/services/mocks only (doc 7 rule 3)."
+        "message": "Mock image URLs (/mock/...) belong in src/services/mocks or a feature's api.mock.ts only (doc 7 rule 3)."
       },
       {
         "selector": "TemplateElement[value.raw=/^[\\x2f]mock[\\x2f]/]",
-        "message": "Mock image URLs (/mock/...) belong in src/services/mocks only (doc 7 rule 3)."
+        "message": "Mock image URLs (/mock/...) belong in src/services/mocks or a feature's api.mock.ts only (doc 7 rule 3)."
       }
     ],
     "boundaries/dependencies": [
@@ -79,6 +79,22 @@
                 { "element": { "type": "service" } },
                 { "element": { "type": "cross-cutting" } }
               ]
+            }
+          },
+          {
+            "from": {
+              "element": {
+                "type": "feature",
+                "fileInternalPath": "**/*.test.{ts,tsx}"
+              }
+            },
+            "allow": {
+              "to": {
+                "element": {
+                  "type": "feature",
+                  "fileInternalPath": "api.mock.ts"
+                }
+              }
             }
           },
           {
@@ -166,7 +182,7 @@
       }
     },
     {
-      "files": ["src/services/mocks/**"],
+      "files": ["src/services/mocks/**", "src/features/*/api.mock.ts"],
       "rules": {
         "no-restricted-syntax": [
           "error",

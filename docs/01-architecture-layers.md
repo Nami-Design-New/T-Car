@@ -283,9 +283,30 @@ change. Each item says why.
    users, so they stay behind client hooks until the account routes and a
    real API exist. `auth/actions.ts` is the first set of Server Actions.
 
-6. **No `USE_MOCKS` flag yet.** Each `services/<domain>.api.ts` exports an
-   interface (`WalletApi`, `CarsApi`, ...) and currently only the mock
-   implementation. The flag is worth adding with the first real endpoint.
+6. **No `USE_MOCKS` flag (decided 2026-10-27).** Each
+   `services/<domain>.api.ts` exports an interface (`WalletApi`, `CarsApi`,
+   ...) and, until its feature is integrated, only the mock implementation. An
+   integrated feature calls the API only; its mock stays for tests.
+
+9. **Each feature owns its data access (2026-10-27).** When a feature is
+   integrated with the API, its `services/<x>.api.ts` and
+   `services/mocks/<x>.ts` move into the feature, one feature at a time:
+
+   ```
+   features/<x>/
+     api.ts        interface, http implementation, wire DTOs, guards, DTO → model
+     api.mock.ts   the mock, used by tests only
+   ```
+
+   `api.ts` imports `server-only` when it uses `serverHttp`; a public endpoint
+   the browser calls (countries) uses `http`. `index.ts` never re-exports
+   `api.mock.ts`. Data used by several features gets its own feature (for
+   example `features/phone-countries`, used through its `index.ts` by auth,
+   account, and home). Only the transport (`services/http/`) stays shared;
+   the end state is a `services/` folder that holds `http/` only. Lint: the
+   `/mock/` image-URL exception covers `features/*/api.mock.ts`, and a
+   feature's `*.test.ts(x)` may import another feature's `api.mock.ts`
+   (nothing else may).
 
 7. **Server data into client screens.** Each account section is its own route
    now (doc 5): its server page reads its data through `queries` and passes it
