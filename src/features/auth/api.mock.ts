@@ -81,4 +81,9 @@ export const authMock: AuthApi = {
       message: 'Location saved successfully.',
     };
   },
+
+  async logout() {
+    await delay();
+    return 'Logged out successfully.';
+  },
 };

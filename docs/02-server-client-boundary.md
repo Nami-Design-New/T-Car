@@ -206,8 +206,9 @@ The backend does not set an `httpOnly` cookie, so the session is NextAuth's
 | Dialog flow | [`features/auth/actions.ts`](../src/features/auth/actions.ts): `requestOtpAction`, `verifyOtpAction` (signs in and returns the onboarding step, read back from the new session cookie with `readSignedInStep()`), `registerAction`, `signOutAction`, all returning `ActionResult`. [`useAuthFlow`](../src/features/auth/components/useAuthFlow.ts) runs the steps and toasts; `AuthModal` renders them |
 | Configuration | `AUTH_SECRET` is required (see `.env.example`); set `AUTH_URL` behind a proxy |
 
-Still open: logout against the backend (A7), and handling a backend 401 by signing the
-session out (A8). The mock
+Logout revokes the backend token before clearing the session; an already revoked
+token is treated as success. Handling a backend 401 elsewhere by signing the
+session out remains open (A8). The mock
 ([`features/auth/api.mock.ts`](../src/features/auth/api.mock.ts): code `1234`,
 `+966500000000` has an account) mirrors the backend for tests. The middleware check only looks at
 the cookie; the backend must still validate the token on every request.

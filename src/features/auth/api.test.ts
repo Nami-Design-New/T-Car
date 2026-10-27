@@ -244,3 +244,23 @@ describe("authApi.assignLocation", () => {
     });
   });
 });
+
+describe("authApi.logout", () => {
+  it("posts with the session client and returns the backend message", async () => {
+    sessionPost.mockResolvedValue({ data: null, code: 200, message: "Logged out successfully." });
+    await expect(authApi.logout()).resolves.toBe("Logged out successfully.");
+    expect(sessionPost).toHaveBeenCalledWith("/logout");
+    expect(post).not.toHaveBeenCalled();
+  });
+
+  it("treats an already revoked token as success", async () => {
+    sessionPost.mockRejectedValue(new AppError("unauthorized", undefined, 401));
+    await expect(authApi.logout()).resolves.toBe("");
+  });
+
+  it("propagates other errors", async () => {
+    const error = new AppError("server", undefined, 500);
+    sessionPost.mockRejectedValue(error);
+    await expect(authApi.logout()).rejects.toBe(error);
+  });
+});

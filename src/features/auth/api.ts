@@ -31,6 +31,8 @@ export interface AuthApi {
   completeProfile(input: CompleteProfileInput): Promise<ProfileStepResult>;
   /** Saves the customer's location (the `location` step) with the session's token. */
   assignLocation(input: AssignLocationInput): Promise<ProfileStepResult>;
+  /** Revokes the session token; an already revoked token is also success. */
+  logout(): Promise<string>;
 }
 
 /** `login` signs in or creates the account; `change_phone` verifies a new number. */
@@ -227,6 +229,15 @@ const httpAuthApi: AuthApi = {
     return toProfileStepResult(
       await serverHttp.post<ApiEnvelope<unknown>>("/assign-location", body),
     );
+  },
+
+  async logout() {
+    try {
+      return messageOf(await serverHttp.post<ApiEnvelope<unknown>>("/logout"));
+    } catch (error) {
+      if (error instanceof AppError && error.kind === "unauthorized") return "";
+      throw error;
+    }
   },
 };
 

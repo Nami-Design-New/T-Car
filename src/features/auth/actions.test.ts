@@ -2,11 +2,14 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const {
   signIn,
+  signOut,
   readSignedInStep,
   updateSessionProfile,
   requestOtp,
   completeProfile,
   assignLocation,
+  logout,
+  reportError,
   OtpSignInError,
 } = vi.hoisted(() => {
   class OtpSignInError extends Error {
@@ -16,24 +19,27 @@ const {
   }
   return {
     signIn: vi.fn(),
+    signOut: vi.fn(),
     readSignedInStep: vi.fn(),
     updateSessionProfile: vi.fn(),
     requestOtp: vi.fn(),
     completeProfile: vi.fn(),
     assignLocation: vi.fn(),
+    logout: vi.fn(),
+    reportError: vi.fn(),
     OtpSignInError,
   };
 });
 
 vi.mock('@/auth', () => ({
   signIn,
-  signOut: vi.fn(),
+  signOut,
   readSignedInStep,
   updateSessionProfile,
   OtpSignInError,
 }));
-vi.mock('./api', () => ({ authApi: { requestOtp, completeProfile, assignLocation } }));
-vi.mock('@/shared/lib/report', () => ({ reportError: vi.fn() }));
+vi.mock('./api', () => ({ authApi: { requestOtp, completeProfile, assignLocation, logout } }));
+vi.mock('@/shared/lib/report', () => ({ reportError }));
 
 import { AppError } from '@/shared/lib/errors';
 import type { PhoneFieldValue } from '@/shared/lib/phone';
@@ -41,6 +47,7 @@ import {
   assignLocationAction,
   completeProfileAction,
   requestOtpAction,
+  signOutAction,
   verifyOtpAction,
 } from './actions';
 
@@ -54,11 +61,46 @@ const profile = {
 
 beforeEach(() => {
   signIn.mockReset();
+  signOut.mockReset();
   readSignedInStep.mockReset();
   updateSessionProfile.mockReset();
   requestOtp.mockReset();
   completeProfile.mockReset();
   assignLocation.mockReset();
+  logout.mockReset();
+  reportError.mockReset();
+});
+
+describe('signOutAction', () => {
+  it('revokes the backend token before clearing the session and returns its message', async () => {
+    logout.mockResolvedValue('Logged out successfully.');
+    signOut.mockResolvedValue(undefined);
+
+    await expect(signOutAction()).resolves.toEqual({
+      ok: true, data: undefined, message: 'Logged out successfully.',
+    });
+    expect(logout.mock.invocationCallOrder[0]).toBeLessThan(signOut.mock.invocationCallOrder[0]);
+    expect(signOut).toHaveBeenCalledWith({ redirect: false });
+  });
+
+  it('clears the session and reports a backend failure', async () => {
+    const error = new AppError('network');
+    logout.mockRejectedValue(error);
+    signOut.mockResolvedValue(undefined);
+
+    await expect(signOutAction()).resolves.toMatchObject({ ok: false, error: { kind: 'network' } });
+    expect(reportError).toHaveBeenCalledWith(error, { scope: 'auth.logout' });
+    expect(signOut).toHaveBeenCalledWith({ redirect: false });
+  });
+
+  it('reports a failure to clear the local session', async () => {
+    const error = new AppError('unknown');
+    logout.mockResolvedValue(undefined);
+    signOut.mockRejectedValue(error);
+
+    await expect(signOutAction()).resolves.toMatchObject({ ok: false, error: { kind: 'unknown' } });
+    expect(reportError).toHaveBeenCalledWith(error, { scope: 'auth.signOut' });
+  });
 });
 
 describe('requestOtpAction', () => {

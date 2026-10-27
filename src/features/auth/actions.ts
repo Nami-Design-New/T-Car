@@ -114,6 +114,21 @@ export async function assignLocationAction(
   }
 }
 
-export async function signOutAction(): Promise<void> {
-  await signOut({ redirect: false });
+/** Revoke the backend token before clearing the cookie that supplies it. */
+export async function signOutAction(): Promise<ActionResult<void>> {
+  let result: ActionResult<void>;
+  try {
+    result = toActionResult(ok(undefined, await authApi.logout()));
+  } catch (error) {
+    reportError(error, { scope: 'auth.logout' });
+    result = toActionResult(fail(error));
+  }
+
+  try {
+    await signOut({ redirect: false });
+  } catch (error) {
+    reportError(error, { scope: 'auth.signOut' });
+    return toActionResult(fail(error));
+  }
+  return result;
 }

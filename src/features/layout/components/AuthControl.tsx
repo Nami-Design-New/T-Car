@@ -10,6 +10,9 @@ import {
   signOutAction,
 } from '@/features/auth';
 import { useRouter } from '@/i18n/navigation';
+import { useErrorMessage } from '@/shared/hooks/useErrorMessage';
+import { useNotify } from '@/shared/hooks/useNotify';
+import { fromActionResult } from '@/shared/lib/result';
 import { Button } from '@/shared/ui/Button';
 import { ICONS } from '@/shared/config/assets';
 import UserMenu from './UserMenu';
@@ -51,6 +54,8 @@ export default function AuthControl({
 }: Props) {
   const router = useRouter();
   const userMenuT = useTranslations('layout.userMenu');
+  const notify = useNotify();
+  const errorMessage = useErrorMessage();
   const [showAuth, setShowAuth] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [showLocation, setShowLocation] = useState(false);
@@ -63,7 +68,11 @@ export default function AuthControl({
   }, []);
 
   const handleLogout = async () => {
-    await signOutAction();
+    const result = fromActionResult(await signOutAction());
+    if (result.ok) notify.success(result.message);
+    else notify.error(result.error.kind === 'validation' && result.error.serverMessage
+      ? result.error.serverMessage
+      : errorMessage(result.error));
     router.refresh();
   };
 
