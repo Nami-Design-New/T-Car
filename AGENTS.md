@@ -52,6 +52,8 @@ Ask the user before: any `git commit` (and which branch it goes on); deleting `B
   client calls `fromActionResult` (an `AppError` instance cannot cross the
   boundary). User-facing error text comes from `errors.*` in both
   `messages/ar.json` and `messages/en.json`, shown with `useErrorMessage()`.
+  Exception for the integrated API: backend success and validation (422)
+  messages are toasted as they are with `useNotify()` (sonner, doc 3 §6).
   A failed submit keeps the dialog open with the input and the error.
 - **Auth**: NextAuth v5 in `src/auth.ts`; the backend token is read only by
   `services/http/server.ts`. `AUTH_SECRET` is in `.env.local`.

@@ -652,7 +652,11 @@
     "title": "Available cities",
     "subtitle": "Choose your city and start your journey with us"
   },
-  "common": { "selectPlaceholder": "Choose..." },
+  "common": {
+    "selectPlaceholder": "Choose...",
+    "notifications": "Notifications",
+    "success": "Done successfully."
+  },
   "dateTimePicker": {
     "previousMonth": "Previous month",
     "nextMonth": "Next month",

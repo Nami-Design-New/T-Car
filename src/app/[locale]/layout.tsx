@@ -5,6 +5,7 @@ import type { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
 import { getDirection } from "@/shared/config/languages";
 import { DirectionProvider } from "@/shared/ui/DirectionProvider";
+import { Toaster } from "@/shared/ui/Toaster";
 import NextTopLoader from "nextjs-toploader";
 import localFont from "next/font/local";
 import "../../styles/tailwind.css";
@@ -104,6 +105,7 @@ export default async function RootLayout({
             />
             <main>{children}</main>
             <Footer />
+            <Toaster dir={dir} />
           </DirectionProvider>
         </NextIntlClientProvider>
       </body>

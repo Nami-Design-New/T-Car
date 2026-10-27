@@ -650,7 +650,11 @@
     "title": "المدن المتاحة",
     "subtitle": "اختر مدينتك وابدأ رحلتك معنا"
   },
-  "common": { "selectPlaceholder": "اختر..." },
+  "common": {
+    "selectPlaceholder": "اختر...",
+    "notifications": "الإشعارات",
+    "success": "تمت العملية بنجاح."
+  },
   "dateTimePicker": {
     "previousMonth": "الشهر السابق",
     "nextMonth": "الشهر التالي",
