@@ -223,6 +223,17 @@ the client shows it. 401, 5xx, network, and timeout errors keep the
 `errors.*` lookup above. A dialog with a failed submit still stays open with
 the input (rule 5).
 
+**Backend envelope (2026-10-27).** The API answers `{ data, message, code }`
+(`services/http/envelope.ts`), and a validation error arrives as HTTP 200 with
+`code: 422`. `services/http/client.ts` decides the outcome this way: HTTP 401
+and 5xx by the HTTP status (body ignored); otherwise by the body `code` as it
+is (422 → `validation`, 429 → `rate_limited`, ...), falling back to the HTTP
+status when there is no envelope. A body `code` of 401 also calls
+`onUnauthorized`. The backend text travels as `AppError.serverMessage` (and
+`AppErrorData.serverMessage` across a Server Action); a success message
+travels as `Result` / `ActionResult` `message`. Both clients send
+`Accept-Language` with the page locale.
+
 ### 7. Reporting
 
 ```ts

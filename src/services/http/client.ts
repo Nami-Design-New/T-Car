@@ -1,5 +1,6 @@
 import { env } from '@/shared/config/env';
-import { AppError, toAppError } from '@/shared/lib/errors';
+import { AppError, kindFromStatus, toAppError } from '@/shared/lib/errors';
+import { isApiEnvelope } from './envelope';
 
 type QueryValue = string | number | boolean | null | undefined;
 
@@ -13,7 +14,9 @@ export interface RequestOptions extends Omit<RequestInit, 'body' | 'method'> {
 export interface HttpClientConfig {
   baseUrl: string;
   getToken?: () => string | null | undefined | Promise<string | null | undefined>;
-  /** Called on a 401, before the `unauthorized` AppError is thrown. */
+  /** Sent as `Accept-Language` (the backend localizes `message`), unless the caller sets it. */
+  getLocale?: () => string | null | undefined | Promise<string | null | undefined>;
+  /** Called on a 401 (HTTP or body `code`), before the `unauthorized` AppError is thrown. */
   onUnauthorized?: () => void;
 }
 
@@ -31,11 +34,39 @@ function buildUrl(baseUrl: string, path: string, query?: RequestOptions['query']
   return search ? `${url}?${search}` : url;
 }
 
+async function readJson(response: Response): Promise<unknown> {
+  try {
+    return await response.json();
+  } catch {
+    return undefined;
+  }
+}
+
 /**
- * fetch wrapper: base URL, timeout, JSON, auth header. Every failure leaves it
- * as an AppError, so nothing above this layer handles raw fetch errors.
+ * fetch wrapper: base URL, timeout, JSON, auth and language headers. Every
+ * failure leaves it as an AppError, so nothing above this layer handles raw
+ * fetch errors.
+ *
+ * Outcome (docs/api/Auth-API.md rule R1): HTTP 401 and 5xx decide by the HTTP
+ * status and ignore the body. Otherwise the envelope's `code` decides as it
+ * is: a validation error is HTTP 200 with `code: 422`. A successful call
+ * returns the whole body (for the API, the envelope with `data` and `message`).
  */
-export function createHttpClient({ baseUrl, getToken, onUnauthorized }: HttpClientConfig) {
+export function createHttpClient({
+  baseUrl,
+  getToken,
+  getLocale,
+  onUnauthorized,
+}: HttpClientConfig) {
+  function fail(status: number, body: unknown, cause?: unknown): never {
+    if (status === 401) onUnauthorized?.();
+    const serverMessage = isApiEnvelope(body) ? body.message : undefined;
+    throw new AppError(kindFromStatus(status), undefined, status, undefined, {
+      cause,
+      serverMessage,
+    });
+  }
+
   async function request<T>(
     method: string,
     path: string,
@@ -47,6 +78,10 @@ export function createHttpClient({ baseUrl, getToken, onUnauthorized }: HttpClie
 
     const token = await getToken?.();
     if (token) requestHeaders.set('Authorization', `Bearer ${token}`);
+    if (!requestHeaders.has('Accept-Language')) {
+      const locale = await getLocale?.();
+      if (locale) requestHeaders.set('Accept-Language', locale);
+    }
 
     const controller = new AbortController();
     const timer = setTimeout(
@@ -71,19 +106,19 @@ export function createHttpClient({ baseUrl, getToken, onUnauthorized }: HttpClie
       clearTimeout(timer);
     }
 
-    if (!response.ok) {
-      if (response.status === 401) onUnauthorized?.();
-      // Map the backend's error codes and field errors here once its contract is known.
-      throw toAppError(response);
+    if (response.status === 401 || response.status >= 500) {
+      fail(response.status, undefined, response);
     }
-
     if (response.status === 204) return undefined as T;
 
-    try {
-      return (await response.json()) as T;
-    } catch (error) {
-      throw new AppError('server', undefined, response.status, undefined, { cause: error });
+    const payload = await readJson(response);
+    const bodyCode = isApiEnvelope(payload) ? payload.code : undefined;
+    const code = bodyCode !== undefined && bodyCode >= 400 ? bodyCode : response.status;
+    if (!response.ok || code >= 400) fail(code, payload, response);
+    if (payload === undefined) {
+      throw new AppError('server', undefined, response.status, undefined, { cause: response });
     }
+    return payload as T;
   }
 
   return {
@@ -105,4 +140,7 @@ export type HttpClient = ReturnType<typeof createHttpClient>;
  * (it lives in the NextAuth session cookie), so calls that need the customer
  * go through the server: services/http/server.ts.
  */
-export const http = createHttpClient({ baseUrl: env.publicApiUrl });
+export const http = createHttpClient({
+  baseUrl: env.publicApiUrl,
+  getLocale: () => (typeof document === 'undefined' ? undefined : document.documentElement.lang),
+});

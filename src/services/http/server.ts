@@ -1,6 +1,7 @@
 import 'server-only';
 import { headers } from 'next/headers';
 import { getToken } from 'next-auth/jwt';
+import { getLocale } from 'next-intl/server';
 import { SESSION_COOKIE } from '@/shared/config/session';
 import { env } from '@/shared/config/env';
 import { createHttpClient } from './client';
@@ -16,8 +17,18 @@ async function readAccessToken(): Promise<string | undefined> {
   return token?.accessToken;
 }
 
+/** The request's locale; undefined outside a localized request (e.g. a route handler). */
+async function readLocale(): Promise<string | undefined> {
+  try {
+    return await getLocale();
+  } catch {
+    return undefined;
+  }
+}
+
 /** Server client: forwards the signed-in customer's backend token as the bearer token. */
 export const serverHttp = createHttpClient({
   baseUrl: env.serverApiUrl,
   getToken: readAccessToken,
+  getLocale: readLocale,
 });

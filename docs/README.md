@@ -254,6 +254,14 @@ layout, bottom on the inline-end side and above the mobile navigation, and the
 `common.success` / `errors.validation` fallbacks (doc 3 §6). No caller uses it
 yet; the envelope-aware HTTP client is next (A1).
 
+**Auth API integration, fraction A1 (2026-10-27):** `services/http/client.ts`
+reads the backend envelope (`services/http/envelope.ts`): HTTP 401 and 5xx
+decide by status, everything else by the body `code` (validation is HTTP 200
+with `code: 422`). `AppError.serverMessage` and the `Result` /
+`ActionResult` success `message` carry the backend text to the client for
+toasts, and both HTTP clients send `Accept-Language` (doc 3 §6). Every
+service is still on its mock; countries are next (A2).
+
 | Feature                            | Moved to `features/` |                  Data behind queries / api                  |                             Actions return `Result`                              | Remaining                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | ---------------------------------- | :------------------: | :---------------------------------------------------------: | :------------------------------------------------------------------------------: | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `wallet`, `bank-accounts`          |         Yes          | Client reads over `*.api.ts`; writes through Server Actions |                                       Yes                                        | Fractions 1–3 complete: wallet and bank-account form, confirmation, and result states use shared dialogs. Left: user-scoped reads/API and forms (doc 3 step 7). Form validation fractions 4–5 add RHF + Zod amount and bank-account rules, re-parsed by the actions                                                                                                                                                                                                                                                                          |
