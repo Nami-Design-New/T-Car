@@ -3,7 +3,7 @@
 Status: **in progress** on branch `refactor/architecture-layers` (not merged). See
 [Migration status](#migration-status) for what is done and where the code
 deliberately differs from these documents.
-Last reviewed against the code: 2026-10-25. Status updated: 2026-10-25.
+Last reviewed against the code: 2026-10-25. Status updated: 2026-10-27.
 
 This folder reviews the current front end and sets out the target design and the
 migration path for the architecture areas. Each document stands on its own: it covers the
@@ -355,6 +355,22 @@ session's backend token with `AUTH_SECRET`) locks the link to that session: a
 crafted link loses its parameters and signs nobody out. The middleware sets
 `next` in the `x-tcar-next` request header. Account reads are still mocks, so the live 401
 path was checked with a temporary page that forces one.
+
+**Guest location (2026-10-27):** A visitor without a session is asked for the
+browser location once per browser (`GuestLocationRequest` in the root layout).
+There is no IP fallback (product decision). On consent the coordinates, then
+the address and region from the Geocoding REST API in the site's language
+(`shared/lib/geocode.ts`, which now also holds `MapLocationModal`'s
+`regionOf`), are kept in localStorage (`shared/lib/guest-location.ts`,
+`readGuestLocation()`). A rejection is stored and not asked again; a timeout
+is asked again next visit, and a failed lookup is retried without a prompt.
+For a guest the header's `LocationPicker` shows the stored address (updated
+when the lookup finishes, `subscribeGuestLocation`) and opens the map there; a
+place the guest picks on the map replaces the stored location.
+`POST /assign-location` needs a token (Auth-API.md §3.5), so nothing is sent
+yet: the endpoints that need the guest's location send it once they exist.
+localStorage is browser only, so a server read cannot use it; the client
+passes it to the Server Action. The Maps key must allow the Geocoding API.
 
 | Feature                            | Moved to `features/` |                  Data behind queries / api                  |                             Actions return `Result`                              | Remaining                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | ---------------------------------- | :------------------: | :---------------------------------------------------------: | :------------------------------------------------------------------------------: | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |

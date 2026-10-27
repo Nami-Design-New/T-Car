@@ -1,5 +1,5 @@
 import { auth } from "@/auth";
-import { Footer, Header } from "@/features/layout";
+import { Footer, GuestLocationRequest, Header } from "@/features/layout";
 import { getNotifications } from "@/features/notifications/queries";
 import type { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
@@ -102,6 +102,7 @@ export default async function RootLayout({
         <NextIntlClientProvider>
           <DirectionProvider dir={dir}>
             <NextTopLoader color="#1f7ffa" height={3} showSpinner={false} />
+            {!session?.user && <GuestLocationRequest />}
             <Header
               hasSession={signedIn}
               signedIn={signedIn}

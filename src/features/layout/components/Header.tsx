@@ -35,7 +35,7 @@ export default async function Header({
       <div className="header-inner mx-auto flex h-20 w-full max-w-7xl items-center justify-between px-2">
         <div className="flex min-w-0 items-center gap-[clamp(12px,2vw,24px)]">
           <BrandLogo />
-          <LocationPicker />
+          <LocationPicker guest={!signedIn && !profilePending} />
         </div>
 
         <MobileNav

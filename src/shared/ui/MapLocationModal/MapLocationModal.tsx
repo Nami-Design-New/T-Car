@@ -13,6 +13,7 @@ import {
 import { Dialog } from "@/shared/ui/Dialog";
 import { FormInput } from "../Form";
 import { Button } from "../Button";
+import { regionOf } from "@/shared/lib/geocode";
 import type { LocationData } from "@/shared/lib/location";
 
 export interface MapLocationModalProps {
@@ -35,13 +36,6 @@ const defaultCenter = {
 
 /** First locale the Maps script was requested with; see the note in the component. */
 let pinnedMapsLanguage: string | undefined;
-
-/** The first-level administrative area (e.g. "Riyadh Province"), if the geocoder has one. */
-function regionOf(result: google.maps.GeocoderResult): string | undefined {
-  return result.address_components?.find((component) =>
-    component.types.includes("administrative_area_level_1"),
-  )?.long_name;
-}
 
 export default function MapLocationModal({
   open,
