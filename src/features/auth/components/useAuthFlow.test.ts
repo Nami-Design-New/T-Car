@@ -5,7 +5,7 @@ import type { ActionResult } from "@/shared/lib/result";
 const actions = vi.hoisted(() => ({
   requestOtpAction: vi.fn(),
   verifyOtpAction: vi.fn(),
-  registerAction: vi.fn(),
+  completeProfileAction: vi.fn(),
 }));
 const router = vi.hoisted(() => ({ replace: vi.fn(), refresh: vi.fn() }));
 const notify = vi.hoisted(() => ({ success: vi.fn(), error: vi.fn() }));
@@ -13,8 +13,12 @@ const notify = vi.hoisted(() => ({ success: vi.fn(), error: vi.fn() }));
 vi.mock("../actions", () => actions);
 vi.mock("@/i18n/navigation", () => ({ useRouter: () => router }));
 vi.mock("@/shared/hooks/useNotify", () => ({ useNotify: () => notify }));
+// Translated text is not under test here: the error kind stands in for it.
+vi.mock("@/shared/hooks/useErrorMessage", () => ({
+  useErrorMessage: () => (error: { kind: string }) => `text:${error.kind}`,
+}));
 
-import { useAuthFlow } from "./useAuthFlow";
+import { useAuthFlow, type AuthFlowStart } from "./useAuthFlow";
 
 const phone = { countryCode: "+966", phone: "544444442" };
 const profile = {
@@ -27,9 +31,18 @@ const validation422 = (serverMessage: string): ActionResult<never> => ({
   error: { kind: "validation", status: 422, serverMessage },
 });
 
-function renderFlow(next?: string) {
+function renderFlow(
+  next?: string,
+  initialStep?: AuthFlowStart,
+  callbacks: {
+    onRegistrationSuccess?: (locationNext: boolean) => void;
+    onLocationRequired?: () => void;
+  } = {},
+) {
   const onDone = vi.fn();
-  const view = renderHook(() => useAuthFlow({ next, onDone }));
+  const view = renderHook(() =>
+    useAuthFlow({ next, onDone, initialStep, ...callbacks }),
+  );
   return { ...view, onDone };
 }
 
@@ -111,8 +124,11 @@ describe("useAuthFlow", () => {
     expect(result.current.state).toEqual({ step: "login" });
   });
 
-  it("treats `location` as signed in until the product decides (Q2)", async () => {
-    const { result, onDone } = renderFlow();
+  it("closes auth and requests the separate location modal when location is missing", async () => {
+    const onLocationRequired = vi.fn();
+    const { result, onDone } = renderFlow(undefined, undefined, {
+      onLocationRequired,
+    });
     await toOtpStep(result);
     actions.verifyOtpAction.mockResolvedValue({
       ok: true,
@@ -120,10 +136,45 @@ describe("useAuthFlow", () => {
     });
 
     await act(() => result.current.verify("1234"));
-    expect(onDone).toHaveBeenCalled();
+    expect(result.current.state).toEqual({ step: "login" });
+    expect(onLocationRequired).toHaveBeenCalledOnce();
+    expect(onDone).toHaveBeenCalledOnce();
   });
 
-  it("opens registration for a new account, then submits it with the phone and code", async () => {
+  it("closes auth and requests separate success and location modals after registration", async () => {
+    const onRegistrationSuccess = vi.fn();
+    const { result, onDone } = renderFlow(undefined, "register", {
+      onRegistrationSuccess,
+    });
+    actions.completeProfileAction.mockResolvedValue({
+      ok: true,
+      data: { onboardingStep: "location" },
+      message: "Profile updated successfully.",
+    });
+    await act(() => result.current.register(profile));
+    expect(onRegistrationSuccess).toHaveBeenCalledWith(true);
+    expect(result.current.state).toEqual({ step: "login" });
+    expect(onDone).toHaveBeenCalledOnce();
+  });
+
+  it("closes auth and requests the separate success modal when registration is complete", async () => {
+    const onRegistrationSuccess = vi.fn();
+    const { result, onDone } = renderFlow(undefined, "register", {
+      onRegistrationSuccess,
+    });
+    actions.completeProfileAction.mockResolvedValue({
+      ok: true,
+      data: { onboardingStep: "completed" },
+      message: "Profile updated successfully.",
+    });
+    await act(() => result.current.register(profile));
+
+    expect(onRegistrationSuccess).toHaveBeenCalledWith(false);
+    expect(onDone).toHaveBeenCalledOnce();
+    expect(router.refresh).toHaveBeenCalled();
+  });
+
+  it("opens the profile for a new account, completes it, and toasts the message", async () => {
     const { result } = renderFlow();
     await toOtpStep(result);
     actions.verifyOtpAction.mockResolvedValue({
@@ -131,21 +182,59 @@ describe("useAuthFlow", () => {
       data: { onboardingStep: "register" },
     });
     await act(() => result.current.verify("1234"));
-    expect(result.current.state).toEqual({
-      step: "register",
-      phone,
-      code: "1234",
-    });
+    expect(result.current.state).toEqual({ step: "register", phone });
 
-    actions.registerAction.mockResolvedValue({ ok: true, data: undefined });
+    actions.completeProfileAction.mockResolvedValue({
+      ok: true,
+      data: { onboardingStep: "location" },
+      message: "Profile updated successfully.",
+    });
     await act(() => result.current.register(profile));
 
-    expect(actions.registerAction).toHaveBeenCalledWith({
-      phone,
-      code: "1234",
-      ...profile,
+    expect(actions.completeProfileAction).toHaveBeenCalledWith(profile);
+    expect(notify.success).toHaveBeenLastCalledWith(
+      "Profile updated successfully.",
+    );
+    expect(result.current.state).toEqual({ step: "login" });
+  });
+
+  it("toasts a profile rejected by the backend and keeps the form", async () => {
+    const { result } = renderFlow(undefined, "register");
+    actions.completeProfileAction.mockResolvedValue(
+      validation422("The email has already been taken."),
+    );
+
+    let formError: unknown;
+    await act(async () => {
+      formError = await result.current.register(profile);
     });
-    expect(result.current.state).toEqual({ step: "success" });
+
+    expect(formError).toBeUndefined();
+    expect(notify.error).toHaveBeenCalledWith(
+      "The email has already been taken.",
+    );
+    expect(result.current.state).toEqual({ step: "register" });
+  });
+
+  it("resumes on the profile for a session that still needs it, and goes back to the start", () => {
+    const { result } = renderFlow(undefined, "register");
+    expect(result.current.state).toEqual({ step: "register" });
+
+    act(() => result.current.back());
+    expect(result.current.state).toEqual({ step: "login" });
+  });
+
+  it("refreshes the header when the profile form is closed, since the session stays", () => {
+    const { result, onDone } = renderFlow(undefined, "register");
+    act(() => result.current.dismiss());
+    expect(onDone).toHaveBeenCalled();
+    expect(router.refresh).toHaveBeenCalled();
+  });
+
+  it("closes the phone step without a refresh", () => {
+    const { result } = renderFlow();
+    act(() => result.current.dismiss());
+    expect(router.refresh).not.toHaveBeenCalled();
   });
 
   it("toasts a wrong code and keeps the OTP step", async () => {

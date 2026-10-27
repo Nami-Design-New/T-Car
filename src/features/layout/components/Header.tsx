@@ -14,12 +14,15 @@ const notificationIcon = ICONS.notification;
 interface Props {
   hasSession: boolean;
   signedIn: boolean;
+  /** Signed in at verification but the profile is still missing. */
+  profilePending?: boolean;
   unreadCount: number;
 }
 
 export default async function Header({
   hasSession,
   signedIn,
+  profilePending = false,
   unreadCount,
 }: Props) {
   const t = await getTranslations();
@@ -47,6 +50,7 @@ export default async function Header({
                 <div className="min-w-0 flex-1">
                   <AuthControl
                     signedIn={signedIn}
+                    profilePending={profilePending}
                     loginLabel={t("nav.login")}
                     logoutOnly
                   />
@@ -60,7 +64,11 @@ export default async function Header({
             <div className="flex items-center gap-3 max-lg:w-full">
               <LanguageSwitcher />
             </div>
-            <AuthControl signedIn={signedIn} loginLabel={t("nav.login")} />
+            <AuthControl
+              signedIn={signedIn}
+              profilePending={profilePending}
+              loginLabel={t("nav.login")}
+            />
           </div>
         </MobileNav>
         {hasSession && (

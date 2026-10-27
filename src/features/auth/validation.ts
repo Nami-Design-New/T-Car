@@ -5,7 +5,7 @@ import {
   isFullName,
   isPastIsoDate,
 } from '@/shared/lib/validation';
-import { isNationalNumber, toNationalNumber } from './model';
+import { isNationalNumber, isOldEnough, toNationalNumber } from './model';
 
 // Auth form schemas (doc 9). Messages are `errors.*` keys, never user text.
 // The client resolves forms with them and the Server Actions parse them again.
@@ -64,14 +64,35 @@ export const registerFormSchema = z.object({
   birthDate: z
     .string({ error: 'auth.birthDateRequired' })
     .min(1, { error: 'auth.birthDateRequired', abort: true })
-    .refine(isPastIsoDate, { error: 'auth.invalidBirthDate' })
+    .refine(isPastIsoDate, { error: 'auth.invalidBirthDate', abort: true })
+    // The backend requires 18 (`MIN_AGE`); checked here so the form says so first.
+    .refine((value) => isOldEnough(value), { error: 'auth.underAge' })
 });
 
-/** What `registerAction` receives: the verified phone and code plus the form. */
-export const registrationSchema = verifyOtpSchema.extend(registerFormSchema.shape);
+const invalidLocation = { error: 'auth.invalidLocation' } as const;
+
+/**
+ * Location step: what `MapLocationModal` picked, as `/assign-location` takes it.
+ * The backend requires a region; when the geocoder has none, the address is sent.
+ */
+export const locationSchema = z
+  .object(
+    {
+      lat: z.number(invalidLocation).min(-90, invalidLocation).max(90, invalidLocation),
+      lng: z.number(invalidLocation).min(-180, invalidLocation).max(180, invalidLocation),
+      address: z.string(invalidLocation).trim().min(1, invalidLocation),
+      region: z.string(invalidLocation).trim().optional(),
+    },
+    invalidLocation
+  )
+  .transform(({ lat, lng, address, region }) => ({
+    latitude: lat,
+    longitude: lng,
+    addressName: address,
+    region: region || address,
+  }));
 
 export type PhoneFormInput = z.input<typeof phoneSchema>;
 export type PhoneFormValues = z.output<typeof phoneSchema>;
 export type OtpCodeValues = z.infer<typeof otpCodeSchema>;
 export type RegisterFormValues = z.infer<typeof registerFormSchema>;
-export type RegistrationSubmission = z.input<typeof registrationSchema>;

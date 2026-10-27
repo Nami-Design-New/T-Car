@@ -31,13 +31,41 @@ export interface AuthGrant {
   onboardingStep: OnboardingStep;
 }
 
-/** The profile a new customer fills in after verifying their phone. */
-export interface RegistrationInput {
-  phone: string;
-  code: string;
+/**
+ * The profile a new customer fills in after verifying their phone. The signed-in
+ * session identifies them, so no phone or code travels with it.
+ */
+export interface CompleteProfileInput {
   fullName: string;
   email: string;
+  /** YYYY-MM-DD */
   birthDate: string;
+}
+
+/** The customer's location, the last onboarding step (`POST /assign-location`). */
+export interface AssignLocationInput {
+  latitude: number;
+  longitude: number;
+  addressName: string;
+  region: string;
+}
+
+/** What profile completion returns: the updated user, what is left, and the backend's message. */
+export interface ProfileStepResult {
+  user: AuthUser;
+  onboardingStep: OnboardingStep;
+  message: string;
+}
+
+/** The backend's minimum age for an account (`POST /complete-profile`). */
+export const MIN_AGE = 18;
+
+/** Whether someone born on `birthDate` (YYYY-MM-DD) is at least `MIN_AGE` today (UTC). */
+export function isOldEnough(birthDate: string, now: Date = new Date()): boolean {
+  const [year, month, day] = birthDate.split('-').map(Number);
+  if (!year || !month || !day) return false;
+  const adulthood = Date.UTC(year + MIN_AGE, month - 1, day);
+  return adulthood <= now.getTime();
 }
 
 /** Digits the backend accepts in a national number (`POST /auth/request-otp`). */

@@ -2,7 +2,12 @@ import NextAuth, { CredentialsSignin } from 'next-auth';
 import { decode } from 'next-auth/jwt';
 import Credentials from 'next-auth/providers/credentials';
 import { cookies } from 'next/headers';
-import type { AuthGrant, OnboardingStep } from '@/features/auth/model';
+import {
+  toOnboardingStep,
+  type AuthGrant,
+  type AuthUser,
+  type OnboardingStep,
+} from '@/features/auth/model';
 import { authApi } from '@/features/auth/api';
 import { AppError, toAppError } from '@/shared/lib/errors';
 import { reportError } from '@/shared/lib/report';
@@ -21,7 +26,22 @@ export class OtpSignInError extends CredentialsSignin {
 
 const text = (value: unknown) => (typeof value === 'string' ? value : '');
 
-export const { handlers, auth, signIn, signOut } = NextAuth({
+/** What a session update may change after profile completion. */
+type ProfileUpdate = Partial<Pick<AuthUser, 'name' | 'email'>> & { onboardingStep?: OnboardingStep };
+
+/**
+ * An update also reaches the `jwt` callback from the browser
+ * (`POST /api/auth/session`). Only updates carrying this per-process value,
+ * which never leaves the server, are applied (see `updateSessionProfile`).
+ */
+const SERVER_UPDATE = crypto.randomUUID();
+
+interface SessionUpdate {
+  serverUpdate?: string;
+  user?: ProfileUpdate;
+}
+
+export const { handlers, auth, signIn, signOut, unstable_update } = NextAuth({
   // Self-hosted (not Vercel), so trust the Host header of the deployment.
   trustHost: true,
   session: { strategy: 'jwt' },
@@ -40,11 +60,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         countryCode: {},
         phone: {},
         code: {},
-        /** 'register' when a new customer finishes registration (mock until A6); sign-in otherwise. */
-        intent: {},
-        fullName: {},
-        email: {},
-        birthDate: {},
       },
       async authorize(credentials) {
         const countryCode = text(credentials.countryCode);
@@ -53,16 +68,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
         let grant: AuthGrant;
         try {
-          grant =
-            credentials.intent === 'register'
-              ? await authApi.register({
-                  phone: `${countryCode}${phone}`,
-                  code,
-                  fullName: text(credentials.fullName),
-                  email: text(credentials.email),
-                  birthDate: text(credentials.birthDate),
-                })
-              : await authApi.verifyOtp({ countryCode, phone }, code);
+          grant = await authApi.verifyOtp({ countryCode, phone }, code);
         } catch (error) {
           const appError = toAppError(error);
           // reportError skips expected outcomes (validation, e.g. a wrong code).
@@ -79,7 +85,17 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     }),
   ],
   callbacks: {
-    jwt({ token, user }) {
+    jwt({ token, user, trigger, session }) {
+      if (trigger === 'update') {
+        const { serverUpdate, user: update } = (session ?? {}) as SessionUpdate;
+        if (serverUpdate !== SERVER_UPDATE || !token.user) return token;
+        if (typeof update?.name === 'string') token.user = { ...token.user, name: update.name };
+        if (typeof update?.email === 'string') token.user = { ...token.user, email: update.email };
+        if (typeof update?.onboardingStep === 'string') {
+          token.onboardingStep = toOnboardingStep(update.onboardingStep, Boolean(token.user.name));
+        }
+        return token;
+      }
       if (user) {
         token.accessToken = user.accessToken;
         token.onboardingStep = user.onboardingStep;
@@ -115,4 +131,14 @@ export async function readSignedInStep(): Promise<OnboardingStep | undefined> {
   if (!value || !secret) return undefined;
   const token = await decode({ token: value, secret, salt: SESSION_COOKIE });
   return token?.onboardingStep;
+}
+
+/**
+ * Updates the signed-in session after a profile write (name, email, and what
+ * is left of onboarding). Server only: the marker keeps browser updates out.
+ */
+export async function updateSessionProfile(update: ProfileUpdate): Promise<void> {
+  // Auth.js types the update as a Session; the marker is an extra field it passes through.
+  const data = { serverUpdate: SERVER_UPDATE, user: update };
+  await unstable_update(data as Parameters<typeof unstable_update>[0]);
 }

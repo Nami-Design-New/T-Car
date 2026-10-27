@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { toValidationError } from '@/shared/lib/validation';
-import { otpCodeSchema, phoneSchema, registerFormSchema, registrationSchema, verifyOtpSchema } from './validation';
+import { locationSchema, otpCodeSchema, phoneSchema, registerFormSchema, verifyOtpSchema } from './validation';
 
 describe('registration full-name rules', () => {
   it('accepts a trimmed non-Latin full name', () => {
@@ -146,19 +146,48 @@ describe('registerFormSchema', () => {
     });
   });
 
-  it('accepts today as a birth date (no minimum age is decided yet)', () => {
+  it('needs the backend minimum age of 18, counted to the day', () => {
     vi.useFakeTimers({
       now: new Date('2026-10-18T12:00:00Z'),
       toFake: ['Date']
     });
-    expect(registerFormSchema.safeParse({ ...validProfile, birthDate: '2026-10-18' }).success).toBe(true);
+    expect(registerFormSchema.safeParse({ ...validProfile, birthDate: '2008-10-18' }).success).toBe(true);
+    expect(fieldErrors(registerFormSchema.safeParse({ ...validProfile, birthDate: '2008-10-19' }))).toEqual({
+      birthDate: 'auth.underAge'
+    });
+    expect(fieldErrors(registerFormSchema.safeParse({ ...validProfile, birthDate: '2026-10-18' }))).toEqual({
+      birthDate: 'auth.underAge'
+    });
   });
 
-  it('needs the phone and code as well on the server', () => {
-    const errors = fieldErrors(registrationSchema.safeParse(validProfile));
-    expect(errors).toEqual({
-      phone: 'auth.invalidPhone',
-      code: 'auth.invalidCode'
+  it('reports a future date as invalid, not as under age', () => {
+    vi.useFakeTimers({
+      now: new Date('2026-10-18T12:00:00Z'),
+      toFake: ['Date']
     });
+    expect(fieldErrors(registerFormSchema.safeParse({ ...validProfile, birthDate: '2030-01-01' }))).toEqual({
+      birthDate: 'auth.invalidBirthDate'
+    });
+  });
+});
+
+describe('locationSchema', () => {
+  const picked = { lat: 24.7136, lng: 46.6753, address: 'King Fahd Rd', region: 'Riyadh Province' };
+
+  it('maps the picked location to the API shape', () => {
+    expect(locationSchema.parse(picked)).toEqual({
+      latitude: 24.7136,
+      longitude: 46.6753,
+      addressName: 'King Fahd Rd',
+      region: 'Riyadh Province'
+    });
+  });
+
+  it.each([
+    ['a latitude out of range', { ...picked, lat: 91 }, 'lat'],
+    ['a longitude out of range', { ...picked, lng: -181 }, 'lng'],
+    ['an empty address', { ...picked, address: ' ' }, 'address']
+  ])('rejects %s', (_, input, field) => {
+    expect(fieldErrors(locationSchema.safeParse(input))).toEqual({ [field]: 'auth.invalidLocation' });
   });
 });

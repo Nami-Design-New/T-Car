@@ -110,6 +110,9 @@
     }
   },
   "auth": {
+    "location": {
+      "title": "Set your location"
+    },
     "login": {
       "logoAlt": "T-Car",
       "title": "Welcome back",
@@ -599,7 +602,9 @@
       "emailRequired": "Email address is required.",
       "invalidEmail": "Enter a valid email address.",
       "birthDateRequired": "Date of birth is required.",
-      "invalidBirthDate": "Enter a valid date of birth that is not in the future."
+      "invalidBirthDate": "Enter a valid date of birth that is not in the future.",
+      "underAge": "You must be at least 18 years old.",
+      "invalidLocation": "Choose a valid location on the map."
     }
   },
   "legalContent": {

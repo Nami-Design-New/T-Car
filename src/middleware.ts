@@ -13,18 +13,21 @@ const PROTECTED = new RegExp(`^/(?:(${routing.locales.join('|')})/)?(?:account)(
 
 /**
  * A fast redirect for signed-out visitors: they land on the home page with the
- * sign-in dialog open, and come back to the page afterwards. This only reads the
- * session cookie; the backend still has to check the token on every request.
+ * sign-in dialog open, and come back to the page afterwards. A session whose
+ * profile is still missing (signed in at verification) gets the dialog on the
+ * profile form instead. This only reads the session cookie; the backend still
+ * has to check the token on every request.
  */
 export default auth((req) => {
   const { pathname, search } = req.nextUrl;
   const match = pathname.match(PROTECTED);
+  const profilePending = req.auth?.user?.onboardingStep === 'register';
 
-  if (match && !req.auth) {
+  if (match && (!req.auth || profilePending)) {
     const locale = match[1] ?? routing.defaultLocale;
     const next = (match[1] ? pathname.slice(locale.length + 1) : pathname) + search;
     const url = new URL(`/${locale}`, req.nextUrl);
-    url.searchParams.set('auth', 'login');
+    url.searchParams.set('auth', profilePending ? 'register' : 'login');
     url.searchParams.set('next', next);
     return NextResponse.redirect(url);
   }

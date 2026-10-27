@@ -1,32 +1,44 @@
 "use client";
 
-import { useTranslations } from "next-intl";
-
 import { formatPhoneFieldValue } from "@/shared/lib/phone";
 import { Dialog } from "@/shared/ui/Dialog";
-import { ResultDialog } from "@/shared/ui/ResultDialog";
 import LoginForm from "./LoginForm";
 import OtpForm from "./OtpForm";
 import RegisterForm from "./RegisterForm";
-import { useAuthFlow } from "./useAuthFlow";
+import { useAuthFlow, type AuthFlowStart } from "./useAuthFlow";
 
 type Props = {
   show: boolean;
   onHide: () => void;
   /** Where to go after signing in, e.g. the protected page that sent the user here. */
   next?: string;
+  /** `register` resumes a session whose profile is still missing. */
+  initialStep?: AuthFlowStart;
+  onRegistrationSuccess?: (locationNext: boolean) => void;
+  onLocationRequired?: () => void;
 };
 
 /** The sign-in dialog. The flow (steps, actions, toasts) lives in `useAuthFlow`. */
-export default function AuthModal({ show, onHide, next }: Props) {
-  const t = useTranslations("authSuccess");
-  const flow = useAuthFlow({ next, onDone: onHide });
+export default function AuthModal({
+  show,
+  onHide,
+  next,
+  initialStep,
+  onRegistrationSuccess,
+  onLocationRequired,
+}: Props) {
+  const flow = useAuthFlow({
+    next,
+    onDone: onHide,
+    initialStep,
+    onRegistrationSuccess,
+    onLocationRequired,
+  });
   const { state, pending } = flow;
 
   const close = () => {
     if (pending) return;
-    flow.reset();
-    onHide();
+    flow.dismiss();
   };
 
   const renderStep = () => {
@@ -61,15 +73,6 @@ export default function AuthModal({ show, onHide, next }: Props) {
           />
         );
 
-      case "success":
-        return (
-          <ResultDialog
-            open
-            status="success"
-            description={t("description")}
-            onClose={flow.finish}
-          />
-        );
     }
   };
 
@@ -77,7 +80,6 @@ export default function AuthModal({ show, onHide, next }: Props) {
     <Dialog
       open={show}
       onClose={close}
-
       closeOnEscape={!pending}
       closeOnBackdrop={!pending}
       label="Authentication"

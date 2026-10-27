@@ -1,15 +1,16 @@
 import "server-only";
 import { isApiEnvelope, type ApiEnvelope } from "@/services/http/envelope";
-import { publicServerHttp } from "@/services/http/server";
+import { publicServerHttp, serverHttp } from "@/services/http/server";
 import { AppError } from "@/shared/lib/errors";
 import type { PhoneFieldValue } from "@/shared/lib/phone";
 import {
   toOnboardingStep,
   type AuthGrant,
+  type AssignLocationInput,
   type AuthUser,
-  type RegistrationInput,
+  type CompleteProfileInput,
+  type ProfileStepResult,
 } from "./model";
-import { authMock } from "./api.mock";
 
 export interface AuthApi {
   /**
@@ -23,8 +24,13 @@ export interface AuthApi {
    * code is a `validation` AppError with the backend's message.
    */
   verifyOtp(phone: PhoneFieldValue, code: string): Promise<AuthGrant>;
-  /** Creates the account for a verified phone and signs it in. */
-  register(input: RegistrationInput): Promise<AuthGrant>;
+  /**
+   * Saves the new customer's profile with the signed-in session's token. A
+   * 422 carries the backend's message; a revoked token is `unauthorized`.
+   */
+  completeProfile(input: CompleteProfileInput): Promise<ProfileStepResult>;
+  /** Saves the customer's location (the `location` step) with the session's token. */
+  assignLocation(input: AssignLocationInput): Promise<ProfileStepResult>;
 }
 
 /** `login` signs in or creates the account; `change_phone` verifies a new number. */
@@ -112,13 +118,56 @@ function toAuthUser(user: UserDto): AuthUser {
   };
 }
 
+/** `POST /complete-profile` body. */
+export interface CompleteProfileBody {
+  name: string;
+  email: string;
+  /** YYYY-MM-DD; the backend requires an age of at least 18. */
+  birth_date: string;
+}
+
+/** `POST /assign-location` body. */
+export interface AssignLocationBody {
+  latitude: number;
+  longitude: number;
+  address_name: string;
+  region: string;
+}
+
+/** `data` of a successful `/complete-profile` (and `/assign-location`). No new token. */
+export interface ProfileStepData {
+  user: UserDto;
+  current_step: OnboardingStepDto;
+}
+
+function isProfileStepData(value: unknown): value is ProfileStepData {
+  return (
+    isRecord(value) &&
+    isUserDto(value.user) &&
+    isNullableString(value.current_step)
+  );
+}
+
+/** Maps a profile-step response (`/complete-profile`, `/assign-location`). */
+function toProfileStepResult(response: unknown): ProfileStepResult {
+  if (!isApiEnvelope(response) || !isProfileStepData(response.data)) {
+    throw new AppError("server");
+  }
+  const { user, current_step } = response.data;
+  return {
+    user: toAuthUser(user),
+    onboardingStep: toOnboardingStep(current_step, Boolean(user.name)),
+    message: response.message,
+  };
+}
+
 /** The success message of a write whose `data` the app does not read. */
 function messageOf(response: ApiEnvelope<unknown>): string {
   if (!isApiEnvelope(response)) throw new AppError("server");
   return response.message;
 }
 
-const httpAuthApi: Pick<AuthApi, "requestOtp" | "verifyOtp"> = {
+const httpAuthApi: AuthApi = {
   async requestOtp({ countryCode, phone }) {
     const body: RequestOtpBody = {
       phone,
@@ -155,9 +204,31 @@ const httpAuthApi: Pick<AuthApi, "requestOtp" | "verifyOtp"> = {
       onboardingStep: toOnboardingStep(current_step, Boolean(user.name)),
     };
   },
+
+  async completeProfile({ fullName, email, birthDate }) {
+    const body: CompleteProfileBody = {
+      name: fullName,
+      email,
+      birth_date: birthDate,
+    };
+    // serverHttp sends the session's backend token (issued at verification).
+    return toProfileStepResult(
+      await serverHttp.post<ApiEnvelope<unknown>>("/complete-profile", body),
+    );
+  },
+
+  async assignLocation({ latitude, longitude, addressName, region }) {
+    const body: AssignLocationBody = {
+      latitude,
+      longitude,
+      address_name: addressName,
+      region,
+    };
+    return toProfileStepResult(
+      await serverHttp.post<ApiEnvelope<unknown>>("/assign-location", body),
+    );
+  },
 };
 
-// Wired endpoint by endpoint (A4–A7 in docs/api/Auth-API.md): OTP request and
-// verification are live; registration stays on the mock until A6. Once all
-// are live the mock stays for tests only (no mock flag). Callers stay unchanged.
-export const authApi: AuthApi = { ...authMock, ...httpAuthApi };
+// Every auth call is live; `api.mock.ts` is for tests only (no mock flag).
+export const authApi: AuthApi = httpAuthApi;

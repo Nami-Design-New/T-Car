@@ -49,7 +49,7 @@ export interface PhoneFieldProps {
 }
 
 // Small mock pages keep the paginated path visible before real API integration.
-const PAGE_SIZE = 4;
+const PAGE_SIZE = 100;
 
 export function PhoneField({
   value,

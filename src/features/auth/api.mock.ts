@@ -1,6 +1,7 @@
 import {
   AUTH_ERROR_CODES,
   isNationalNumber,
+  isOldEnough,
   type AuthGrant,
   type AuthUser,
   type OnboardingStep,
@@ -16,6 +17,9 @@ const MOCK_USERS: AuthUser[] = [
   { id: 'u1', name: 'أحمد عبدالله القحطاني', phone: '+966500000000', email: 'ahmed@domain.com' },
 ];
 
+/** Mock only: the profile write fails with the backend's 422 for this email. */
+export const MOCK_REJECTED_EMAIL = 'taken@domain.com';
+
 const digits = (phone: string) => phone.replace(/\D/g, '');
 
 const grantFor = (user: AuthUser, onboardingStep: OnboardingStep): AuthGrant => ({
@@ -27,20 +31,13 @@ const grantFor = (user: AuthUser, onboardingStep: OnboardingStep): AuthGrant => 
 
 const delay = (ms = 600) => new Promise((resolve) => setTimeout(resolve, ms));
 
-function checkCode(phone: string, code: string) {
-  if (digits(phone).length < 8) {
-    throw new AppError('validation', 'auth.invalidPhone', undefined, { phone: 'auth.invalidPhone' });
-  }
-  if (code !== MOCK_OTP_CODE) {
-    throw new AppError('validation', AUTH_ERROR_CODES.invalidCode, undefined, {
-      code: AUTH_ERROR_CODES.invalidCode,
-    });
-  }
-}
+/** The backend's validation error: HTTP 200 with `code: 422` and one message. */
+const backend422 = (serverMessage: string) =>
+  new AppError('validation', undefined, 422, undefined, { serverMessage });
 
-// Stateless (a registration is not remembered), because this runs on the
-// server where module state would be shared between every user. Like the
-// backend, verifying an unknown number signs it in with `register` left.
+// Test-only (the app calls the API). Stateless, because module state on the
+// server would be shared between every user. Like the backend, verifying an
+// unknown number signs it in with `register` left.
 export const authMock: AuthApi = {
   async requestOtp({ phone }) {
     await delay();
@@ -53,21 +50,35 @@ export const authMock: AuthApi = {
   async verifyOtp({ countryCode, phone }, code) {
     await delay();
     const number = `${countryCode}${phone}`;
-    checkCode(number, code);
+    if (code !== MOCK_OTP_CODE) {
+      throw new AppError('validation', AUTH_ERROR_CODES.invalidCode, undefined, {
+        code: AUTH_ERROR_CODES.invalidCode,
+      });
+    }
     const user = MOCK_USERS.find((item) => digits(item.phone) === digits(number));
     if (user) return grantFor(user, 'completed');
     return grantFor({ id: `u-${digits(number)}`, name: '', phone: number }, 'register');
   },
 
-  async register({ phone, code, fullName, email }) {
+  async completeProfile({ fullName, email, birthDate }) {
     await delay();
-    checkCode(phone, code);
-    if (!fullName.trim()) {
-      throw new AppError('validation', 'auth.nameRequired', undefined, { fullName: 'auth.nameRequired' });
-    }
-    return grantFor(
-      { id: `u-${digits(phone)}`, name: fullName.trim(), phone, email: email || undefined },
-      'completed'
-    );
+    if (email === MOCK_REJECTED_EMAIL) throw backend422('The email has already been taken.');
+    if (!isOldEnough(birthDate)) throw backend422('You must be at least 18 years old.');
+    return {
+      user: { id: 'u-new', name: fullName, phone: '+966500000001', email },
+      onboardingStep: 'location',
+      message: 'Profile updated successfully.',
+    };
+  },
+
+  async assignLocation({ latitude, addressName }) {
+    await delay();
+    if (Math.abs(latitude) > 90) throw backend422('The latitude must be between -90 and 90.');
+    if (!addressName.trim()) throw backend422('The address name field is required.');
+    return {
+      user: { id: 'u-new', name: 'New Customer', phone: '+966500000001' },
+      onboardingStep: 'completed',
+      message: 'Location saved successfully.',
+    };
   },
 };

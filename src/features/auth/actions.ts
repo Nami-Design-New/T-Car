@@ -1,18 +1,26 @@
 'use server';
 
-import { OtpSignInError, readSignedInStep, signIn, signOut } from '@/auth';
+import {
+  OtpSignInError,
+  readSignedInStep,
+  signIn,
+  signOut,
+  updateSessionProfile,
+} from '@/auth';
 import { authApi } from './api';
 import { AppError } from '@/shared/lib/errors';
+import type { LocationData } from '@/shared/lib/location';
 import type { PhoneFieldValue } from '@/shared/lib/phone';
 import { reportError } from '@/shared/lib/report';
 import { fail, ok, toActionResult, type ActionResult } from '@/shared/lib/result';
 import { toValidationError } from '@/shared/lib/validation';
 import type { OnboardingStep } from './model';
 import {
+  locationSchema,
   phoneSchema,
-  registrationSchema,
+  registerFormSchema,
   verifyOtpSchema,
-  type RegistrationSubmission,
+  type RegisterFormValues,
 } from './validation';
 
 /** The provider rethrows its own error with the AppError inside (see src/auth.ts). */
@@ -67,28 +75,42 @@ export async function verifyOtpAction(
 }
 
 /**
- * Creates the account for a verified phone and signs it in. Still the mock
- * (it re-checks phone and code) until A6 calls `/complete-profile`.
+ * Saves the new customer's profile with the session's token (issued at
+ * verification), then updates the session's name, email, and onboarding step.
+ * Resolves with the new step and the backend's message, which the client toasts.
  */
-export async function registerAction(
-  input: RegistrationSubmission
-): Promise<ActionResult<void>> {
-  const parsed = registrationSchema.safeParse(input);
+export async function completeProfileAction(
+  input: RegisterFormValues
+): Promise<ActionResult<{ onboardingStep: OnboardingStep }>> {
+  const parsed = registerFormSchema.safeParse(input);
   if (!parsed.success) return toActionResult(fail(toValidationError(parsed.error)));
-  const { phone, code, fullName, email, birthDate } = parsed.data;
   try {
-    await signIn('otp', {
-      ...phone,
-      code,
-      fullName,
-      email,
-      birthDate,
-      intent: 'register',
-      redirect: false,
-    });
-    return toActionResult(ok(undefined));
+    const { user, onboardingStep, message } = await authApi.completeProfile(parsed.data);
+    await updateSessionProfile({ name: user.name, email: user.email, onboardingStep });
+    return toActionResult(ok({ onboardingStep }, message));
   } catch (error) {
-    return toActionResult(fail(signInError(error)));
+    reportError(error, { scope: 'auth.completeProfile' });
+    return toActionResult(fail(error));
+  }
+}
+
+/**
+ * Saves the location picked on the map (the last onboarding step) with the
+ * session's token, then moves the session's step on. Resolves with the new
+ * step and the backend's message, which the client toasts.
+ */
+export async function assignLocationAction(
+  location: LocationData
+): Promise<ActionResult<{ onboardingStep: OnboardingStep }>> {
+  const parsed = locationSchema.safeParse(location);
+  if (!parsed.success) return toActionResult(fail(toValidationError(parsed.error)));
+  try {
+    const { onboardingStep, message } = await authApi.assignLocation(parsed.data);
+    await updateSessionProfile({ onboardingStep });
+    return toActionResult(ok({ onboardingStep }, message));
+  } catch (error) {
+    reportError(error, { scope: 'auth.assignLocation' });
+    return toActionResult(fail(error));
   }
 }
 

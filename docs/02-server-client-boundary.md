@@ -198,17 +198,15 @@ The backend does not set an `httpOnly` cookie, so the session is NextAuth's
 
 | Concern | Implementation |
 | ------- | -------------- |
-| Sign-in | [`src/auth.ts`](../src/auth.ts): a Credentials provider `otp` calls `authApi.verifyOtp({ countryCode, phone }, code)` (live `POST /auth/verify-otp`), or `authApi.register(...)` when `intent=register` (mock until A6). A failure is thrown as `OtpSignInError`, which carries the whole `AppError` (kind, backend message); with `redirect: false` Auth.js rethrows that same instance to the Server Action |
+| Sign-in | [`src/auth.ts`](../src/auth.ts): a Credentials provider `otp` calls `authApi.verifyOtp({ countryCode, phone }, code)` (live `POST /auth/verify-otp`). Profile completion is not a sign-in: `completeProfileAction` calls `POST /complete-profile` with the session's token, then `updateSessionProfile()` (a server-only `unstable_update`) updates the session's name, email, and step. A failure is thrown as `OtpSignInError`, which carries the whole `AppError` (kind, backend message); with `redirect: false` Auth.js rethrows that same instance to the Server Action |
 | Token storage | JWT session in an `httpOnly`, `SameSite=Lax` cookie named `tcar.session-token` (`__Secure-` prefixed and `Secure` in production), see [`shared/config/session.ts`](../src/shared/config/session.ts). The backend token is inside the encrypted JWT |
 | Who reads the token | [`services/http/server.ts`](../src/services/http/server.ts) with `getToken()`. The session the browser can read (`/api/auth/session`) has the user and `onboardingStep` only. The browser client sends no token |
-| Route protection | [`src/middleware.ts`](../src/middleware.ts): NextAuth's `auth()` wraps the `next-intl` middleware; `/account` and `/my-bookings` (with or without a locale) redirect to `/<locale>?auth=login&next=…` |
+| Route protection | [`src/middleware.ts`](../src/middleware.ts): NextAuth's `auth()` wraps the `next-intl` middleware; `/account` and `/my-bookings` (with or without a locale) redirect to `/<locale>?auth=login&next=…`, or to `?auth=register&next=…` for a session whose profile is still missing |
 | Logged-in UI | The `[locale]` layout calls `auth()` and passes the user to `Header`, which shows the user menu or the login button. `?auth=login` opens the dialog; `next` must be a same-site path |
 | Dialog flow | [`features/auth/actions.ts`](../src/features/auth/actions.ts): `requestOtpAction`, `verifyOtpAction` (signs in and returns the onboarding step, read back from the new session cookie with `readSignedInStep()`), `registerAction`, `signOutAction`, all returning `ActionResult`. [`useAuthFlow`](../src/features/auth/components/useAuthFlow.ts) runs the steps and toasts; `AuthModal` renders them |
 | Configuration | `AUTH_SECRET` is required (see `.env.example`); set `AUTH_URL` behind a proxy |
 
-Still open: profile completion (A6; the backend issues the full token at
-verification, so a new number is signed in with `onboardingStep: 'register'`),
-logout against the backend (A7), and handling a backend 401 by signing the
+Still open: logout against the backend (A7), and handling a backend 401 by signing the
 session out (A8). The mock
 ([`features/auth/api.mock.ts`](../src/features/auth/api.mock.ts): code `1234`,
 `+966500000000` has an account) mirrors the backend for tests. The middleware check only looks at

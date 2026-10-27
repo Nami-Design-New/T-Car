@@ -1,6 +1,14 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const { signIn, readSignedInStep, requestOtp, OtpSignInError } = vi.hoisted(() => {
+const {
+  signIn,
+  readSignedInStep,
+  updateSessionProfile,
+  requestOtp,
+  completeProfile,
+  assignLocation,
+  OtpSignInError,
+} = vi.hoisted(() => {
   class OtpSignInError extends Error {
     constructor(readonly error: unknown) {
       super('otp');
@@ -9,24 +17,36 @@ const { signIn, readSignedInStep, requestOtp, OtpSignInError } = vi.hoisted(() =
   return {
     signIn: vi.fn(),
     readSignedInStep: vi.fn(),
+    updateSessionProfile: vi.fn(),
     requestOtp: vi.fn(),
+    completeProfile: vi.fn(),
+    assignLocation: vi.fn(),
     OtpSignInError,
   };
 });
 
-vi.mock('@/auth', () => ({ signIn, signOut: vi.fn(), readSignedInStep, OtpSignInError }));
-vi.mock('./api', () => ({ authApi: { requestOtp } }));
+vi.mock('@/auth', () => ({
+  signIn,
+  signOut: vi.fn(),
+  readSignedInStep,
+  updateSessionProfile,
+  OtpSignInError,
+}));
+vi.mock('./api', () => ({ authApi: { requestOtp, completeProfile, assignLocation } }));
 vi.mock('@/shared/lib/report', () => ({ reportError: vi.fn() }));
 
 import { AppError } from '@/shared/lib/errors';
 import type { PhoneFieldValue } from '@/shared/lib/phone';
-import { registerAction, requestOtpAction, verifyOtpAction } from './actions';
+import {
+  assignLocationAction,
+  completeProfileAction,
+  requestOtpAction,
+  verifyOtpAction,
+} from './actions';
 
 const saudi = (phone: string): PhoneFieldValue => ({ countryCode: '+966', phone });
 
-const registration = {
-  phone: saudi('500000001'),
-  code: '1234',
+const profile = {
   fullName: ' New Customer ',
   email: 'new@domain.com',
   birthDate: '1990-05-17',
@@ -35,7 +55,10 @@ const registration = {
 beforeEach(() => {
   signIn.mockReset();
   readSignedInStep.mockReset();
+  updateSessionProfile.mockReset();
   requestOtp.mockReset();
+  completeProfile.mockReset();
+  assignLocation.mockReset();
 });
 
 describe('requestOtpAction', () => {
@@ -145,42 +168,104 @@ describe('verifyOtpAction', () => {
   });
 });
 
-describe('registerAction', () => {
-  it('rejects a malformed profile without signing in', async () => {
-    const result = await registerAction({
-      ...registration,
-      email: 'not-an-email',
-    });
+describe('completeProfileAction', () => {
+  it('rejects a malformed profile without calling the API', async () => {
+    const result = await completeProfileAction({ ...profile, email: 'not-an-email' });
     expect(result).toMatchObject({
       ok: false,
-      error: {
-        kind: 'validation',
-        fieldErrors: { email: 'auth.invalidEmail' },
-      },
+      error: { kind: 'validation', fieldErrors: { email: 'auth.invalidEmail' } },
     });
-    expect(signIn).not.toHaveBeenCalled();
+    expect(completeProfile).not.toHaveBeenCalled();
   });
 
-  it('signs in with the parsed profile', async () => {
-    signIn.mockResolvedValue(undefined);
-    await expect(registerAction(registration)).resolves.toEqual({ ok: true, data: undefined });
-    expect(signIn).toHaveBeenCalledWith('otp', {
-      countryCode: '+966',
-      phone: '500000001',
-      code: '1234',
+  it('saves the trimmed profile, updates the session, and returns the step and message', async () => {
+    completeProfile.mockResolvedValue({
+      user: { id: '34', name: 'New Customer', phone: '+966500000001', email: 'new@domain.com' },
+      onboardingStep: 'location',
+      message: 'Profile updated successfully.',
+    });
+
+    await expect(completeProfileAction(profile)).resolves.toEqual({
+      ok: true,
+      data: { onboardingStep: 'location' },
+      message: 'Profile updated successfully.',
+    });
+    expect(completeProfile).toHaveBeenCalledWith({
       fullName: 'New Customer',
       email: 'new@domain.com',
       birthDate: '1990-05-17',
-      intent: 'register',
-      redirect: false,
+    });
+    expect(updateSessionProfile).toHaveBeenCalledWith({
+      name: 'New Customer',
+      email: 'new@domain.com',
+      onboardingStep: 'location',
     });
   });
 
-  it('keeps transport failures as their kind', async () => {
-    signIn.mockRejectedValue(new OtpSignInError(new AppError('network')));
-    await expect(registerAction(registration)).resolves.toMatchObject({
+  it('returns a backend 422 with its message and leaves the session alone', async () => {
+    completeProfile.mockRejectedValue(
+      new AppError('validation', undefined, 422, undefined, {
+        serverMessage: 'The email has already been taken.',
+      })
+    );
+    await expect(completeProfileAction(profile)).resolves.toMatchObject({
       ok: false,
-      error: { kind: 'network' },
+      error: { kind: 'validation', serverMessage: 'The email has already been taken.' },
     });
+    expect(updateSessionProfile).not.toHaveBeenCalled();
+  });
+
+  it('returns a revoked token as unauthorized', async () => {
+    completeProfile.mockRejectedValue(new AppError('unauthorized', undefined, 401));
+    await expect(completeProfileAction(profile)).resolves.toMatchObject({
+      ok: false,
+      error: { kind: 'unauthorized' },
+    });
+  });
+});
+
+describe('assignLocationAction', () => {
+  const picked = { lat: 24.7136, lng: 46.6753, address: ' King Fahd Rd, Riyadh ', region: 'Riyadh Province' };
+
+  it('rejects a location without an address without calling the API', async () => {
+    const result = await assignLocationAction({ ...picked, address: '  ' });
+    expect(result).toMatchObject({
+      ok: false,
+      error: { kind: 'validation', fieldErrors: { address: 'auth.invalidLocation' } },
+    });
+    expect(assignLocation).not.toHaveBeenCalled();
+  });
+
+  it('saves the location, moves the session on, and returns the message', async () => {
+    assignLocation.mockResolvedValue({
+      user: { id: '34', name: 'Test', phone: '+966593080235' },
+      onboardingStep: 'completed',
+      message: 'Location saved successfully.',
+    });
+
+    await expect(assignLocationAction(picked)).resolves.toEqual({
+      ok: true,
+      data: { onboardingStep: 'completed' },
+      message: 'Location saved successfully.',
+    });
+    expect(assignLocation).toHaveBeenCalledWith({
+      latitude: 24.7136,
+      longitude: 46.6753,
+      addressName: 'King Fahd Rd, Riyadh',
+      region: 'Riyadh Province',
+    });
+    expect(updateSessionProfile).toHaveBeenCalledWith({ onboardingStep: 'completed' });
+  });
+
+  it('sends the address as the region when the geocoder has none', async () => {
+    assignLocation.mockResolvedValue({
+      user: { id: '34', name: 'Test', phone: '+966593080235' },
+      onboardingStep: 'completed',
+      message: 'Location saved successfully.',
+    });
+    await assignLocationAction({ ...picked, region: undefined });
+    expect(assignLocation).toHaveBeenCalledWith(
+      expect.objectContaining({ region: 'King Fahd Rd, Riyadh' })
+    );
   });
 });

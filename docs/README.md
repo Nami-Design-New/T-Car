@@ -314,6 +314,26 @@ processes `next-intl`, so the `OtpForm` and `RegisterForm` tests load
 again, and `messages.test.tsx` renders the three auth forms in both locales
 and fails on any missing or broken message.
 
+**Auth API integration, fraction A6 (2026-10-27):** Profile completion is live
+(`POST /complete-profile` with the session's token through `serverHttp`);
+every auth call now uses the API and `features/auth/api.mock.ts` is for tests
+only. `completeProfileAction` replaces the mock registration and then updates
+the session (name, email, step) with `updateSessionProfile()`, an
+`unstable_update` that only the server can apply: browser updates through
+`POST /api/auth/session` lack a per-process marker and are ignored. The form
+also requires the backend's minimum age of 18 (`errors.auth.underAge`). A
+session still on `register` is not signed in for the UI: the layout passes
+`profilePending`, the header's button opens the dialog on the profile, and
+the middleware sends `/account/*` to `?auth=register&next=…`.
+The location step is live too (product decision, Auth-API.md Q2): after the
+profile is saved the success dialog shows, closing it closes the auth dialog
+and opens `MapLocationModal` ("Set your location"); confirming calls
+`assignLocationAction` (`POST /assign-location`, region from the geocoder's
+first-level area, or the address when it has none) and finishes sign-in.
+Signing in with `location` left opens the map directly; closing the map skips
+the step and keeps the session signed in. `LocationData` gains an optional
+`region`, filled by `MapLocationModal`.
+
 | Feature                            | Moved to `features/` |                  Data behind queries / api                  |                             Actions return `Result`                              | Remaining                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | ---------------------------------- | :------------------: | :---------------------------------------------------------: | :------------------------------------------------------------------------------: | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `wallet`, `bank-accounts`          |         Yes          | Client reads over `*.api.ts`; writes through Server Actions |                                       Yes                                        | Fractions 1–3 complete: wallet and bank-account form, confirmation, and result states use shared dialogs. Left: user-scoped reads/API and forms (doc 3 step 7). Form validation fractions 4–5 add RHF + Zod amount and bank-account rules, re-parsed by the actions                                                                                                                                                                                                                                                                          |

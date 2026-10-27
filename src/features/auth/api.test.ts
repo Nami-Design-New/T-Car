@@ -1,15 +1,23 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { AppError } from "@/shared/lib/errors";
 
-const { post } = vi.hoisted(() => ({ post: vi.fn() }));
+const { post, sessionPost } = vi.hoisted(() => ({
+  post: vi.fn(),
+  sessionPost: vi.fn(),
+}));
 
 vi.mock("server-only", () => ({}));
-vi.mock("@/services/http/server", () => ({ publicServerHttp: { post } }));
+// publicServerHttp sends no token; serverHttp sends the session's.
+vi.mock("@/services/http/server", () => ({
+  publicServerHttp: { post },
+  serverHttp: { post: sessionPost },
+}));
 
 import { authApi } from "./api";
 
 beforeEach(() => {
   post.mockReset();
+  sessionPost.mockReset();
 });
 
 describe("authApi.requestOtp", () => {
@@ -131,6 +139,108 @@ describe("authApi.verifyOtp", () => {
     post.mockResolvedValue(verified(data));
     await expect(authApi.verifyOtp(phone, "1234")).rejects.toMatchObject({
       kind: "server",
+    });
+  });
+});
+
+describe("authApi.completeProfile", () => {
+  const profileUser = {
+    id: 34,
+    name: "Test",
+    phone: "593080235",
+    email: "api.test@example.com",
+    phone_code: "+966",
+    birth_date: "2000-12-12",
+    latitude: null,
+    longitude: null,
+    region: null,
+    address_name: null,
+    lang: "en",
+    balance: 0,
+    withdrawable_balance: 0,
+    non_withdrawable_balance: 0,
+    created_at: "2026-10-27 05:50:36",
+  };
+  const input = {
+    fullName: "Test",
+    email: "api.test@example.com",
+    birthDate: "2000-12-12",
+  };
+
+  it("posts the profile with the session's client and maps the result", async () => {
+    sessionPost.mockResolvedValue({
+      data: { user: profileUser, current_step: "location" },
+      message: "Profile updated successfully.",
+      code: 200,
+    });
+
+    await expect(authApi.completeProfile(input)).resolves.toEqual({
+      user: {
+        id: "34",
+        name: "Test",
+        phone: "+966593080235",
+        email: "api.test@example.com",
+      },
+      onboardingStep: "location",
+      message: "Profile updated successfully.",
+    });
+    expect(sessionPost).toHaveBeenCalledWith("/complete-profile", {
+      name: "Test",
+      email: "api.test@example.com",
+      birth_date: "2000-12-12",
+    });
+    expect(post).not.toHaveBeenCalled();
+  });
+
+  it("passes a revoked token (401) through", async () => {
+    const error = new AppError("unauthorized", undefined, 401);
+    sessionPost.mockRejectedValue(error);
+    await expect(authApi.completeProfile(input)).rejects.toBe(error);
+  });
+
+  it("rejects a success without the user", async () => {
+    sessionPost.mockResolvedValue({
+      data: { current_step: "location" },
+      message: "Profile updated successfully.",
+      code: 200,
+    });
+    await expect(authApi.completeProfile(input)).rejects.toMatchObject({
+      kind: "server",
+    });
+  });
+});
+
+describe("authApi.assignLocation", () => {
+  it("posts the location with the session's client and maps the step", async () => {
+    sessionPost.mockResolvedValue({
+      data: {
+        user: {
+          id: 34,
+          name: "Test",
+          phone: "593080235",
+          email: "api.test@example.com",
+          phone_code: "+966",
+        },
+        current_step: "completed",
+      },
+      message: "Location saved successfully.",
+      code: 200,
+    });
+
+    const result = await authApi.assignLocation({
+      latitude: 24.7136,
+      longitude: 46.6753,
+      addressName: "King Fahd Rd",
+      region: "Riyadh Province",
+    });
+
+    expect(result.onboardingStep).toBe("completed");
+    expect(result.message).toBe("Location saved successfully.");
+    expect(sessionPost).toHaveBeenCalledWith("/assign-location", {
+      latitude: 24.7136,
+      longitude: 46.6753,
+      address_name: "King Fahd Rd",
+      region: "Riyadh Province",
     });
   });
 });

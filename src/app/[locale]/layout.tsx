@@ -87,7 +87,11 @@ export default async function RootLayout({
 }) {
   const [{ locale }, session] = await Promise.all([params, auth()]);
   const dir = getDirection(locale);
-  const unreadCount = session
+  // A session whose profile is still missing (signed in at verification) is
+  // not signed in for the UI: the header offers the profile form instead.
+  const profilePending = session?.user?.onboardingStep === "register";
+  const signedIn = Boolean(session?.user) && !profilePending;
+  const unreadCount = signedIn
     ? (await getNotifications()).filter((notification) => !notification.read)
         .length
     : 0;
@@ -99,8 +103,9 @@ export default async function RootLayout({
           <DirectionProvider dir={dir}>
             <NextTopLoader color="#1f7ffa" height={3} showSpinner={false} />
             <Header
-              hasSession={Boolean(session)}
-              signedIn={Boolean(session?.user)}
+              hasSession={signedIn}
+              signedIn={signedIn}
+              profilePending={profilePending}
               unreadCount={unreadCount}
             />
             <main>{children}</main>

@@ -33,7 +33,7 @@ export function BackButton({
     <button
       type="button"
       className={cn(
-        "back-button inline-flex cursor-pointer items-center justify-center rounded-md border border-stroke-light bg-surface-background p-[3px] hover:text-action-primary focus-visible:rounded-md focus-visible:outline-2 focus-visible:outline-action-primary focus-visible:outline-offset-3",
+        "border-stroke-light bg-surface-background hover:text-action-primary focus-visible:outline-action-primary inline-flex cursor-pointer items-center justify-center rounded-md border p-[3px] focus-visible:rounded-md focus-visible:outline-2 focus-visible:outline-offset-3",
         className,
       )}
       onClick={handleOnClick}
@@ -44,7 +44,6 @@ export function BackButton({
         width={ICONS.chevron.width}
         height={ICONS.chevron.height}
         alt="Back"
-        className="back-button__icon"
         aria-hidden="true"
       />
       {label && <span>{label}</span>}
