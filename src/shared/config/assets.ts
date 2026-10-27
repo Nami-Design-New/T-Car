@@ -72,6 +72,12 @@ export const IMAGES = {
   appStore: { src: "/images/app/app-store.webp", width: 160, height: 48 },
   googlePlay: { src: "/images/app/google-play.webp", width: 160, height: 48 },
   gift: { src: "/images/illustrations/gift.webp", width: 48, height: 37 },
+  /** Until the cars API returns the office logo with each car. */
+  officePlaceholder: {
+    src: "/images/placeholders/office.svg",
+    width: 44,
+    height: 44,
+  },
   cancelBooking: {
     src: "/images/illustrations/cancel-booking.svg",
     width: 140,

@@ -117,9 +117,9 @@ export default function CarCard({
           <div className="mb-2 flex min-w-0 items-center gap-3">
             <span className="flex min-w-0 flex-1 items-center gap-2 text-xs font-medium text-text-subtle">
               <Image
-                src={"/mock/offices/office-1.webp"}
-                width={44}
-                height={44}
+                src={IMAGES.officePlaceholder.src}
+                width={IMAGES.officePlaceholder.width}
+                height={IMAGES.officePlaceholder.height}
                 alt=""
                 className="size-11 rounded object-cover"
               />
