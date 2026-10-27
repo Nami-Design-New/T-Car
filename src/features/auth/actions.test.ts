@@ -1,17 +1,19 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const { signIn, sendOtp, CredentialsSignin } = vi.hoisted(() => {
+const { signIn, requestOtp, CredentialsSignin } = vi.hoisted(() => {
   class CredentialsSignin extends Error {
     code = 'credentials';
   }
-  return { signIn: vi.fn(), sendOtp: vi.fn(), CredentialsSignin };
+  return { signIn: vi.fn(), requestOtp: vi.fn(), CredentialsSignin };
 });
 
 vi.mock('next-auth', () => ({ CredentialsSignin }));
 vi.mock('@/auth', () => ({ signIn, signOut: vi.fn() }));
-vi.mock('./api', () => ({ authApi: { sendOtp } }));
+vi.mock('./api', () => ({ authApi: { requestOtp } }));
 vi.mock('@/shared/lib/report', () => ({ reportError: vi.fn() }));
 
+import { AppError } from '@/shared/lib/errors';
+import type { PhoneFieldValue } from '@/shared/lib/phone';
 import { registerAction, requestOtpAction, verifyOtpAction } from './actions';
 
 /** What the sign-in provider throws for an AppError code. */
@@ -32,12 +34,12 @@ const registration = {
 
 beforeEach(() => {
   signIn.mockReset();
-  sendOtp.mockReset();
+  requestOtp.mockReset();
 });
 
 describe('requestOtpAction', () => {
   it('rejects a malformed phone without calling the service', async () => {
-    await expect(requestOtpAction('+966')).resolves.toEqual({
+    await expect(requestOtpAction({ countryCode: '+966', phone: '12' })).resolves.toEqual({
       ok: false,
       error: {
         kind: 'validation',
@@ -45,22 +47,39 @@ describe('requestOtpAction', () => {
         fieldErrors: { phone: 'auth.invalidPhone' },
       },
     });
-    expect(sendOtp).not.toHaveBeenCalled();
+    expect(requestOtp).not.toHaveBeenCalled();
   });
 
-  it('rejects input that is not a string', async () => {
-    const result = await requestOtpAction({ phone: '966500000000' } as unknown as string);
-    expect(result.ok).toBe(false);
-    expect(sendOtp).not.toHaveBeenCalled();
+  it.each([
+    ['not an object', '966500000000'],
+    ['a bad calling code', { countryCode: '966', phone: '500000000' }],
+    ['letters in the number', { countryCode: '+966', phone: '5000abc00' }],
+  ])('rejects %s', async (_case, input) => {
+    const result = await requestOtpAction(input as unknown as PhoneFieldValue);
+    expect(result).toMatchObject({ ok: false, error: { fieldErrors: { phone: 'auth.invalidPhone' } } });
+    expect(requestOtp).not.toHaveBeenCalled();
   });
 
-  it('sends the trimmed phone', async () => {
-    sendOtp.mockResolvedValue(undefined);
-    await expect(requestOtpAction(' 966500000000 ')).resolves.toEqual({
+  it('sends the normalized national number and returns it with the backend message', async () => {
+    requestOtp.mockResolvedValue('OTP has been sent successfully.');
+    await expect(requestOtpAction({ countryCode: ' +966 ', phone: ' 0544 444 442 ' })).resolves.toEqual({
       ok: true,
-      data: undefined,
+      data: { countryCode: '+966', phone: '544444442' },
+      message: 'OTP has been sent successfully.',
     });
-    expect(sendOtp).toHaveBeenCalledWith('966500000000');
+    expect(requestOtp).toHaveBeenCalledWith({ countryCode: '+966', phone: '544444442' });
+  });
+
+  it('returns a backend validation error with its message', async () => {
+    requestOtp.mockRejectedValue(
+      new AppError('validation', undefined, 422, undefined, {
+        serverMessage: 'The phone number must be 8 to 15 digits only.',
+      })
+    );
+    await expect(requestOtpAction({ countryCode: '+966', phone: '544444442' })).resolves.toMatchObject({
+      ok: false,
+      error: { kind: 'validation', status: 422, serverMessage: 'The phone number must be 8 to 15 digits only.' },
+    });
   });
 });
 

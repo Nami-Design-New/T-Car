@@ -6,20 +6,42 @@ import {
   isPastIsoDate,
   isPhoneNumber,
 } from '@/shared/lib/validation';
+import { isNationalNumber, toNationalNumber } from './model';
 
 // Auth form schemas (doc 9). Messages are `errors.*` keys, never user text.
 // The client resolves forms with them and the Server Actions parse them again.
 /** Length of the one-time code the backend sends. */
 export const OTP_LENGTH = 4;
 
+/** A whole number ("+966500000000"); used by OTP verification until A5. */
 const phone = z.string({ error: 'auth.invalidPhone' }).trim().refine(isPhoneNumber, { error: 'auth.invalidPhone' });
+
+const CALLING_CODE = /^\+\d{1,4}$/;
+
+/**
+ * The login phone as `PhoneField` holds it: calling code and national number
+ * kept apart, as the API takes them. One message on `phone` for any problem;
+ * the parsed value carries the normalized national number.
+ */
+const phoneValue = z
+  .object(
+    {
+      countryCode: z.string({ error: 'auth.invalidPhone' }).trim(),
+      phone: z.string({ error: 'auth.invalidPhone' }).trim(),
+    },
+    { error: 'auth.invalidPhone' }
+  )
+  .refine(({ countryCode, phone }) => CALLING_CODE.test(countryCode) && isNationalNumber(phone), {
+    error: 'auth.invalidPhone',
+  })
+  .transform(({ countryCode, phone }) => ({ countryCode, phone: toNationalNumber(phone) }));
 
 const code = z
   .string({ error: 'auth.invalidCode' })
   .regex(new RegExp(`^\\d{${OTP_LENGTH}}$`), { error: 'auth.invalidCode' });
 
 /** Login step: the phone the code is sent to. */
-export const phoneSchema = z.object({ phone });
+export const phoneSchema = z.object({ phone: phoneValue });
 
 /** OTP step: the code the customer typed. */
 export const otpCodeSchema = z.object({ code });
@@ -54,7 +76,8 @@ export const registerFormSchema = z.object({
 /** What `registerAction` receives: the verified phone and code plus the form. */
 export const registrationSchema = verifyOtpSchema.extend(registerFormSchema.shape);
 
-export type PhoneFormValues = z.infer<typeof phoneSchema>;
+export type PhoneFormInput = z.input<typeof phoneSchema>;
+export type PhoneFormValues = z.output<typeof phoneSchema>;
 export type OtpCodeValues = z.infer<typeof otpCodeSchema>;
 export type RegisterFormValues = z.infer<typeof registerFormSchema>;
 export type RegistrationSubmission = z.input<typeof registrationSchema>;

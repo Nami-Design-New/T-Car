@@ -26,6 +26,15 @@ async function readLocale(): Promise<string | undefined> {
   }
 }
 
+/**
+ * Server client for public endpoints (OTP request and verify): no bearer token,
+ * so a stale session never reaches calls that must not depend on one.
+ */
+export const publicServerHttp = createHttpClient({
+  baseUrl: env.serverApiUrl,
+  getLocale: readLocale,
+});
+
 /** Server client: forwards the signed-in customer's backend token as the bearer token. */
 export const serverHttp = createHttpClient({
   baseUrl: env.serverApiUrl,

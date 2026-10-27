@@ -4,7 +4,9 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 
 import { useRouter } from "@/i18n/navigation";
+import { useNotify } from "@/shared/hooks/useNotify";
 import type { AppError } from "@/shared/lib/errors";
+import { formatPhoneFieldValue, type PhoneFieldValue } from "@/shared/lib/phone";
 import { fromActionResult } from "@/shared/lib/result";
 import { Dialog } from "@/shared/ui/Dialog";
 import { ResultDialog } from "@/shared/ui/ResultDialog";
@@ -26,9 +28,17 @@ type Step = "login" | "otp" | "register" | "success";
 export default function AuthModal({ show, onHide, next }: Props) {
   const t = useTranslations("authSuccess");
   const router = useRouter();
+  const notify = useNotify();
 
   const [step, setStep] = useState<Step>("login");
-  const [phone, setPhone] = useState("");
+  /** The normalized phone the code was sent to. */
+  const [otpPhone, setOtpPhone] = useState<PhoneFieldValue>({
+    countryCode: "",
+    phone: "",
+  });
+  // Verification and registration still run on the mock, which takes the
+  // whole number (until A5 / A6).
+  const phone = formatPhoneFieldValue(otpPhone);
   const [code, setCode] = useState("");
   const [pending, setPending] = useState(false);
 
@@ -61,18 +71,33 @@ export default function AuthModal({ show, onHide, next }: Props) {
     }
   };
 
-  const handleRequestOtp = (value: string) =>
+  /**
+   * A backend validation message is toasted as it is (doc 3 §6), and the form
+   * keeps its input without a second, inline message. Any other error goes
+   * back to the form.
+   */
+  const formError = (error: AppError) => {
+    if (error.kind === "validation" && error.serverMessage) {
+      notify.error(error.serverMessage);
+      return undefined;
+    }
+    return error;
+  };
+
+  const handleRequestOtp = (value: PhoneFieldValue) =>
     run(async () => {
       const result = fromActionResult(await requestOtpAction(value));
-      if (!result.ok) return result.error;
-      setPhone(value);
+      if (!result.ok) return formError(result.error);
+      notify.success(result.message);
+      setOtpPhone(result.data);
       setStep("otp");
     });
 
   const handleResend = () =>
     run(async () => {
-      const result = fromActionResult(await requestOtpAction(phone));
-      if (!result.ok) return result.error;
+      const result = fromActionResult(await requestOtpAction(otpPhone));
+      if (!result.ok) return formError(result.error);
+      notify.success(result.message);
     });
 
   const handleVerify = (value: string) =>

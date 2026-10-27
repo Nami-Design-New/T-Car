@@ -280,6 +280,17 @@ through the mock until A4–A7 wire the endpoints. The account mock keeps its
 own copy of the fixed OTP code, since `services` may not import a feature's
 mock.
 
+**Auth API integration, fraction A4 (2026-10-27):** OTP request and resend are
+live (`POST /auth/request-otp`, `otp_type: login`) through
+`publicServerHttp`, a server client without the session token.
+`features/auth/api.ts` is `server-only`; verification and registration still
+run on the mock (A5, A6). The login form keeps the calling code and the
+national number apart (`PhoneFieldValue`); the schema normalizes the number
+to digits without the trunk `0` and checks the backend's 8–15 digits.
+`AuthModal` toasts the backend's success and validation messages and keeps
+the form's input. The two stale `LoginForm` tests are updated to the
+separated value and pass.
+
 | Feature                            | Moved to `features/` |                  Data behind queries / api                  |                             Actions return `Result`                              | Remaining                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | ---------------------------------- | :------------------: | :---------------------------------------------------------: | :------------------------------------------------------------------------------: | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `wallet`, `bank-accounts`          |         Yes          | Client reads over `*.api.ts`; writes through Server Actions |                                       Yes                                        | Fractions 1–3 complete: wallet and bank-account form, confirmation, and result states use shared dialogs. Left: user-scoped reads/API and forms (doc 3 step 7). Form validation fractions 4–5 add RHF + Zod amount and bank-account rules, re-parsed by the actions                                                                                                                                                                                                                                                                          |

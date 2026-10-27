@@ -1,4 +1,4 @@
-import { AUTH_ERROR_CODES, type AuthGrant, type AuthUser } from './model';
+import { AUTH_ERROR_CODES, isNationalNumber, type AuthGrant, type AuthUser } from './model';
 import { AppError } from '@/shared/lib/errors';
 import type { AuthApi } from './api';
 
@@ -34,11 +34,12 @@ function checkCode(phone: string, code: string) {
 // Stateless (a registration is not remembered), because this runs on the
 // server where module state would be shared between every user.
 export const authMock: AuthApi = {
-  async sendOtp(phone) {
+  async requestOtp({ phone }) {
     await delay();
-    if (digits(phone).length < 8) {
+    if (!isNationalNumber(phone)) {
       throw new AppError('validation', 'auth.invalidPhone', undefined, { phone: 'auth.invalidPhone' });
     }
+    return 'OTP has been sent successfully.';
   },
 
   async verifyOtp(phone, code) {

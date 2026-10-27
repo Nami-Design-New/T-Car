@@ -2,6 +2,7 @@ import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 import { AppError } from '@/shared/lib/errors';
+import type { PhoneFieldValue } from '@/shared/lib/phone';
 import { renderWithIntl } from '@/shared/test/render';
 import LoginForm from './LoginForm';
 
@@ -12,7 +13,9 @@ vi.mock('@/features/phone-countries', async () => {
 });
 
 function renderForm(overrides: Partial<React.ComponentProps<typeof LoginForm>> = {}) {
-  const onNext = vi.fn<(phone: string) => Promise<AppError | undefined>>(async () => undefined);
+  const onNext = vi.fn<(phone: PhoneFieldValue) => Promise<AppError | undefined>>(
+    async () => undefined
+  );
   const user = userEvent.setup();
   renderWithIntl(<LoginForm onNext={onNext} {...overrides} />);
   const phone = screen.getByRole('textbox', { name: 'Mobile number' });
@@ -50,7 +53,9 @@ describe('LoginForm', () => {
       expect(screen.queryByText('Enter a valid phone number.')).not.toBeInTheDocument()
     );
     await user.keyboard('{Enter}');
-    await waitFor(() => expect(onNext).toHaveBeenCalledWith('966500000000'));
+    await waitFor(() =>
+      expect(onNext).toHaveBeenCalledWith({ countryCode: '+966', phone: '500000000' })
+    );
   });
 
   it('keeps the phone and shows a server failure', async () => {
@@ -62,7 +67,7 @@ describe('LoginForm', () => {
     expect(await screen.findByRole('alert')).toHaveTextContent(
       'Too many attempts. Wait a moment and try again.'
     );
-    expect(phone).toHaveValue('+966 500 000 000');
+    expect(phone).toHaveValue('500000000');
   });
 
   it('puts a server field error on the phone', async () => {

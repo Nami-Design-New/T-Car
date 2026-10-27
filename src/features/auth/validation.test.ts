@@ -40,35 +40,32 @@ function fieldErrors(result: { success: boolean; error?: Parameters<typeof toVal
 }
 
 describe('phoneSchema', () => {
-  it.each(['966500000000', '+966500000000', '+966 50 000 0000', ' +1 (415) 555-0100 '])('accepts %s', (phone) => {
-    expect(phoneSchema.safeParse({ phone }).success).toBe(true);
+  const login = (countryCode: string, phone: string) => ({ phone: { countryCode, phone } });
+
+  it.each(['500000000', '0544444442', '50 000 0000', '500-000-000'])('accepts %s', (phone) => {
+    expect(phoneSchema.safeParse(login('+966', phone)).success).toBe(true);
   });
 
-  it('trims the phone and keeps its format otherwise', () => {
-    expect(phoneSchema.parse({ phone: ' +966 500000000 ' })).toEqual({
-      phone: '+966 500000000'
-    });
+  it('normalizes the national number: digits only, without the trunk 0', () => {
+    expect(phoneSchema.parse(login(' +966 ', ' 0544 444-442 '))).toEqual(login('+966', '544444442'));
+  });
+
+  it('accepts 8 and 15 national digits, the backend bounds', () => {
+    expect(phoneSchema.safeParse(login('+20', '12345678')).success).toBe(true);
+    expect(phoneSchema.safeParse(login('+20', '123456789012345')).success).toBe(true);
   });
 
   it.each([
-    ['only the country code', '+966'],
-    ['7 digits', '9665000'],
-    ['16 digits', '+9665000000000000'],
-    ['letters', '+96650000000a'],
-    ['empty', '']
-  ])('rejects %s', (_, phone) => {
-    expect(fieldErrors(phoneSchema.safeParse({ phone }))).toEqual({
-      phone: 'auth.invalidPhone'
-    });
-  });
-
-  it('accepts 8 and 15 digits, the bounds', () => {
-    expect(phoneSchema.safeParse({ phone: '12345678' }).success).toBe(true);
-    expect(phoneSchema.safeParse({ phone: '966500000000000' }).success).toBe(true);
-  });
-
-  it('rejects a value that is not a string with the same key', () => {
-    expect(fieldErrors(phoneSchema.safeParse({ phone: 966500000000 }))).toEqual({
+    ['7 digits', login('+966', '5000000')],
+    ['16 digits', login('+966', '5000000000000000')],
+    ['7 digits after the trunk 0', login('+966', '05000000')],
+    ['letters', login('+966', '50000000a')],
+    ['an empty number', login('+966', '')],
+    ['a calling code without +', login('966', '500000000')],
+    ['an empty calling code', login('', '500000000')],
+    ['a string instead of the value', { phone: '+966500000000' }],
+  ])('rejects %s on the phone field', (_, input) => {
+    expect(fieldErrors(phoneSchema.safeParse(input))).toEqual({
       phone: 'auth.invalidPhone'
     });
   });

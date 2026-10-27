@@ -4,6 +4,7 @@ import { CredentialsSignin } from 'next-auth';
 import { signIn, signOut } from '@/auth';
 import { authApi } from './api';
 import { AppError, type AppErrorKind } from '@/shared/lib/errors';
+import type { PhoneFieldValue } from '@/shared/lib/phone';
 import { reportError } from '@/shared/lib/report';
 import { fail, ok, toActionResult, type ActionResult } from '@/shared/lib/result';
 import { toValidationError } from '@/shared/lib/validation';
@@ -38,12 +39,18 @@ function signInError(error: unknown): AppError {
 
 // Each action parses its input again: the client's validation is not trusted.
 
-export async function requestOtpAction(phone: string): Promise<ActionResult<void>> {
+/**
+ * Sends the login code. Resolves with the normalized phone (the one to verify)
+ * and the backend's message, which the client toasts.
+ */
+export async function requestOtpAction(
+  phone: PhoneFieldValue
+): Promise<ActionResult<PhoneFieldValue>> {
   const parsed = phoneSchema.safeParse({ phone });
   if (!parsed.success) return toActionResult(fail(toValidationError(parsed.error)));
   try {
-    await authApi.sendOtp(parsed.data.phone);
-    return toActionResult(ok(undefined));
+    const message = await authApi.requestOtp(parsed.data.phone);
+    return toActionResult(ok(parsed.data.phone, message));
   } catch (error) {
     reportError(error, { scope: 'auth.requestOtp' });
     return toActionResult(fail(error));
