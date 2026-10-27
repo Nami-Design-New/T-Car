@@ -58,9 +58,13 @@ Ask the user before: any `git commit` (and which branch it goes on); deleting `B
   Exception for the integrated API: backend success and validation (422)
   messages are toasted as they are with `useNotify()` (sonner, doc 3 §6).
   A failed submit keeps the dialog open with the input and the error.
-- **Auth**: NextAuth v5 in `src/auth.ts`; the backend token is read only by
-  `services/http/server.ts`. `AUTH_SECRET` is in `.env.local`.
-  Mock sign-in: code `1234`, `+966500000000` has an account.
+- **Auth**: NextAuth v5 in `src/auth.ts`, on the live API (TEST server); a
+  sign-in sends a real OTP over WhatsApp and a new number creates an account.
+  The backend token is read only on the server: `services/http/session.ts`
+  (`readAccessToken`, for `serverHttp`) and the middleware (sign-out proof).
+  A backend 401 signs the session out (A8). `AUTH_SECRET` is in `.env.local`.
+  The auth mock (`features/auth/api.mock.ts`, tests only) accepts code `1234`;
+  `+966500000000` has an account.
 - **Navigation**: `Link` and `useRouter` come from `@/i18n/navigation`, with
   locale-less paths.
 - **Props**: `interface Props` sits in the component file.
