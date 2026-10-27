@@ -1,5 +1,5 @@
-import type { AuthGrant, RegistrationInput } from '@/features/auth/model';
-import { authMock } from './mocks/auth';
+import type { AuthGrant, RegistrationInput } from './model';
+import { authMock } from './api.mock';
 
 export interface AuthApi {
   /** Sends a one-time code to the phone (WhatsApp). */
@@ -14,9 +14,9 @@ export interface AuthApi {
   register(input: RegistrationInput): Promise<AuthGrant>;
 }
 
-// The auth endpoints are not available yet, so the mock is the only
-// implementation. Add the http one here (see cars.api.ts) and pick between the
-// two with an env flag once they exist; callers stay unchanged.
+// Still the mock until the endpoints are wired fraction by fraction (A4–A7 in
+// docs/api/Auth-API.md). The http implementation replaces it here, without a
+// mock flag; the mock then stays for tests only. Callers stay unchanged.
 // Assumption to confirm with the backend: registration re-sends the verified
 // phone and code. If it returns a registration token from verifyOtp instead,
 // only this file, the mock, and the sign-in provider change.

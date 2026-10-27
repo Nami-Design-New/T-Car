@@ -207,7 +207,7 @@ The backend does not set an `httpOnly` cookie, so the session is NextAuth's
 | Configuration | `AUTH_SECRET` is required (see `.env.example`); set `AUTH_URL` behind a proxy |
 
 Still open: the backend auth endpoints (mocked in
-[`services/mocks/auth.ts`](../src/services/mocks/auth.ts): code `1234`,
+[`features/auth/api.mock.ts`](../src/features/auth/api.mock.ts): code `1234`,
 `+966500000000` has an account), confirming whether registration re-sends
 the verified phone and code or uses a registration token, and handling a
 backend 401 by signing the session out. The middleware check only looks at

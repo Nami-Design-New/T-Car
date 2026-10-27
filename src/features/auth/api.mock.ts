@@ -1,6 +1,6 @@
-import { AUTH_ERROR_CODES, type AuthGrant, type AuthUser } from '@/features/auth/model';
+import { AUTH_ERROR_CODES, type AuthGrant, type AuthUser } from './model';
 import { AppError } from '@/shared/lib/errors';
-import type { AuthApi } from '../auth.api';
+import type { AuthApi } from './api';
 
 /** Mock only: the one code every phone accepts. */
 export const MOCK_OTP_CODE = '1234';

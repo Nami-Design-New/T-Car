@@ -9,7 +9,7 @@ const { signIn, sendOtp, CredentialsSignin } = vi.hoisted(() => {
 
 vi.mock('next-auth', () => ({ CredentialsSignin }));
 vi.mock('@/auth', () => ({ signIn, signOut: vi.fn() }));
-vi.mock('@/services/auth.api', () => ({ authApi: { sendOtp } }));
+vi.mock('./api', () => ({ authApi: { sendOtp } }));
 vi.mock('@/shared/lib/report', () => ({ reportError: vi.fn() }));
 
 import { registerAction, requestOtpAction, verifyOtpAction } from './actions';

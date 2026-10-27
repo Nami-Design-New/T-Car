@@ -2,7 +2,7 @@
 
 import { CredentialsSignin } from 'next-auth';
 import { signIn, signOut } from '@/auth';
-import { authApi } from '@/services/auth.api';
+import { authApi } from './api';
 import { AppError, type AppErrorKind } from '@/shared/lib/errors';
 import { reportError } from '@/shared/lib/report';
 import { fail, ok, toActionResult, type ActionResult } from '@/shared/lib/result';

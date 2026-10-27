@@ -272,6 +272,14 @@ calling-code search (how `PhoneField` finds the selected flag) is filtered
 locally. `parsePhoneFieldValue` now knows all 9 API calling codes. A missing
 flag uses `IMAGES.flagPlaceholder`.
 
+**Auth API integration, fraction A3 (2026-10-27):** Auth data access moved
+into the feature with no behavior change: `services/auth.api.ts` →
+`features/auth/api.ts` and `services/mocks/auth.ts` →
+`features/auth/api.mock.ts` (doc 1 §1.5 item 9). The app still signs in
+through the mock until A4–A7 wire the endpoints. The account mock keeps its
+own copy of the fixed OTP code, since `services` may not import a feature's
+mock.
+
 | Feature                            | Moved to `features/` |                  Data behind queries / api                  |                             Actions return `Result`                              | Remaining                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | ---------------------------------- | :------------------: | :---------------------------------------------------------: | :------------------------------------------------------------------------------: | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `wallet`, `bank-accounts`          |         Yes          | Client reads over `*.api.ts`; writes through Server Actions |                                       Yes                                        | Fractions 1–3 complete: wallet and bank-account form, confirmation, and result states use shared dialogs. Left: user-scoped reads/API and forms (doc 3 step 7). Form validation fractions 4–5 add RHF + Zod amount and bank-account rules, re-parsed by the actions                                                                                                                                                                                                                                                                          |

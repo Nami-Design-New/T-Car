@@ -1,7 +1,7 @@
 import NextAuth, { CredentialsSignin } from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
 import { AUTH_ERROR_CODES, type AuthGrant } from '@/features/auth/model';
-import { authApi } from '@/services/auth.api';
+import { authApi } from '@/features/auth/api';
 import { toAppError } from '@/shared/lib/errors';
 import { reportError } from '@/shared/lib/report';
 import { SECURE_SESSION_COOKIE, SESSION_COOKIE } from '@/shared/config/session';
