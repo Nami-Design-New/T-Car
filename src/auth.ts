@@ -11,7 +11,7 @@ import {
 import { authApi } from '@/features/auth/api';
 import { AppError, toAppError } from '@/shared/lib/errors';
 import { reportError } from '@/shared/lib/report';
-import { SECURE_SESSION_COOKIE, SESSION_COOKIE } from '@/shared/config/session';
+import { SESSION_COOKIE, SESSION_COOKIE_OPTIONS } from '@/shared/config/session';
 
 /**
  * Carries the whole AppError (kind, backend message, field errors) to the
@@ -48,7 +48,7 @@ export const { handlers, auth, signIn, signOut, unstable_update } = NextAuth({
   cookies: {
     sessionToken: {
       name: SESSION_COOKIE,
-      options: { httpOnly: true, sameSite: 'lax', path: '/', secure: SECURE_SESSION_COOKIE },
+      options: SESSION_COOKIE_OPTIONS,
     },
   },
   providers: [

@@ -87,6 +87,21 @@ describe("createHttpClient", () => {
     expect(onUnauthorized).toHaveBeenCalledOnce();
   });
 
+  it("waits for an async onUnauthorized before rejecting", async () => {
+    respond(401);
+    const steps: string[] = [];
+    const client = createHttpClient({
+      baseUrl: "https://api.test/user",
+      onUnauthorized: async () => {
+        await Promise.resolve();
+        steps.push("cleared");
+      },
+    });
+
+    await client.post("/logout").catch(() => steps.push("rejected"));
+    expect(steps).toEqual(["cleared", "rejected"]);
+  });
+
   it("decides HTTP 5xx by its status, even with an HTML body", async () => {
     respond(500, undefined, "<html>Server Error</html>");
     const client = createHttpClient({ baseUrl: "https://api.test/user" });

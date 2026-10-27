@@ -207,8 +207,19 @@ The backend does not set an `httpOnly` cookie, so the session is NextAuth's
 | Configuration | `AUTH_SECRET` is required (see `.env.example`); set `AUTH_URL` behind a proxy |
 
 Logout revokes the backend token before clearing the session; an already revoked
-token is treated as success. Handling a backend 401 elsewhere by signing the
-session out remains open (A8). The mock
+token is treated as success. Tokens do not expire and there is no refresh
+endpoint; deleting the account revokes the token, so any backend 401 means the
+session is dead. In a Server Action, `serverHttp` clears the session cookie
+before the action returns `unauthorized` ([`services/http/session.ts`](../src/services/http/session.ts)).
+A page cannot write cookies while it renders: protected reads wrap their call in
+`protectedRead`, which redirects to `/<locale>?auth=expired&proof=…&next=…`, where
+the middleware clears the cookie and opens the sign-in dialog. `proof` is an
+HMAC of the session's backend token with `AUTH_SECRET`
+([`shared/lib/session-proof.ts`](../src/shared/lib/session-proof.ts)); without
+the proof for the visitor's own session the middleware drops the parameters, so
+a crafted link signs nobody out. `next` comes from the
+`x-tcar-next` request header, which the middleware sets on every page request
+(a header sent by the client is overwritten). The mock
 ([`features/auth/api.mock.ts`](../src/features/auth/api.mock.ts): code `1234`,
 `+966500000000` has an account) mirrors the backend for tests. The middleware check only looks at
 the cookie; the backend must still validate the token on every request.

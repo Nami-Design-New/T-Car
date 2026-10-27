@@ -16,8 +16,8 @@ export interface HttpClientConfig {
   getToken?: () => string | null | undefined | Promise<string | null | undefined>;
   /** Sent as `Accept-Language` (the backend localizes `message`), unless the caller sets it. */
   getLocale?: () => string | null | undefined | Promise<string | null | undefined>;
-  /** Called on a 401 (HTTP or body `code`), before the `unauthorized` AppError is thrown. */
-  onUnauthorized?: () => void;
+  /** Called (and awaited) on a 401 (HTTP or body `code`), before the `unauthorized` AppError is thrown. */
+  onUnauthorized?: () => void | Promise<void>;
 }
 
 const DEFAULT_TIMEOUT_MS = 15000;
@@ -58,8 +58,8 @@ export function createHttpClient({
   getLocale,
   onUnauthorized,
 }: HttpClientConfig) {
-  function fail(status: number, body: unknown, cause?: unknown): never {
-    if (status === 401) onUnauthorized?.();
+  async function fail(status: number, body: unknown, cause?: unknown): Promise<never> {
+    if (status === 401) await onUnauthorized?.();
     const serverMessage = isApiEnvelope(body) ? body.message : undefined;
     throw new AppError(kindFromStatus(status), undefined, status, undefined, {
       cause,
@@ -107,14 +107,14 @@ export function createHttpClient({
     }
 
     if (response.status === 401 || response.status >= 500) {
-      fail(response.status, undefined, response);
+      return fail(response.status, undefined, response);
     }
     if (response.status === 204) return undefined as T;
 
     const payload = await readJson(response);
     const bodyCode = isApiEnvelope(payload) ? payload.code : undefined;
     const code = bodyCode !== undefined && bodyCode >= 400 ? bodyCode : response.status;
-    if (!response.ok || code >= 400) fail(code, payload, response);
+    if (!response.ok || code >= 400) return fail(code, payload, response);
     if (payload === undefined) {
       throw new AppError('server', undefined, response.status, undefined, { cause: response });
     }
