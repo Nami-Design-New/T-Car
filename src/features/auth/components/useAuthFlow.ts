@@ -2,12 +2,14 @@
 
 import { useState } from "react";
 import { useRouter } from "@/i18n/navigation";
+import { useErrorMessage } from "@/shared/hooks/useErrorMessage";
 import { useNotify } from "@/shared/hooks/useNotify";
 import type { AppError } from "@/shared/lib/errors";
 import type { PhoneFieldValue } from "@/shared/lib/phone";
 import { fromActionResult } from "@/shared/lib/result";
 import {
   completeProfileAction,
+  discardRegistrationAction,
   requestOtpAction,
   verifyOtpAction,
 } from "../actions";
@@ -21,12 +23,9 @@ import type { RegisterFormValues } from "../validation";
 export type AuthFlowState =
   | { step: "login"; phone?: PhoneFieldValue }
   | { step: "otp"; phone: PhoneFieldValue }
-  // The session (signed in at verification) identifies the customer, so the
-  // profile needs no phone or code; a resumed session has no phone at all.
-  | { step: "register"; phone?: PhoneFieldValue };
-
-/** Where the dialog opens: `register` for a session whose profile is still missing. */
-export type AuthFlowStart = "login" | "register";
+  // The verified phone's token waits on the server (pending registration),
+  // so the profile needs no phone or code; there is no session yet.
+  | { step: "register"; phone: PhoneFieldValue };
 
 interface Options {
   /** Where to go after signing in, e.g. the protected page that sent the user here. */
@@ -35,7 +34,6 @@ interface Options {
   onDone: () => void;
   onRegistrationSuccess?: (locationNext: boolean) => void;
   onLocationRequired?: () => void;
-  initialStep?: AuthFlowStart;
 }
 
 /**
@@ -46,13 +44,13 @@ interface Options {
 export function useAuthFlow({
   next,
   onDone,
-  initialStep = "login",
   onRegistrationSuccess,
   onLocationRequired,
 }: Options) {
   const router = useRouter();
   const notify = useNotify();
-  const [state, setState] = useState<AuthFlowState>({ step: initialStep });
+  const errorMessage = useErrorMessage();
+  const [state, setState] = useState<AuthFlowState>({ step: "login" });
   const [pending, setPending] = useState(false);
 
   const reset = () => setState({ step: "login" });
@@ -66,15 +64,13 @@ export function useAuthFlow({
   };
 
   /**
-   * Closes the dialog without finishing. Leaving the profile form keeps the
-   * session (it exists since verification), so the header is refreshed to
-   * offer completing the profile.
+   * Closes the dialog without finishing. Leaving the profile form discards the
+   * registration (product decision): the next sign-in verifies a new code.
    */
   const dismiss = () => {
-    const leftProfile = state.step === "register";
+    if (state.step === "register") void discardRegistrationAction();
     reset();
     onDone();
-    if (leftProfile) router.refresh();
   };
 
   /** Runs one action at a time; resolves with the error for the form. */
@@ -139,6 +135,12 @@ export function useAuthFlow({
     run(async () => {
       if (state.step !== "register") return undefined;
       const result = fromActionResult(await completeProfileAction(values));
+      if (!result.ok && result.error.kind === "unauthorized") {
+        // The registration expired: back to the phone for a new code.
+        notify.error(errorMessage(result.error));
+        setState({ step: "login", phone: state.phone });
+        return undefined;
+      }
       if (!result.ok) return formError(result.error);
       notify.success(result.message);
       onRegistrationSuccess?.(result.data.onboardingStep === "location");
@@ -148,17 +150,13 @@ export function useAuthFlow({
     });
 
   /**
-   * One step back: from the code to the phone (kept, with its country, so it
-   * can be edited), from the profile to the code. A resumed profile step has
-   * no phone, so it goes back to the start.
+   * One step back to the phone (kept, with its country, so it can be edited).
+   * From the profile that discards the registration: the code is spent, so a
+   * new one is needed.
    */
   const back = () => {
-    if (state.step === "otp") setState({ step: "login", phone: state.phone });
-    if (state.step === "register") {
-      setState(
-        state.phone ? { step: "otp", phone: state.phone } : { step: "login" },
-      );
-    }
+    if (state.step === "register") void discardRegistrationAction();
+    if (state.step !== "login") setState({ step: "login", phone: state.phone });
   };
 
   return {

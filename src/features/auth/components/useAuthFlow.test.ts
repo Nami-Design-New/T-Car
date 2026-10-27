@@ -6,6 +6,7 @@ const actions = vi.hoisted(() => ({
   requestOtpAction: vi.fn(),
   verifyOtpAction: vi.fn(),
   completeProfileAction: vi.fn(),
+  discardRegistrationAction: vi.fn(),
 }));
 const router = vi.hoisted(() => ({ replace: vi.fn(), refresh: vi.fn() }));
 const notify = vi.hoisted(() => ({ success: vi.fn(), error: vi.fn() }));
@@ -18,7 +19,7 @@ vi.mock("@/shared/hooks/useErrorMessage", () => ({
   useErrorMessage: () => (error: { kind: string }) => `text:${error.kind}`,
 }));
 
-import { useAuthFlow, type AuthFlowStart } from "./useAuthFlow";
+import { useAuthFlow } from "./useAuthFlow";
 
 const phone = { countryCode: "+966", phone: "544444442" };
 const profile = {
@@ -33,7 +34,6 @@ const validation422 = (serverMessage: string): ActionResult<never> => ({
 
 function renderFlow(
   next?: string,
-  initialStep?: AuthFlowStart,
   callbacks: {
     onRegistrationSuccess?: (locationNext: boolean) => void;
     onLocationRequired?: () => void;
@@ -41,7 +41,7 @@ function renderFlow(
 ) {
   const onDone = vi.fn();
   const view = renderHook(() =>
-    useAuthFlow({ next, onDone, initialStep, ...callbacks }),
+    useAuthFlow({ next, onDone, ...callbacks }),
   );
   return { ...view, onDone };
 }
@@ -56,6 +56,16 @@ async function toOtpStep(flow: ReturnType<typeof renderFlow>["result"]) {
   await act(() =>
     flow.current.requestOtp({ countryCode: "+966", phone: "0544444442" }),
   );
+}
+
+/** Verifies a new number, so the flow is on the profile step (no session yet). */
+async function toRegisterStep(flow: ReturnType<typeof renderFlow>["result"]) {
+  await toOtpStep(flow);
+  actions.verifyOtpAction.mockResolvedValue({
+    ok: true,
+    data: { onboardingStep: "register" },
+  });
+  await act(() => flow.current.verify("1234"));
 }
 
 beforeEach(() => {
@@ -126,7 +136,7 @@ describe("useAuthFlow", () => {
 
   it("closes auth and requests the separate location modal when location is missing", async () => {
     const onLocationRequired = vi.fn();
-    const { result, onDone } = renderFlow(undefined, undefined, {
+    const { result, onDone } = renderFlow(undefined, {
       onLocationRequired,
     });
     await toOtpStep(result);
@@ -143,9 +153,10 @@ describe("useAuthFlow", () => {
 
   it("closes auth and requests separate success and location modals after registration", async () => {
     const onRegistrationSuccess = vi.fn();
-    const { result, onDone } = renderFlow(undefined, "register", {
+    const { result, onDone } = renderFlow(undefined, {
       onRegistrationSuccess,
     });
+    await toRegisterStep(result);
     actions.completeProfileAction.mockResolvedValue({
       ok: true,
       data: { onboardingStep: "location" },
@@ -159,9 +170,10 @@ describe("useAuthFlow", () => {
 
   it("closes auth and requests the separate success modal when registration is complete", async () => {
     const onRegistrationSuccess = vi.fn();
-    const { result, onDone } = renderFlow(undefined, "register", {
+    const { result, onDone } = renderFlow(undefined, {
       onRegistrationSuccess,
     });
+    await toRegisterStep(result);
     actions.completeProfileAction.mockResolvedValue({
       ok: true,
       data: { onboardingStep: "completed" },
@@ -199,7 +211,8 @@ describe("useAuthFlow", () => {
   });
 
   it("toasts a profile rejected by the backend and keeps the form", async () => {
-    const { result } = renderFlow(undefined, "register");
+    const { result } = renderFlow();
+    await toRegisterStep(result);
     actions.completeProfileAction.mockResolvedValue(
       validation422("The email has already been taken."),
     );
@@ -213,27 +226,41 @@ describe("useAuthFlow", () => {
     expect(notify.error).toHaveBeenCalledWith(
       "The email has already been taken.",
     );
-    expect(result.current.state).toEqual({ step: "register" });
+    expect(result.current.state).toEqual({ step: "register", phone });
   });
 
-  it("resumes on the profile for a session that still needs it, and goes back to the start", () => {
-    const { result } = renderFlow(undefined, "register");
-    expect(result.current.state).toEqual({ step: "register" });
+  it("goes back to the phone with a toast when the registration expired", async () => {
+    const { result } = renderFlow();
+    await toRegisterStep(result);
+    actions.completeProfileAction.mockResolvedValue({
+      ok: false,
+      error: { kind: "unauthorized" },
+    });
 
-    act(() => result.current.back());
-    expect(result.current.state).toEqual({ step: "login" });
+    let formError: unknown;
+    await act(async () => {
+      formError = await result.current.register(profile);
+    });
+
+    expect(formError).toBeUndefined();
+    expect(notify.error).toHaveBeenCalledWith("text:unauthorized");
+    expect(result.current.state).toEqual({ step: "login", phone });
   });
 
-  it("refreshes the header when the profile form is closed, since the session stays", () => {
-    const { result, onDone } = renderFlow(undefined, "register");
+  it("discards the registration when the profile form is closed", async () => {
+    const { result, onDone } = renderFlow();
+    await toRegisterStep(result);
     act(() => result.current.dismiss());
+
+    expect(actions.discardRegistrationAction).toHaveBeenCalledOnce();
     expect(onDone).toHaveBeenCalled();
-    expect(router.refresh).toHaveBeenCalled();
+    expect(router.refresh).not.toHaveBeenCalled();
   });
 
-  it("closes the phone step without a refresh", () => {
+  it("closes the phone step without discarding or refreshing", () => {
     const { result } = renderFlow();
     act(() => result.current.dismiss());
+    expect(actions.discardRegistrationAction).not.toHaveBeenCalled();
     expect(router.refresh).not.toHaveBeenCalled();
   });
 
@@ -263,18 +290,12 @@ describe("useAuthFlow", () => {
     expect(result.current.state).toEqual({ step: "login", phone });
   });
 
-  it("keeps the number when going back from registration to the phone", async () => {
+  it("discards the registration and keeps the number when going back from the profile", async () => {
     const { result } = renderFlow();
-    await toOtpStep(result);
-    actions.verifyOtpAction.mockResolvedValue({
-      ok: true,
-      data: { onboardingStep: "register" },
-    });
-    await act(() => result.current.verify("1234"));
+    await toRegisterStep(result);
 
     act(() => result.current.back());
-    expect(result.current.state).toEqual({ step: "otp", phone });
-    act(() => result.current.back());
+    expect(actions.discardRegistrationAction).toHaveBeenCalledOnce();
     expect(result.current.state).toEqual({ step: "login", phone });
   });
 

@@ -19,8 +19,6 @@ import UserMenu from './UserMenu';
 
 interface Props {
   signedIn: boolean;
-  /** Signed in at verification but the profile is still missing: the dialog opens on it. */
-  profilePending?: boolean;
   loginLabel: string;
   logoutOnly?: boolean;
 }
@@ -29,10 +27,7 @@ interface AuthPromptProps {
   onOpen: (next?: string) => void;
 }
 
-/**
- * Opens the dialog after middleware redirects to `?auth=login` (signed out) or
- * `?auth=register` (profile still missing; the dialog starts on the profile).
- */
+/** Opens the dialog after middleware redirects to `?auth=login` (signed out). */
 function AuthPrompt({ onOpen }: AuthPromptProps) {
   const searchParams = useSearchParams();
   const auth = searchParams.get('auth');
@@ -40,7 +35,7 @@ function AuthPrompt({ onOpen }: AuthPromptProps) {
   const next = rawNext && /^\/(?!\/)/.test(rawNext) ? rawNext : undefined;
 
   useEffect(() => {
-    if (auth === 'login' || auth === 'register') onOpen(next);
+    if (auth === 'login') onOpen(next);
   }, [auth, next, onOpen]);
 
   return null;
@@ -48,7 +43,6 @@ function AuthPrompt({ onOpen }: AuthPromptProps) {
 
 export default function AuthControl({
   signedIn,
-  profilePending = false,
   loginLabel,
   logoutOnly = false,
 }: Props) {
@@ -142,7 +136,6 @@ export default function AuthControl({
           show={true}
           onHide={() => setShowAuth(false)}
           next={authNext}
-          initialStep={profilePending ? 'register' : 'login'}
           onRegistrationSuccess={(locationNext) => {
             setLocationAfterSuccess(locationNext);
             setShowSuccess(true);

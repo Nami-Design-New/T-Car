@@ -1,12 +1,6 @@
 'use server';
 
-import {
-  OtpSignInError,
-  readSignedInStep,
-  signIn,
-  signOut,
-  updateSessionProfile,
-} from '@/auth';
+import { signInWithGrant, signOut, updateSessionProfile } from '@/auth';
 import { authApi } from './api';
 import { AppError } from '@/shared/lib/errors';
 import type { LocationData } from '@/shared/lib/location';
@@ -14,7 +8,12 @@ import type { PhoneFieldValue } from '@/shared/lib/phone';
 import { reportError } from '@/shared/lib/report';
 import { fail, ok, toActionResult, type ActionResult } from '@/shared/lib/result';
 import { toValidationError } from '@/shared/lib/validation';
-import type { OnboardingStep } from './model';
+import type { AuthGrant, OnboardingStep } from './model';
+import {
+  clearPendingRegistration,
+  readPendingRegistration,
+  savePendingRegistration,
+} from './registration';
 import {
   locationSchema,
   phoneSchema,
@@ -23,11 +22,15 @@ import {
   type RegisterFormValues,
 } from './validation';
 
-/** The provider rethrows its own error with the AppError inside (see src/auth.ts). */
-function signInError(error: unknown): AppError {
-  if (error instanceof OtpSignInError) return error.error;
-  reportError(error, { scope: 'auth.signIn' });
-  return new AppError('unknown', undefined, undefined, undefined, { cause: error });
+/** Starts the session; a failure here is unexpected (the grant was just issued). */
+async function startSession(grant: AuthGrant): Promise<AppError | undefined> {
+  try {
+    await signInWithGrant(grant);
+    return undefined;
+  } catch (error) {
+    reportError(error, { scope: 'auth.signIn' });
+    return new AppError('unknown', undefined, undefined, undefined, { cause: error });
+  }
 }
 
 // Each action parses its input again: the client's validation is not trusted.
@@ -51,9 +54,10 @@ export async function requestOtpAction(
 }
 
 /**
- * Verifies the code and signs the customer in; a new number gets its account
- * here. Resolves with what is left of onboarding, so the dialog knows whether
- * to show the registration form. A wrong code keeps the backend's message.
+ * Verifies the code. An existing customer is signed in. A new number (its
+ * account is created here) gets no session yet: the token waits in the
+ * pending-registration cookie until the profile is saved. Resolves with what
+ * is left of onboarding; a wrong code keeps the backend's message.
  */
 export async function verifyOtpAction(
   phone: PhoneFieldValue,
@@ -61,37 +65,54 @@ export async function verifyOtpAction(
 ): Promise<ActionResult<{ onboardingStep: OnboardingStep }>> {
   const parsed = verifyOtpSchema.safeParse({ phone, code });
   if (!parsed.success) return toActionResult(fail(toValidationError(parsed.error)));
+  let grant: AuthGrant;
   try {
-    await signIn('otp', { ...parsed.data.phone, code: parsed.data.code, redirect: false });
+    grant = await authApi.verifyOtp(parsed.data.phone, parsed.data.code);
   } catch (error) {
-    return toActionResult(fail(signInError(error)));
+    // reportError skips expected outcomes (validation, e.g. a wrong code).
+    reportError(error, { scope: 'auth.verifyOtp' });
+    return toActionResult(fail(error));
   }
-  const onboardingStep = await readSignedInStep();
-  if (!onboardingStep) {
-    // Signed in, but the new session could not be read back: do not block the user.
-    reportError(new AppError('unknown'), { scope: 'auth.verifyOtp.step' });
+  const { onboardingStep } = grant;
+  if (onboardingStep === 'register') {
+    await savePendingRegistration(grant);
+    return toActionResult(ok({ onboardingStep }));
   }
-  return toActionResult(ok({ onboardingStep: onboardingStep ?? 'completed' }));
+  await clearPendingRegistration();
+  const error = await startSession(grant);
+  return toActionResult(error ? fail(error) : ok({ onboardingStep }));
 }
 
 /**
- * Saves the new customer's profile with the session's token (issued at
- * verification), then updates the session's name, email, and onboarding step.
- * Resolves with the new step and the backend's message, which the client toasts.
+ * Saves the new customer's profile with the token from verification, then
+ * starts the session. Resolves with the new step and the backend's message,
+ * which the client toasts. Without a pending registration (expired, or
+ * discarded) it is `unauthorized`: the customer verifies again.
  */
 export async function completeProfileAction(
   input: RegisterFormValues
 ): Promise<ActionResult<{ onboardingStep: OnboardingStep }>> {
   const parsed = registerFormSchema.safeParse(input);
   if (!parsed.success) return toActionResult(fail(toValidationError(parsed.error)));
+  const pending = await readPendingRegistration();
+  if (!pending) return toActionResult(fail(new AppError('unauthorized')));
   try {
-    const { user, onboardingStep, message } = await authApi.completeProfile(parsed.data);
-    await updateSessionProfile({ name: user.name, email: user.email, onboardingStep });
-    return toActionResult(ok({ onboardingStep }, message));
+    const { user, onboardingStep, message } = await authApi.completeProfile(
+      parsed.data,
+      pending.accessToken
+    );
+    await clearPendingRegistration();
+    const error = await startSession({ accessToken: pending.accessToken, user, onboardingStep });
+    return toActionResult(error ? fail(error) : ok({ onboardingStep }, message));
   } catch (error) {
     reportError(error, { scope: 'auth.completeProfile' });
     return toActionResult(fail(error));
   }
+}
+
+/** Drops a registration the customer left (closed the profile form or went back). */
+export async function discardRegistrationAction(): Promise<void> {
+  await clearPendingRegistration();
 }
 
 /**

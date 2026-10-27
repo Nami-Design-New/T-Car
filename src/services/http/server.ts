@@ -33,3 +33,14 @@ export const serverHttp = createHttpClient({
   getLocale: readLocale,
   onUnauthorized: clearSession,
 });
+
+/**
+ * Server client for a token that has no session yet (a registration waiting
+ * for its profile, `features/auth/registration.ts`). A 401 clears nothing.
+ */
+export const tokenServerHttp = (accessToken: string) =>
+  createHttpClient({
+    baseUrl: env.serverApiUrl,
+    getToken: () => accessToken,
+    getLocale: readLocale,
+  });

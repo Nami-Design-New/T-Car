@@ -1,44 +1,42 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const {
-  signIn,
+  signInWithGrant,
   signOut,
-  readSignedInStep,
   updateSessionProfile,
   requestOtp,
+  verifyOtp,
   completeProfile,
   assignLocation,
   logout,
   reportError,
-  OtpSignInError,
-} = vi.hoisted(() => {
-  class OtpSignInError extends Error {
-    constructor(readonly error: unknown) {
-      super('otp');
-    }
-  }
-  return {
-    signIn: vi.fn(),
-    signOut: vi.fn(),
-    readSignedInStep: vi.fn(),
-    updateSessionProfile: vi.fn(),
-    requestOtp: vi.fn(),
-    completeProfile: vi.fn(),
-    assignLocation: vi.fn(),
-    logout: vi.fn(),
-    reportError: vi.fn(),
-    OtpSignInError,
-  };
-});
-
-vi.mock('@/auth', () => ({
-  signIn,
-  signOut,
-  readSignedInStep,
-  updateSessionProfile,
-  OtpSignInError,
+  savePendingRegistration,
+  readPendingRegistration,
+  clearPendingRegistration,
+} = vi.hoisted(() => ({
+  signInWithGrant: vi.fn(),
+  signOut: vi.fn(),
+  updateSessionProfile: vi.fn(),
+  requestOtp: vi.fn(),
+  verifyOtp: vi.fn(),
+  completeProfile: vi.fn(),
+  assignLocation: vi.fn(),
+  logout: vi.fn(),
+  reportError: vi.fn(),
+  savePendingRegistration: vi.fn(),
+  readPendingRegistration: vi.fn(),
+  clearPendingRegistration: vi.fn(),
 }));
-vi.mock('./api', () => ({ authApi: { requestOtp, completeProfile, assignLocation, logout } }));
+
+vi.mock('@/auth', () => ({ signInWithGrant, signOut, updateSessionProfile }));
+vi.mock('./api', () => ({
+  authApi: { requestOtp, verifyOtp, completeProfile, assignLocation, logout },
+}));
+vi.mock('./registration', () => ({
+  savePendingRegistration,
+  readPendingRegistration,
+  clearPendingRegistration,
+}));
 vi.mock('@/shared/lib/report', () => ({ reportError }));
 
 import { AppError } from '@/shared/lib/errors';
@@ -46,6 +44,7 @@ import type { PhoneFieldValue } from '@/shared/lib/phone';
 import {
   assignLocationAction,
   completeProfileAction,
+  discardRegistrationAction,
   requestOtpAction,
   signOutAction,
   verifyOtpAction,
@@ -60,16 +59,11 @@ const profile = {
 };
 
 beforeEach(() => {
-  signIn.mockReset();
-  signOut.mockReset();
-  readSignedInStep.mockReset();
-  updateSessionProfile.mockReset();
-  requestOtp.mockReset();
-  completeProfile.mockReset();
-  assignLocation.mockReset();
-  logout.mockReset();
-  reportError.mockReset();
+  vi.resetAllMocks();
 });
+
+const newUser = { id: '34', name: '', phone: '+966500000001' };
+const pendingGrant = { accessToken: 'pending-token', user: newUser, onboardingStep: 'register' };
 
 describe('signOutAction', () => {
   it('revokes the backend token before clearing the session and returns its message', async () => {
@@ -150,46 +144,50 @@ describe('requestOtpAction', () => {
 });
 
 describe('verifyOtpAction', () => {
-  it('rejects an incomplete code without signing in', async () => {
+  it('rejects an incomplete code without calling the API', async () => {
     const result = await verifyOtpAction(saudi('500000000'), '12');
     expect(result).toMatchObject({
       ok: false,
       error: { kind: 'validation', fieldErrors: { code: 'auth.invalidCode' } },
     });
-    expect(signIn).not.toHaveBeenCalled();
+    expect(verifyOtp).not.toHaveBeenCalled();
   });
 
-  it('signs in with the normalized phone and returns the onboarding step', async () => {
-    signIn.mockResolvedValue(undefined);
-    readSignedInStep.mockResolvedValue('register');
+  it('signs an existing customer in with the grant and returns the step', async () => {
+    const grant = {
+      accessToken: 'token',
+      user: { id: '7', name: 'Sara', phone: '+966500000000' },
+      onboardingStep: 'completed',
+    };
+    verifyOtp.mockResolvedValue(grant);
 
-    await expect(verifyOtpAction(saudi('0500000001'), '1234')).resolves.toEqual({
-      ok: true,
-      data: { onboardingStep: 'register' },
-    });
-    expect(signIn).toHaveBeenCalledWith('otp', {
-      countryCode: '+966',
-      phone: '500000001',
-      code: '1234',
-      redirect: false,
-    });
-  });
-
-  it('does not block a signed-in user when the step cannot be read back', async () => {
-    signIn.mockResolvedValue(undefined);
-    readSignedInStep.mockResolvedValue(undefined);
-
-    await expect(verifyOtpAction(saudi('500000000'), '1234')).resolves.toEqual({
+    await expect(verifyOtpAction(saudi('0500000000'), '1234')).resolves.toEqual({
       ok: true,
       data: { onboardingStep: 'completed' },
     });
+    expect(verifyOtp).toHaveBeenCalledWith({ countryCode: '+966', phone: '500000000' }, '1234');
+    expect(signInWithGrant).toHaveBeenCalledWith(grant);
+    expect(savePendingRegistration).not.toHaveBeenCalled();
+    expect(clearPendingRegistration).toHaveBeenCalled();
   });
 
-  it('returns the provider error as it is, with the backend message', async () => {
-    const error = new AppError('validation', undefined, 422, undefined, {
-      serverMessage: 'The verification code is invalid or expired.',
+  it('keeps a new number pending without a session', async () => {
+    verifyOtp.mockResolvedValue(pendingGrant);
+
+    await expect(verifyOtpAction(saudi('500000001'), '1234')).resolves.toEqual({
+      ok: true,
+      data: { onboardingStep: 'register' },
     });
-    signIn.mockRejectedValue(new OtpSignInError(error));
+    expect(savePendingRegistration).toHaveBeenCalledWith(pendingGrant);
+    expect(signInWithGrant).not.toHaveBeenCalled();
+  });
+
+  it('returns a wrong code with the backend message', async () => {
+    verifyOtp.mockRejectedValue(
+      new AppError('validation', undefined, 422, undefined, {
+        serverMessage: 'The verification code is invalid or expired.',
+      })
+    );
 
     await expect(verifyOtpAction(saudi('500000000'), '9999')).resolves.toMatchObject({
       ok: false,
@@ -199,18 +197,28 @@ describe('verifyOtpAction', () => {
         serverMessage: 'The verification code is invalid or expired.',
       },
     });
+    expect(signInWithGrant).not.toHaveBeenCalled();
   });
 
   it('turns an unexpected sign-in failure into unknown', async () => {
-    signIn.mockRejectedValue(new Error('boom'));
+    verifyOtp.mockResolvedValue({ ...pendingGrant, onboardingStep: 'completed' });
+    signInWithGrant.mockRejectedValue(new Error('boom'));
     await expect(verifyOtpAction(saudi('500000000'), '1234')).resolves.toMatchObject({
       ok: false,
       error: { kind: 'unknown' },
     });
+    expect(reportError).toHaveBeenCalled();
   });
 });
 
 describe('completeProfileAction', () => {
+  const savedUser = {
+    id: '34',
+    name: 'New Customer',
+    phone: '+966500000001',
+    email: 'new@domain.com',
+  };
+
   it('rejects a malformed profile without calling the API', async () => {
     const result = await completeProfileAction({ ...profile, email: 'not-an-email' });
     expect(result).toMatchObject({
@@ -220,9 +228,19 @@ describe('completeProfileAction', () => {
     expect(completeProfile).not.toHaveBeenCalled();
   });
 
-  it('saves the trimmed profile, updates the session, and returns the step and message', async () => {
+  it('is unauthorized without a pending registration', async () => {
+    readPendingRegistration.mockResolvedValue(null);
+    await expect(completeProfileAction(profile)).resolves.toMatchObject({
+      ok: false,
+      error: { kind: 'unauthorized' },
+    });
+    expect(completeProfile).not.toHaveBeenCalled();
+  });
+
+  it('saves the trimmed profile with the pending token, then starts the session', async () => {
+    readPendingRegistration.mockResolvedValue(pendingGrant);
     completeProfile.mockResolvedValue({
-      user: { id: '34', name: 'New Customer', phone: '+966500000001', email: 'new@domain.com' },
+      user: savedUser,
       onboardingStep: 'location',
       message: 'Profile updated successfully.',
     });
@@ -232,19 +250,20 @@ describe('completeProfileAction', () => {
       data: { onboardingStep: 'location' },
       message: 'Profile updated successfully.',
     });
-    expect(completeProfile).toHaveBeenCalledWith({
-      fullName: 'New Customer',
-      email: 'new@domain.com',
-      birthDate: '1990-05-17',
-    });
-    expect(updateSessionProfile).toHaveBeenCalledWith({
-      name: 'New Customer',
-      email: 'new@domain.com',
+    expect(completeProfile).toHaveBeenCalledWith(
+      { fullName: 'New Customer', email: 'new@domain.com', birthDate: '1990-05-17' },
+      'pending-token'
+    );
+    expect(clearPendingRegistration).toHaveBeenCalled();
+    expect(signInWithGrant).toHaveBeenCalledWith({
+      accessToken: 'pending-token',
+      user: savedUser,
       onboardingStep: 'location',
     });
   });
 
-  it('returns a backend 422 with its message and leaves the session alone', async () => {
+  it('returns a backend 422 with its message and keeps the registration pending', async () => {
+    readPendingRegistration.mockResolvedValue(pendingGrant);
     completeProfile.mockRejectedValue(
       new AppError('validation', undefined, 422, undefined, {
         serverMessage: 'The email has already been taken.',
@@ -254,15 +273,24 @@ describe('completeProfileAction', () => {
       ok: false,
       error: { kind: 'validation', serverMessage: 'The email has already been taken.' },
     });
-    expect(updateSessionProfile).not.toHaveBeenCalled();
+    expect(clearPendingRegistration).not.toHaveBeenCalled();
+    expect(signInWithGrant).not.toHaveBeenCalled();
   });
 
   it('returns a revoked token as unauthorized', async () => {
+    readPendingRegistration.mockResolvedValue(pendingGrant);
     completeProfile.mockRejectedValue(new AppError('unauthorized', undefined, 401));
     await expect(completeProfileAction(profile)).resolves.toMatchObject({
       ok: false,
       error: { kind: 'unauthorized' },
     });
+  });
+});
+
+describe('discardRegistrationAction', () => {
+  it('clears the pending registration', async () => {
+    await discardRegistrationAction();
+    expect(clearPendingRegistration).toHaveBeenCalledOnce();
   });
 });
 

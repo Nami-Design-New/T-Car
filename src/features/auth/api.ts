@@ -1,6 +1,10 @@
 import "server-only";
 import { isApiEnvelope, type ApiEnvelope } from "@/services/http/envelope";
-import { publicServerHttp, serverHttp } from "@/services/http/server";
+import {
+  publicServerHttp,
+  serverHttp,
+  tokenServerHttp,
+} from "@/services/http/server";
 import { AppError } from "@/shared/lib/errors";
 import type { PhoneFieldValue } from "@/shared/lib/phone";
 import {
@@ -19,16 +23,20 @@ export interface AuthApi {
    */
   requestOtp(phone: PhoneFieldValue): Promise<string>;
   /**
-   * Verifies the code and signs the customer in. A new number gets an account
-   * and a token at once, with `onboardingStep: 'register'`. A wrong or expired
+   * Verifies the code and returns the customer's token. A new number gets an
+   * account and a token at once, with `onboardingStep: 'register'`. A wrong or expired
    * code is a `validation` AppError with the backend's message.
    */
   verifyOtp(phone: PhoneFieldValue, code: string): Promise<AuthGrant>;
   /**
-   * Saves the new customer's profile with the signed-in session's token. A
-   * 422 carries the backend's message; a revoked token is `unauthorized`.
+   * Saves the new customer's profile with the token issued at verification
+   * (there is no session until this succeeds). A 422 carries the backend's
+   * message; a revoked token is `unauthorized`.
    */
-  completeProfile(input: CompleteProfileInput): Promise<ProfileStepResult>;
+  completeProfile(
+    input: CompleteProfileInput,
+    accessToken: string,
+  ): Promise<ProfileStepResult>;
   /** Saves the customer's location (the `location` step) with the session's token. */
   assignLocation(input: AssignLocationInput): Promise<ProfileStepResult>;
   /** Revokes the session token; an already revoked token is also success. */
@@ -207,15 +215,17 @@ const httpAuthApi: AuthApi = {
     };
   },
 
-  async completeProfile({ fullName, email, birthDate }) {
+  async completeProfile({ fullName, email, birthDate }, accessToken) {
     const body: CompleteProfileBody = {
       name: fullName,
       email,
       birth_date: birthDate,
     };
-    // serverHttp sends the session's backend token (issued at verification).
     return toProfileStepResult(
-      await serverHttp.post<ApiEnvelope<unknown>>("/complete-profile", body),
+      await tokenServerHttp(accessToken).post<ApiEnvelope<unknown>>(
+        "/complete-profile",
+        body,
+      ),
     );
   },
 

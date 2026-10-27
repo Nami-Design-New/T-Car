@@ -37,7 +37,7 @@ const backend422 = (serverMessage: string) =>
 
 // Test-only (the app calls the API). Stateless, because module state on the
 // server would be shared between every user. Like the backend, verifying an
-// unknown number signs it in with `register` left.
+// unknown number creates the account with `register` left.
 export const authMock: AuthApi = {
   async requestOtp({ phone }) {
     await delay();

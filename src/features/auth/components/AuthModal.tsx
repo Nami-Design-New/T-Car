@@ -5,15 +5,13 @@ import { Dialog } from "@/shared/ui/Dialog";
 import LoginForm from "./LoginForm";
 import OtpForm from "./OtpForm";
 import RegisterForm from "./RegisterForm";
-import { useAuthFlow, type AuthFlowStart } from "./useAuthFlow";
+import { useAuthFlow } from "./useAuthFlow";
 
 type Props = {
   show: boolean;
   onHide: () => void;
   /** Where to go after signing in, e.g. the protected page that sent the user here. */
   next?: string;
-  /** `register` resumes a session whose profile is still missing. */
-  initialStep?: AuthFlowStart;
   onRegistrationSuccess?: (locationNext: boolean) => void;
   onLocationRequired?: () => void;
 };
@@ -23,14 +21,12 @@ export default function AuthModal({
   show,
   onHide,
   next,
-  initialStep,
   onRegistrationSuccess,
   onLocationRequired,
 }: Props) {
   const flow = useAuthFlow({
     next,
     onDone: onHide,
-    initialStep,
     onRegistrationSuccess,
     onLocationRequired,
   });

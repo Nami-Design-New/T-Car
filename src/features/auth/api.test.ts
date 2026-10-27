@@ -1,16 +1,23 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { AppError } from "@/shared/lib/errors";
 
-const { post, sessionPost } = vi.hoisted(() => ({
-  post: vi.fn(),
-  sessionPost: vi.fn(),
-}));
+const { post, sessionPost, tokenPost, tokenServerHttp } = vi.hoisted(() => {
+  const tokenPost = vi.fn();
+  return {
+    tokenPost,
+    tokenServerHttp: vi.fn(() => ({ post: tokenPost })),
+    post: vi.fn(),
+    sessionPost: vi.fn(),
+  };
+});
 
 vi.mock("server-only", () => ({}));
-// publicServerHttp sends no token; serverHttp sends the session's.
+// publicServerHttp sends no token; serverHttp sends the session's;
+// tokenServerHttp sends the one it is given.
 vi.mock("@/services/http/server", () => ({
   publicServerHttp: { post },
   serverHttp: { post: sessionPost },
+  tokenServerHttp,
 }));
 
 import { authApi } from "./api";
@@ -18,6 +25,8 @@ import { authApi } from "./api";
 beforeEach(() => {
   post.mockReset();
   sessionPost.mockReset();
+  tokenPost.mockReset();
+  tokenServerHttp.mockClear();
 });
 
 describe("authApi.requestOtp", () => {
@@ -167,14 +176,14 @@ describe("authApi.completeProfile", () => {
     birthDate: "2000-12-12",
   };
 
-  it("posts the profile with the session's client and maps the result", async () => {
-    sessionPost.mockResolvedValue({
+  it("posts the profile with the verification token and maps the result", async () => {
+    tokenPost.mockResolvedValue({
       data: { user: profileUser, current_step: "location" },
       message: "Profile updated successfully.",
       code: 200,
     });
 
-    await expect(authApi.completeProfile(input)).resolves.toEqual({
+    await expect(authApi.completeProfile(input, "pending-token")).resolves.toEqual({
       user: {
         id: "34",
         name: "Test",
@@ -184,27 +193,29 @@ describe("authApi.completeProfile", () => {
       onboardingStep: "location",
       message: "Profile updated successfully.",
     });
-    expect(sessionPost).toHaveBeenCalledWith("/complete-profile", {
+    expect(tokenServerHttp).toHaveBeenCalledWith("pending-token");
+    expect(tokenPost).toHaveBeenCalledWith("/complete-profile", {
       name: "Test",
       email: "api.test@example.com",
       birth_date: "2000-12-12",
     });
     expect(post).not.toHaveBeenCalled();
+    expect(sessionPost).not.toHaveBeenCalled();
   });
 
   it("passes a revoked token (401) through", async () => {
     const error = new AppError("unauthorized", undefined, 401);
-    sessionPost.mockRejectedValue(error);
-    await expect(authApi.completeProfile(input)).rejects.toBe(error);
+    tokenPost.mockRejectedValue(error);
+    await expect(authApi.completeProfile(input, "pending-token")).rejects.toBe(error);
   });
 
   it("rejects a success without the user", async () => {
-    sessionPost.mockResolvedValue({
+    tokenPost.mockResolvedValue({
       data: { current_step: "location" },
       message: "Profile updated successfully.",
       code: 200,
     });
-    await expect(authApi.completeProfile(input)).rejects.toMatchObject({
+    await expect(authApi.completeProfile(input, "pending-token")).rejects.toMatchObject({
       kind: "server",
     });
   });

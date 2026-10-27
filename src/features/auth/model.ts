@@ -8,8 +8,8 @@ export interface AuthUser {
 
 /**
  * What is left of onboarding after the phone is verified. The backend issues a
- * full token at verification, so the session exists from then on; the app
- * gates on this step (`register` sessions cannot use the account pages).
+ * full token at verification, but the session starts only after `register`:
+ * until then the token waits in the pending-registration cookie.
  */
 export type OnboardingStep = 'register' | 'location' | 'completed';
 

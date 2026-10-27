@@ -87,10 +87,8 @@ export default async function RootLayout({
 }) {
   const [{ locale }, session] = await Promise.all([params, auth()]);
   const dir = getDirection(locale);
-  // A session whose profile is still missing (signed in at verification) is
-  // not signed in for the UI: the header offers the profile form instead.
-  const profilePending = session?.user?.onboardingStep === "register";
-  const signedIn = Boolean(session?.user) && !profilePending;
+  // Sessions start once the profile exists (after the register step).
+  const signedIn = Boolean(session?.user);
   const unreadCount = signedIn
     ? (await getNotifications()).filter((notification) => !notification.read)
         .length
@@ -102,11 +100,10 @@ export default async function RootLayout({
         <NextIntlClientProvider>
           <DirectionProvider dir={dir}>
             <NextTopLoader color="#1f7ffa" height={3} showSpinner={false} />
-            {!session?.user && <GuestLocationRequest />}
+            {!signedIn && <GuestLocationRequest />}
             <Header
               hasSession={signedIn}
               signedIn={signedIn}
-              profilePending={profilePending}
               unreadCount={unreadCount}
             />
             <main>{children}</main>

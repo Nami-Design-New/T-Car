@@ -1,30 +1,16 @@
-import NextAuth, { CredentialsSignin } from 'next-auth';
-import { decode } from 'next-auth/jwt';
+import NextAuth from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
-import { cookies } from 'next/headers';
 import {
   toOnboardingStep,
   type AuthGrant,
   type AuthUser,
   type OnboardingStep,
 } from '@/features/auth/model';
-import { authApi } from '@/features/auth/api';
-import { AppError, toAppError } from '@/shared/lib/errors';
-import { reportError } from '@/shared/lib/report';
+import { sealGrant, unsealGrant } from '@/features/auth/sealed-grant';
 import { SESSION_COOKIE, SESSION_COOKIE_OPTIONS } from '@/shared/config/session';
 
-/**
- * Carries the whole AppError (kind, backend message, field errors) to the
- * Server Action: with `redirect: false`, Auth.js rethrows this same instance.
- */
-export class OtpSignInError extends CredentialsSignin {
-  constructor(readonly error: AppError) {
-    super();
-    this.code = error.code ?? error.kind;
-  }
-}
-
-const text = (value: unknown) => (typeof value === 'string' ? value : '');
+/** Salt of a grant sealed for sign-in; a grant sealed for anything else is refused. */
+const SIGN_IN_GRANT = 'tcar.sign-in-grant';
 
 /** What a session update may change after profile completion. */
 type ProfileUpdate = Partial<Pick<AuthUser, 'name' | 'email'>> & { onboardingStep?: OnboardingStep };
@@ -52,29 +38,18 @@ export const { handlers, auth, signIn, signOut, unstable_update } = NextAuth({
     },
   },
   providers: [
+    // The Server Actions verify the code (and finish registration) with the
+    // API, then start the session here with the grant they got. The endpoint
+    // is public, so it only takes a grant sealed by `signInWithGrant`.
     Credentials({
-      id: 'otp',
-      name: 'Phone',
-      credentials: {
-        /** The calling code and the normalized national number, as the API takes them. */
-        countryCode: {},
-        phone: {},
-        code: {},
-      },
+      id: 'grant',
+      name: 'Verified grant',
+      credentials: { grant: {} },
       async authorize(credentials) {
-        const countryCode = text(credentials.countryCode);
-        const phone = text(credentials.phone);
-        const code = text(credentials.code);
-
-        let grant: AuthGrant;
-        try {
-          grant = await authApi.verifyOtp({ countryCode, phone }, code);
-        } catch (error) {
-          const appError = toAppError(error);
-          // reportError skips expected outcomes (validation, e.g. a wrong code).
-          reportError(appError, { scope: 'auth.signIn' });
-          throw new OtpSignInError(appError);
-        }
+        const sealed = typeof credentials.grant === 'string' ? credentials.grant : '';
+        const grant = await unsealGrant(sealed, SIGN_IN_GRANT);
+        // Sessions start once the profile exists (registration finishes first).
+        if (!grant || grant.onboardingStep === 'register') return null;
 
         return {
           ...grant.user,
@@ -96,6 +71,9 @@ export const { handlers, auth, signIn, signOut, unstable_update } = NextAuth({
         }
         return token;
       }
+      // A session started at verification, before sessions waited for the
+      // profile: end it, and the customer signs in again to register.
+      if (!user && token.onboardingStep === 'register') return null;
       if (user) {
         token.accessToken = user.accessToken;
         token.onboardingStep = user.onboardingStep;
@@ -121,16 +99,12 @@ export const { handlers, auth, signIn, signOut, unstable_update } = NextAuth({
 });
 
 /**
- * The onboarding step of the session this request just created. `signIn`
- * writes the cookie into this request's cookie store, while `auth()` reads the
- * incoming request headers, so it would not see the new session yet.
+ * Starts the session with a grant the API has just issued (verification of an
+ * existing customer, or a finished registration). Server only.
  */
-export async function readSignedInStep(): Promise<OnboardingStep | undefined> {
-  const value = (await cookies()).get(SESSION_COOKIE)?.value;
-  const secret = process.env.AUTH_SECRET;
-  if (!value || !secret) return undefined;
-  const token = await decode({ token: value, secret, salt: SESSION_COOKIE });
-  return token?.onboardingStep;
+export async function signInWithGrant(grant: AuthGrant): Promise<void> {
+  const sealed = await sealGrant(grant, SIGN_IN_GRANT, 60);
+  await signIn('grant', { grant: sealed, redirect: false });
 }
 
 /**
