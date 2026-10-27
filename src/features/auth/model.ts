@@ -6,10 +6,29 @@ export interface AuthUser {
   email?: string;
 }
 
+/**
+ * What is left of onboarding after the phone is verified. The backend issues a
+ * full token at verification, so the session exists from then on; the app
+ * gates on this step (`register` sessions cannot use the account pages).
+ */
+export type OnboardingStep = 'register' | 'location' | 'completed';
+
+const ONBOARDING_STEPS: readonly string[] = ['register', 'location', 'completed'];
+
+/**
+ * The backend's `current_step`. It can be `null` for an existing user
+ * (Auth-API.md Q3): without a name that is still `register`, otherwise done.
+ */
+export function toOnboardingStep(step: string | null, hasName: boolean): OnboardingStep {
+  if (step !== null && ONBOARDING_STEPS.includes(step)) return step as OnboardingStep;
+  return hasName ? 'completed' : 'register';
+}
+
 /** What the backend returns after a successful sign-in or registration. */
 export interface AuthGrant {
   accessToken: string;
   user: AuthUser;
+  onboardingStep: OnboardingStep;
 }
 
 /** The profile a new customer fills in after verifying their phone. */
@@ -39,8 +58,7 @@ export function isNationalNumber(phone: string): boolean {
   return digits >= NATIONAL_NUMBER_DIGITS.min && digits <= NATIONAL_NUMBER_DIGITS.max;
 }
 
-/** Stable codes the OTP sign-in returns to the client (they end up in a URL, so no details). */
+/** Stable codes the OTP sign-in returns to the client. */
 export const AUTH_ERROR_CODES = {
   invalidCode: 'auth.invalidCode',
-  registrationRequired: 'auth.registrationRequired',
 } as const;

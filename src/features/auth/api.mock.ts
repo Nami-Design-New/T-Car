@@ -1,21 +1,28 @@
-import { AUTH_ERROR_CODES, isNationalNumber, type AuthGrant, type AuthUser } from './model';
+import {
+  AUTH_ERROR_CODES,
+  isNationalNumber,
+  type AuthGrant,
+  type AuthUser,
+  type OnboardingStep,
+} from './model';
 import { AppError } from '@/shared/lib/errors';
 import type { AuthApi } from './api';
 
 /** Mock only: the one code every phone accepts. */
 export const MOCK_OTP_CODE = '1234';
 
-/** Mock only: phones that already have an account. Any other phone goes to registration. */
+/** Mock only: phones that already have an account. Any other phone is a new account (`register`). */
 const MOCK_USERS: AuthUser[] = [
   { id: 'u1', name: 'أحمد عبدالله القحطاني', phone: '+966500000000', email: 'ahmed@domain.com' },
 ];
 
 const digits = (phone: string) => phone.replace(/\D/g, '');
 
-const grantFor = (user: AuthUser): AuthGrant => ({
+const grantFor = (user: AuthUser, onboardingStep: OnboardingStep): AuthGrant => ({
   // Not a real credential: the mock backend accepts anything.
   accessToken: `mock-token-${user.id}`,
   user,
+  onboardingStep,
 });
 
 const delay = (ms = 600) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -32,7 +39,8 @@ function checkCode(phone: string, code: string) {
 }
 
 // Stateless (a registration is not remembered), because this runs on the
-// server where module state would be shared between every user.
+// server where module state would be shared between every user. Like the
+// backend, verifying an unknown number signs it in with `register` left.
 export const authMock: AuthApi = {
   async requestOtp({ phone }) {
     await delay();
@@ -42,12 +50,13 @@ export const authMock: AuthApi = {
     return 'OTP has been sent successfully.';
   },
 
-  async verifyOtp(phone, code) {
+  async verifyOtp({ countryCode, phone }, code) {
     await delay();
-    checkCode(phone, code);
-    const user = MOCK_USERS.find((item) => digits(item.phone) === digits(phone));
-    if (!user) throw new AppError('conflict', AUTH_ERROR_CODES.registrationRequired);
-    return grantFor(user);
+    const number = `${countryCode}${phone}`;
+    checkCode(number, code);
+    const user = MOCK_USERS.find((item) => digits(item.phone) === digits(number));
+    if (user) return grantFor(user, 'completed');
+    return grantFor({ id: `u-${digits(number)}`, name: '', phone: number }, 'register');
   },
 
   async register({ phone, code, fullName, email }) {
@@ -56,6 +65,9 @@ export const authMock: AuthApi = {
     if (!fullName.trim()) {
       throw new AppError('validation', 'auth.nameRequired', undefined, { fullName: 'auth.nameRequired' });
     }
-    return grantFor({ id: `u-${digits(phone)}`, name: fullName.trim(), phone, email: email || undefined });
+    return grantFor(
+      { id: `u-${digits(phone)}`, name: fullName.trim(), phone, email: email || undefined },
+      'completed'
+    );
   },
 };

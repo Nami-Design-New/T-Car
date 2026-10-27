@@ -30,10 +30,18 @@ type Props = {
    * resolves with the error when that fails.
    */
   onNext: (phone: PhoneFieldValue) => Promise<AppError | undefined>;
+  /** The number to start from, e.g. after going back from the code step. */
+  defaultPhone?: PhoneFieldValue;
   loading?: boolean;
 };
 
-export default function LoginForm({ onNext, loading = false }: Props) {
+const EMPTY_PHONE: PhoneFieldValue = { countryCode: "+966", phone: "" };
+
+export default function LoginForm({
+  onNext,
+  defaultPhone = EMPTY_PHONE,
+  loading = false,
+}: Props) {
   const t = useTranslations();
   const errorMessage = useErrorMessage();
   const fieldError = useFieldErrorMessage();
@@ -47,7 +55,7 @@ export default function LoginForm({ onNext, loading = false }: Props) {
     resolver: zodResolver(phoneSchema),
     mode: "onBlur",
     reValidateMode: "onChange",
-    defaultValues: { phone: { countryCode: "+966", phone: "" } },
+    defaultValues: { phone: defaultPhone },
   });
 
   const onSubmit = handleSubmit(async ({ phone }) => {

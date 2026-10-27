@@ -291,6 +291,29 @@ to digits without the trunk `0` and checks the backend's 8–15 digits.
 the form's input. The two stale `LoginForm` tests are updated to the
 separated value and pass.
 
+**Auth API integration, fraction A5 (2026-10-27):** OTP verification is live
+(`POST /auth/verify-otp`). The backend creates the account and issues the
+token at verification, so every verified number is signed in; the JWT holds
+the token and `onboardingStep` (`register` / `location` / `completed`, with
+`current_step: null` read from the name), and the browser session exposes
+the step but never the token. `OtpSignInError` carries the whole `AppError`,
+so a wrong code is toasted with the backend's message. The dialog flow moved
+to `useAuthFlow` (one state per step); `AuthModal` only renders. Open until
+A6: registration still signs in through the mock, and `register` sessions are
+not yet kept out of the account pages; `location` counts as signed in until
+the product decides (Auth-API.md Q2).
+Also in A5: going back from the code (or "Edit number") returns to the
+phone step with the number and country kept. The register form submits
+again: its terms checkbox had been replaced by a consent sentence while the
+schema still required `acceptTerms`; consent is now implied by continuing
+(product decision) and the sentence is translated with its links. Message
+fixes: `auth.otp.resendIn` had a `{seconds}` placeholder the form never
+passed (English formatting error), `layout.location.locationIconAlt` was
+missing, and the back buttons get their `backLabel` names. Vitest now
+processes `next-intl`, so the `OtpForm` and `RegisterForm` tests load
+again, and `messages.test.tsx` renders the three auth forms in both locales
+and fails on any missing or broken message.
+
 | Feature                            | Moved to `features/` |                  Data behind queries / api                  |                             Actions return `Result`                              | Remaining                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | ---------------------------------- | :------------------: | :---------------------------------------------------------: | :------------------------------------------------------------------------------: | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `wallet`, `bank-accounts`          |         Yes          | Client reads over `*.api.ts`; writes through Server Actions |                                       Yes                                        | Fractions 1–3 complete: wallet and bank-account form, confirmation, and result states use shared dialogs. Left: user-scoped reads/API and forms (doc 3 step 7). Form validation fractions 4–5 add RHF + Zod amount and bank-account rules, re-parsed by the actions                                                                                                                                                                                                                                                                          |

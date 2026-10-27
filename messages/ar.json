@@ -27,6 +27,7 @@
     },
     "location": {
       "choose": "اختيار الموقع",
+      "locationIconAlt": "الموقع",
       "default": "الرياض، شارع الحرية"
     }
   },
@@ -126,7 +127,8 @@
       "backLabel": "العودة إلى رقم الجوال",
       "codeLabel": "رمز التحقق",
       "digitLabel": "الرقم {position} من {total}",
-      "resendIn": "إعادة إرسال الرمز بعد...",
+      "resendIn": "إعادة إرسال الرمز بعد",
+      "editNumber": "تعديل الرقم",
       "resend": "اعد إرسال الكود",
       "verify": "تأكيد الرمز"
     },
@@ -139,7 +141,7 @@
       "emailLabel": "البريد الإلكتروني",
       "emailPlaceholder": "name@domain.com",
       "birthDateLabel": "تاريخ الميلاد",
-      "agreeToTerms": "أوافق على الشروط والأحكام",
+      "consent": "بمتابعتك، فإنك توافق على <terms>الشروط والأحكام</terms> و<privacy>سياسة الخصوصية</privacy> الخاصة بالتطبيق.",
       "submit": "إنشاء الحساب"
     }
   },
@@ -592,12 +594,10 @@
       "invalidPhone": "أدخل رقم جوال صحيحًا.",
       "invalidCode": "رمز التحقق غير صحيح. حاول مرة أخرى.",
       "nameRequired": "الاسم الكامل مطلوب.",
-      "registrationRequired": "هذا الرقم غير مسجل. أكمل إنشاء الحساب.",
       "emailRequired": "البريد الإلكتروني مطلوب.",
       "invalidEmail": "أدخل بريدًا إلكترونيًا صحيحًا.",
       "birthDateRequired": "تاريخ الميلاد مطلوب.",
-      "invalidBirthDate": "أدخل تاريخ ميلاد صحيحًا لا يقع في المستقبل.",
-      "termsRequired": "وافق على الشروط والأحكام للمتابعة."
+      "invalidBirthDate": "أدخل تاريخ ميلاد صحيحًا لا يقع في المستقبل."
     }
   },
   "legalContent": {

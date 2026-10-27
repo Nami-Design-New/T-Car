@@ -1,16 +1,21 @@
 import NextAuth, { CredentialsSignin } from 'next-auth';
+import { decode } from 'next-auth/jwt';
 import Credentials from 'next-auth/providers/credentials';
-import { AUTH_ERROR_CODES, type AuthGrant } from '@/features/auth/model';
+import { cookies } from 'next/headers';
+import type { AuthGrant, OnboardingStep } from '@/features/auth/model';
 import { authApi } from '@/features/auth/api';
-import { toAppError } from '@/shared/lib/errors';
+import { AppError, toAppError } from '@/shared/lib/errors';
 import { reportError } from '@/shared/lib/report';
 import { SECURE_SESSION_COOKIE, SESSION_COOKIE } from '@/shared/config/session';
 
-/** Carries an AppError code to the client as `signIn(...).code`. */
-class OtpSignInError extends CredentialsSignin {
-  constructor(code: string) {
+/**
+ * Carries the whole AppError (kind, backend message, field errors) to the
+ * Server Action: with `redirect: false`, Auth.js rethrows this same instance.
+ */
+export class OtpSignInError extends CredentialsSignin {
+  constructor(readonly error: AppError) {
     super();
-    this.code = code;
+    this.code = error.code ?? error.kind;
   }
 }
 
@@ -31,15 +36,18 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       id: 'otp',
       name: 'Phone',
       credentials: {
+        /** The calling code and the normalized national number, as the API takes them. */
+        countryCode: {},
         phone: {},
         code: {},
-        /** 'register' when a new customer finishes registration; sign-in otherwise. */
+        /** 'register' when a new customer finishes registration (mock until A6); sign-in otherwise. */
         intent: {},
         fullName: {},
         email: {},
         birthDate: {},
       },
       async authorize(credentials) {
+        const countryCode = text(credentials.countryCode);
         const phone = text(credentials.phone);
         const code = text(credentials.code);
 
@@ -48,24 +56,25 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           grant =
             credentials.intent === 'register'
               ? await authApi.register({
-                  phone,
+                  phone: `${countryCode}${phone}`,
                   code,
                   fullName: text(credentials.fullName),
                   email: text(credentials.email),
                   birthDate: text(credentials.birthDate),
                 })
-              : await authApi.verifyOtp(phone, code);
+              : await authApi.verifyOtp({ countryCode, phone }, code);
         } catch (error) {
           const appError = toAppError(error);
-          // Expected outcomes (wrong code, new customer) are not reported;
-          // reportError already skips validation errors.
-          if (appError.code !== AUTH_ERROR_CODES.registrationRequired) {
-            reportError(appError, { scope: 'auth.signIn' });
-          }
-          throw new OtpSignInError(appError.code ?? appError.kind);
+          // reportError skips expected outcomes (validation, e.g. a wrong code).
+          reportError(appError, { scope: 'auth.signIn' });
+          throw new OtpSignInError(appError);
         }
 
-        return { ...grant.user, accessToken: grant.accessToken };
+        return {
+          ...grant.user,
+          accessToken: grant.accessToken,
+          onboardingStep: grant.onboardingStep,
+        };
       },
     }),
   ],
@@ -73,6 +82,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     jwt({ token, user }) {
       if (user) {
         token.accessToken = user.accessToken;
+        token.onboardingStep = user.onboardingStep;
         token.user = {
           id: user.id!,
           name: user.name ?? '',
@@ -83,9 +93,26 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       return token;
     },
     // The session is readable by the browser (/api/auth/session), so it gets
-    // the user only. The backend token stays in the encrypted cookie.
+    // the user and the onboarding step only. The backend token stays in the
+    // encrypted cookie.
     session({ session, token }) {
-      return { ...session, user: { ...session.user, ...token.user } };
+      return {
+        ...session,
+        user: { ...session.user, ...token.user, onboardingStep: token.onboardingStep },
+      };
     },
   },
 });
+
+/**
+ * The onboarding step of the session this request just created. `signIn`
+ * writes the cookie into this request's cookie store, while `auth()` reads the
+ * incoming request headers, so it would not see the new session yet.
+ */
+export async function readSignedInStep(): Promise<OnboardingStep | undefined> {
+  const value = (await cookies()).get(SESSION_COOKIE)?.value;
+  const secret = process.env.AUTH_SECRET;
+  if (!value || !secret) return undefined;
+  const token = await decode({ token: value, secret, salt: SESSION_COOKIE });
+  return token?.onboardingStep;
+}

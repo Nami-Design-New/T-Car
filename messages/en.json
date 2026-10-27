@@ -27,6 +27,7 @@
     },
     "location": {
       "choose": "Choose your location",
+      "locationIconAlt": "Location",
       "default": "Riyadh, Al Hurriya Street"
     }
   },
@@ -126,7 +127,8 @@
       "backLabel": "Back to mobile number",
       "codeLabel": "Verification code",
       "digitLabel": "Digit {position} of {total}",
-      "resendIn": "Resend in {seconds} seconds",
+      "resendIn": "Resend the code in",
+      "editNumber": "Edit number",
       "resend": "Resend code",
       "verify": "Verify and continue"
     },
@@ -139,7 +141,7 @@
       "emailLabel": "Email address",
       "emailPlaceholder": "name@domain.com",
       "birthDateLabel": "Date of birth",
-      "agreeToTerms": "I agree to the terms and conditions",
+      "consent": "By continuing, you agree to the app's <terms>Terms and Conditions</terms> and <privacy>Privacy Policy</privacy>.",
       "submit": "Create account"
     }
   },
@@ -594,12 +596,10 @@
       "invalidPhone": "Enter a valid phone number.",
       "invalidCode": "The verification code is incorrect. Try again.",
       "nameRequired": "Full name is required.",
-      "registrationRequired": "This number has no account yet. Finish creating your account.",
       "emailRequired": "Email address is required.",
       "invalidEmail": "Enter a valid email address.",
       "birthDateRequired": "Date of birth is required.",
-      "invalidBirthDate": "Enter a valid date of birth that is not in the future.",
-      "termsRequired": "Accept the terms and conditions to continue."
+      "invalidBirthDate": "Enter a valid date of birth that is not in the future."
     }
   },
   "legalContent": {

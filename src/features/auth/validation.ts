@@ -4,7 +4,6 @@ import {
   FULL_NAME_MIN_LENGTH,
   isFullName,
   isPastIsoDate,
-  isPhoneNumber,
 } from '@/shared/lib/validation';
 import { isNationalNumber, toNationalNumber } from './model';
 
@@ -12,9 +11,6 @@ import { isNationalNumber, toNationalNumber } from './model';
 // The client resolves forms with them and the Server Actions parse them again.
 /** Length of the one-time code the backend sends. */
 export const OTP_LENGTH = 4;
-
-/** A whole number ("+966500000000"); used by OTP verification until A5. */
-const phone = z.string({ error: 'auth.invalidPhone' }).trim().refine(isPhoneNumber, { error: 'auth.invalidPhone' });
 
 const CALLING_CODE = /^\+\d{1,4}$/;
 
@@ -46,10 +42,10 @@ export const phoneSchema = z.object({ phone: phoneValue });
 /** OTP step: the code the customer typed. */
 export const otpCodeSchema = z.object({ code });
 
-/** What `verifyOtpAction` receives. */
-export const verifyOtpSchema = z.object({ phone, code });
+/** What `verifyOtpAction` receives: the phone the code was sent to, and the code. */
+export const verifyOtpSchema = z.object({ phone: phoneValue, code });
 
-/** Registration step: the profile fields and the terms checkbox. */
+/** Registration step: the profile fields (consent is implied by continuing). */
 const registerName = z
   .string({ error: 'auth.nameRequired' })
   .trim()
@@ -68,9 +64,7 @@ export const registerFormSchema = z.object({
   birthDate: z
     .string({ error: 'auth.birthDateRequired' })
     .min(1, { error: 'auth.birthDateRequired', abort: true })
-    .refine(isPastIsoDate, { error: 'auth.invalidBirthDate' }),
-  // A boolean, not `literal(true)`, so the unchecked box is a valid form value.
-  acceptTerms: z.boolean({ error: 'auth.termsRequired' }).refine((value) => value, { error: 'auth.termsRequired' })
+    .refine(isPastIsoDate, { error: 'auth.invalidBirthDate' })
 });
 
 /** What `registerAction` receives: the verified phone and code plus the form. */

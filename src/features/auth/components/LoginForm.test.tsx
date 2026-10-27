@@ -24,6 +24,11 @@ function renderForm(overrides: Partial<React.ComponentProps<typeof LoginForm>> =
 }
 
 describe('LoginForm', () => {
+  it('starts from the number it is given, e.g. after going back', () => {
+    renderForm({ defaultPhone: { countryCode: '+962', phone: '791234567' } });
+    expect(screen.getByRole('textbox', { name: 'Mobile number' })).toHaveValue('791234567');
+  });
+
   it('shows the phone error on blur and ties it to the input', async () => {
     const { user, phone } = renderForm();
     await user.click(phone);

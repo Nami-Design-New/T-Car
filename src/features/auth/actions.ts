@@ -1,14 +1,13 @@
 'use server';
 
-import { CredentialsSignin } from 'next-auth';
-import { signIn, signOut } from '@/auth';
+import { OtpSignInError, readSignedInStep, signIn, signOut } from '@/auth';
 import { authApi } from './api';
-import { AppError, type AppErrorKind } from '@/shared/lib/errors';
+import { AppError } from '@/shared/lib/errors';
 import type { PhoneFieldValue } from '@/shared/lib/phone';
 import { reportError } from '@/shared/lib/report';
 import { fail, ok, toActionResult, type ActionResult } from '@/shared/lib/result';
 import { toValidationError } from '@/shared/lib/validation';
-import { AUTH_ERROR_CODES } from './model';
+import type { OnboardingStep } from './model';
 import {
   phoneSchema,
   registrationSchema,
@@ -16,23 +15,9 @@ import {
   type RegistrationSubmission,
 } from './validation';
 
-/** Validation codes the provider passes through, and the form field each belongs to. */
-const VALIDATION_FIELDS = new Map<string, string>([
-  [AUTH_ERROR_CODES.invalidCode, 'code'],
-  ['auth.invalidPhone', 'phone'],
-  ['auth.nameRequired', 'fullName'],
-]);
-
-/** The provider only passes a code string through; rebuild the AppError from it. */
+/** The provider rethrows its own error with the AppError inside (see src/auth.ts). */
 function signInError(error: unknown): AppError {
-  if (error instanceof CredentialsSignin) {
-    const code = error.code;
-    const field = VALIDATION_FIELDS.get(code);
-    if (field) return new AppError('validation', code, undefined, { [field]: code });
-    if (code === AUTH_ERROR_CODES.registrationRequired) return new AppError('conflict', code);
-    // Transport failures come through as their kind (network, server, ...).
-    return new AppError(code as AppErrorKind);
-  }
+  if (error instanceof OtpSignInError) return error.error;
   reportError(error, { scope: 'auth.signIn' });
   return new AppError('unknown', undefined, undefined, undefined, { cause: error });
 }
@@ -57,36 +42,43 @@ export async function requestOtpAction(
   }
 }
 
-/** Signs in an existing customer, or reports that the phone needs an account first. */
+/**
+ * Verifies the code and signs the customer in; a new number gets its account
+ * here. Resolves with what is left of onboarding, so the dialog knows whether
+ * to show the registration form. A wrong code keeps the backend's message.
+ */
 export async function verifyOtpAction(
-  phone: string,
+  phone: PhoneFieldValue,
   code: string
-): Promise<ActionResult<{ registrationRequired: boolean }>> {
+): Promise<ActionResult<{ onboardingStep: OnboardingStep }>> {
   const parsed = verifyOtpSchema.safeParse({ phone, code });
   if (!parsed.success) return toActionResult(fail(toValidationError(parsed.error)));
   try {
-    await signIn('otp', { ...parsed.data, redirect: false });
-    return toActionResult(ok({ registrationRequired: false }));
+    await signIn('otp', { ...parsed.data.phone, code: parsed.data.code, redirect: false });
   } catch (error) {
-    const appError = signInError(error);
-    if (appError.code === AUTH_ERROR_CODES.registrationRequired) {
-      return toActionResult(ok({ registrationRequired: true }));
-    }
-    return toActionResult(fail(appError));
+    return toActionResult(fail(signInError(error)));
   }
+  const onboardingStep = await readSignedInStep();
+  if (!onboardingStep) {
+    // Signed in, but the new session could not be read back: do not block the user.
+    reportError(new AppError('unknown'), { scope: 'auth.verifyOtp.step' });
+  }
+  return toActionResult(ok({ onboardingStep: onboardingStep ?? 'completed' }));
 }
 
-/** Creates the account for a verified phone and signs it in. */
+/**
+ * Creates the account for a verified phone and signs it in. Still the mock
+ * (it re-checks phone and code) until A6 calls `/complete-profile`.
+ */
 export async function registerAction(
   input: RegistrationSubmission
 ): Promise<ActionResult<void>> {
   const parsed = registrationSchema.safeParse(input);
   if (!parsed.success) return toActionResult(fail(toValidationError(parsed.error)));
-  // The terms checkbox is checked here only; the backend contract has no field for it yet.
   const { phone, code, fullName, email, birthDate } = parsed.data;
   try {
     await signIn('otp', {
-      phone,
+      ...phone,
       code,
       fullName,
       email,

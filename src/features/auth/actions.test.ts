@@ -1,14 +1,20 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const { signIn, requestOtp, CredentialsSignin } = vi.hoisted(() => {
-  class CredentialsSignin extends Error {
-    code = 'credentials';
+const { signIn, readSignedInStep, requestOtp, OtpSignInError } = vi.hoisted(() => {
+  class OtpSignInError extends Error {
+    constructor(readonly error: unknown) {
+      super('otp');
+    }
   }
-  return { signIn: vi.fn(), requestOtp: vi.fn(), CredentialsSignin };
+  return {
+    signIn: vi.fn(),
+    readSignedInStep: vi.fn(),
+    requestOtp: vi.fn(),
+    OtpSignInError,
+  };
 });
 
-vi.mock('next-auth', () => ({ CredentialsSignin }));
-vi.mock('@/auth', () => ({ signIn, signOut: vi.fn() }));
+vi.mock('@/auth', () => ({ signIn, signOut: vi.fn(), readSignedInStep, OtpSignInError }));
 vi.mock('./api', () => ({ authApi: { requestOtp } }));
 vi.mock('@/shared/lib/report', () => ({ reportError: vi.fn() }));
 
@@ -16,24 +22,19 @@ import { AppError } from '@/shared/lib/errors';
 import type { PhoneFieldValue } from '@/shared/lib/phone';
 import { registerAction, requestOtpAction, verifyOtpAction } from './actions';
 
-/** What the sign-in provider throws for an AppError code. */
-function providerError(code: string) {
-  const error = new CredentialsSignin();
-  error.code = code;
-  return error;
-}
+const saudi = (phone: string): PhoneFieldValue => ({ countryCode: '+966', phone });
 
 const registration = {
-  phone: '966500000001',
+  phone: saudi('500000001'),
   code: '1234',
   fullName: ' New Customer ',
   email: 'new@domain.com',
   birthDate: '1990-05-17',
-  acceptTerms: true,
 };
 
 beforeEach(() => {
   signIn.mockReset();
+  readSignedInStep.mockReset();
   requestOtp.mockReset();
 });
 
@@ -85,7 +86,7 @@ describe('requestOtpAction', () => {
 
 describe('verifyOtpAction', () => {
   it('rejects an incomplete code without signing in', async () => {
-    const result = await verifyOtpAction('966500000000', '12');
+    const result = await verifyOtpAction(saudi('500000000'), '12');
     expect(result).toMatchObject({
       ok: false,
       error: { kind: 'validation', fieldErrors: { code: 'auth.invalidCode' } },
@@ -93,24 +94,53 @@ describe('verifyOtpAction', () => {
     expect(signIn).not.toHaveBeenCalled();
   });
 
-  it('returns a wrong code from the provider as a field error', async () => {
-    signIn.mockRejectedValue(providerError('auth.invalidCode'));
-    const result = await verifyOtpAction('966500000000', '9999');
-    expect(result).toEqual({
+  it('signs in with the normalized phone and returns the onboarding step', async () => {
+    signIn.mockResolvedValue(undefined);
+    readSignedInStep.mockResolvedValue('register');
+
+    await expect(verifyOtpAction(saudi('0500000001'), '1234')).resolves.toEqual({
+      ok: true,
+      data: { onboardingStep: 'register' },
+    });
+    expect(signIn).toHaveBeenCalledWith('otp', {
+      countryCode: '+966',
+      phone: '500000001',
+      code: '1234',
+      redirect: false,
+    });
+  });
+
+  it('does not block a signed-in user when the step cannot be read back', async () => {
+    signIn.mockResolvedValue(undefined);
+    readSignedInStep.mockResolvedValue(undefined);
+
+    await expect(verifyOtpAction(saudi('500000000'), '1234')).resolves.toEqual({
+      ok: true,
+      data: { onboardingStep: 'completed' },
+    });
+  });
+
+  it('returns the provider error as it is, with the backend message', async () => {
+    const error = new AppError('validation', undefined, 422, undefined, {
+      serverMessage: 'The verification code is invalid or expired.',
+    });
+    signIn.mockRejectedValue(new OtpSignInError(error));
+
+    await expect(verifyOtpAction(saudi('500000000'), '9999')).resolves.toMatchObject({
       ok: false,
       error: {
         kind: 'validation',
-        code: 'auth.invalidCode',
-        fieldErrors: { code: 'auth.invalidCode' },
+        status: 422,
+        serverMessage: 'The verification code is invalid or expired.',
       },
     });
   });
 
-  it('reports a phone without an account as a registration step, not an error', async () => {
-    signIn.mockRejectedValue(providerError('auth.registrationRequired'));
-    await expect(verifyOtpAction('966500000001', '1234')).resolves.toEqual({
-      ok: true,
-      data: { registrationRequired: true },
+  it('turns an unexpected sign-in failure into unknown', async () => {
+    signIn.mockRejectedValue(new Error('boom'));
+    await expect(verifyOtpAction(saudi('500000000'), '1234')).resolves.toMatchObject({
+      ok: false,
+      error: { kind: 'unknown' },
     });
   });
 });
@@ -120,23 +150,23 @@ describe('registerAction', () => {
     const result = await registerAction({
       ...registration,
       email: 'not-an-email',
-      acceptTerms: false,
     });
     expect(result).toMatchObject({
       ok: false,
       error: {
         kind: 'validation',
-        fieldErrors: { email: 'auth.invalidEmail', acceptTerms: 'auth.termsRequired' },
+        fieldErrors: { email: 'auth.invalidEmail' },
       },
     });
     expect(signIn).not.toHaveBeenCalled();
   });
 
-  it('signs in with the parsed profile and leaves the terms flag out', async () => {
+  it('signs in with the parsed profile', async () => {
     signIn.mockResolvedValue(undefined);
     await expect(registerAction(registration)).resolves.toEqual({ ok: true, data: undefined });
     expect(signIn).toHaveBeenCalledWith('otp', {
-      phone: '966500000001',
+      countryCode: '+966',
+      phone: '500000001',
       code: '1234',
       fullName: 'New Customer',
       email: 'new@domain.com',
@@ -147,8 +177,8 @@ describe('registerAction', () => {
   });
 
   it('keeps transport failures as their kind', async () => {
-    signIn.mockRejectedValue(providerError('network'));
-    await expect(registerAction(registration)).resolves.toEqual({
+    signIn.mockRejectedValue(new OtpSignInError(new AppError('network')));
+    await expect(registerAction(registration)).resolves.toMatchObject({
       ok: false,
       error: { kind: 'network' },
     });

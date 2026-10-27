@@ -8,8 +8,7 @@ describe('registration full-name rules', () => {
       registerFormSchema.parse({
         fullName: ' أحمد عبدالله ',
         email: 'ahmed@domain.com',
-        birthDate: '1990-05-17',
-        acceptTerms: true
+        birthDate: '1990-05-17'
       }).fullName
     ).toBe('أحمد عبدالله');
   });
@@ -29,8 +28,7 @@ describe('registration full-name rules', () => {
 const validProfile = {
   fullName: 'Ahmed Abdullah',
   email: 'ahmed@domain.com',
-  birthDate: '1990-05-17',
-  acceptTerms: true
+  birthDate: '1990-05-17'
 };
 
 /** The `errors.*` key per field, as the Server Action would return it. */
@@ -83,9 +81,17 @@ describe('otpCodeSchema', () => {
   });
 
   it('checks the phone too when verifying', () => {
-    expect(fieldErrors(verifyOtpSchema.safeParse({ phone: '+966', code: '1234' }))).toEqual({
+    expect(
+      fieldErrors(verifyOtpSchema.safeParse({ phone: { countryCode: '+966', phone: '12' }, code: '1234' }))
+    ).toEqual({
       phone: 'auth.invalidPhone'
     });
+  });
+
+  it('verifies the same normalized number the code was sent to', () => {
+    expect(
+      verifyOtpSchema.parse({ phone: { countryCode: '+966', phone: '0544 444 442' }, code: '1234' })
+    ).toEqual({ phone: { countryCode: '+966', phone: '544444442' }, code: '1234' });
   });
 });
 
@@ -110,15 +116,13 @@ describe('registerFormSchema', () => {
         registerFormSchema.safeParse({
           fullName: '   ',
           email: '',
-          birthDate: '',
-          acceptTerms: false
+          birthDate: ''
         })
       )
     ).toEqual({
       fullName: 'auth.nameRequired',
       email: 'auth.emailRequired',
-      birthDate: 'auth.birthDateRequired',
-      acceptTerms: 'auth.termsRequired'
+      birthDate: 'auth.birthDateRequired'
     });
   });
 

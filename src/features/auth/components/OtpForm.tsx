@@ -19,6 +19,8 @@ import { BackButton } from "@/shared/ui/BackButton";
 type Props = {
   phone: string;
   onBack: () => void;
+  /** Goes back to the phone step with the number filled in, to correct it. */
+  onEditPhone?: () => void;
   /** Resolves with the error when verification fails; the code stays so the user can correct it. */
   onVerify: (code: string) => Promise<AppError | undefined>;
   onResend?: () => Promise<AppError | undefined>;
@@ -30,6 +32,7 @@ const OTP_RESEND_SECONDS = 30;
 export default function OtpForm({
   phone,
   onBack,
+  onEditPhone,
   onVerify,
   onResend,
   loading = false,
@@ -94,7 +97,7 @@ export default function OtpForm({
       noValidate
     >
       <div className="mb-6 flex items-center gap-2">
-        <BackButton onClick={onBack} />
+        <BackButton onClick={onBack} aria-label={t("auth.otp.backLabel")} />
 
         <h2 className="text-text-primary mb-0 text-xl leading-relaxed font-extrabold">
           {t("auth.otp.title")}
@@ -107,6 +110,16 @@ export default function OtpForm({
         <p className="text-text-subtle mb-4 text-start text-base leading-relaxed">
           {t("auth.otp.description", { phone })}
         </p>
+        {onEditPhone && (
+          <button
+            type="button"
+            className="text-action-primary mb-4 block cursor-pointer border-0 bg-transparent p-0 text-start text-sm font-semibold underline"
+            onClick={onEditPhone}
+            disabled={loading}
+          >
+            {t("auth.otp.editNumber")}
+          </button>
+        )}
       </div>
       <div className={"flex items-center justify-center"}>
         <Controller
@@ -138,7 +151,7 @@ export default function OtpForm({
         {timer > 0 ? (
           <span className="text-action-primary text-sm leading-relaxed">
             {" "}
-            00:{timer}{" "}
+            00:{String(timer).padStart(2, "0")}{" "}
           </span>
         ) : (
           <button

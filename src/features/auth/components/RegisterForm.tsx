@@ -11,7 +11,7 @@ import {
 import type { AppError } from "@/shared/lib/errors";
 import { applyFieldErrors } from "@/shared/lib/validation";
 import { Button } from "@/shared/ui/Button";
-import { FormCheckbox, FormInput } from "@/shared/ui/Form";
+import { FormInput } from "@/shared/ui/Form";
 import { registerFormSchema, type RegisterFormValues } from "../validation";
 import { BackButton } from "@/shared/ui/BackButton/BackButton";
 import { Link } from "@/i18n/navigation";
@@ -23,7 +23,7 @@ type Props = {
   loading?: boolean;
 };
 
-const FIELDS = ["fullName", "email", "birthDate", "acceptTerms"] as const;
+const FIELDS = ["fullName", "email", "birthDate"] as const;
 
 export default function RegisterForm({
   onBack,
@@ -47,7 +47,6 @@ export default function RegisterForm({
       fullName: "",
       email: "",
       birthDate: "",
-      acceptTerms: false,
     },
   });
 
@@ -71,7 +70,7 @@ export default function RegisterForm({
       noValidate
     >
       <div className="mt-2 mb-6 flex items-center gap-2">
-        <BackButton onClick={onBack} />
+        <BackButton onClick={onBack} aria-label={t("auth.register.backLabel")} />
         <h2 className="text-text-primary mb-0 text-xl leading-relaxed font-extrabold">
           {t("auth.register.title")}
         </h2>
@@ -114,16 +113,20 @@ export default function RegisterForm({
           {...register("birthDate")}
         />
       </div>
+      {/* Consent is implied by continuing; the API has no terms field (Auth-API.md Q8). */}
       <p className="mt-4 text-center text-sm">
-        <span>بمتابعتك، فإنك توافق على </span>{" "}
-        <Link className="text-action-primary" href="/terms">
-          الشروط والأحكام
-        </Link>{" "}
-        <br />و{" "}
-        <Link className="text-action-primary" href="/privacy">
-          سياسة الخصوصية
-        </Link>{" "}
-        الخاصة بالتطبيق.
+        {t.rich("auth.register.consent", {
+          terms: (chunks) => (
+            <Link className="text-action-primary" href="/terms">
+              {chunks}
+            </Link>
+          ),
+          privacy: (chunks) => (
+            <Link className="text-action-primary" href="/privacy">
+              {chunks}
+            </Link>
+          ),
+        })}
       </p>
 
       {formError && (
