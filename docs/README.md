@@ -410,6 +410,7 @@ mock keeps its own OTP code `1234` for the phone change.
   change/verify phone; (3) license upload, complete (JPG/PNG, 5 MB); (4) wallet top-up / withdrawal, complete; (5) bank-account add / edit, complete; (6) contact message, complete (RHF + Zod with server re-parse); (7) daily booking and checkout terms / payment, complete; (8) booking
   review, extend, and edit, complete. Join-us stays blocked until it has a write contract.
 - Form validation fraction 1 (auth):
+  Registration shows localized messages for names shorter than 2 characters or longer than 100 characters.
   `zod` 4 and `@hookform/resolvers` 5 added; `features/auth/validation.ts` holds
   the phone, OTP, and registration schemas (messages are `errors.auth.*` keys,
   five new in both locales); the login, OTP, and registration forms use React

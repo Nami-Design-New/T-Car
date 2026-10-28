@@ -14,8 +14,8 @@ describe('registration full-name rules', () => {
   });
 
   it.each([
-    ['one character', 'A', 'auth.nameRequired'],
-    ['101 characters', 'A'.repeat(101), 'auth.nameRequired'],
+    ['one character', 'A', 'auth.nameTooShort'],
+    ['101 characters', 'A'.repeat(101), 'auth.nameTooLong'],
     ['digits', 'Ahmed 123', 'auth.nameRequired'],
     ['punctuation', 'Ahmed-Abdullah', 'auth.nameRequired']
   ])('rejects %s', (_, fullName, error) => {

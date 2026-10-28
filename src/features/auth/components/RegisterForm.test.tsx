@@ -40,6 +40,17 @@ async function fillValid({ user, name, email, birthDate }: ReturnType<typeof ren
 }
 
 describe('RegisterForm', () => {
+  it.each([
+    ['A', 'Full name must be at least 2 characters.'],
+    ['A'.repeat(101), 'Full name must be no more than 100 characters.'],
+  ])('shows the name length error', async (value, message) => {
+    const { user, name } = renderForm();
+    await user.type(name, value);
+    await user.tab();
+    expect(await screen.findByText(message)).toBeInTheDocument();
+    expect(name).toHaveAccessibleDescription(message);
+  });
+
   it('shows a field error on blur and ties it to the field', async () => {
     const { user, email } = renderForm();
     await user.type(email, 'ahmed@');

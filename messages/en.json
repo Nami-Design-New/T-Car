@@ -599,6 +599,8 @@
       "invalidPhone": "Enter a valid phone number.",
       "invalidCode": "The verification code is incorrect. Try again.",
       "nameRequired": "Full name is required.",
+      "nameTooShort": "Full name must be at least 2 characters.",
+      "nameTooLong": "Full name must be no more than 100 characters.",
       "emailRequired": "Email address is required.",
       "invalidEmail": "Enter a valid email address.",
       "birthDateRequired": "Date of birth is required.",

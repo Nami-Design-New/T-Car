@@ -50,8 +50,8 @@ const registerName = z
   .string({ error: 'auth.nameRequired' })
   .trim()
   .min(1, { error: 'auth.nameRequired', abort: true })
-  .min(FULL_NAME_MIN_LENGTH, { error: 'auth.nameRequired', abort: true })
-  .max(FULL_NAME_MAX_LENGTH, { error: 'auth.nameRequired', abort: true })
+  .min(FULL_NAME_MIN_LENGTH, { error: 'auth.nameTooShort', abort: true })
+  .max(FULL_NAME_MAX_LENGTH, { error: 'auth.nameTooLong', abort: true })
   .refine(isFullName, { error: 'auth.nameRequired' });
 
 export const registerFormSchema = z.object({
