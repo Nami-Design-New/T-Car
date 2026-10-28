@@ -224,10 +224,14 @@ export default function ProfileTab({ profile }: Props) {
   const saveError = errors.root?.server?.message;
 
   return (
-    <div className="flex w-full flex-col rounded-xl border border-stroke-light bg-surface-elevated p-6 max-md:p-4">
+    <div className="border-stroke-light bg-surface-elevated flex w-full flex-col rounded-xl border p-6 max-md:p-4">
       {/* The form closes before the dialogs below: their submit events would
           otherwise bubble through the portals into this form. */}
-      <form className="contents" onSubmit={handleSaveProfile} noValidate>
+      <form
+        className="flex flex-col gap-5"
+        onSubmit={handleSaveProfile}
+        noValidate
+      >
         {/* ==================== Full Name ==================== */}
 
         <FormInput
@@ -246,7 +250,6 @@ export default function ProfileTab({ profile }: Props) {
           id="profile-email"
           label={t("email")}
           type="email"
-          dir="ltr"
           autoComplete="email"
           required
           error={fieldError(errors.email?.message)}
@@ -259,7 +262,6 @@ export default function ProfileTab({ profile }: Props) {
           id="profile-birth-date"
           label={t("birthDate")}
           type="date"
-          dir="ltr"
           autoComplete="bday"
           required
           icon={<FiCalendar />}
@@ -269,18 +271,18 @@ export default function ProfileTab({ profile }: Props) {
 
         {/* ==================== Phone ==================== */}
 
-        <div className="mb-3 w-full rounded-sm bg-surface-elevated transition-colors">
+        <div className="bg-surface-elevated mb-3 w-full rounded-sm transition-colors">
           <button
             type="button"
             className="flex min-h-[62px] w-full items-center justify-between gap-3 border-0 bg-transparent px-3 py-2 text-start transition-opacity hover:opacity-85 max-md:min-h-[58px] max-md:px-2.5"
             onClick={() => setPhoneStep("edit")}
           >
             <div className="flex min-w-0 flex-1 flex-col gap-1.5">
-              <span className="text-[13px] font-semibold leading-[1.4] text-text-primary max-md:text-xs">
+              <span className="text-text-primary text-[13px] leading-[1.4] font-semibold max-md:text-xs">
                 {t("phone")}
               </span>
 
-              <div className="flex min-w-0 items-center gap-1.5 text-[11px] leading-[1.5] text-text-subtle max-md:text-[10px] [&>svg]:shrink-0 [&>svg]:text-sm [&>svg]:text-status-success">
+              <div className="text-text-subtle [&>svg]:text-status-success flex min-w-0 items-center gap-1.5 text-[11px] leading-[1.5] max-md:text-[10px] [&>svg]:shrink-0 [&>svg]:text-sm">
                 <FiCheck aria-hidden="true" />
 
                 <span className="min-w-0 [overflow-wrap:anywhere]" dir="ltr">
@@ -290,7 +292,7 @@ export default function ProfileTab({ profile }: Props) {
             </div>
 
             <FiChevronRight
-              className="rtl:scale-x-[-1] shrink-0 text-lg text-text-subtle max-md:text-base"
+              className="text-text-subtle shrink-0 text-lg max-md:text-base rtl:scale-x-[-1]"
               aria-hidden="true"
             />
           </button>
@@ -299,17 +301,17 @@ export default function ProfileTab({ profile }: Props) {
         {/* ==================== License ==================== */}
 
         {form.licenseUploaded ? (
-          <div className="mb-3 w-full rounded-sm bg-surface-elevated transition-colors">
+          <div className="bg-surface-elevated mb-3 w-full rounded-sm transition-colors">
             <div
               className="flex min-h-[62px] w-full items-center justify-between gap-3 px-3 py-2 max-md:min-h-[58px] max-md:px-2.5"
               role="status"
             >
               <div className="flex min-w-0 flex-1 flex-col gap-1.5">
-                <span className="text-[13px] font-semibold leading-[1.4] text-text-primary max-md:text-xs">
+                <span className="text-text-primary text-[13px] leading-[1.4] font-semibold max-md:text-xs">
                   {t("license")}
                 </span>
 
-                <div className="flex min-w-0 items-center gap-1.5 text-[11px] leading-[1.5] text-text-subtle max-md:text-[10px] [&>svg]:shrink-0 [&>svg]:text-sm [&>svg]:text-status-success">
+                <div className="text-text-subtle [&>svg]:text-status-success flex min-w-0 items-center gap-1.5 text-[11px] leading-[1.5] max-md:text-[10px] [&>svg]:shrink-0 [&>svg]:text-sm">
                   <FiCheck aria-hidden="true" />
                   <span>{t("licenseVerified")}</span>
                 </div>
@@ -317,18 +319,18 @@ export default function ProfileTab({ profile }: Props) {
             </div>
           </div>
         ) : (
-          <div className="mb-3 w-full rounded-sm bg-status-error-background transition-colors">
+          <div className="bg-status-error-background mb-3 w-full rounded-sm transition-colors">
             <button
               type="button"
               className="flex min-h-[62px] w-full items-center justify-between gap-3 border-0 bg-transparent px-3 py-2 text-start transition-opacity hover:opacity-85 max-md:min-h-[58px] max-md:px-2.5"
               onClick={() => setShowLicenseModal(true)}
             >
               <div className="flex min-w-0 flex-1 flex-col gap-1.5">
-                <span className="text-[13px] font-semibold leading-[1.4] text-text-primary max-md:text-xs">
+                <span className="text-text-primary text-[13px] leading-[1.4] font-semibold max-md:text-xs">
                   {t("license")}
                 </span>
 
-                <div className="flex min-w-0 items-center gap-1.5 text-[11px] leading-[1.5] text-text-subtle max-md:text-[10px] [&>svg]:shrink-0 [&>svg]:text-sm [&>svg]:text-status-error">
+                <div className="text-text-subtle [&>svg]:text-status-error flex min-w-0 items-center gap-1.5 text-[11px] leading-[1.5] max-md:text-[10px] [&>svg]:shrink-0 [&>svg]:text-sm">
                   <FiAlertCircle aria-hidden="true" />
                   <span className="min-w-0 [overflow-wrap:anywhere]">
                     {t("licenseRequired")}
@@ -337,7 +339,7 @@ export default function ProfileTab({ profile }: Props) {
               </div>
 
               <FiChevronRight
-                className="rtl:scale-x-[-1] shrink-0 text-lg text-text-subtle max-md:text-base"
+                className="text-text-subtle shrink-0 text-lg max-md:text-base rtl:scale-x-[-1]"
                 aria-hidden="true"
               />
             </button>
@@ -348,7 +350,7 @@ export default function ProfileTab({ profile }: Props) {
 
         <button
           type="button"
-          className="mb-2 flex w-full items-center justify-start gap-1.5 border-0 bg-transparent px-0 py-1 text-end text-sm font-semibold text-status-error transition-opacity hover:opacity-80 max-md:text-xs [&>svg]:text-[17px] max-md:[&>svg]:text-[15px]"
+          className="text-status-error mb-2 flex w-full items-center justify-start gap-1.5 border-0 bg-transparent px-0 py-1 text-end text-sm font-semibold transition-opacity hover:opacity-80 max-md:text-xs [&>svg]:text-[17px] max-md:[&>svg]:text-[15px]"
           onClick={() => {
             setDeleteError(null);
             setShowDeleteModal(true);
@@ -371,12 +373,12 @@ export default function ProfileTab({ profile }: Props) {
         </Button>
 
         {saveError && (
-          <p className="mt-2 mb-0 text-sm text-status-error" role="alert">
+          <p className="text-status-error mt-2 mb-0 text-sm" role="alert">
             {saveError}
           </p>
         )}
         {saved && (
-          <p className="mt-2 mb-0 text-sm text-status-success" role="status">
+          <p className="text-status-success mt-2 mb-0 text-sm" role="status">
             {t("saved")}
           </p>
         )}

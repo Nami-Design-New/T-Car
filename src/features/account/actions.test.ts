@@ -14,7 +14,7 @@ const { auth, accountApi } = vi.hoisted(() => ({
 }));
 
 vi.mock("@/auth", () => ({ auth, signOut: vi.fn() }));
-vi.mock("@/services/account.api", () => ({ accountApi }));
+vi.mock("./api", () => ({ accountApi }));
 vi.mock("@/shared/lib/report", () => ({ reportError: vi.fn() }));
 
 import {
@@ -154,7 +154,7 @@ describe("phone actions", () => {
 });
 
 describe("uploadLicenseAction", () => {
-  it("rechecks the 5 MB limit before calling the service", async () => {
+  it("rechecks the 15 MB limit before calling the service", async () => {
     const formData = new FormData();
     formData.set(
       "license",

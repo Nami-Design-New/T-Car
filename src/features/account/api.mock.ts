@@ -1,10 +1,6 @@
-import {
-  LICENSE_MAX_SIZE_BYTES,
-  isLicenseFileType,
-  type UserProfile,
-} from "@/features/account/model";
+import { LICENSE_MAX_SIZE_BYTES, isLicenseFileType, type UserProfile } from "./model";
 import { AppError } from "@/shared/lib/errors";
-import type { AccountApi } from "../account.api";
+import type { AccountApi } from "./api";
 
 /** The phone-change code; the same fixed code as the sign-in mock (features/auth/api.mock.ts). */
 const MOCK_OTP_CODE = "1234";

@@ -147,7 +147,7 @@ describe("licenseUploadSchema", () => {
     type: "image/png",
   };
 
-  it("accepts JPG and PNG files at the 5 MB boundary", () => {
+  it("accepts JPG, JPEG, and PNG files at the 15 MB boundary", () => {
     expect(licenseUploadSchema.safeParse({ file: validLicense }).success).toBe(
       true,
     );
@@ -156,9 +156,14 @@ describe("licenseUploadSchema", () => {
         file: { ...validLicense, name: "license.jpg", type: "image/jpeg" },
       }).success,
     ).toBe(true);
+    expect(
+      licenseUploadSchema.safeParse({
+        file: { ...validLicense, name: "license.jpeg", type: "image/jpeg" },
+      }).success,
+    ).toBe(true);
   });
 
-  it("rejects a file over 5 MB and unsupported declared types", () => {
+  it("rejects a file over 15 MB and unsupported declared types", () => {
     expect(
       fieldErrors(
         licenseUploadSchema.safeParse({

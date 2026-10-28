@@ -19,7 +19,7 @@ function renderModal(onSubmit = vi.fn().mockResolvedValue(undefined)) {
 }
 
 describe("LicenseModal", () => {
-  it("shows the 5 MB validation error and does not submit an oversized file", async () => {
+  it("shows the 15 MB validation error and does not submit an oversized file", async () => {
     const { user, onSubmit, input } = renderModal();
     const tooLarge = new File(
       [new Uint8Array(LICENSE_MAX_SIZE_BYTES + 1)],
@@ -31,7 +31,7 @@ describe("LicenseModal", () => {
 
     expect(
       await screen.findByText(
-        "The driving license image must be 5 MB or smaller.",
+        "The driving license image must be 15 MB or smaller.",
       ),
     ).toBeVisible();
     await user.click(screen.getByRole("button", { name: "Upload" }));
@@ -42,6 +42,19 @@ describe("LicenseModal", () => {
     const onSubmit = vi.fn().mockResolvedValue(undefined);
     const { user, input } = renderModal(onSubmit);
     const file = new File(["license"], "license.jpg", { type: "image/jpeg" });
+
+    await user.upload(input, file);
+    await user.click(screen.getByRole("button", { name: "Upload" }));
+
+    await waitFor(() => expect(onSubmit).toHaveBeenCalledWith(file));
+  });
+
+  it("accepts a .jpeg image", async () => {
+    const onSubmit = vi.fn().mockResolvedValue(undefined);
+    const { user, input } = renderModal(onSubmit);
+    const file = new File(["license"], "license.jpeg", {
+      type: "image/jpeg",
+    });
 
     await user.upload(input, file);
     await user.click(screen.getByRole("button", { name: "Upload" }));

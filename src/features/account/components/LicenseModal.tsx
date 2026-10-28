@@ -124,7 +124,7 @@ export default function LicenseModal({
             aria-invalid={Boolean(errors.file)}
             aria-describedby={uploadError ? "license-file-error" : undefined}
             type="file"
-            accept="image/png,image/jpeg"
+            accept=".jpg,.jpeg,.png,image/jpeg,image/png"
             hidden
             onChange={handleFileChange}
           />

@@ -88,7 +88,7 @@
       "title": "رخصة القيادة",
       "close": "إغلاق",
       "uploadPrompt": "اضغط هنا لرفع صورة رخصة القيادة",
-      "fileTypes": "JPG أو PNG",
+      "fileTypes": "JPG أو JPEG أو PNG، حتى 15 ميجابايت",
       "submit": "إرسال"
     },
     "verifyPhone": {
@@ -582,8 +582,8 @@
       "resendLimited": "لا يمكن إعادة إرسال الرمز الآن. انتظر قليلاً ثم حاول مرة أخرى.",
       "licenseRequired": "اختر صورة لرخصة القيادة.",
       "licenseRejected": "تعذر رفع رخصة القيادة. حاول باستخدام صورة أخرى.",
-      "licenseTooLarge": "??? ??? ?????? ??? ???? ???? ??????? 5 ????????.",
-      "licenseInvalidType": "???? ???? JPG ?? PNG.",
+      "licenseTooLarge": "يجب ألا يزيد حجم صورة رخصة القيادة عن 15 ميجابايت.",
+      "licenseInvalidType": "اختر صورة JPG أو JPEG أو PNG.",
       "deleteRejected": "لا يمكن حذف الحساب لوجود حجوزات نشطة.",
       "invalidCode": "رمز التحقق غير صحيح. حاول مرة أخرى.",
       "nameRequired": "الاسم الكامل مطلوب.",

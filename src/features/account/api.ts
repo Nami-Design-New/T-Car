@@ -1,5 +1,6 @@
-import type { LicenseUpload, UserProfile } from '@/features/account/model';
-import { accountMock } from './mocks/account';
+import "server-only";
+import type { LicenseUpload, UserProfile } from "./model";
+import { accountMock } from "./api.mock";
 
 export interface AccountApi {
   getProfile(accountId: string): Promise<UserProfile>;
@@ -12,6 +13,6 @@ export interface AccountApi {
   deleteAccount(accountId: string): Promise<void>;
 }
 
-// The account endpoints are not available yet, so the stateless mock is the
-// only implementation. Add the HTTP implementation here once they exist.
+// The account mock remains in use until the profile API integration fractions
+// replace each operation with its live implementation.
 export const accountApi: AccountApi = accountMock;

@@ -407,7 +407,7 @@ mock keeps its own OTP code `1234` for the phone change.
 
 - Form validation ([doc 9](09-form-validation.md)), 8 of 8 fractions done, one
   commit each: (1) ✅ auth sign-in and registration; (2) ✅ profile save and
-  change/verify phone; (3) license upload, complete (JPG/PNG, 5 MB); (4) wallet top-up / withdrawal, complete; (5) bank-account add / edit, complete; (6) contact message, complete (RHF + Zod with server re-parse); (7) daily booking and checkout terms / payment, complete; (8) booking
+  change/verify phone; (3) license upload, complete (JPG/JPEG/PNG, 15 MB); (4) wallet top-up / withdrawal, complete; (5) bank-account add / edit, complete; (6) contact message, complete (RHF + Zod with server re-parse); (7) daily booking and checkout terms / payment, complete; (8) booking
   review, extend, and edit, complete. Join-us stays blocked until it has a write contract.
 - Form validation fraction 1 (auth):
   Registration shows localized messages for names shorter than 2 characters or longer than 100 characters.
@@ -472,9 +472,14 @@ mock keeps its own OTP code `1234` for the phone change.
   `.login_form p` now styles only direct children, so `PhoneField`'s error
   keeps its style in both phone forms. Left: an unused `.auth_btn` rule remains
   in `styles/legacy/_components.scss` for the legacy cleanup.
+- Profile API fraction P1 (2026-10-28): `AccountApi` and its stateless mock now
+  live in `features/account/{api.ts,api.mock.ts}`; account actions and queries
+  import the feature-owned API. The mock stays active until each live profile
+  endpoint is integrated. License validation accepts declared JPG/JPEG/PNG files
+  up to 15 MiB; the picker and both locale messages state the same rule.
 - Form validation fraction 3 (license upload): the dialog now uses RHF +
-  Zod with a single selected-file schema. It accepts declared JPG/PNG files
-  up to 5 MB and keeps a failed submission open with the file and a localized
+  Zod with a single selected-file schema. It accepts declared JPG/JPEG/PNG files
+  up to 15 MB and keeps a failed submission open with the file and a localized
   inline error. The Server Action parses the same schema from FormData before
   calling the mock service, which rechecks declared type and size; actual image
   inspection, scanning, and retention remain backend contract follow-ups.

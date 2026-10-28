@@ -1,7 +1,7 @@
 "use server";
 
 import { auth, signOut } from "@/auth";
-import { accountApi } from "@/services/account.api";
+import { accountApi } from "./api";
 import { AppError } from "@/shared/lib/errors";
 import { reportError } from "@/shared/lib/report";
 import {
