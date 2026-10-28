@@ -1,7 +1,8 @@
 /** Country metadata used by phone entry fields. */
 export interface PhoneCountry {
   id: string;
-  iso2: string;
+  /** Not provided by the countries API. */
+  iso2?: string;
   name: string;
   countryCode: string;
   flagUrl: string;
@@ -38,10 +39,15 @@ export function parsePhoneFieldValue(
   value: string,
   defaultCountryCode = "+966",
   countryCodes: readonly string[] = [
+    // Must cover every phone_code from GET /countries until the forms keep
+    // the calling code separate (auth fraction A4, account later).
+    "+966",
     "+971",
     "+973",
-    "+966",
     "+965",
+    "+968",
+    "+974",
+    "+962",
     "+961",
     "+20",
   ],

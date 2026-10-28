@@ -13,6 +13,7 @@ import {
 import { Dialog } from "@/shared/ui/Dialog";
 import { FormInput } from "../Form";
 import { Button } from "../Button";
+import { regionOf } from "@/shared/lib/geocode";
 import type { LocationData } from "@/shared/lib/location";
 
 export interface MapLocationModalProps {
@@ -46,6 +47,9 @@ export default function MapLocationModal({
   const t = useTranslations("rentalSearch.map");
   const [position, setPosition] = useState(defaultCenter);
   const [address, setAddress] = useState("");
+  const [region, setRegion] = useState<string | undefined>(
+    initialLocation?.region,
+  );
   const [search, setSearch] = useState("");
   const [predictions, setPredictions] = useState<
     google.maps.places.AutocompletePrediction[] | null
@@ -104,6 +108,7 @@ export default function MapLocationModal({
     geocoder.geocode({ location: { lat, lng } }, (results, status) => {
       if (status === "OK" && results?.[0]) {
         setAddress(results[0].formatted_address);
+        setRegion(regionOf(results[0]));
       }
     });
   }, []);
@@ -192,6 +197,7 @@ export default function MapLocationModal({
         // بيحرك الخريطة فورًا (الـ useEffect فوق بيمسك أي تغيير في position)
         setPosition({ lat, lng });
         setAddress(results[0].formatted_address || description || "");
+        setRegion(regionOf(results[0]));
         setPredictions(null);
         setSearch("");
       }
@@ -218,7 +224,7 @@ export default function MapLocationModal({
           {search && (
             <button
               type="button"
-              className="clear_search absolute end-7 flex cursor-pointer items-center border-0 bg-transparent text-base text-text-placeholder hover:text-text-primary"
+              className="clear_search text-text-placeholder hover:text-text-primary absolute end-7 flex cursor-pointer items-center border-0 bg-transparent text-base"
               onClick={() => {
                 setSearch("");
                 setPredictions(null);
@@ -229,20 +235,20 @@ export default function MapLocationModal({
           )}
 
           {predictions && predictions.length > 0 && (
-            <ul className="predictions_list absolute inset-x-0 top-[calc(100%+6px)] z-20 m-0 max-h-[260px] list-none overflow-y-auto rounded-md border border-stroke-light bg-surface-elevated p-2 shadow-[0_8px_24px_rgba(30,30,30,0.1)]">
+            <ul className="predictions_list border-stroke-light bg-surface-elevated absolute inset-x-0 top-[calc(100%+6px)] z-20 m-0 max-h-[260px] list-none overflow-y-auto rounded-md border p-2 shadow-[0_8px_24px_rgba(30,30,30,0.1)]">
               {predictions.map((p) => (
                 <li
                   key={p.place_id}
-                  className="flex cursor-pointer items-center gap-3 rounded-[10px] px-3 py-2.5 transition duration-150 hover:bg-surface-card-primary"
+                  className="hover:bg-surface-card-primary flex cursor-pointer items-center gap-3 rounded-[10px] px-3 py-2.5 transition duration-150"
                   onClick={() => selectPrediction(p.place_id, p.description)}
                 >
-                  <FiMapPin className="shrink-0 text-action-primary" />
+                  <FiMapPin className="text-action-primary shrink-0" />
                   <div className="flex min-w-0 flex-col overflow-hidden">
-                    <span className="main_text overflow-hidden text-ellipsis whitespace-nowrap text-sm font-semibold text-text-primary">
+                    <span className="main_text text-text-primary overflow-hidden text-sm font-semibold text-ellipsis whitespace-nowrap">
                       {p.structured_formatting?.main_text || p.description}
                     </span>
                     {p.structured_formatting?.secondary_text && (
-                      <span className="secondary_text text-xs text-text-subtle">
+                      <span className="secondary_text text-text-subtle text-xs">
                         {p.structured_formatting.secondary_text}
                       </span>
                     )}
@@ -253,7 +259,7 @@ export default function MapLocationModal({
           )}
         </div>
 
-        <div className="map_placeholder flex h-[420px] flex-col items-center justify-center gap-4 rounded-xl border-2 border-dashed border-stroke-heavy bg-surface-on-background max-md:h-[300px]">
+        <div className="map_placeholder border-stroke-heavy bg-surface-on-background flex h-[420px] flex-col items-center justify-center gap-4 rounded-xl border-2 border-dashed max-md:h-[300px]">
           {isLoaded ? (
             <GoogleMap
               mapContainerStyle={containerStyle}
@@ -269,22 +275,24 @@ export default function MapLocationModal({
             </GoogleMap>
           ) : (
             <>
-              <FiMapPin className="text-[70px] text-action-primary" />
-              <span className="font-semibold text-text-subtle">{t("loading")}</span>
+              <FiMapPin className="text-action-primary text-[70px]" />
+              <span className="text-text-subtle font-semibold">
+                {t("loading")}
+              </span>
             </>
           )}
         </div>
 
-        {address && <p className="selected_address">{address}</p>}
+        {address && <p className="mt-3">{address}</p>}
         {locationError && (
-          <p className="location_error mt-2 mb-0 text-[13px] text-status-error">
+          <p className="text-status-error mt-2 mb-0 text-[13px]">
             {locationError}
           </p>
         )}
       </Dialog.Body>
 
       <Dialog.Footer>
-        <div className="location_actions mt-6 flex items-center justify-between gap-4">
+        <div className="mt-6 flex items-center justify-between gap-4">
           <Button
             type="button"
             variant="outline"
@@ -304,6 +312,7 @@ export default function MapLocationModal({
                 lat: position.lat,
                 lng: position.lng,
                 address,
+                region,
               })
             }
           >

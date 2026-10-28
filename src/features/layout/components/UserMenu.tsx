@@ -22,15 +22,15 @@ export default function UserMenu({ avatarUrl, onLogout }: Props) {
   const [open, setOpen] = useState(false);
 
   return (
-    <div className=" relative min-w-0">
+    <div className="relative min-w-0">
       <Menu.Root open={open} onOpenChange={setOpen}>
         <Menu.Trigger asChild>
           <button
             type="button"
-            className=" flex h-11 cursor-pointer items-center gap-2 rounded-md border border-stroke-light bg-surface-background px-2.5 pe-3.5 transition hover:border-action-primary"
+            className="border-stroke-light bg-surface-background hover:border-action-primary flex h-11 cursor-pointer items-center gap-2 rounded-md border px-2.5 pe-3.5 transition"
             aria-label={t("account")}
           >
-            <span className=" relative grid size-8.5 shrink-0 place-items-center overflow-hidden rounded-full bg-surface-card-primary text-[22px] text-action-primary">
+            <span className="bg-surface-card-primary text-action-primary relative grid size-8.5 shrink-0 place-items-center overflow-hidden rounded-full text-[22px]">
               {avatarUrl ? (
                 <Image src={avatarUrl} alt="" fill sizes="32px" />
               ) : (
@@ -41,14 +41,14 @@ export default function UserMenu({ avatarUrl, onLogout }: Props) {
             <FiChevronDown
               aria-hidden="true"
               className={cn(
-                "user-menu-chevron shrink-0 text-sm text-text-subtle transition duration-300",
+                "user-menu-chevron text-text-subtle shrink-0 text-sm transition duration-300",
                 open && "open rotate-180",
               )}
             />
           </button>
         </Menu.Trigger>
 
-        <Menu.Content className=" w-50">
+        <Menu.Content className="w-50">
           <Menu.Item asChild>
             <Link href="/account/profile">
               <Image

@@ -6,30 +6,42 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
 import { Button } from "@/shared/ui/Button";
 import { PhoneField } from "@/shared/ui/PhoneField";
-import { phoneCountriesApi } from "@/services/phoneCountries.api";
-import {
-  formatPhoneFieldValue,
-  parsePhoneFieldValue,
-} from "@/shared/lib/phone";
+import { loadPhoneCountries } from "@/features/phone-countries";
+import type { PhoneFieldValue } from "@/shared/lib/phone";
 import {
   useErrorMessage,
   useFieldErrorMessage,
 } from "@/shared/hooks/useErrorMessage";
 import type { AppError } from "@/shared/lib/errors";
 import { applyFieldErrors } from "@/shared/lib/validation";
-import { phoneSchema, type PhoneFormValues } from "../validation";
+import {
+  phoneSchema,
+  type PhoneFormInput,
+  type PhoneFormValues,
+} from "../validation";
 import { IMAGES } from "@/shared/config/assets";
 const logo = IMAGES.brandMark;
 import { ICONS } from "@/shared/config/assets";
 const whatsappIcon = ICONS.whatsapp;
 
 type Props = {
-  /** Sends the code to this phone; resolves with the error when that fails. */
-  onNext: (phone: string) => Promise<AppError | undefined>;
+  /**
+   * Sends the code to this phone (calling code and normalized national number);
+   * resolves with the error when that fails.
+   */
+  onNext: (phone: PhoneFieldValue) => Promise<AppError | undefined>;
+  /** The number to start from, e.g. after going back from the code step. */
+  defaultPhone?: PhoneFieldValue;
   loading?: boolean;
 };
 
-export default function LoginForm({ onNext, loading = false }: Props) {
+const EMPTY_PHONE: PhoneFieldValue = { countryCode: "+966", phone: "" };
+
+export default function LoginForm({
+  onNext,
+  defaultPhone = EMPTY_PHONE,
+  loading = false,
+}: Props) {
   const t = useTranslations();
   const errorMessage = useErrorMessage();
   const fieldError = useFieldErrorMessage();
@@ -39,11 +51,11 @@ export default function LoginForm({ onNext, loading = false }: Props) {
     handleSubmit,
     setError,
     formState: { errors },
-  } = useForm<PhoneFormValues>({
+  } = useForm<PhoneFormInput, unknown, PhoneFormValues>({
     resolver: zodResolver(phoneSchema),
     mode: "onBlur",
     reValidateMode: "onChange",
-    defaultValues: { phone: "+966" },
+    defaultValues: { phone: defaultPhone },
   });
 
   const onSubmit = handleSubmit(async ({ phone }) => {
@@ -84,9 +96,9 @@ export default function LoginForm({ onNext, loading = false }: Props) {
           render={({ field }) => (
             <PhoneField
               label={t("auth.login.phoneLabel")}
-              value={parsePhoneFieldValue(field.value)}
-              onChange={(phone) => field.onChange(formatPhoneFieldValue(phone))}
-              loadCountries={phoneCountriesApi.listCountries}
+              value={field.value}
+              onChange={field.onChange}
+              loadCountries={loadPhoneCountries}
               onBlur={field.onBlur}
               searchPlaceholder={t("auth.login.countrySearchPlaceholder")}
               inputAriaLabel={t("auth.login.phoneLabel")}

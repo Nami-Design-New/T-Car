@@ -27,6 +27,7 @@
     },
     "location": {
       "choose": "Choose your location",
+      "locationIconAlt": "Location",
       "default": "Riyadh, Al Hurriya Street"
     }
   },
@@ -109,6 +110,9 @@
     }
   },
   "auth": {
+    "location": {
+      "title": "Set your location"
+    },
     "login": {
       "logoAlt": "T-Car",
       "title": "Welcome back",
@@ -126,7 +130,8 @@
       "backLabel": "Back to mobile number",
       "codeLabel": "Verification code",
       "digitLabel": "Digit {position} of {total}",
-      "resendIn": "Resend in {seconds} seconds",
+      "resendIn": "Resend the code in",
+      "editNumber": "Edit number",
       "resend": "Resend code",
       "verify": "Verify and continue"
     },
@@ -139,7 +144,7 @@
       "emailLabel": "Email address",
       "emailPlaceholder": "name@domain.com",
       "birthDateLabel": "Date of birth",
-      "agreeToTerms": "I agree to the terms and conditions",
+      "consent": "By continuing, you agree to the app's <terms>Terms and Conditions</terms> and <privacy>Privacy Policy</privacy>.",
       "submit": "Create account"
     }
   },
@@ -592,14 +597,18 @@
     },
     "auth": {
       "invalidPhone": "Enter a valid phone number.",
+      "phoneTooShort": "Phone number must be at least 8 digits, excluding the country code and leading zeros.",
+      "phoneTooLong": "Phone number must be no more than 15 digits, excluding the country code and leading zeros.",
       "invalidCode": "The verification code is incorrect. Try again.",
       "nameRequired": "Full name is required.",
-      "registrationRequired": "This number has no account yet. Finish creating your account.",
+      "nameTooShort": "Full name must be at least 2 characters.",
+      "nameTooLong": "Full name must be no more than 100 characters.",
       "emailRequired": "Email address is required.",
       "invalidEmail": "Enter a valid email address.",
       "birthDateRequired": "Date of birth is required.",
       "invalidBirthDate": "Enter a valid date of birth that is not in the future.",
-      "termsRequired": "Accept the terms and conditions to continue."
+      "underAge": "You must be at least 18 years old.",
+      "invalidLocation": "Choose a valid location on the map."
     }
   },
   "legalContent": {
@@ -652,7 +661,11 @@
     "title": "Available cities",
     "subtitle": "Choose your city and start your journey with us"
   },
-  "common": { "selectPlaceholder": "Choose..." },
+  "common": {
+    "selectPlaceholder": "Choose...",
+    "notifications": "Notifications",
+    "success": "Done successfully."
+  },
   "dateTimePicker": {
     "previousMonth": "Previous month",
     "nextMonth": "Next month",

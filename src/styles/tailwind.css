@@ -270,15 +270,35 @@
     }
   }
 
+  @keyframes dialog-fade-out {
+    to {
+      opacity: 0;
+    }
+  }
+
+  /* Scale only: the centering offset lives in the `translate` property. */
   @keyframes dialog-pop-in {
     from {
       opacity: 0;
-      transform: translate(-50%, -50%) scale(0.95);
+      transform: scale(0.95);
+    }
+  }
+
+  @keyframes dialog-pop-out {
+    to {
+      opacity: 0;
+      transform: scale(0.95);
     }
   }
 
   @keyframes dialog-sheet-in {
     from {
+      transform: translateY(100%);
+    }
+  }
+
+  @keyframes dialog-sheet-out {
+    to {
       transform: translateY(100%);
     }
   }

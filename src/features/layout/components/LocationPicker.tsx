@@ -1,9 +1,14 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { FiChevronDown, FiMapPin } from "react-icons/fi";
+import {
+  readGuestLocation,
+  saveGuestLocationRecord,
+  subscribeGuestLocation,
+} from "@/shared/lib/guest-location";
 import type { LocationData } from "@/shared/lib/location";
 import { ICONS } from "@/shared/config/assets";
 import Image from "next/image";
@@ -17,14 +22,40 @@ const MapLocationModal = dynamic(
   { ssr: false },
 );
 
-export default function LocationPicker() {
+/** The stored guest location as the map takes it; the address may still be pending. */
+function readGuestLocationData(): LocationData | null {
+  const stored = readGuestLocation();
+  return stored && { ...stored, address: stored.address ?? "" };
+}
+
+interface Props {
+  /** No session: show the guest's stored location, and store what they pick. */
+  guest?: boolean;
+}
+
+export default function LocationPicker({ guest = false }: Props) {
   const t = useTranslations("layout.location");
   const [open, setOpen] = useState(false);
   const [location, setLocation] = useState<LocationData | null>(null);
 
+  // localStorage is read after hydration, so the server and first render agree.
+  useEffect(() => {
+    if (!guest) return;
+    const sync = () => setLocation(readGuestLocationData());
+    sync();
+    return subscribeGuestLocation(sync);
+  }, [guest]);
+
   const handleConfirm = (nextLocation: LocationData) => {
     setLocation(nextLocation);
     setOpen(false);
+    if (guest) {
+      saveGuestLocationRecord({
+        status: "granted",
+        ...nextLocation,
+        savedAt: new Date().toISOString(),
+      });
+    }
   };
 
   return (

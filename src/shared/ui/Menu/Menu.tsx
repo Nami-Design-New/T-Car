@@ -52,8 +52,8 @@ function Item({
       className={cn(
         menuItemClasses,
         tone === "danger"
-          ? "menu__item--danger text-status-error data-[highlighted]:bg-status-error-background data-[highlighted]:text-status-error"
-          : "text-text-primary data-[highlighted]:bg-surface-card-primary data-[highlighted]:text-text-primary",
+          ? "text-status-error data-highlighted:bg-status-error-background data-highlighted:text-status-error cursor-pointer"
+          : "text-text-primary data-highlighted:bg-surface-card-primary data-highlighted:text-text-primary",
         className,
       )}
       {...props}

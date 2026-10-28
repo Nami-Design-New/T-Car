@@ -43,7 +43,10 @@ Ask the user before: any `git commit` (and which branch it goes on); deleting `B
 - **Model**: `model.ts` holds types and pure rules (no React, no I/O).
   `services/` may import `features/*/model` and `shared/{lib,config}`.
 - **Data access**: `services/<x>.api.ts` exports an interface plus, for now,
-  the mock from `services/mocks/<x>.ts`. A mock that runs on the server stays
+  the mock from `services/mocks/<x>.ts`. When a feature is integrated with the
+  API, both move into it (`features/<x>/api.ts`, `features/<x>/api.mock.ts`,
+  mock for tests only, no mock flag); only `services/http/` stays shared
+  (doc 1 §1.5 item 9). A mock that runs on the server stays
   read-only or stateless (module state would be shared between users); each
   mock includes one reproducible failure rule, documented in the file.
 - **Errors**: reads throw `AppError` (`shared/lib/errors.ts`); queries return
@@ -52,10 +55,16 @@ Ask the user before: any `git commit` (and which branch it goes on); deleting `B
   client calls `fromActionResult` (an `AppError` instance cannot cross the
   boundary). User-facing error text comes from `errors.*` in both
   `messages/ar.json` and `messages/en.json`, shown with `useErrorMessage()`.
+  Exception for the integrated API: backend success and validation (422)
+  messages are toasted as they are with `useNotify()` (sonner, doc 3 §6).
   A failed submit keeps the dialog open with the input and the error.
-- **Auth**: NextAuth v5 in `src/auth.ts`; the backend token is read only by
-  `services/http/server.ts`. `AUTH_SECRET` is in `.env.local`.
-  Mock sign-in: code `1234`, `+966500000000` has an account.
+- **Auth**: NextAuth v5 in `src/auth.ts`, on the live API (TEST server); a
+  sign-in sends a real OTP over WhatsApp and a new number creates an account.
+  The backend token is read only on the server: `services/http/session.ts`
+  (`readAccessToken`, for `serverHttp`) and the middleware (sign-out proof).
+  A backend 401 signs the session out (A8). `AUTH_SECRET` is in `.env.local`.
+  The auth mock (`features/auth/api.mock.ts`, tests only) accepts code `1234`;
+  `+966500000000` has an account.
 - **Navigation**: `Link` and `useRouter` come from `@/i18n/navigation`, with
   locale-less paths.
 - **Props**: `interface Props` sits in the component file.

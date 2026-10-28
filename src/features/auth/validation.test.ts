@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { toValidationError } from '@/shared/lib/validation';
-import { otpCodeSchema, phoneSchema, registerFormSchema, registrationSchema, verifyOtpSchema } from './validation';
+import { locationSchema, otpCodeSchema, phoneSchema, registerFormSchema, verifyOtpSchema } from './validation';
 
 describe('registration full-name rules', () => {
   it('accepts a trimmed non-Latin full name', () => {
@@ -8,15 +8,14 @@ describe('registration full-name rules', () => {
       registerFormSchema.parse({
         fullName: ' أحمد عبدالله ',
         email: 'ahmed@domain.com',
-        birthDate: '1990-05-17',
-        acceptTerms: true
+        birthDate: '1990-05-17'
       }).fullName
     ).toBe('أحمد عبدالله');
   });
 
   it.each([
-    ['one character', 'A', 'auth.nameRequired'],
-    ['101 characters', 'A'.repeat(101), 'auth.nameRequired'],
+    ['one character', 'A', 'auth.nameTooShort'],
+    ['101 characters', 'A'.repeat(101), 'auth.nameTooLong'],
     ['digits', 'Ahmed 123', 'auth.nameRequired'],
     ['punctuation', 'Ahmed-Abdullah', 'auth.nameRequired']
   ])('rejects %s', (_, fullName, error) => {
@@ -29,8 +28,7 @@ describe('registration full-name rules', () => {
 const validProfile = {
   fullName: 'Ahmed Abdullah',
   email: 'ahmed@domain.com',
-  birthDate: '1990-05-17',
-  acceptTerms: true
+  birthDate: '1990-05-17'
 };
 
 /** The `errors.*` key per field, as the Server Action would return it. */
@@ -40,37 +38,39 @@ function fieldErrors(result: { success: boolean; error?: Parameters<typeof toVal
 }
 
 describe('phoneSchema', () => {
-  it.each(['966500000000', '+966500000000', '+966 50 000 0000', ' +1 (415) 555-0100 '])('accepts %s', (phone) => {
-    expect(phoneSchema.safeParse({ phone }).success).toBe(true);
+  const login = (countryCode: string, phone: string) => ({ phone: { countryCode, phone } });
+
+  it.each(['500000000', '0544444442', '50 000 0000', '500-000-000'])('accepts %s', (phone) => {
+    expect(phoneSchema.safeParse(login('+966', phone)).success).toBe(true);
   });
 
-  it('trims the phone and keeps its format otherwise', () => {
-    expect(phoneSchema.parse({ phone: ' +966 500000000 ' })).toEqual({
-      phone: '+966 500000000'
+  it('normalizes the national number: digits only, without the trunk 0', () => {
+    expect(phoneSchema.parse(login(' +966 ', ' 0544 444-442 '))).toEqual(login('+966', '544444442'));
+  });
+
+  it('accepts 8 and 15 national digits, the backend bounds', () => {
+    expect(phoneSchema.safeParse(login('+20', '12345678')).success).toBe(true);
+    expect(phoneSchema.safeParse(login('+20', '123456789012345')).success).toBe(true);
+  });
+
+  it.each([
+    ['letters', login('+966', '50000000a')],
+    ['an empty number', login('+966', '')],
+    ['a calling code without +', login('966', '500000000')],
+    ['an empty calling code', login('', '500000000')],
+    ['a string instead of the value', { phone: '+966500000000' }],
+  ])('rejects %s on the phone field', (_, input) => {
+    expect(fieldErrors(phoneSchema.safeParse(input))).toEqual({
+      phone: 'auth.invalidPhone'
     });
   });
 
   it.each([
-    ['only the country code', '+966'],
-    ['7 digits', '9665000'],
-    ['16 digits', '+9665000000000000'],
-    ['letters', '+96650000000a'],
-    ['empty', '']
-  ])('rejects %s', (_, phone) => {
-    expect(fieldErrors(phoneSchema.safeParse({ phone }))).toEqual({
-      phone: 'auth.invalidPhone'
-    });
-  });
-
-  it('accepts 8 and 15 digits, the bounds', () => {
-    expect(phoneSchema.safeParse({ phone: '12345678' }).success).toBe(true);
-    expect(phoneSchema.safeParse({ phone: '966500000000000' }).success).toBe(true);
-  });
-
-  it('rejects a value that is not a string with the same key', () => {
-    expect(fieldErrors(phoneSchema.safeParse({ phone: 966500000000 }))).toEqual({
-      phone: 'auth.invalidPhone'
-    });
+    ['5000000', 'auth.phoneTooShort'],
+    ['05000000', 'auth.phoneTooShort'],
+    ['5000000000000000', 'auth.phoneTooLong'],
+  ])('reports the length problem for %s', (phone, message) => {
+    expect(fieldErrors(phoneSchema.safeParse(login('+966', phone)))).toEqual({ phone: message });
   });
 });
 
@@ -86,9 +86,17 @@ describe('otpCodeSchema', () => {
   });
 
   it('checks the phone too when verifying', () => {
-    expect(fieldErrors(verifyOtpSchema.safeParse({ phone: '+966', code: '1234' }))).toEqual({
-      phone: 'auth.invalidPhone'
+    expect(
+      fieldErrors(verifyOtpSchema.safeParse({ phone: { countryCode: '+966', phone: '12' }, code: '1234' }))
+    ).toEqual({
+      phone: 'auth.phoneTooShort'
     });
+  });
+
+  it('verifies the same normalized number the code was sent to', () => {
+    expect(
+      verifyOtpSchema.parse({ phone: { countryCode: '+966', phone: '0544 444 442' }, code: '1234' })
+    ).toEqual({ phone: { countryCode: '+966', phone: '544444442' }, code: '1234' });
   });
 });
 
@@ -113,15 +121,13 @@ describe('registerFormSchema', () => {
         registerFormSchema.safeParse({
           fullName: '   ',
           email: '',
-          birthDate: '',
-          acceptTerms: false
+          birthDate: ''
         })
       )
     ).toEqual({
       fullName: 'auth.nameRequired',
       email: 'auth.emailRequired',
-      birthDate: 'auth.birthDateRequired',
-      acceptTerms: 'auth.termsRequired'
+      birthDate: 'auth.birthDateRequired'
     });
   });
 
@@ -145,19 +151,48 @@ describe('registerFormSchema', () => {
     });
   });
 
-  it('accepts today as a birth date (no minimum age is decided yet)', () => {
+  it('needs the backend minimum age of 18, counted to the day', () => {
     vi.useFakeTimers({
       now: new Date('2026-10-18T12:00:00Z'),
       toFake: ['Date']
     });
-    expect(registerFormSchema.safeParse({ ...validProfile, birthDate: '2026-10-18' }).success).toBe(true);
+    expect(registerFormSchema.safeParse({ ...validProfile, birthDate: '2008-10-18' }).success).toBe(true);
+    expect(fieldErrors(registerFormSchema.safeParse({ ...validProfile, birthDate: '2008-10-19' }))).toEqual({
+      birthDate: 'auth.underAge'
+    });
+    expect(fieldErrors(registerFormSchema.safeParse({ ...validProfile, birthDate: '2026-10-18' }))).toEqual({
+      birthDate: 'auth.underAge'
+    });
   });
 
-  it('needs the phone and code as well on the server', () => {
-    const errors = fieldErrors(registrationSchema.safeParse(validProfile));
-    expect(errors).toEqual({
-      phone: 'auth.invalidPhone',
-      code: 'auth.invalidCode'
+  it('reports a future date as invalid, not as under age', () => {
+    vi.useFakeTimers({
+      now: new Date('2026-10-18T12:00:00Z'),
+      toFake: ['Date']
     });
+    expect(fieldErrors(registerFormSchema.safeParse({ ...validProfile, birthDate: '2030-01-01' }))).toEqual({
+      birthDate: 'auth.invalidBirthDate'
+    });
+  });
+});
+
+describe('locationSchema', () => {
+  const picked = { lat: 24.7136, lng: 46.6753, address: 'King Fahd Rd', region: 'Riyadh Province' };
+
+  it('maps the picked location to the API shape', () => {
+    expect(locationSchema.parse(picked)).toEqual({
+      latitude: 24.7136,
+      longitude: 46.6753,
+      addressName: 'King Fahd Rd',
+      region: 'Riyadh Province'
+    });
+  });
+
+  it.each([
+    ['a latitude out of range', { ...picked, lat: 91 }, 'lat'],
+    ['a longitude out of range', { ...picked, lng: -181 }, 'lng'],
+    ['an empty address', { ...picked, address: ' ' }, 'address']
+  ])('rejects %s', (_, input, field) => {
+    expect(fieldErrors(locationSchema.safeParse(input))).toEqual({ [field]: 'auth.invalidLocation' });
   });
 });

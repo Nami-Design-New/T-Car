@@ -1,5 +1,5 @@
 import type { PhoneCountry } from "@/shared/lib/phone";
-import type { PhoneCountriesApi } from "../phoneCountries.api";
+import type { PhoneCountriesApi } from "./api";
 import { AppError } from "@/shared/lib/errors";
 
 const MOCK_COUNTRIES: PhoneCountry[] = [
@@ -40,7 +40,7 @@ const MOCK_COUNTRIES: PhoneCountry[] = [
   },
 ];
 
-// Stateless and safe for server reads. For a reproducible error state, search
+// Test-only (the app uses the API). Stateless and safe for server reads. For a reproducible error state, search
 // for the exact term "__mock_error__"; it throws a server AppError.
 export const phoneCountriesMock: PhoneCountriesApi = {
   async listCountries({ search, cursor = null, limit, signal }) {
@@ -60,7 +60,7 @@ export const phoneCountriesMock: PhoneCountriesApi = {
     const normalizedSearch = search.trim().toLocaleLowerCase();
     const filteredCountries = MOCK_COUNTRIES.filter((country) =>
       [country.name, country.iso2, country.countryCode].some((field) =>
-        field.toLocaleLowerCase().includes(normalizedSearch),
+        (field ?? "").toLocaleLowerCase().includes(normalizedSearch),
       ),
     );
     const pageSize = Math.max(1, Math.floor(limit));

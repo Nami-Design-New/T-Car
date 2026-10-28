@@ -3,7 +3,7 @@
 Status: **in progress** on branch `refactor/architecture-layers` (not merged). See
 [Migration status](#migration-status) for what is done and where the code
 deliberately differs from these documents.
-Last reviewed against the code: 2026-10-25. Status updated: 2026-10-25.
+Last reviewed against the code: 2026-10-25. Status updated: 2026-10-27.
 
 This folder reviews the current front end and sets out the target design and the
 migration path for the architecture areas. Each document stands on its own: it covers the
@@ -247,6 +247,144 @@ client-safe phone/country value and pagination contracts plus a stateless,
 searchable, cursor-paginated country service mock. The real country endpoint
 remains a separate integration after its backend contract is approved.
 
+**Auth API integration (branch `feature/auth-api`), fraction A0 (2026-10-27):**
+Added `sonner` with one `<Toaster />` (`shared/ui/Toaster`) in the locale
+layout, bottom on the inline-end side and above the mobile navigation, and the
+`useNotify()` hook for backend success and validation messages, with
+`common.success` / `errors.validation` fallbacks (doc 3 §6). No caller uses it
+yet; the envelope-aware HTTP client is next (A1).
+
+**Auth API integration, fraction A1 (2026-10-27):** `services/http/client.ts`
+reads the backend envelope (`services/http/envelope.ts`): HTTP 401 and 5xx
+decide by status, everything else by the body `code` (validation is HTTP 200
+with `code: 422`). `AppError.serverMessage` and the `Result` /
+`ActionResult` success `message` carry the backend text to the client for
+toasts, and both HTTP clients send `Accept-Language` (doc 3 §6). Every
+service is still on its mock; countries are next (A2).
+
+**Auth API integration, fraction A2 (2026-10-27):** Phone countries are their
+own feature, `features/phone-countries` (first feature to own its data access,
+doc 1 §1.5 item 9): `api.ts` calls the public `GET /countries` from the
+browser and maps it to `PhoneCountry`; `api.mock.ts` (moved from
+`services/mocks`) is used by tests only. `LoginForm`, `EditPhoneModal`, and
+`JoinUsForm` use `loadPhoneCountries`. The backend searches titles only, so a
+calling-code search (how `PhoneField` finds the selected flag) is filtered
+locally. `parsePhoneFieldValue` now knows all 9 API calling codes. A missing
+flag uses `IMAGES.flagPlaceholder`.
+
+**Auth API integration, fraction A3 (2026-10-27):** Auth data access moved
+into the feature with no behavior change: `services/auth.api.ts` →
+`features/auth/api.ts` and `services/mocks/auth.ts` →
+`features/auth/api.mock.ts` (doc 1 §1.5 item 9). The app still signs in
+through the mock until A4–A7 wire the endpoints. The account mock keeps its
+own copy of the fixed OTP code, since `services` may not import a feature's
+mock.
+
+**Auth API integration, fraction A4 (2026-10-27):** OTP request and resend are
+live (`POST /auth/request-otp`, `otp_type: login`) through
+`publicServerHttp`, a server client without the session token.
+`features/auth/api.ts` is `server-only`; verification and registration still
+run on the mock (A5, A6). The login form keeps the calling code and the
+national number apart (`PhoneFieldValue`); the schema normalizes the number
+to digits without the trunk `0` and checks the backend's 8–15 digits.
+`AuthModal` toasts the backend's success and validation messages and keeps
+the form's input. The two stale `LoginForm` tests are updated to the
+separated value and pass.
+
+**Auth API integration, fraction A5 (2026-10-27):** OTP verification is live
+(`POST /auth/verify-otp`). The backend creates the account and issues the
+token at verification, so every verified number is signed in; the JWT holds
+the token and `onboardingStep` (`register` / `location` / `completed`, with
+`current_step: null` read from the name), and the browser session exposes
+the step but never the token. `OtpSignInError` carries the whole `AppError`,
+so a wrong code is toasted with the backend's message. The dialog flow moved
+to `useAuthFlow` (one state per step); `AuthModal` only renders. Open until
+A6: registration still signs in through the mock, and `register` sessions are
+not yet kept out of the account pages; `location` counts as signed in until
+the product decides (Auth-API.md Q2).
+Also in A5: going back from the code (or "Edit number") returns to the
+phone step with the number and country kept. The register form submits
+again: its terms checkbox had been replaced by a consent sentence while the
+schema still required `acceptTerms`; consent is now implied by continuing
+(product decision) and the sentence is translated with its links. Message
+fixes: `auth.otp.resendIn` had a `{seconds}` placeholder the form never
+passed (English formatting error), `layout.location.locationIconAlt` was
+missing, and the back buttons get their `backLabel` names. Vitest now
+processes `next-intl`, so the `OtpForm` and `RegisterForm` tests load
+again, and `messages.test.tsx` renders the three auth forms in both locales
+and fails on any missing or broken message.
+
+**Auth API integration, fraction A6 (2026-10-27):** Profile completion is live
+(`POST /complete-profile` with the session's token through `serverHttp`);
+every auth call now uses the API and `features/auth/api.mock.ts` is for tests
+only. `completeProfileAction` replaces the mock registration and then updates
+the session (name, email, step) with `updateSessionProfile()`, an
+`unstable_update` that only the server can apply: browser updates through
+`POST /api/auth/session` lack a per-process marker and are ignored. The form
+also requires the backend's minimum age of 18 (`errors.auth.underAge`). A
+session still on `register` is not signed in for the UI: the layout passes
+`profilePending`, the header's button opens the dialog on the profile, and
+the middleware sends `/account/*` to `?auth=register&next=…`.
+The location step is live too (product decision, Auth-API.md Q2): after the
+profile is saved the auth dialog closes and a separate success dialog shows;
+closing it opens `MapLocationModal` ("Set your location"); confirming calls
+`assignLocationAction` (`POST /assign-location`, region from the geocoder's
+first-level area, or the address when it has none) and finishes sign-in.
+Signing in with `location` left opens the map directly; closing the map skips
+the step and keeps the session signed in. `LocationData` gains an optional
+`region`, filled by `MapLocationModal`.
+
+**Auth API integration, fraction A7 (2026-10-27):** Logout calls
+`POST /logout` with the session token before clearing the NextAuth session.
+A revoked token (401) is treated as success. Other backend failures are
+reported and shown to the user while local sign-out still proceeds; successful
+backend messages are toasted. Live token-revocation verification remains
+pending: the TEST server's TLS handshake failed during the probe. Dead-token
+handling elsewhere remains A8.
+
+**Auth API integration, fraction A8 (2026-10-27):** A backend 401 now ends the
+session everywhere (tokens do not expire and are revoked on logout and account
+deletion, Auth-API.md Q4/Q5). In a Server Action, `serverHttp` clears the
+session cookie (and its chunks) before returning `unauthorized`, and the page
+re-renders signed out. Protected reads (profile, points, notifications,
+bookings, booking details) go through `protectedRead`
+(`services/http/session.ts`): `unauthorized` redirects to
+`?auth=expired&proof=…&next=…`, where the middleware clears the cookie and
+opens the sign-in dialog, which returns to `next`. The proof (an HMAC of the
+session's backend token with `AUTH_SECRET`) locks the link to that session: a
+crafted link loses its parameters and signs nobody out. The middleware sets
+`next` in the `x-tcar-next` request header. Account reads are still mocks, so the live 401
+path was checked with a temporary page that forces one.
+
+**Auth API integration, fraction A11 (2026-10-27):** The session starts after
+the register step, not at verification (product decision; replaces A6's
+session at verification). `verifyOtpAction` calls the API itself: an existing
+customer is signed in through the `grant` provider (`signInWithGrant`, which
+only accepts a grant sealed with `AUTH_SECRET`, `features/auth/sealed-grant.ts`);
+a new number's token waits in the encrypted, httpOnly pending-registration
+cookie (`features/auth/registration.ts`, 30 minutes) and `/complete-profile`
+sends it (`tokenServerHttp`). A saved profile clears the cookie and starts the
+session. Closing the form or going back discards the registration; an expired
+one returns to the phone with `errors.unauthorized`. `profilePending`, the
+`?auth=register` redirect, and the dialog's `initialStep` are gone; a session
+still on `register` from before is ended by the `jwt` callback.
+
+**Guest location (2026-10-27):** A visitor without a session is asked for the
+browser location once per browser (`GuestLocationRequest` in the root layout).
+There is no IP fallback (product decision). On consent the coordinates, then
+the address and region from the Geocoding REST API in the site's language
+(`shared/lib/geocode.ts`, which now also holds `MapLocationModal`'s
+`regionOf`), are kept in localStorage (`shared/lib/guest-location.ts`,
+`readGuestLocation()`). A rejection is stored and not asked again; a timeout
+is asked again next visit, and a failed lookup is retried without a prompt.
+For a guest the header's `LocationPicker` shows the stored address (updated
+when the lookup finishes, `subscribeGuestLocation`) and opens the map there; a
+place the guest picks on the map replaces the stored location.
+`POST /assign-location` needs a token (Auth-API.md §3.5), so nothing is sent
+yet: the endpoints that need the guest's location send it once they exist.
+localStorage is browser only, so a server read cannot use it; the client
+passes it to the Server Action. The Maps key must allow the Geocoding API.
+
 | Feature                            | Moved to `features/` |                  Data behind queries / api                  |                             Actions return `Result`                              | Remaining                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | ---------------------------------- | :------------------: | :---------------------------------------------------------: | :------------------------------------------------------------------------------: | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `wallet`, `bank-accounts`          |         Yes          | Client reads over `*.api.ts`; writes through Server Actions |                                       Yes                                        | Fractions 1–3 complete: wallet and bank-account form, confirmation, and result states use shared dialogs. Left: user-scoped reads/API and forms (doc 3 step 7). Form validation fractions 4–5 add RHF + Zod amount and bank-account rules, re-parsed by the actions                                                                                                                                                                                                                                                                          |
@@ -254,13 +392,16 @@ remains a separate integration after its backend contract is approved.
 | `car-details`, `booking`           |         Yes          |                             Yes                             |                                  Yes (checkout)                                  | Fraction 5 complete: daily booking, confirmation, payment, and booking result dialogs use shared primitives. Left: keep a failed edit request open inside `BookingDailyModal` and migrate remaining booking-flow details                                                                                                                                                                                                                                                                                                                     |
 | `cars`, `cities`                   |         Yes          |                             Yes                             |                                       n/a                                        | Fraction 6 complete: the same `CarFilters` surface serves the hero drawer, `/cars`, and city listings. It preserves the hero's selected URL filters when navigating to `/cars`; `/cars` and each city listing keep independent, URL-backed state on their own routes. City listings use the same office-grouped `CarOfficeRow` swipers as `/cars`. Brand options come from `getCarBrands()` (mocked `carsApi.listBrands()`). Left: consolidate the remaining option data (companies, types, services; doc 4)                                 |
 | `home`, `rental-search`            |         Yes          |                 Yes (FAQs, search options)                  |                        Yes (Server Action: contact form)                         | Fraction 7 complete: pickup type, branch, airport, station, map, and country dialogs use shared `Dialog`. The FAQ is native `<details>`; static home content remains component-local                                                                                                                                                                                                                                                                                                                                                         |
-| `auth`                             |         Yes          |                 NextAuth + mocked `authApi`                 |                               Yes (Server Actions)                               | Auth dialog uses shared `Dialog` and `ResultDialog`; login, OTP, and registration use RHF + Zod (`validation.ts`) with the schemas re-parsed in the actions (doc 9 fraction 1). Real backend endpoints remain a later integration concern                                                                                                                                                                                                                                                                                                    |
+| `auth`                             |         Yes          |                 Live API (NextAuth + `authApi`)              |                               Yes (Server Actions)                               | Live API, A0–A8 and A11 ([Auth-API.md](api/Auth-API.md) §5): OTP request and verification, profile completion, location, and logout call the backend; the session starts after the register step; the mock (`features/auth/api.mock.ts`) is for tests only. The forms use RHF + Zod with server re-parse. A rejected token (401) clears the session and reopens sign-in with `next`. Left: verify logout revocation live (the TEST server's TLS handshake failed); the dead-token redirect on account pages is verified with a forced 401 only, because account reads are still mocks; open backend questions Q1, Q3, Q6, Q7, Q9–Q11 (HTTP status for errors, `current_step: null`, field errors, untranslated keys, OTP limits, countries, phone normalization) and the backend record of terms consent (Q8) |
 | `account` (profile, notifications) |         Yes          |              Yes (scoped to the session user)               | Yes (Server Actions: save, phone change send and verify, license upload, delete) | Routes per section with a shared layout and `AccountNav`; the loyalty points summary is shown in the account layout and `/account/points` owns the points history view. Common success/failure results now use `shared/ui/Dialog`. Profile save and change/verify phone use RHF + Zod (`validation.ts`) with the schemas re-parsed in the actions (doc 9 fraction 2). License upload uses RHF + Zod (doc 9 fraction 3); left: notification mark-all-read is still static, opening the license details is still a TODO, and remaining dialogs |
 | `layout`                           |         Yes          |                             n/a                             |                                       n/a                                        | The header shell and footer render on the server; mobile navigation uses a fixed bottom bar for account, bookings, and More; More opens an accessible modal side drawer with header links and language control; NAV_LINKS marks the current home-page hash with aria-current. The user menu uses `Menu`. Left: trimming the client messages (doc 2 step 7), the language switcher on `Menu`                                                                                                                                                                                                                                                                                                                    |
 
-The `*.api.ts` files are backed by mocks only; no backend endpoint is wired in.
-Mock rules that make failures reproducible (OTP `1234`, top-ups over 10,000,
-extensions over 30 days, and so on) are documented in each `services/mocks/*.ts`.
+Other feature `*.api.ts` files remain backed by mocks; auth and phone countries
+use the live API, and their mocks (`features/<x>/api.mock.ts`) are for tests
+only.
+Mock rules that make failures reproducible (top-ups over 10,000, extensions over
+30 days, and so on) are documented in each `services/mocks/*.ts`; the account
+mock keeps its own OTP code `1234` for the phone change.
 
 ### What remains
 
@@ -269,6 +410,7 @@ extensions over 30 days, and so on) are documented in each `services/mocks/*.ts`
   change/verify phone; (3) license upload, complete (JPG/PNG, 5 MB); (4) wallet top-up / withdrawal, complete; (5) bank-account add / edit, complete; (6) contact message, complete (RHF + Zod with server re-parse); (7) daily booking and checkout terms / payment, complete; (8) booking
   review, extend, and edit, complete. Join-us stays blocked until it has a write contract.
 - Form validation fraction 1 (auth):
+  Registration shows localized messages for names shorter than 2 characters or longer than 100 characters.
   `zod` 4 and `@hookform/resolvers` 5 added; `features/auth/validation.ts` holds
   the phone, OTP, and registration schemas (messages are `errors.auth.*` keys,
   five new in both locales); the login, OTP, and registration forms use React
@@ -468,8 +610,11 @@ Decisions taken during the migration, for review:
    `fromActionResult()` rebuilds it. See [doc 3](03-error-handling.md#34-migration-steps).
 4. **Auth uses NextAuth v5** (`5.0.0-beta.32`, pinned) instead of a hand-built cookie
    session, because the backend does not set an `httpOnly` cookie. See [doc 2](02-server-client-boundary.md#23-auth-across-the-boundary).
-5. **No `USE_MOCKS` flag yet.** Each `services/<domain>.api.ts` exports an interface and,
-   for now, only the mock implementation. The flag comes with the first real endpoint.
+5. **No mock flag.** Each `services/<domain>.api.ts` exports an interface and, until
+   its feature is integrated, only the mock. An integrated feature owns its data
+   access instead (`features/<x>/api.ts`, with `api.mock.ts` for tests only), as
+   `auth` and `phone-countries` do; only `services/http/` stays shared
+   ([doc 1 §1.5](01-architecture-layers.md#15-as-built-notes) item 9).
 6. **Wallet, bank-account, booking, checkout, and contact writes use Server Actions**
    that return `ActionResult`; `fromActionResult()` rebuilds the client-side
    `Result`. Wallet and bank-account reads still use browser-only stateful mocks

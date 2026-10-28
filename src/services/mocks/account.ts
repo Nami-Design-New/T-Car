@@ -5,7 +5,9 @@ import {
 } from "@/features/account/model";
 import { AppError } from "@/shared/lib/errors";
 import type { AccountApi } from "../account.api";
-import { MOCK_OTP_CODE } from "./auth";
+
+/** The phone-change code; the same fixed code as the sign-in mock (features/auth/api.mock.ts). */
+const MOCK_OTP_CODE = "1234";
 
 const MOCK_PROFILE: UserProfile = {
   fullName: "أحمد عبدالله القحطاني",

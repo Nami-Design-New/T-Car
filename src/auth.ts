@@ -1,78 +1,82 @@
-import NextAuth, { CredentialsSignin } from 'next-auth';
+import NextAuth from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
-import { AUTH_ERROR_CODES, type AuthGrant } from '@/features/auth/model';
-import { authApi } from '@/services/auth.api';
-import { toAppError } from '@/shared/lib/errors';
-import { reportError } from '@/shared/lib/report';
-import { SECURE_SESSION_COOKIE, SESSION_COOKIE } from '@/shared/config/session';
+import {
+  toOnboardingStep,
+  type AuthGrant,
+  type AuthUser,
+  type OnboardingStep,
+} from '@/features/auth/model';
+import { sealGrant, unsealGrant } from '@/features/auth/sealed-grant';
+import { SESSION_COOKIE, SESSION_COOKIE_OPTIONS } from '@/shared/config/session';
 
-/** Carries an AppError code to the client as `signIn(...).code`. */
-class OtpSignInError extends CredentialsSignin {
-  constructor(code: string) {
-    super();
-    this.code = code;
-  }
+/** Salt of a grant sealed for sign-in; a grant sealed for anything else is refused. */
+const SIGN_IN_GRANT = 'tcar.sign-in-grant';
+
+/** What a session update may change after profile completion. */
+type ProfileUpdate = Partial<Pick<AuthUser, 'name' | 'email'>> & { onboardingStep?: OnboardingStep };
+
+/**
+ * An update also reaches the `jwt` callback from the browser
+ * (`POST /api/auth/session`). Only updates carrying this per-process value,
+ * which never leaves the server, are applied (see `updateSessionProfile`).
+ */
+const SERVER_UPDATE = crypto.randomUUID();
+
+interface SessionUpdate {
+  serverUpdate?: string;
+  user?: ProfileUpdate;
 }
 
-const text = (value: unknown) => (typeof value === 'string' ? value : '');
-
-export const { handlers, auth, signIn, signOut } = NextAuth({
+export const { handlers, auth, signIn, signOut, unstable_update } = NextAuth({
   // Self-hosted (not Vercel), so trust the Host header of the deployment.
   trustHost: true,
   session: { strategy: 'jwt' },
   cookies: {
     sessionToken: {
       name: SESSION_COOKIE,
-      options: { httpOnly: true, sameSite: 'lax', path: '/', secure: SECURE_SESSION_COOKIE },
+      options: SESSION_COOKIE_OPTIONS,
     },
   },
   providers: [
+    // The Server Actions verify the code (and finish registration) with the
+    // API, then start the session here with the grant they got. The endpoint
+    // is public, so it only takes a grant sealed by `signInWithGrant`.
     Credentials({
-      id: 'otp',
-      name: 'Phone',
-      credentials: {
-        phone: {},
-        code: {},
-        /** 'register' when a new customer finishes registration; sign-in otherwise. */
-        intent: {},
-        fullName: {},
-        email: {},
-        birthDate: {},
-      },
+      id: 'grant',
+      name: 'Verified grant',
+      credentials: { grant: {} },
       async authorize(credentials) {
-        const phone = text(credentials.phone);
-        const code = text(credentials.code);
+        const sealed = typeof credentials.grant === 'string' ? credentials.grant : '';
+        const grant = await unsealGrant(sealed, SIGN_IN_GRANT);
+        // Sessions start once the profile exists (registration finishes first).
+        if (!grant || grant.onboardingStep === 'register') return null;
 
-        let grant: AuthGrant;
-        try {
-          grant =
-            credentials.intent === 'register'
-              ? await authApi.register({
-                  phone,
-                  code,
-                  fullName: text(credentials.fullName),
-                  email: text(credentials.email),
-                  birthDate: text(credentials.birthDate),
-                })
-              : await authApi.verifyOtp(phone, code);
-        } catch (error) {
-          const appError = toAppError(error);
-          // Expected outcomes (wrong code, new customer) are not reported;
-          // reportError already skips validation errors.
-          if (appError.code !== AUTH_ERROR_CODES.registrationRequired) {
-            reportError(appError, { scope: 'auth.signIn' });
-          }
-          throw new OtpSignInError(appError.code ?? appError.kind);
-        }
-
-        return { ...grant.user, accessToken: grant.accessToken };
+        return {
+          ...grant.user,
+          accessToken: grant.accessToken,
+          onboardingStep: grant.onboardingStep,
+        };
       },
     }),
   ],
   callbacks: {
-    jwt({ token, user }) {
+    jwt({ token, user, trigger, session }) {
+      if (trigger === 'update') {
+        const { serverUpdate, user: update } = (session ?? {}) as SessionUpdate;
+        if (serverUpdate !== SERVER_UPDATE || !token.user) return token;
+        if (typeof update?.name === 'string') token.user = { ...token.user, name: update.name };
+        if (typeof update?.email === 'string') token.user = { ...token.user, email: update.email };
+        if (typeof update?.onboardingStep === 'string') {
+          token.onboardingStep = toOnboardingStep(update.onboardingStep, Boolean(token.user.name));
+        }
+        return token;
+      }
+      // A session started at verification, before sessions waited for the
+      // profile: end it, and the customer signs in again to register.
+      if (!user && token.onboardingStep === 'register') return null;
       if (user) {
         token.accessToken = user.accessToken;
+        token.onboardingStep = user.onboardingStep;
         token.user = {
           id: user.id!,
           name: user.name ?? '',
@@ -83,9 +87,32 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       return token;
     },
     // The session is readable by the browser (/api/auth/session), so it gets
-    // the user only. The backend token stays in the encrypted cookie.
+    // the user and the onboarding step only. The backend token stays in the
+    // encrypted cookie.
     session({ session, token }) {
-      return { ...session, user: { ...session.user, ...token.user } };
+      return {
+        ...session,
+        user: { ...session.user, ...token.user, onboardingStep: token.onboardingStep },
+      };
     },
   },
 });
+
+/**
+ * Starts the session with a grant the API has just issued (verification of an
+ * existing customer, or a finished registration). Server only.
+ */
+export async function signInWithGrant(grant: AuthGrant): Promise<void> {
+  const sealed = await sealGrant(grant, SIGN_IN_GRANT, 60);
+  await signIn('grant', { grant: sealed, redirect: false });
+}
+
+/**
+ * Updates the signed-in session after a profile write (name, email, and what
+ * is left of onboarding). Server only: the marker keeps browser updates out.
+ */
+export async function updateSessionProfile(update: ProfileUpdate): Promise<void> {
+  // Auth.js types the update as a Session; the marker is an extra field it passes through.
+  const data = { serverUpdate: SERVER_UPDATE, user: update };
+  await unstable_update(data as Parameters<typeof unstable_update>[0]);
+}

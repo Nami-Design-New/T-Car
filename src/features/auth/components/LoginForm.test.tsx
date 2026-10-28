@@ -2,11 +2,20 @@ import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 import { AppError } from '@/shared/lib/errors';
+import type { PhoneFieldValue } from '@/shared/lib/phone';
 import { renderWithIntl } from '@/shared/test/render';
 import LoginForm from './LoginForm';
 
+// The country list comes from the stateless mock instead of the API.
+vi.mock('@/features/phone-countries', async () => {
+  const { phoneCountriesMock } = await import('@/features/phone-countries/api.mock');
+  return { loadPhoneCountries: phoneCountriesMock.listCountries };
+});
+
 function renderForm(overrides: Partial<React.ComponentProps<typeof LoginForm>> = {}) {
-  const onNext = vi.fn<(phone: string) => Promise<AppError | undefined>>(async () => undefined);
+  const onNext = vi.fn<(phone: PhoneFieldValue) => Promise<AppError | undefined>>(
+    async () => undefined
+  );
   const user = userEvent.setup();
   renderWithIntl(<LoginForm onNext={onNext} {...overrides} />);
   const phone = screen.getByRole('textbox', { name: 'Mobile number' });
@@ -15,6 +24,11 @@ function renderForm(overrides: Partial<React.ComponentProps<typeof LoginForm>> =
 }
 
 describe('LoginForm', () => {
+  it('starts from the number it is given, e.g. after going back', () => {
+    renderForm({ defaultPhone: { countryCode: '+962', phone: '791234567' } });
+    expect(screen.getByRole('textbox', { name: 'Mobile number' })).toHaveValue('791234567');
+  });
+
   it('shows the phone error on blur and ties it to the input', async () => {
     const { user, phone } = renderForm();
     await user.click(phone);
@@ -33,6 +47,18 @@ describe('LoginForm', () => {
     expect(onNext).not.toHaveBeenCalled();
   });
 
+  it.each([
+    ['5000000', 'Phone number must be at least 8 digits, excluding the country code and leading zeros.'],
+    ['5000000000000000', 'Phone number must be no more than 15 digits, excluding the country code and leading zeros.'],
+  ])('shows the length error for %s', async (value, message) => {
+    const { user, phone, submit, onNext } = renderForm();
+    await user.type(phone, value);
+    await user.click(submit);
+    expect(await screen.findByText(message)).toBeInTheDocument();
+    expect(phone).toHaveAccessibleDescription(message);
+    expect(onNext).not.toHaveBeenCalled();
+  });
+
   it('submits with the keyboard and clears the error while typing', async () => {
     const { onNext, user, phone } = renderForm();
     await user.click(phone);
@@ -44,7 +70,9 @@ describe('LoginForm', () => {
       expect(screen.queryByText('Enter a valid phone number.')).not.toBeInTheDocument()
     );
     await user.keyboard('{Enter}');
-    await waitFor(() => expect(onNext).toHaveBeenCalledWith('966500000000'));
+    await waitFor(() =>
+      expect(onNext).toHaveBeenCalledWith({ countryCode: '+966', phone: '500000000' })
+    );
   });
 
   it('keeps the phone and shows a server failure', async () => {
@@ -56,7 +84,7 @@ describe('LoginForm', () => {
     expect(await screen.findByRole('alert')).toHaveTextContent(
       'Too many attempts. Wait a moment and try again.'
     );
-    expect(phone).toHaveValue('+966 500 000 000');
+    expect(phone).toHaveValue('500000000');
   });
 
   it('puts a server field error on the phone', async () => {

@@ -17,11 +17,11 @@ const dialogSizeClasses = {
 const dialogPlacementClasses = {
   center: "",
   "bottom-sheet":
-    "max-[575px]:bottom-0 max-[575px]:left-0 max-[575px]:top-auto max-[575px]:w-screen max-[575px]:max-h-[90dvh] max-[575px]:max-w-none max-[575px]:translate-x-0 max-[575px]:translate-y-0 max-[575px]:rounded-b-none max-[575px]:rounded-t-xl max-[575px]:pb-[env(safe-area-inset-bottom)] max-[575px]:animate-[dialog-sheet-in_0.18s_ease-out]",
+    "max-[575px]:bottom-0 max-[575px]:left-0 max-[575px]:top-auto max-[575px]:w-screen max-[575px]:max-h-[90dvh] max-[575px]:max-w-none max-[575px]:translate-x-0 max-[575px]:translate-y-0 max-[575px]:rounded-b-none max-[575px]:rounded-t-xl max-[575px]:pb-[env(safe-area-inset-bottom)] max-[575px]:data-[state=open]:animate-[dialog-sheet-in_0.2s_ease-out] max-[575px]:data-[state=closed]:animate-[dialog-sheet-out_0.2s_ease-in_forwards]",
 };
 
 const dialogContentBaseClasses =
-  "fixed left-1/2 top-1/2 z-[10001] flex max-h-[calc(100dvh-2.5rem)] w-[calc(100vw-2.5rem)] -translate-x-1/2 -translate-y-1/2 origin-center flex-col gap-3 rounded-lg bg-surface-elevated p-6 text-text-primary shadow-[0_20px_48px_rgba(30,30,30,0.18)] outline-none animate-[dialog-pop-in_0.18s_ease-out] motion-reduce:animate-none";
+  "fixed left-1/2 top-1/2 z-[10001] flex max-h-[calc(100dvh-2.5rem)] w-[calc(100vw-2.5rem)] -translate-x-1/2 -translate-y-1/2 origin-center flex-col gap-3 rounded-lg bg-surface-elevated p-6 text-text-primary shadow-[0_20px_48px_rgba(30,30,30,0.18)] outline-none data-[state=open]:animate-[dialog-pop-in_0.2s_ease-out] data-[state=closed]:animate-[dialog-pop-out_0.2s_ease-in_forwards] motion-reduce:animate-none!";
 
 export interface DialogProps {
   open: boolean;
@@ -72,7 +72,7 @@ function DialogRoot({
       }}
     >
       <RadixDialog.Portal>
-        <RadixDialog.Overlay className="dialog-backdrop fixed inset-0 z-10000 bg-[rgba(30,30,30,0.45)] animate-[dialog-fade-in_0.15s_ease-out] motion-reduce:animate-none" />
+        <RadixDialog.Overlay className="dialog-backdrop fixed inset-0 z-10000 bg-[rgba(30,30,30,0.45)] data-[state=open]:animate-[dialog-fade-in_0.2s_ease-out] data-[state=closed]:animate-[dialog-fade-out_0.2s_ease-in_forwards] motion-reduce:animate-none!" />
         <RadixDialog.Content
           aria-modal="true"
           aria-label={label}

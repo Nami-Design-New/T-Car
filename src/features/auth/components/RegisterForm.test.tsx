@@ -6,6 +6,16 @@ import { renderWithIntl } from '@/shared/test/render';
 import type { RegisterFormValues } from '../validation';
 import RegisterForm from './RegisterForm';
 
+// BackButton and the terms link use the locale-aware navigation, which needs the app router.
+vi.mock('@/i18n/navigation', () => ({
+  useRouter: () => ({ back: vi.fn() }),
+  Link: ({ href, children, ...rest }: React.ComponentProps<'a'>) => (
+    <a href={String(href)} {...rest}>
+      {children}
+    </a>
+  ),
+}));
+
 function renderForm(overrides: Partial<React.ComponentProps<typeof RegisterForm>> = {}) {
   const onSubmit = vi.fn<(values: RegisterFormValues) => Promise<AppError | undefined>>(
     async () => undefined
@@ -19,19 +29,28 @@ function renderForm(overrides: Partial<React.ComponentProps<typeof RegisterForm>
     email: screen.getByRole('textbox', { name: 'Email address' }),
     // A date input has no ARIA role; its label also holds the hidden required mark.
     birthDate: screen.getByLabelText(/Date of birth/),
-    terms: screen.getByRole('checkbox', { name: 'I agree to the terms and conditions' }),
     submit: screen.getByRole('button', { name: 'Create account' }),
   };
 }
 
-async function fillValid({ user, name, email, birthDate, terms }: ReturnType<typeof renderForm>) {
+async function fillValid({ user, name, email, birthDate }: ReturnType<typeof renderForm>) {
   await user.type(name, 'Ahmed Abdullah');
   await user.type(email, 'ahmed@domain.com');
   await user.type(birthDate, '1990-05-17');
-  await user.click(terms);
 }
 
 describe('RegisterForm', () => {
+  it.each([
+    ['A', 'Full name must be at least 2 characters.'],
+    ['A'.repeat(101), 'Full name must be no more than 100 characters.'],
+  ])('shows the name length error', async (value, message) => {
+    const { user, name } = renderForm();
+    await user.type(name, value);
+    await user.tab();
+    expect(await screen.findByText(message)).toBeInTheDocument();
+    expect(name).toHaveAccessibleDescription(message);
+  });
+
   it('shows a field error on blur and ties it to the field', async () => {
     const { user, email } = renderForm();
     await user.type(email, 'ahmed@');
@@ -43,13 +62,12 @@ describe('RegisterForm', () => {
   });
 
   it('reports every missing field on submit and focuses the first', async () => {
-    const { onSubmit, user, name, terms, submit } = renderForm();
+    const { onSubmit, user, name, submit } = renderForm();
     await user.click(submit);
 
     expect(await screen.findByText('Full name is required.')).toBeInTheDocument();
     expect(screen.getByText('Email address is required.')).toBeInTheDocument();
     expect(screen.getByText('Date of birth is required.')).toBeInTheDocument();
-    expect(terms).toHaveAccessibleDescription('Accept the terms and conditions to continue.');
     expect(name).toHaveFocus();
     expect(onSubmit).not.toHaveBeenCalled();
   });
@@ -65,7 +83,6 @@ describe('RegisterForm', () => {
         fullName: 'Ahmed Abdullah',
         email: 'ahmed@domain.com',
         birthDate: '1990-05-17',
-        acceptTerms: true,
       })
     );
   });
@@ -86,7 +103,6 @@ describe('RegisterForm', () => {
     expect(form.name).toHaveFocus();
     expect(form.name).toHaveValue('Ahmed Abdullah');
     expect(form.email).toHaveValue('ahmed@domain.com');
-    expect(form.terms).toBeChecked();
   });
 
   it('shows an error for a field the form does not have as a form message', async () => {
@@ -102,6 +118,17 @@ describe('RegisterForm', () => {
       'The verification code is incorrect. Try again.'
     );
     expect(form.email).toHaveValue('ahmed@domain.com');
+  });
+
+  it('states the implied consent with links to the terms and the privacy policy', () => {
+    renderForm();
+    expect(screen.getByRole('link', { name: 'Terms and Conditions' })).toHaveAttribute('href', '/terms');
+    expect(screen.getByRole('link', { name: 'Privacy Policy' })).toHaveAttribute('href', '/privacy');
+  });
+
+  it('names the back button', () => {
+    renderForm();
+    expect(screen.getByRole('button', { name: 'Back to verification' })).toBeInTheDocument();
   });
 
   it('cannot be submitted while pending', () => {

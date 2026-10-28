@@ -1,110 +1,61 @@
 "use client";
 
-import { useState } from "react";
-import { useTranslations } from "next-intl";
-
-import { useRouter } from "@/i18n/navigation";
-import type { AppError } from "@/shared/lib/errors";
-import { fromActionResult } from "@/shared/lib/result";
+import { formatPhoneFieldValue } from "@/shared/lib/phone";
 import { Dialog } from "@/shared/ui/Dialog";
-import { ResultDialog } from "@/shared/ui/ResultDialog";
-import { registerAction, requestOtpAction, verifyOtpAction } from "../actions";
-import type { RegisterFormValues } from "../validation";
 import LoginForm from "./LoginForm";
 import OtpForm from "./OtpForm";
 import RegisterForm from "./RegisterForm";
+import { useAuthFlow } from "./useAuthFlow";
 
 type Props = {
   show: boolean;
   onHide: () => void;
   /** Where to go after signing in, e.g. the protected page that sent the user here. */
   next?: string;
+  onRegistrationSuccess?: (locationNext: boolean) => void;
+  onLocationRequired?: () => void;
 };
 
-type Step = "login" | "otp" | "register" | "success";
-
-export default function AuthModal({ show, onHide, next }: Props) {
-  const t = useTranslations("authSuccess");
-  const router = useRouter();
-
-  const [step, setStep] = useState<Step>("login");
-  const [phone, setPhone] = useState("");
-  const [code, setCode] = useState("");
-  const [pending, setPending] = useState(false);
-
-  const reset = () => {
-    setStep("login");
-    setCode("");
-  };
+/** The sign-in dialog. The flow (steps, actions, toasts) lives in `useAuthFlow`. */
+export default function AuthModal({
+  show,
+  onHide,
+  next,
+  onRegistrationSuccess,
+  onLocationRequired,
+}: Props) {
+  const flow = useAuthFlow({
+    next,
+    onDone: onHide,
+    onRegistrationSuccess,
+    onLocationRequired,
+  });
+  const { state, pending } = flow;
 
   const close = () => {
     if (pending) return;
-    reset();
-    onHide();
+    flow.dismiss();
   };
-
-  /** The server now has a session: re-render the header and protected pages. */
-  const finish = () => {
-    reset();
-    onHide();
-    if (next) router.replace(next);
-    router.refresh();
-  };
-
-  /** Runs one action; resolves with its error so the form can show it and keep its input. */
-  const run = async (action: () => Promise<AppError | undefined>) => {
-    setPending(true);
-    try {
-      return await action();
-    } finally {
-      setPending(false);
-    }
-  };
-
-  const handleRequestOtp = (value: string) =>
-    run(async () => {
-      const result = fromActionResult(await requestOtpAction(value));
-      if (!result.ok) return result.error;
-      setPhone(value);
-      setStep("otp");
-    });
-
-  const handleResend = () =>
-    run(async () => {
-      const result = fromActionResult(await requestOtpAction(phone));
-      if (!result.ok) return result.error;
-    });
-
-  const handleVerify = (value: string) =>
-    run(async () => {
-      const result = fromActionResult(await verifyOtpAction(phone, value));
-      if (!result.ok) return result.error;
-      setCode(value);
-      if (result.data.registrationRequired) setStep("register");
-      else finish();
-    });
-
-  const handleRegister = (values: RegisterFormValues) =>
-    run(async () => {
-      const result = fromActionResult(
-        await registerAction({ phone, code, ...values }),
-      );
-      if (!result.ok) return result.error;
-      setStep("success");
-    });
 
   const renderStep = () => {
-    switch (step) {
+    switch (state.step) {
       case "login":
-        return <LoginForm onNext={handleRequestOtp} loading={pending} />;
+        return (
+          <LoginForm
+            defaultPhone={state.phone}
+            onNext={flow.requestOtp}
+            loading={pending}
+          />
+        );
 
       case "otp":
         return (
           <OtpForm
-            phone={phone}
-            onBack={() => setStep("login")}
-            onVerify={handleVerify}
-            onResend={handleResend}
+            phone={formatPhoneFieldValue(state.phone)}
+            onBack={flow.back}
+            onEditPhone={flow.back}
+            onVerify={flow.verify}
+            onResend={flow.resend}
             loading={pending}
           />
         );
@@ -112,21 +63,12 @@ export default function AuthModal({ show, onHide, next }: Props) {
       case "register":
         return (
           <RegisterForm
-            onBack={() => setStep("otp")}
-            onSubmit={handleRegister}
+            onBack={flow.back}
+            onSubmit={flow.register}
             loading={pending}
           />
         );
 
-      case "success":
-        return (
-          <ResultDialog
-            open
-            status="success"
-            description={t("description")}
-            onClose={finish}
-          />
-        );
     }
   };
 
@@ -134,7 +76,6 @@ export default function AuthModal({ show, onHide, next }: Props) {
     <Dialog
       open={show}
       onClose={close}
-
       closeOnEscape={!pending}
       closeOnBackdrop={!pending}
       label="Authentication"

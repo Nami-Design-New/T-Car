@@ -1,9 +1,12 @@
-import { screen, waitFor } from '@testing-library/react';
+import { act, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 import { AppError } from '@/shared/lib/errors';
 import { renderWithIntl } from '@/shared/test/render';
 import OtpForm from './OtpForm';
+
+// BackButton reads the locale-aware router, which needs the app router; the forms pass onBack.
+vi.mock('@/i18n/navigation', () => ({ useRouter: () => ({ back: vi.fn() }) }));
 
 function renderForm(overrides: Partial<React.ComponentProps<typeof OtpForm>> = {}) {
   const onVerify = vi.fn<(code: string) => Promise<AppError | undefined>>(async () => undefined);
@@ -17,6 +20,30 @@ function renderForm(overrides: Partial<React.ComponentProps<typeof OtpForm>> = {
 }
 
 describe('OtpForm', () => {
+  it('names the back button and edits the number from the description', async () => {
+    const onBack = vi.fn();
+    const onEditPhone = vi.fn();
+    const { user } = renderForm({ onBack, onEditPhone });
+
+    await user.click(screen.getByRole('button', { name: 'Edit number' }));
+    expect(onEditPhone).toHaveBeenCalledOnce();
+    await user.click(screen.getByRole('button', { name: 'Back to mobile number' }));
+    expect(onBack).toHaveBeenCalledOnce();
+  });
+
+  it('shows the resend countdown with two digits', () => {
+    vi.useFakeTimers({ toFake: ['setInterval', 'clearInterval'] });
+    try {
+      renderForm();
+      expect(screen.getByText('Resend the code in')).toBeInTheDocument();
+      expect(screen.getByText(/00:30/)).toBeInTheDocument();
+      for (let second = 0; second < 21; second += 1) act(() => vi.advanceTimersByTime(1000));
+      expect(screen.getByText(/00:09/)).toBeInTheDocument();
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
   it('enables verification only for a complete code', async () => {
     const { user, submit } = renderForm();
     expect(submit).toBeDisabled();

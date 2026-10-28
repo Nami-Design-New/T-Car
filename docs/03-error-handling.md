@@ -210,6 +210,30 @@ Add an `errors` namespace to both message files:
 Lookup order: `errors.<code>`, then `errors.<kind>`, then `errors.unknown`.
 Never show `error.message` from the backend or from JavaScript directly.
 
+**Exception: API toasts (2026-10-27).** For the integrated API, success and
+validation (422) responses are shown as a `sonner` toast with the backend
+`message` (the backend localizes it from `Accept-Language`). The single
+`<Toaster />` (`shared/ui/Toaster`) sits in the locale layout, bottom and on
+the inline-end side, above the mobile navigation. Components call
+`useNotify()` (`shared/hooks/useNotify.ts`): `notify.success(message)` and
+`notify.error(message)`. A missing message, or one that is an untranslated key
+such as `validation.email_required`, falls back to `common.success` /
+`errors.validation`. Server Actions cannot toast: they return the message and
+the client shows it. 401, 5xx, network, and timeout errors keep the
+`errors.*` lookup above. A dialog with a failed submit still stays open with
+the input (rule 5).
+
+**Backend envelope (2026-10-27).** The API answers `{ data, message, code }`
+(`services/http/envelope.ts`), and a validation error arrives as HTTP 200 with
+`code: 422`. `services/http/client.ts` decides the outcome this way: HTTP 401
+and 5xx by the HTTP status (body ignored); otherwise by the body `code` as it
+is (422 → `validation`, 429 → `rate_limited`, ...), falling back to the HTTP
+status when there is no envelope. A body `code` of 401 also calls
+`onUnauthorized`. The backend text travels as `AppError.serverMessage` (and
+`AppErrorData.serverMessage` across a Server Action); a success message
+travels as `Result` / `ActionResult` `message`. Both clients send
+`Accept-Language` with the page locale.
+
 ### 7. Reporting
 
 ```ts
@@ -242,7 +266,8 @@ failure path gets built and tested now, not after launch.
 4. A failed read never renders an empty state (see [doc 6](06-ui-states.md)).
 5. A dialog with a failed submit stays open, keeps what the user typed, and
    shows the error.
-6. User-facing error text always comes from `messages/*.json`.
+6. User-facing error text always comes from `messages/*.json`, except the
+   backend's own success and validation messages, which are toasted (§6).
 7. Every `catch` either handles the error (UI and recovery), or reports it and
    rethrows. A bare `catch {}` is not allowed.
 

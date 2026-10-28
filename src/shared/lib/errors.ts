@@ -19,11 +19,15 @@ export class AppError extends Error {
     readonly status?: number,
     /** field → i18n key under `errors.*` */
     readonly fieldErrors?: Record<string, string>,
-    options?: { cause?: unknown }
+    options?: { cause?: unknown; serverMessage?: string }
   ) {
-    super(code ?? kind, options);
+    super(code ?? kind, { cause: options?.cause });
     this.name = 'AppError';
+    this.serverMessage = options?.serverMessage;
   }
+
+  /** The backend's own (localized) message; toasted for validation errors (doc 3 §6). */
+  readonly serverMessage?: string;
 }
 
 export function kindFromStatus(status: number): AppErrorKind {

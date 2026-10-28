@@ -32,7 +32,7 @@ export default async function Header({
       <div className="header-inner mx-auto flex h-20 w-full max-w-7xl items-center justify-between px-2">
         <div className="flex min-w-0 items-center gap-[clamp(12px,2vw,24px)]">
           <BrandLogo />
-          <LocationPicker />
+          <LocationPicker guest={!signedIn} />
         </div>
 
         <MobileNav
@@ -60,7 +60,10 @@ export default async function Header({
             <div className="flex items-center gap-3 max-lg:w-full">
               <LanguageSwitcher />
             </div>
-            <AuthControl signedIn={signedIn} loginLabel={t("nav.login")} />
+            <AuthControl
+              signedIn={signedIn}
+              loginLabel={t("nav.login")}
+            />
           </div>
         </MobileNav>
         {hasSession && (

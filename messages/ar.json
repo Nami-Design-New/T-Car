@@ -27,6 +27,7 @@
     },
     "location": {
       "choose": "اختيار الموقع",
+      "locationIconAlt": "الموقع",
       "default": "الرياض، شارع الحرية"
     }
   },
@@ -109,6 +110,9 @@
     }
   },
   "auth": {
+    "location": {
+      "title": "حدد موقعك"
+    },
     "login": {
       "logoAlt": "تي كار",
       "title": "مرحباً بك",
@@ -126,7 +130,8 @@
       "backLabel": "العودة إلى رقم الجوال",
       "codeLabel": "رمز التحقق",
       "digitLabel": "الرقم {position} من {total}",
-      "resendIn": "إعادة إرسال الرمز بعد...",
+      "resendIn": "إعادة إرسال الرمز بعد",
+      "editNumber": "تعديل الرقم",
       "resend": "اعد إرسال الكود",
       "verify": "تأكيد الرمز"
     },
@@ -139,7 +144,7 @@
       "emailLabel": "البريد الإلكتروني",
       "emailPlaceholder": "name@domain.com",
       "birthDateLabel": "تاريخ الميلاد",
-      "agreeToTerms": "أوافق على الشروط والأحكام",
+      "consent": "بمتابعتك، فإنك توافق على <terms>الشروط والأحكام</terms> و<privacy>سياسة الخصوصية</privacy> الخاصة بالتطبيق.",
       "submit": "إنشاء الحساب"
     }
   },
@@ -590,14 +595,18 @@
     },
     "auth": {
       "invalidPhone": "أدخل رقم جوال صحيحًا.",
+      "phoneTooShort": "يجب أن يتكون رقم الجوال من 8 أرقام على الأقل، دون رمز الدولة والأصفار في البداية.",
+      "phoneTooLong": "يجب ألا يزيد رقم الجوال عن 15 رقمًا، دون رمز الدولة والأصفار في البداية.",
       "invalidCode": "رمز التحقق غير صحيح. حاول مرة أخرى.",
       "nameRequired": "الاسم الكامل مطلوب.",
-      "registrationRequired": "هذا الرقم غير مسجل. أكمل إنشاء الحساب.",
+      "nameTooShort": "يجب أن يتكون الاسم الكامل من حرفين على الأقل.",
+      "nameTooLong": "يجب ألا يزيد الاسم الكامل عن 100 حرف.",
       "emailRequired": "البريد الإلكتروني مطلوب.",
       "invalidEmail": "أدخل بريدًا إلكترونيًا صحيحًا.",
       "birthDateRequired": "تاريخ الميلاد مطلوب.",
       "invalidBirthDate": "أدخل تاريخ ميلاد صحيحًا لا يقع في المستقبل.",
-      "termsRequired": "وافق على الشروط والأحكام للمتابعة."
+      "underAge": "يجب أن يكون عمرك 18 عامًا على الأقل.",
+      "invalidLocation": "اختر موقعًا صحيحًا على الخريطة."
     }
   },
   "legalContent": {
@@ -650,7 +659,11 @@
     "title": "المدن المتاحة",
     "subtitle": "اختر مدينتك وابدأ رحلتك معنا"
   },
-  "common": { "selectPlaceholder": "اختر..." },
+  "common": {
+    "selectPlaceholder": "اختر...",
+    "notifications": "الإشعارات",
+    "success": "تمت العملية بنجاح."
+  },
   "dateTimePicker": {
     "previousMonth": "الشهر السابق",
     "nextMonth": "الشهر التالي",

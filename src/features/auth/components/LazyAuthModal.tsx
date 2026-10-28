@@ -8,6 +8,8 @@ interface Props {
   show: boolean;
   onHide: () => void;
   next?: string;
+  onRegistrationSuccess?: (locationNext: boolean) => void;
+  onLocationRequired?: () => void;
 }
 
 /** Keeps the auth dialog and phone-input bundle out of the initial shell. */

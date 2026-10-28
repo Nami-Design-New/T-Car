@@ -1,10 +1,11 @@
 import { auth } from "@/auth";
-import { Footer, Header } from "@/features/layout";
+import { Footer, GuestLocationRequest, Header } from "@/features/layout";
 import { getNotifications } from "@/features/notifications/queries";
 import type { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
 import { getDirection } from "@/shared/config/languages";
 import { DirectionProvider } from "@/shared/ui/DirectionProvider";
+import { Toaster } from "@/shared/ui/Toaster";
 import NextTopLoader from "nextjs-toploader";
 import localFont from "next/font/local";
 import "../../styles/tailwind.css";
@@ -86,7 +87,9 @@ export default async function RootLayout({
 }) {
   const [{ locale }, session] = await Promise.all([params, auth()]);
   const dir = getDirection(locale);
-  const unreadCount = session
+  // Sessions start once the profile exists (after the register step).
+  const signedIn = Boolean(session?.user);
+  const unreadCount = signedIn
     ? (await getNotifications()).filter((notification) => !notification.read)
         .length
     : 0;
@@ -97,13 +100,15 @@ export default async function RootLayout({
         <NextIntlClientProvider>
           <DirectionProvider dir={dir}>
             <NextTopLoader color="#1f7ffa" height={3} showSpinner={false} />
+            {!signedIn && <GuestLocationRequest />}
             <Header
-              hasSession={Boolean(session)}
-              signedIn={Boolean(session?.user)}
+              hasSession={signedIn}
+              signedIn={signedIn}
               unreadCount={unreadCount}
             />
             <main>{children}</main>
             <Footer />
+            <Toaster dir={dir} />
           </DirectionProvider>
         </NextIntlClientProvider>
       </body>

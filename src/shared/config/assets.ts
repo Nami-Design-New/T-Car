@@ -72,6 +72,18 @@ export const IMAGES = {
   appStore: { src: "/images/app/app-store.webp", width: 160, height: 48 },
   googlePlay: { src: "/images/app/google-play.webp", width: 160, height: 48 },
   gift: { src: "/images/illustrations/gift.webp", width: 48, height: 37 },
+  /** A country without a flag image in GET /countries. */
+  flagPlaceholder: {
+    src: "/images/placeholders/flag.svg",
+    width: 24,
+    height: 18,
+  },
+  /** Until the cars API returns the office logo with each car. */
+  officePlaceholder: {
+    src: "/images/placeholders/office.svg",
+    width: 44,
+    height: 44,
+  },
   cancelBooking: {
     src: "/images/illustrations/cancel-booking.svg",
     width: 140,
