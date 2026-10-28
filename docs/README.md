@@ -482,6 +482,11 @@ mock keeps its own OTP code `1234` for the phone change.
   maps the documented `data.user` fields into `UserProfile`; malformed payloads
   are server errors and a 401 follows the existing session-clear/sign-in path.
   Account writes remain on the mock until their dedicated fractions.
+- Profile API phone-flow preparation (2026-10-28): `PhoneChangeModal` now owns
+  one dialog and switches between standalone `PhoneChangeForm` and
+  `PhoneVerificationForm` steps. The verification step has the login flow's
+  back control, OTP input, and 30-second resend timer. Live phone OTP endpoint
+  integration remains in P4 and P5.
 - Form validation fraction 3 (license upload): the dialog now uses RHF +
   Zod with a single selected-file schema. It accepts declared JPG/JPEG/PNG files
   up to 15 MB and keeps a failed submission open with the file and a localized

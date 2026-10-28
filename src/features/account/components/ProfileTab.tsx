@@ -33,8 +33,7 @@ import {
   uploadLicenseAction,
   verifyPhoneAction,
 } from "../actions";
-import EditPhoneModal from "./EditPhoneModal";
-import VerifyPhoneModal from "./VerifyPhoneModal";
+import PhoneChangeModal from "./PhoneChangeModal";
 import { ICONS } from "@/shared/config/assets";
 import Image from "next/image";
 
@@ -125,11 +124,7 @@ export default function ProfileTab({ profile }: Props) {
       const result = fromActionResult(await sendPhoneCodeAction(phone));
       if (!result.ok) return result.error;
       setPendingPhone(phone);
-      // Let the edit dialog unmount before opening the verification dialog.
-      // Radix restores focus when a dialog closes; opening both in one render
-      // can otherwise leave the verification step behind the closing portal.
-      setPhoneStep(null);
-      window.setTimeout(() => setPhoneStep("verify"), 0);
+      setPhoneStep("verify");
     });
 
   // ==================== Resend OTP ====================
@@ -404,31 +399,26 @@ export default function ProfileTab({ profile }: Props) {
         </p>
       )}
 
-      {/* ==================== Edit Phone Modal ==================== */}
+      {/* ==================== Phone Change Modal ==================== */}
 
-      <EditPhoneModal
-        open={phoneStep === "edit"}
+      <PhoneChangeModal
+        open={phoneStep !== null}
         onClose={() => {
-          if (pendingAction !== "send") setPhoneStep(null);
+          if (pendingAction === "send" || pendingAction === "resend" || pendingAction === "verify") return;
+          setPhoneStep(null);
         }}
         currentPhone={form.phone}
-        onSendCode={handleSendCode}
-        loading={pendingAction === "send"}
-      />
-
-      {/* ==================== Verify Phone Modal ==================== */}
-
-      <VerifyPhoneModal
-        open={phoneStep === "verify"}
-        onClose={() => setPhoneStep(null)}
-        phone={pendingPhone}
-        onEditPhone={() => {
-          if (pendingAction !== "resend") setPhoneStep("edit");
+        pendingPhone={pendingPhone}
+        step={phoneStep}
+        onStepChange={(step) => {
+          if (step === "edit" && pendingAction === "resend") return;
+          setPhoneStep(step);
         }}
-        onVerified={handleVerified}
+        onSendCode={handleSendCode}
         onResendCode={handleResendCode}
         onVerifyCode={handleVerifyCode}
-        loading={pendingAction === "resend" || pendingAction === "verify"}
+        onVerified={handleVerified}
+        loading={pendingAction === "send" || pendingAction === "resend" || pendingAction === "verify"}
       />
 
       {/* ==================== License Modal ==================== */}

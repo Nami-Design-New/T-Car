@@ -247,7 +247,6 @@ export default function VerifyPhoneModal({
       <ResultDialog
         open={successOpen}
         status="success"
-
         description={t("successDescription")}
         onClose={handleSuccessDone}
       />
