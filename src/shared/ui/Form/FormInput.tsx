@@ -31,28 +31,38 @@ export function FormInput({
   });
 
   return (
-    <div className="form_group flex flex-col gap-2">
+    <div className="flex flex-col gap-2">
       {label && (
-        <label htmlFor={field.id} className="form_label text-sm font-semibold text-text-primary">
+        <label
+          htmlFor={field.id}
+          className="text-text-primary mb-1 text-sm font-semibold"
+        >
           {label}
-          {required && <span className="ms-1 text-status-error" aria-hidden="true">*</span>}
+          {required && (
+            <span className="text-status-error ms-1" aria-hidden="true">
+              *
+            </span>
+          )}
         </label>
       )}
 
       {icon ? (
         // Shares the input's direction, so the icon sits on the side its padding is on.
-        <div className="form_input_wrapper relative" dir={props.dir}>
+        <div className="relative" dir={props.dir}>
           <input
             className={cn(
-              'form_input form_input--with-icon w-full rounded-md border border-stroke-light bg-surface-elevated px-4 py-3.5 text-[15px] transition duration-200 focus:border-action-primary focus:outline-none focus:ring-4 focus:ring-action-primary/15',
-              'pe-12',
+              "w-full rounded-md border px-2 py-4 text-sm transition duration-200 focus:outline-none",
+              error
+                ? "border-status-error bg-status-error-background focus:border-status-error"
+                : "border-stroke-light bg-white focus:border-action-primary",
+              "pe-12",
               className,
             )}
             {...props}
             {...field.controlProps}
           />
           <span
-            className="form_input_icon pointer-events-none absolute end-3.5 top-1/2 inline-flex -translate-y-1/2 text-action-primary"
+            className="text-action-primary pointer-events-none absolute inset-e-3.5 top-1/2 inline-flex -translate-y-1/2"
             aria-hidden="true"
           >
             {icon}
@@ -61,7 +71,10 @@ export function FormInput({
       ) : (
         <input
           className={cn(
-            'form_input w-full rounded-md border border-stroke-light bg-surface-elevated px-4 py-3.5 text-[15px] transition duration-200 focus:border-action-primary focus:outline-none focus:ring-4 focus:ring-action-primary/15',
+            "w-full rounded-md border px-2 py-4 text-sm transition duration-200 focus:outline-none",
+            error
+              ? "border-status-error bg-status-error-background focus:border-status-error"
+              : "border-stroke-light bg-white focus:border-action-primary",
             className,
           )}
           {...props}
@@ -70,7 +83,7 @@ export function FormInput({
       )}
 
       {error && (
-        <small id={field.errorId} className="form_error text-[13px] text-status-error">
+        <small id={field.errorId} className="text-status-error text-xs">
           {error}
         </small>
       )}

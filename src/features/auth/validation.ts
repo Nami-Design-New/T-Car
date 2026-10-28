@@ -5,7 +5,7 @@ import {
   isFullName,
   isPastIsoDate,
 } from '@/shared/lib/validation';
-import { isNationalNumber, isOldEnough, toNationalNumber } from './model';
+import { isOldEnough, NATIONAL_NUMBER_DIGITS, toNationalNumber } from './model';
 
 // Auth form schemas (doc 9). Messages are `errors.*` keys, never user text.
 // The client resolves forms with them and the Server Actions parse them again.
@@ -16,8 +16,8 @@ const CALLING_CODE = /^\+\d{1,4}$/;
 
 /**
  * The login phone as `PhoneField` holds it: calling code and national number
- * kept apart, as the API takes them. One message on `phone` for any problem;
- * the parsed value carries the normalized national number.
+ * kept apart, as the API takes them. Errors stay on `phone`, and the parsed
+ * value carries the normalized national number.
  */
 const phoneValue = z
   .object(
@@ -27,8 +27,16 @@ const phoneValue = z
     },
     { error: 'auth.invalidPhone' }
   )
-  .refine(({ countryCode, phone }) => CALLING_CODE.test(countryCode) && isNationalNumber(phone), {
+  .refine(({ countryCode, phone }) => CALLING_CODE.test(countryCode) && /^[\d\s-]+$/.test(phone), {
     error: 'auth.invalidPhone',
+    abort: true,
+  })
+  .refine(({ phone }) => toNationalNumber(phone).length >= NATIONAL_NUMBER_DIGITS.min, {
+    error: 'auth.phoneTooShort',
+    abort: true,
+  })
+  .refine(({ phone }) => toNationalNumber(phone).length <= NATIONAL_NUMBER_DIGITS.max, {
+    error: 'auth.phoneTooLong',
   })
   .transform(({ countryCode, phone }) => ({ countryCode, phone: toNationalNumber(phone) }));
 

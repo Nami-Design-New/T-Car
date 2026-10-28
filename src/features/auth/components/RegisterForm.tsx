@@ -70,7 +70,10 @@ export default function RegisterForm({
       noValidate
     >
       <div className="mt-2 mb-6 flex items-center gap-2">
-        <BackButton onClick={onBack} aria-label={t("auth.register.backLabel")} />
+        <BackButton
+          onClick={onBack}
+          aria-label={t("auth.register.backLabel")}
+        />
         <h2 className="text-text-primary mb-0 text-xl leading-relaxed font-extrabold">
           {t("auth.register.title")}
         </h2>
@@ -91,9 +94,7 @@ export default function RegisterForm({
         <FormInput
           id="register-email"
           label={t("auth.register.emailLabel")}
-          className="!border-stroke-light !bg-surface-elevated text-text-primary placeholder:text-text-placeholder hover:!border-action-primary/35 focus:!border-action-primary focus:!ring-action-primary/15 h-14 text-left text-[15px] [direction:ltr] focus:!ring-4"
           type="email"
-          dir="ltr"
           placeholder={t("auth.register.emailPlaceholder")}
           autoComplete="email"
           required
@@ -104,9 +105,7 @@ export default function RegisterForm({
         <FormInput
           id="register-birth-date"
           label={t("auth.register.birthDateLabel")}
-          className="!border-stroke-light !bg-surface-elevated text-text-subtle placeholder:text-text-placeholder hover:!border-action-primary/35 focus:!border-action-primary focus:!ring-action-primary/15 h-14 text-[15px] tabular-nums [direction:ltr] focus:!ring-4"
           type="date"
-          dir="ltr"
           autoComplete="bday"
           required
           error={fieldError(errors.birthDate?.message)}
@@ -135,7 +134,7 @@ export default function RegisterForm({
         </p>
       )}
 
-      <Button type="submit" size="lg" className="w-full" loading={loading}>
+      <Button type="submit" size="md" className="w-full" loading={loading}>
         {t("auth.register.submit")}
       </Button>
     </form>

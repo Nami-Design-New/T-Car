@@ -54,9 +54,6 @@ describe('phoneSchema', () => {
   });
 
   it.each([
-    ['7 digits', login('+966', '5000000')],
-    ['16 digits', login('+966', '5000000000000000')],
-    ['7 digits after the trunk 0', login('+966', '05000000')],
     ['letters', login('+966', '50000000a')],
     ['an empty number', login('+966', '')],
     ['a calling code without +', login('966', '500000000')],
@@ -66,6 +63,14 @@ describe('phoneSchema', () => {
     expect(fieldErrors(phoneSchema.safeParse(input))).toEqual({
       phone: 'auth.invalidPhone'
     });
+  });
+
+  it.each([
+    ['5000000', 'auth.phoneTooShort'],
+    ['05000000', 'auth.phoneTooShort'],
+    ['5000000000000000', 'auth.phoneTooLong'],
+  ])('reports the length problem for %s', (phone, message) => {
+    expect(fieldErrors(phoneSchema.safeParse(login('+966', phone)))).toEqual({ phone: message });
   });
 });
 
@@ -84,7 +89,7 @@ describe('otpCodeSchema', () => {
     expect(
       fieldErrors(verifyOtpSchema.safeParse({ phone: { countryCode: '+966', phone: '12' }, code: '1234' }))
     ).toEqual({
-      phone: 'auth.invalidPhone'
+      phone: 'auth.phoneTooShort'
     });
   });
 

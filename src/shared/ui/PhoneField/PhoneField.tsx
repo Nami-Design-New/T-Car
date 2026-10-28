@@ -476,7 +476,10 @@ export function PhoneField({
           aria-invalid={error ? true : undefined}
           aria-describedby={error ? errorId : undefined}
           className={cn(
-            "phone_input border-stroke-light bg-surface-elevated text-text-primary focus:border-action-primary focus:ring-action-primary/15 min-h-12.5 min-w-0 flex-1 rounded-md border px-4 text-left transition focus:ring-4 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50",
+            "phone_input text-text-primary min-h-12.5 min-w-0 flex-1 rounded-md border px-4 text-left transition focus:outline-none disabled:cursor-not-allowed disabled:opacity-50",
+            error
+              ? "border-status-error bg-status-error-background focus:border-status-error"
+              : "border-stroke-light focus:border-action-primary bg-white",
             inputClassName,
           )}
         />

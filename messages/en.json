@@ -597,6 +597,8 @@
     },
     "auth": {
       "invalidPhone": "Enter a valid phone number.",
+      "phoneTooShort": "Phone number must be at least 8 digits, excluding the country code and leading zeros.",
+      "phoneTooLong": "Phone number must be no more than 15 digits, excluding the country code and leading zeros.",
       "invalidCode": "The verification code is incorrect. Try again.",
       "nameRequired": "Full name is required.",
       "nameTooShort": "Full name must be at least 2 characters.",

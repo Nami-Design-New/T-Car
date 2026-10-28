@@ -47,6 +47,18 @@ describe('LoginForm', () => {
     expect(onNext).not.toHaveBeenCalled();
   });
 
+  it.each([
+    ['5000000', 'Phone number must be at least 8 digits, excluding the country code and leading zeros.'],
+    ['5000000000000000', 'Phone number must be no more than 15 digits, excluding the country code and leading zeros.'],
+  ])('shows the length error for %s', async (value, message) => {
+    const { user, phone, submit, onNext } = renderForm();
+    await user.type(phone, value);
+    await user.click(submit);
+    expect(await screen.findByText(message)).toBeInTheDocument();
+    expect(phone).toHaveAccessibleDescription(message);
+    expect(onNext).not.toHaveBeenCalled();
+  });
+
   it('submits with the keyboard and clears the error while typing', async () => {
     const { onNext, user, phone } = renderForm();
     await user.click(phone);

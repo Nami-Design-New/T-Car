@@ -1,21 +1,21 @@
-'use client';
+"use client";
 
-import { Suspense, useCallback, useEffect, useState } from 'react';
-import Image from 'next/image';
-import { useSearchParams } from 'next/navigation';
-import { useTranslations } from 'next-intl';
+import { Suspense, useCallback, useEffect, useState } from "react";
+import Image from "next/image";
+import { useSearchParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 import {
   AuthOnboardingModals,
   LazyAuthModal,
   signOutAction,
-} from '@/features/auth';
-import { useRouter } from '@/i18n/navigation';
-import { useErrorMessage } from '@/shared/hooks/useErrorMessage';
-import { useNotify } from '@/shared/hooks/useNotify';
-import { fromActionResult } from '@/shared/lib/result';
-import { Button } from '@/shared/ui/Button';
-import { ICONS } from '@/shared/config/assets';
-import UserMenu from './UserMenu';
+} from "@/features/auth";
+import { useRouter } from "@/i18n/navigation";
+import { useErrorMessage } from "@/shared/hooks/useErrorMessage";
+import { useNotify } from "@/shared/hooks/useNotify";
+import { fromActionResult } from "@/shared/lib/result";
+import { Button } from "@/shared/ui/Button";
+import { ICONS } from "@/shared/config/assets";
+import UserMenu from "./UserMenu";
 
 interface Props {
   signedIn: boolean;
@@ -30,12 +30,12 @@ interface AuthPromptProps {
 /** Opens the dialog after middleware redirects to `?auth=login` (signed out). */
 function AuthPrompt({ onOpen }: AuthPromptProps) {
   const searchParams = useSearchParams();
-  const auth = searchParams.get('auth');
-  const rawNext = searchParams.get('next');
+  const auth = searchParams.get("auth");
+  const rawNext = searchParams.get("next");
   const next = rawNext && /^\/(?!\/)/.test(rawNext) ? rawNext : undefined;
 
   useEffect(() => {
-    if (auth === 'login') onOpen(next);
+    if (auth === "login") onOpen(next);
   }, [auth, next, onOpen]);
 
   return null;
@@ -47,7 +47,7 @@ export default function AuthControl({
   logoutOnly = false,
 }: Props) {
   const router = useRouter();
-  const userMenuT = useTranslations('layout.userMenu');
+  const userMenuT = useTranslations("layout.userMenu");
   const notify = useNotify();
   const errorMessage = useErrorMessage();
   const [showAuth, setShowAuth] = useState(false);
@@ -64,9 +64,12 @@ export default function AuthControl({
   const handleLogout = async () => {
     const result = fromActionResult(await signOutAction());
     if (result.ok) notify.success(result.message);
-    else notify.error(result.error.kind === 'validation' && result.error.serverMessage
-      ? result.error.serverMessage
-      : errorMessage(result.error));
+    else
+      notify.error(
+        result.error.kind === "validation" && result.error.serverMessage
+          ? result.error.serverMessage
+          : errorMessage(result.error),
+      );
     router.refresh();
   };
 
@@ -107,10 +110,10 @@ export default function AuthControl({
               alt=""
             />
           }
-          className="w-full justify-center border-stroke-light text-status-error"
+          className="border-stroke-light text-status-error w-full justify-center"
           onClick={handleLogout}
         >
-          {userMenuT('logout')}
+          {userMenuT("logout")}
         </Button>
         {onboardingModals}
       </>

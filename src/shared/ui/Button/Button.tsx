@@ -30,7 +30,7 @@ export function Button({
   ...rest
 }: ButtonProps) {
   const baseClasses =
-    "group relative cursor-pointer isolate inline-flex min-h-[38px] items-center justify-center overflow-hidden rounded-md border px-3 py-1.5 text-base leading-6 transition duration-[350ms] after:absolute after:inset-0 after:z-[1] after:w-0 after:bg-current after:opacity-[0.18] after:content-[''] after:transition-[width] after:duration-300 after:ease-in-out hover:after:w-full";
+    "group relative cursor-pointer isolate inline-flex min-h-[38px] items-center justify-center overflow-hidden rounded-md border px-3 py-1.5 text-base leading-6 backdrop-blur-[24px] transition duration-[350ms] after:absolute after:inset-0 after:z-[1] after:w-0 after:bg-current after:opacity-[0.18] after:content-[''] after:transition-[width] after:duration-300 after:ease-in-out hover:after:w-full";
 
   const variantClasses = {
     primary: "border-action-primary bg-action-primary text-text-on-action",
@@ -39,9 +39,9 @@ export function Button({
   };
 
   const sizeClasses = {
-    sm: "min-h-8 px-2 py-1 text-sm",
-    md: "min-h-[38px] px-3 py-1.5 text-base",
-    lg: "min-h-12 px-4 py-2 text-xl",
+    sm: "h-8 px-ds-5 py-ds-3 text-sm ",
+    md: "h-11 px-ds-7 py-ds-4 text-sm",
+    lg: "h-13 px-ds-7 py-ds-5 text-sm",
   };
 
   const classes = cn(
@@ -100,7 +100,7 @@ export function Button({
       )}
       {loading && (
         <span
-          className="btn__spinner inline-block size-[1.1em] shrink-0 rounded-full border-2 border-current border-r-transparent motion-reduce:animate-[btn-spin_1.6s_linear_infinite] animate-[btn-spin_0.7s_linear_infinite]"
+          className="btn__spinner inline-block size-[1.1em] shrink-0 animate-[btn-spin_0.7s_linear_infinite] rounded-full border-2 border-current border-r-transparent motion-reduce:animate-[btn-spin_1.6s_linear_infinite]"
           aria-hidden="true"
         />
       )}

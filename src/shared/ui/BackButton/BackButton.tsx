@@ -40,6 +40,7 @@ export function BackButton({
       {...rest}
     >
       <Image
+        className="scale-x-[-1] rtl:scale-x-100"
         src={ICONS.chevron.src}
         width={ICONS.chevron.width}
         height={ICONS.chevron.height}

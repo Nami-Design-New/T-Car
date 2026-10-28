@@ -283,16 +283,16 @@ export default function MapLocationModal({
           )}
         </div>
 
-        {address && <p className="selected_address">{address}</p>}
+        {address && <p className="mt-3">{address}</p>}
         {locationError && (
-          <p className="location_error text-status-error mt-2 mb-0 text-[13px]">
+          <p className="text-status-error mt-2 mb-0 text-[13px]">
             {locationError}
           </p>
         )}
       </Dialog.Body>
 
       <Dialog.Footer>
-        <div className="location_actions mt-6 flex items-center justify-between gap-4">
+        <div className="mt-6 flex items-center justify-between gap-4">
           <Button
             type="button"
             variant="outline"
