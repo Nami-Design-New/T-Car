@@ -10,6 +10,6 @@ export function getProfile(): Promise<UserProfile> {
   return protectedRead(async () => {
     const session = await auth();
     if (!session?.user?.id) throw new AppError("unauthorized");
-    return accountApi.getProfile(session.user.id);
+    return accountApi.getProfile();
   });
 }

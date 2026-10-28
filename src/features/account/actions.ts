@@ -53,15 +53,14 @@ function parse<T>(schema: ZodType<T>, input: unknown): T {
 
 /**
  * Saves the editable fields only. The phone and license status are
- * server-managed, so they come from the stored profile, not the client.
+ * server-managed and do not travel in the client input.
  */
 export async function saveProfileAction(
   input: ProfileFormValues,
 ): Promise<ActionResult<UserProfile>> {
   return run("account.saveProfile", async (accountId) => {
     const changes = parse(profileFormSchema, input);
-    const current = await accountApi.getProfile(accountId);
-    return accountApi.updateProfile(accountId, { ...current, ...changes });
+    return accountApi.updateProfile(accountId, changes);
   });
 }
 

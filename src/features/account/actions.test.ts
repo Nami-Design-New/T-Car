@@ -41,9 +41,8 @@ const edits = {
 beforeEach(() => {
   vi.clearAllMocks();
   auth.mockResolvedValue({ user: { id: "u1" } });
-  accountApi.getProfile.mockResolvedValue({ ...stored });
   accountApi.updateProfile.mockImplementation(
-    async (_id: string, profile: UserProfile) => profile,
+    async (_id: string, profile: UserProfile) => ({ ...stored, ...profile }),
   );
 });
 
@@ -72,7 +71,7 @@ describe("saveProfileAction", () => {
     expect(accountApi.updateProfile).not.toHaveBeenCalled();
   });
 
-  it("saves the parsed edits and keeps the server-managed fields", async () => {
+  it("saves only the parsed editable fields", async () => {
     const fromClient = {
       ...edits,
       phone: "+966599999999",
@@ -84,8 +83,6 @@ describe("saveProfileAction", () => {
       fullName: "New Name",
       email: "new@domain.com",
       birthDate: "1993-03-15",
-      phone: "+966500000000",
-      licenseUploaded: true,
     });
     expect(result).toMatchObject({
       ok: true,

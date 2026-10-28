@@ -16,6 +16,11 @@ export interface UserProfile {
   licenseUploaded: boolean;
 }
 
+export type ProfileChanges = Pick<
+  UserProfile,
+  "fullName" | "email" | "birthDate"
+>;
+
 export interface LicenseUpload {
   name: string;
   size: number;

@@ -35,6 +35,12 @@ import {
 } from "../actions";
 import EditPhoneModal from "./EditPhoneModal";
 import VerifyPhoneModal from "./VerifyPhoneModal";
+import { ICONS } from "@/shared/config/assets";
+import Image from "next/image";
+
+const checkMark = ICONS.checkMark;
+const arrowIcon = ICONS.arrowIcon;
+const xIcon = ICONS.xIcon;
 
 const LicenseModal = dynamic(() => import("./LicenseModal"), { ssr: false });
 
@@ -268,61 +274,72 @@ export default function ProfileTab({ profile }: Props) {
           error={fieldError(errors.birthDate?.message)}
           {...register("birthDate")}
         />
-
+        <Button
+          type="submit"
+          size="lg"
+          className="mb-5"
+          loading={pendingAction === "save"}
+        >
+          {t("save")}
+        </Button>
+      </form>
+      <div className="flex flex-col gap-5">
         {/* ==================== Phone ==================== */}
+        <button
+          type="button"
+          className="bg-surface-on-background flex min-h-14.5 w-full items-center justify-between gap-3 rounded-sm border-0 px-3 py-2 text-start transition-colors hover:opacity-85 max-md:px-2.5"
+          onClick={() => setPhoneStep("edit")}
+        >
+          <div className="flex min-w-0 flex-1 flex-col gap-1.5">
+            <span className="text-text-primary text-[13px] leading-[1.4] font-semibold max-md:text-xs">
+              {t("phone")}
+            </span>
 
-        <div className="bg-surface-elevated mb-3 w-full rounded-sm transition-colors">
-          <button
-            type="button"
-            className="flex min-h-[62px] w-full items-center justify-between gap-3 border-0 bg-transparent px-3 py-2 text-start transition-opacity hover:opacity-85 max-md:min-h-[58px] max-md:px-2.5"
-            onClick={() => setPhoneStep("edit")}
-          >
-            <div className="flex min-w-0 flex-1 flex-col gap-1.5">
-              <span className="text-text-primary text-[13px] leading-[1.4] font-semibold max-md:text-xs">
-                {t("phone")}
+            <div className="text-text-subtle [&>svg]:text-status-success flex min-w-0 items-center gap-1.5 text-[11px] leading-[1.5] max-md:text-[10px] [&>svg]:shrink-0 [&>svg]:text-sm">
+              <span className="min-w-0 wrap-anywhere" dir="ltr">
+                {form.phone}
               </span>
-
-              <div className="text-text-subtle [&>svg]:text-status-success flex min-w-0 items-center gap-1.5 text-[11px] leading-[1.5] max-md:text-[10px] [&>svg]:shrink-0 [&>svg]:text-sm">
-                <FiCheck aria-hidden="true" />
-
-                <span className="min-w-0 [overflow-wrap:anywhere]" dir="ltr">
-                  {form.phone}
-                </span>
-              </div>
+              <Image
+                src={checkMark.src}
+                width={checkMark.width}
+                height={checkMark.height}
+                alt="check icon"
+              />
             </div>
-
-            <FiChevronRight
-              className="text-text-subtle shrink-0 text-lg max-md:text-base rtl:scale-x-[-1]"
-              aria-hidden="true"
-            />
-          </button>
-        </div>
-
+          </div>
+          <Image
+            src={arrowIcon.src}
+            width={arrowIcon.width}
+            height={arrowIcon.height}
+            alt="arrow icon"
+            className="size-5 shrink-0 ltr:scale-x-[-1]"
+          />
+        </button>
         {/* ==================== License ==================== */}
-
         {form.licenseUploaded ? (
           <div className="bg-surface-elevated mb-3 w-full rounded-sm transition-colors">
             <div
-              className="flex min-h-[62px] w-full items-center justify-between gap-3 px-3 py-2 max-md:min-h-[58px] max-md:px-2.5"
+              className="flex min-h-14.5 w-full items-center justify-between gap-3 px-3 py-2 max-md:px-2.5"
               role="status"
             >
               <div className="flex min-w-0 flex-1 flex-col gap-1.5">
                 <span className="text-text-primary text-[13px] leading-[1.4] font-semibold max-md:text-xs">
                   {t("license")}
                 </span>
-
-                <div className="text-text-subtle [&>svg]:text-status-success flex min-w-0 items-center gap-1.5 text-[11px] leading-[1.5] max-md:text-[10px] [&>svg]:shrink-0 [&>svg]:text-sm">
-                  <FiCheck aria-hidden="true" />
-                  <span>{t("licenseVerified")}</span>
-                </div>
+                <Image
+                  src={checkMark.src}
+                  width={checkMark.width}
+                  height={checkMark.height}
+                  alt="check icon"
+                />
               </div>
             </div>
           </div>
         ) : (
-          <div className="bg-status-error-background mb-3 w-full rounded-sm transition-colors">
+          <div className="bg-status-error-background w-full rounded-sm transition-colors">
             <button
               type="button"
-              className="flex min-h-[62px] w-full items-center justify-between gap-3 border-0 bg-transparent px-3 py-2 text-start transition-opacity hover:opacity-85 max-md:min-h-[58px] max-md:px-2.5"
+              className="flex min-h-14.5 w-full items-center justify-between gap-3 border-0 bg-transparent px-3 py-2 text-start transition-opacity hover:opacity-85 max-md:px-2.5"
               onClick={() => setShowLicenseModal(true)}
             >
               <div className="flex min-w-0 flex-1 flex-col gap-1.5">
@@ -330,24 +347,31 @@ export default function ProfileTab({ profile }: Props) {
                   {t("license")}
                 </span>
 
-                <div className="text-text-subtle [&>svg]:text-status-error flex min-w-0 items-center gap-1.5 text-[11px] leading-[1.5] max-md:text-[10px] [&>svg]:shrink-0 [&>svg]:text-sm">
-                  <FiAlertCircle aria-hidden="true" />
-                  <span className="min-w-0 [overflow-wrap:anywhere]">
+                <div className="text-text-subtle flex min-w-0 items-center gap-1.5 text-xs">
+                  <span className="min-w-0 wrap-anywhere">
                     {t("licenseRequired")}
                   </span>
+                  <Image
+                    src={xIcon.src}
+                    width={xIcon.width}
+                    height={xIcon.height}
+                    alt="x icon"
+                    className="size-3.5 shrink-0"
+                  />
                 </div>
               </div>
 
-              <FiChevronRight
-                className="text-text-subtle shrink-0 text-lg max-md:text-base rtl:scale-x-[-1]"
-                aria-hidden="true"
+              <Image
+                src={arrowIcon.src}
+                width={arrowIcon.width}
+                height={arrowIcon.height}
+                alt="arrow icon"
+                className="size-5 shrink-0 ltr:scale-x-[-1]"
               />
             </button>
           </div>
         )}
-
         {/* ==================== Delete Account ==================== */}
-
         <button
           type="button"
           className="text-status-error mb-2 flex w-full items-center justify-start gap-1.5 border-0 bg-transparent px-0 py-1 text-end text-sm font-semibold transition-opacity hover:opacity-80 max-md:text-xs [&>svg]:text-[17px] max-md:[&>svg]:text-[15px]"
@@ -356,33 +380,29 @@ export default function ProfileTab({ profile }: Props) {
             setShowDeleteModal(true);
           }}
         >
-          <FiTrash2 />
-
+          <Image
+            src={xIcon.src}
+            width={xIcon.width}
+            height={xIcon.height}
+            alt="x icon"
+            className="size-3.5 shrink-0"
+          />
           <span>{t("deleteAccount")}</span>
         </button>
+      </div>
 
-        {/* ==================== Save ==================== */}
+      {/* ==================== Save ==================== */}
 
-        <Button
-          type="submit"
-          size="lg"
-          className="mt-2 w-full"
-          loading={pendingAction === "save"}
-        >
-          {t("save")}
-        </Button>
-
-        {saveError && (
-          <p className="text-status-error mt-2 mb-0 text-sm" role="alert">
-            {saveError}
-          </p>
-        )}
-        {saved && (
-          <p className="text-status-success mt-2 mb-0 text-sm" role="status">
-            {t("saved")}
-          </p>
-        )}
-      </form>
+      {saveError && (
+        <p className="text-status-error mt-2 mb-0 text-sm" role="alert">
+          {saveError}
+        </p>
+      )}
+      {saved && (
+        <p className="text-status-success mt-2 mb-0 text-sm" role="status">
+          {t("saved")}
+        </p>
+      )}
 
       {/* ==================== Edit Phone Modal ==================== */}
 

@@ -1,4 +1,8 @@
-import { LICENSE_MAX_SIZE_BYTES, isLicenseFileType, type UserProfile } from "./model";
+import {
+  LICENSE_MAX_SIZE_BYTES,
+  isLicenseFileType,
+  type UserProfile,
+} from "./model";
 import { AppError } from "@/shared/lib/errors";
 import type { AccountApi } from "./api";
 
@@ -14,11 +18,10 @@ const MOCK_PROFILE: UserProfile = {
 };
 
 // Stateless, so it is safe to run on the server. Writes validate and return
-// their result without retaining it between users. The reserved account id
-// `profile-read-failure` deterministically exercises the read error path.
+// their result without retaining it between users. Each write has a documented
+// reproducible failure rule.
 export const accountMock: AccountApi = {
-  async getProfile(accountId) {
-    if (accountId === "profile-read-failure") throw new AppError("server");
+  async getProfile() {
     return { ...MOCK_PROFILE };
   },
 
@@ -29,7 +32,7 @@ export const accountMock: AccountApi = {
         email: "account.profileRejected",
       });
     }
-    return { ...profile };
+    return { ...MOCK_PROFILE, ...profile };
   },
 
   async sendPhoneCode(_accountId, phone) {

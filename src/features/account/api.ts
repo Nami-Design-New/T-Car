@@ -1,10 +1,16 @@
 import "server-only";
-import type { LicenseUpload, UserProfile } from "./model";
+import { isApiEnvelope, type ApiEnvelope } from "@/services/http/envelope";
+import { serverHttp } from "@/services/http/server";
+import { AppError } from "@/shared/lib/errors";
+import type { LicenseUpload, ProfileChanges, UserProfile } from "./model";
 import { accountMock } from "./api.mock";
 
 export interface AccountApi {
-  getProfile(accountId: string): Promise<UserProfile>;
-  updateProfile(accountId: string, profile: UserProfile): Promise<UserProfile>;
+  getProfile(): Promise<UserProfile>;
+  updateProfile(
+    accountId: string,
+    profile: ProfileChanges,
+  ): Promise<UserProfile>;
   /** Sends a code to a new phone number; also used to resend it. */
   sendPhoneCode(accountId: string, phone: string): Promise<void>;
   /** Confirms the new phone number with the code that was sent to it. */
@@ -13,6 +19,49 @@ export interface AccountApi {
   deleteAccount(accountId: string): Promise<void>;
 }
 
-// The account mock remains in use until the profile API integration fractions
-// replace each operation with its live implementation.
-export const accountApi: AccountApi = accountMock;
+interface ProfileUserDto {
+  name: string;
+  email: string;
+  phone: string;
+  phone_code: string;
+  birth_date: string;
+  license: Record<string, unknown> | null;
+}
+
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === "object" && value !== null;
+
+function isProfileUserDto(value: unknown): value is ProfileUserDto {
+  return (
+    isRecord(value) &&
+    typeof value.name === "string" &&
+    typeof value.email === "string" &&
+    typeof value.phone === "string" &&
+    typeof value.phone_code === "string" &&
+    typeof value.birth_date === "string" &&
+    (value.license === null || isRecord(value.license))
+  );
+}
+
+function toUserProfile(user: ProfileUserDto): UserProfile {
+  return {
+    fullName: user.name,
+    email: user.email,
+    birthDate: user.birth_date,
+    phone: `${user.phone_code}${user.phone}`,
+    licenseUploaded: user.license !== null,
+  };
+}
+
+async function getProfile(): Promise<UserProfile> {
+  const response = await serverHttp.get<ApiEnvelope<unknown>>("/profile");
+  if (!isApiEnvelope(response) || !isRecord(response.data)) {
+    throw new AppError("server");
+  }
+  const user = response.data.user;
+  if (!isProfileUserDto(user)) throw new AppError("server");
+  return toUserProfile(user);
+}
+
+/** Profile reads are live; write methods remain on the mock until their fractions. */
+export const accountApi: AccountApi = { ...accountMock, getProfile };

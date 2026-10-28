@@ -17,6 +17,9 @@ export const ICONS = {
   locationChip: { src: "/icons/location-chip.svg", width: 14, height: 14 },
   starFill: { src: "/icons/star-fill.svg", width: 16, height: 16 },
   notification: { src: "/icons/notification.svg", width: 20, height: 20 },
+  xIcon: { src: "/icons/x.svg", width: 14, height: 14 },
+  checkMark: { src: "/icons/check-mark.svg", width: 12, height: 12 },
+  arrowIcon: { src: "/icons/arrow-icon.svg", width: 12, height: 12 },
   langSwitchIcon: {
     src: "/icons/lang-switch-icon.svg",
     width: 20,

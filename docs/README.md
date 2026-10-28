@@ -477,6 +477,11 @@ mock keeps its own OTP code `1234` for the phone change.
   import the feature-owned API. The mock stays active until each live profile
   endpoint is integrated. License validation accepts declared JPG/JPEG/PNG files
   up to 15 MiB; the picker and both locale messages state the same rule.
+- Profile API fraction P2 (2026-10-28): the account profile route reads the live
+  authenticated `GET /profile` response through `features/account/api.ts` and
+  maps the documented `data.user` fields into `UserProfile`; malformed payloads
+  are server errors and a 401 follows the existing session-clear/sign-in path.
+  Account writes remain on the mock until their dedicated fractions.
 - Form validation fraction 3 (license upload): the dialog now uses RHF +
   Zod with a single selected-file schema. It accepts declared JPG/JPEG/PNG files
   up to 15 MB and keeps a failed submission open with the file and a localized
