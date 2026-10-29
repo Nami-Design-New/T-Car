@@ -17,7 +17,7 @@ import {
   FiTrash2,
 } from "react-icons/fi";
 
-import type { UserProfile } from "../model";
+import type { ProfileChanges, UserProfile } from "../model";
 import { profileFormSchema, type ProfileFormValues } from "../validation";
 import {
   useErrorMessage,
@@ -26,6 +26,7 @@ import {
 import { toAppError, type AppError } from "@/shared/lib/errors";
 import { fromActionResult } from "@/shared/lib/result";
 import { applyFieldErrors } from "@/shared/lib/validation";
+import { useNotify } from "@/shared/hooks/useNotify";
 import {
   deleteAccountAction,
   saveProfileAction,
@@ -57,7 +58,7 @@ const editableFields = ({
   fullName,
   email,
   birthDate,
-}: UserProfile): ProfileFormValues => ({
+}: ProfileChanges): ProfileFormValues => ({
   fullName,
   email,
   birthDate,
@@ -67,11 +68,11 @@ export default function ProfileTab({ profile }: Props) {
   const t = useTranslations("account.profile");
   const errorMessage = useErrorMessage();
   const fieldError = useFieldErrorMessage();
+  const notify = useNotify();
   const router = useRouter();
   // The phone and license status; the editable fields live in the form below.
   const [form, setForm] = useState(profile);
   const [pendingAction, setPendingAction] = useState<PendingAction>(null);
-  const [saved, setSaved] = useState(false);
 
   const {
     register,
@@ -197,10 +198,13 @@ export default function ProfileTab({ profile }: Props) {
   const handleSaveProfile = handleSubmit(async (values) => {
     if (pendingAction === "save") return;
     setPendingAction("save");
-    setSaved(false);
     try {
       const result = fromActionResult(await saveProfileAction(values));
       if (!result.ok) {
+        if (result.error.kind === "validation" && result.error.serverMessage) {
+          notify.error(result.error.serverMessage);
+          return;
+        }
         if (!applyFieldErrors(result.error, setError, PROFILE_FIELDS)) {
           setError("root.server", {
             type: result.error.kind,
@@ -211,7 +215,8 @@ export default function ProfileTab({ profile }: Props) {
       }
       // The phone and license status keep their own flows' state.
       reset(editableFields(result.data));
-      setSaved(true);
+      notify.success(result.message);
+      router.refresh();
     } catch (error) {
       setError("root.server", {
         type: "unknown",
@@ -391,11 +396,6 @@ export default function ProfileTab({ profile }: Props) {
       {saveError && (
         <p className="text-status-error mt-2 mb-0 text-sm" role="alert">
           {saveError}
-        </p>
-      )}
-      {saved && (
-        <p className="text-status-success mt-2 mb-0 text-sm" role="status">
-          {t("saved")}
         </p>
       )}
 

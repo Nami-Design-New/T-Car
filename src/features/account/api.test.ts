@@ -1,11 +1,11 @@
 import { describe, expect, it, vi } from "vitest";
 import { AppError } from "@/shared/lib/errors";
 
-const { get } = vi.hoisted(() => ({ get: vi.fn() }));
+const { get, put } = vi.hoisted(() => ({ get: vi.fn(), put: vi.fn() }));
 
 vi.mock("server-only", () => ({}));
 vi.mock("@/services/http/server", () => ({
-  serverHttp: { get },
+  serverHttp: { get, put },
 }));
 
 import { accountApi } from "./api";
@@ -14,6 +14,34 @@ const envelope = (data: unknown) => ({
   data,
   message: "Profile retrieved successfully.",
   code: 200,
+});
+
+describe("accountApi.updateProfile", () => {
+  it("sends editable fields and maps a response that omits the license", async () => {
+    put.mockResolvedValue({
+      code: 200,
+      message: "Profile updated successfully.",
+      data: { user: { name: "New Name", email: "new@example.com", birth_date: "1993-03-15" } },
+    });
+
+    await expect(accountApi.updateProfile("u1", {
+      fullName: "New Name", email: "new@example.com", birthDate: "1993-03-15",
+    })).resolves.toEqual({
+      ok: true,
+      data: { fullName: "New Name", email: "new@example.com", birthDate: "1993-03-15" },
+      message: "Profile updated successfully.",
+    });
+    expect(put).toHaveBeenCalledWith("/update-profile", {
+      name: "New Name", email: "new@example.com", birth_date: "1993-03-15",
+    });
+  });
+
+  it("rejects a malformed update response", async () => {
+    put.mockResolvedValue({ code: 200, message: "Saved", data: { user: { name: "New Name" } } });
+    await expect(accountApi.updateProfile("u1", {
+      fullName: "New Name", email: "new@example.com", birthDate: "1993-03-15",
+    })).resolves.toEqual({ ok: false, error: new AppError("server") });
+  });
 });
 
 describe("accountApi.getProfile", () => {

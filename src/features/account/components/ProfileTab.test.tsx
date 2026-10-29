@@ -3,11 +3,14 @@ import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { ActionResult } from '@/shared/lib/result';
 import { renderWithIntl } from '@/shared/test/render';
-import type { UserProfile } from '../model';
+import type { ProfileChanges, UserProfile } from '../model';
 
-const { saveProfileAction } = vi.hoisted(() => ({
-  saveProfileAction: vi.fn<(input: unknown) => Promise<ActionResult<UserProfile>>>(),
+const { saveProfileAction, notify } = vi.hoisted(() => ({
+  saveProfileAction: vi.fn<(input: unknown) => Promise<ActionResult<ProfileChanges>>>(),
+  notify: { success: vi.fn(), error: vi.fn() },
 }));
+
+vi.mock('@/shared/hooks/useNotify', () => ({ useNotify: () => notify }));
 
 vi.mock('../actions', () => ({
   saveProfileAction,
@@ -41,6 +44,7 @@ function renderTab() {
 
 beforeEach(() => {
   saveProfileAction.mockReset();
+  vi.clearAllMocks();
 });
 
 describe('ProfileTab', () => {
@@ -55,7 +59,7 @@ describe('ProfileTab', () => {
   });
 
   it('saves only the editable fields with the keyboard', async () => {
-    saveProfileAction.mockResolvedValue({ ok: true, data: profile });
+    saveProfileAction.mockResolvedValue({ ok: true, data: profile, message: 'Profile updated successfully.' });
     const { user, name } = renderTab();
     await user.type(name, ' ');
     await user.keyboard('{Enter}');
@@ -67,7 +71,8 @@ describe('ProfileTab', () => {
         birthDate: '1993-03-15',
       })
     );
-    expect(await screen.findByText('Changes saved')).toHaveAttribute('role', 'status');
+    expect(notify.success).toHaveBeenCalledWith('Profile updated successfully.');
+    expect(screen.getByText('+966500000000')).toBeInTheDocument();
   });
 
   it('does not save an invalid profile', async () => {
@@ -101,7 +106,17 @@ describe('ProfileTab', () => {
       )
     );
     expect(email).toHaveValue('fail@tcar.test');
-    expect(screen.queryByText('Changes saved')).not.toBeInTheDocument();
+    expect(notify.success).not.toHaveBeenCalled();
+  });
+
+  it('toasts the backend validation message and keeps edited input', async () => {
+    saveProfileAction.mockResolvedValue({ ok: false, error: { kind: 'validation', status: 422, serverMessage: 'Email already exists.' } });
+    const { user, email, save } = renderTab();
+    await user.clear(email);
+    await user.type(email, 'taken@example.com');
+    await user.click(save);
+    await waitFor(() => expect(notify.error).toHaveBeenCalledWith('Email already exists.'));
+    expect(email).toHaveValue('taken@example.com');
   });
 
   it('shows a failure without a field as a form message', async () => {
@@ -115,7 +130,7 @@ describe('ProfileTab', () => {
   });
 
   it('marks the save button busy while saving', async () => {
-    let finish: (value: ActionResult<UserProfile>) => void = () => {};
+    let finish: (value: ActionResult<ProfileChanges>) => void = () => {};
     saveProfileAction.mockReturnValue(new Promise((resolve) => (finish = resolve)));
     const { user, save } = renderTab();
     await user.click(save);

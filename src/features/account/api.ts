@@ -2,6 +2,7 @@ import "server-only";
 import { isApiEnvelope, type ApiEnvelope } from "@/services/http/envelope";
 import { serverHttp } from "@/services/http/server";
 import { AppError } from "@/shared/lib/errors";
+import { fail, ok, type Result } from "@/shared/lib/result";
 import type { LicenseUpload, ProfileChanges, UserProfile } from "./model";
 import { accountMock } from "./api.mock";
 
@@ -10,7 +11,7 @@ export interface AccountApi {
   updateProfile(
     accountId: string,
     profile: ProfileChanges,
-  ): Promise<UserProfile>;
+  ): Promise<Result<ProfileChanges>>;
   /** Sends a code to a new phone number; also used to resend it. */
   sendPhoneCode(accountId: string, phone: string): Promise<void>;
   /** Confirms the new phone number with the code that was sent to it. */
@@ -63,5 +64,46 @@ async function getProfile(): Promise<UserProfile> {
   return toUserProfile(user);
 }
 
-/** Profile reads are live; write methods remain on the mock until their fractions. */
-export const accountApi: AccountApi = { ...accountMock, getProfile };
+async function updateProfile(
+  _accountId: string,
+  profile: ProfileChanges,
+): Promise<Result<ProfileChanges>> {
+  try {
+    const response = await serverHttp.put<ApiEnvelope<unknown>>(
+      "/update-profile",
+      {
+        name: profile.fullName,
+        email: profile.email,
+        birth_date: profile.birthDate,
+      },
+    );
+    if (
+      !isApiEnvelope(response) ||
+      !isRecord(response.data) ||
+      !isRecord(response.data.user)
+    ) {
+      throw new AppError("server");
+    }
+    const user = response.data.user;
+    if (
+      typeof user.name !== "string" ||
+      typeof user.email !== "string" ||
+      typeof user.birth_date !== "string"
+    ) {
+      throw new AppError("server");
+    }
+    return ok(
+      { fullName: user.name, email: user.email, birthDate: user.birth_date },
+      response.message,
+    );
+  } catch (error) {
+    return fail(error);
+  }
+}
+
+/** Profile reads and edits are live; other writes remain on their mocks. */
+export const accountApi: AccountApi = {
+  ...accountMock,
+  getProfile,
+  updateProfile,
+};

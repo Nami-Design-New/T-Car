@@ -57,16 +57,7 @@ export interface ProfileStepResult {
   message: string;
 }
 
-/** The backend's minimum age for an account (`POST /complete-profile`). */
-export const MIN_AGE = 18;
-
-/** Whether someone born on `birthDate` (YYYY-MM-DD) is at least `MIN_AGE` today (UTC). */
-export function isOldEnough(birthDate: string, now: Date = new Date()): boolean {
-  const [year, month, day] = birthDate.split('-').map(Number);
-  if (!year || !month || !day) return false;
-  const adulthood = Date.UTC(year + MIN_AGE, month - 1, day);
-  return adulthood <= now.getTime();
-}
+export { MIN_AGE, isOldEnough } from '@/shared/lib/validation';
 
 /** Digits the backend accepts in a national number (`POST /auth/request-otp`). */
 export const NATIONAL_NUMBER_DIGITS = { min: 8, max: 15 };

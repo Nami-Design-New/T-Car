@@ -4,6 +4,7 @@ import {
   type UserProfile,
 } from "./model";
 import { AppError } from "@/shared/lib/errors";
+import { fail, ok } from "@/shared/lib/result";
 import type { AccountApi } from "./api";
 
 /** The phone-change code; the same fixed code as the sign-in mock (features/auth/api.mock.ts). */
@@ -28,11 +29,11 @@ export const accountMock: AccountApi = {
   async updateProfile(_accountId, profile) {
     // `fail@tcar.test` deterministically exercises validation without keeping server state.
     if (profile.email === "fail@tcar.test") {
-      throw new AppError("validation", "account.profileRejected", undefined, {
+      return fail(new AppError("validation", "account.profileRejected", undefined, {
         email: "account.profileRejected",
-      });
+      }));
     }
-    return { ...MOCK_PROFILE, ...profile };
+    return ok(profile, "Profile updated successfully.");
   },
 
   async sendPhoneCode(_accountId, phone) {

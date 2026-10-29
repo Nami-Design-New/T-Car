@@ -1,11 +1,6 @@
 import { z } from 'zod';
-import {
-  FULL_NAME_MAX_LENGTH,
-  FULL_NAME_MIN_LENGTH,
-  isFullName,
-  isPastIsoDate,
-} from '@/shared/lib/validation';
-import { isOldEnough, NATIONAL_NUMBER_DIGITS, toNationalNumber } from './model';
+import { profileFieldsSchema } from '@/shared/lib/validation/profile';
+import { NATIONAL_NUMBER_DIGITS, toNationalNumber } from './model';
 
 // Auth form schemas (doc 9). Messages are `errors.*` keys, never user text.
 // The client resolves forms with them and the Server Actions parse them again.
@@ -54,28 +49,7 @@ export const otpCodeSchema = z.object({ code });
 export const verifyOtpSchema = z.object({ phone: phoneValue, code });
 
 /** Registration step: the profile fields (consent is implied by continuing). */
-const registerName = z
-  .string({ error: 'auth.nameRequired' })
-  .trim()
-  .min(1, { error: 'auth.nameRequired', abort: true })
-  .min(FULL_NAME_MIN_LENGTH, { error: 'auth.nameTooShort', abort: true })
-  .max(FULL_NAME_MAX_LENGTH, { error: 'auth.nameTooLong', abort: true })
-  .refine(isFullName, { error: 'auth.nameRequired' });
-
-export const registerFormSchema = z.object({
-  fullName: registerName,
-  email: z
-    .string({ error: 'auth.emailRequired' })
-    .trim()
-    .min(1, { error: 'auth.emailRequired', abort: true })
-    .pipe(z.email({ error: 'auth.invalidEmail' })),
-  birthDate: z
-    .string({ error: 'auth.birthDateRequired' })
-    .min(1, { error: 'auth.birthDateRequired', abort: true })
-    .refine(isPastIsoDate, { error: 'auth.invalidBirthDate', abort: true })
-    // The backend requires 18 (`MIN_AGE`); checked here so the form says so first.
-    .refine((value) => isOldEnough(value), { error: 'auth.underAge' })
-});
+export const registerFormSchema = profileFieldsSchema;
 
 const invalidLocation = { error: 'auth.invalidLocation' } as const;
 

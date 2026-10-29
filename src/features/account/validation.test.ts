@@ -21,10 +21,10 @@ describe("profile full-name rules", () => {
   });
 
   it.each([
-    ["one character", "A", "account.nameRequired"],
-    ["101 characters", "A".repeat(101), "account.nameRequired"],
-    ["digits", "Ahmed 123", "account.nameRequired"],
-    ["punctuation", "Ahmed-Abdullah", "account.nameRequired"],
+    ["one character", "A", "auth.nameTooShort"],
+    ["101 characters", "A".repeat(101), "auth.nameTooLong"],
+    ["digits", "Ahmed 123", "auth.nameRequired"],
+    ["punctuation", "Ahmed-Abdullah", "auth.nameRequired"],
   ])("rejects %s", (_, fullName, error) => {
     expect(
       fieldErrors(profileFormSchema.safeParse({ ...validProfile, fullName })),
@@ -84,9 +84,9 @@ describe("profileFormSchema", () => {
         }),
       ),
     ).toEqual({
-      fullName: "account.nameRequired",
-      email: "account.emailRequired",
-      birthDate: "account.birthDateRequired",
+      fullName: "auth.nameRequired",
+      email: "auth.emailRequired",
+      birthDate: "auth.birthDateRequired",
     });
   });
 
@@ -104,8 +104,8 @@ describe("profileFormSchema", () => {
         }),
       ),
     ).toEqual({
-      email: "account.invalidEmail",
-      birthDate: "account.invalidBirthDate",
+      email: "auth.invalidEmail",
+      birthDate: "auth.invalidBirthDate",
     });
   });
 });

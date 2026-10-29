@@ -1,9 +1,10 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { UserProfile } from "./model";
+import type { ProfileChanges } from "./model";
 import { LICENSE_MAX_SIZE_BYTES } from "./model";
 
-const { auth, accountApi } = vi.hoisted(() => ({
+const { auth, accountApi, updateSessionProfile } = vi.hoisted(() => ({
   auth: vi.fn(),
+  updateSessionProfile: vi.fn(),
   accountApi: {
     getProfile: vi.fn(),
     updateProfile: vi.fn(),
@@ -13,7 +14,7 @@ const { auth, accountApi } = vi.hoisted(() => ({
   },
 }));
 
-vi.mock("@/auth", () => ({ auth, signOut: vi.fn() }));
+vi.mock("@/auth", () => ({ auth, signOut: vi.fn(), updateSessionProfile }));
 vi.mock("./api", () => ({ accountApi }));
 vi.mock("@/shared/lib/report", () => ({ reportError: vi.fn() }));
 
@@ -23,14 +24,6 @@ import {
   uploadLicenseAction,
   verifyPhoneAction,
 } from "./actions";
-
-const stored: UserProfile = {
-  fullName: "Stored Name",
-  email: "stored@domain.com",
-  birthDate: "1990-01-01",
-  phone: "+966500000000",
-  licenseUploaded: true,
-};
 
 const edits = {
   fullName: " New Name ",
@@ -42,7 +35,7 @@ beforeEach(() => {
   vi.clearAllMocks();
   auth.mockResolvedValue({ user: { id: "u1" } });
   accountApi.updateProfile.mockImplementation(
-    async (_id: string, profile: UserProfile) => ({ ...stored, ...profile }),
+    async (_id: string, profile: ProfileChanges) => ({ ok: true, data: profile, message: "Profile updated successfully." }),
   );
 });
 
@@ -51,7 +44,7 @@ describe("saveProfileAction", () => {
     auth.mockResolvedValue(null);
     await expect(
       saveProfileAction({ fullName: "", email: "", birthDate: "" }),
-    ).resolves.toEqual({
+    ).resolves.toMatchObject({
       ok: false,
       error: { kind: "unauthorized" },
     });
@@ -60,12 +53,12 @@ describe("saveProfileAction", () => {
 
   it("rejects a malformed profile without saving", async () => {
     const result = await saveProfileAction({ ...edits, email: "nope" });
-    expect(result).toEqual({
+    expect(result).toMatchObject({
       ok: false,
       error: {
         kind: "validation",
-        code: "account.invalidEmail",
-        fieldErrors: { email: "account.invalidEmail" },
+        code: "auth.invalidEmail",
+        fieldErrors: { email: "auth.invalidEmail" },
       },
     });
     expect(accountApi.updateProfile).not.toHaveBeenCalled();
@@ -86,21 +79,45 @@ describe("saveProfileAction", () => {
     });
     expect(result).toMatchObject({
       ok: true,
-      data: { phone: "+966500000000" },
+      data: { fullName: "New Name", email: "new@domain.com", birthDate: "1993-03-15" },
+      message: "Profile updated successfully.",
     });
+    expect(updateSessionProfile).toHaveBeenCalledWith({ name: "New Name", email: "new@domain.com" });
+  });
+
+  it("rejects an underage customer before calling the service", async () => {
+    const result = await saveProfileAction({ ...edits, birthDate: "2020-01-01" });
+    expect(result).toMatchObject({ ok: false, error: { fieldErrors: { birthDate: "auth.underAge" } } });
+    expect(accountApi.updateProfile).not.toHaveBeenCalled();
+    expect(updateSessionProfile).not.toHaveBeenCalled();
   });
 
   it("passes a service field error through", async () => {
     const { AppError } = await import("@/shared/lib/errors");
-    accountApi.updateProfile.mockRejectedValue(
-      new AppError("validation", "account.profileRejected", undefined, {
+    accountApi.updateProfile.mockResolvedValue({
+      ok: false,
+      error: new AppError("validation", "account.profileRejected", undefined, {
         email: "account.profileRejected",
       }),
-    );
+    });
     await expect(saveProfileAction(edits)).resolves.toMatchObject({
       ok: false,
       error: { fieldErrors: { email: "account.profileRejected" } },
     });
+    expect(updateSessionProfile).not.toHaveBeenCalled();
+  });
+
+  it("preserves the backend validation message without changing the session", async () => {
+    const { AppError } = await import("@/shared/lib/errors");
+    accountApi.updateProfile.mockResolvedValue({
+      ok: false,
+      error: new AppError("validation", undefined, 422, undefined, { serverMessage: "Email already exists." }),
+    });
+    await expect(saveProfileAction(edits)).resolves.toMatchObject({
+      ok: false,
+      error: { kind: "validation", status: 422, serverMessage: "Email already exists." },
+    });
+    expect(updateSessionProfile).not.toHaveBeenCalled();
   });
 });
 

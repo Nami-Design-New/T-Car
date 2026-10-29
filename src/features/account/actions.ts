@@ -1,6 +1,6 @@
 "use server";
 
-import { auth, signOut } from "@/auth";
+import { auth, signOut, updateSessionProfile } from "@/auth";
 import { accountApi } from "./api";
 import { AppError } from "@/shared/lib/errors";
 import { reportError } from "@/shared/lib/report";
@@ -12,7 +12,7 @@ import {
 } from "@/shared/lib/result";
 import { toValidationError } from "@/shared/lib/validation";
 import type { ZodType } from "zod";
-import type { UserProfile } from "./model";
+import type { ProfileChanges } from "./model";
 import {
   phoneChangeSchema,
   licenseUploadSchema,
@@ -57,11 +57,22 @@ function parse<T>(schema: ZodType<T>, input: unknown): T {
  */
 export async function saveProfileAction(
   input: ProfileFormValues,
-): Promise<ActionResult<UserProfile>> {
-  return run("account.saveProfile", async (accountId) => {
+): Promise<ActionResult<ProfileChanges>> {
+  try {
+    const session = await auth();
+    if (!session?.user?.id) throw new AppError("unauthorized");
     const changes = parse(profileFormSchema, input);
-    return accountApi.updateProfile(accountId, changes);
-  });
+    const result = await accountApi.updateProfile(session.user.id, changes);
+    if (!result.ok) throw result.error;
+    await updateSessionProfile({
+      name: result.data.fullName,
+      email: result.data.email,
+    });
+    return toActionResult(result);
+  } catch (error) {
+    reportError(error, { scope: "account.saveProfile" });
+    return toActionResult(fail(error));
+  }
 }
 
 /** Sends (or resends) the verification code to a new phone number. */
