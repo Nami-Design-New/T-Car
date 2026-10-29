@@ -10,10 +10,10 @@ export const MOCK_WALLET_SUMMARY: WalletSummary = {
 };
 
 export const MOCK_WALLET_TRANSACTIONS: WalletTransaction[] = [
-  { id: '1', type: 'topup', amount: 2500, reference: '7A3D6D', createdAt: '2025-12-01T04:50:00' },
-  { id: '2', type: 'refund', amount: 2500, reference: '7A3D6E', createdAt: '2025-12-01T04:50:00' },
-  { id: '3', type: 'payment', amount: 2500, reference: '7A3D6F', createdAt: '2025-12-01T04:50:00' },
-  { id: '4', type: 'withdraw', amount: 2500, reference: '7A3D70', createdAt: '2025-12-01T04:50:00' },
+  { id: '1', type: 'topup', status: 'success', amount: 2500, accountId: null, reference: '7A3D6D', createdAt: '2025-12-01T04:50:00' },
+  { id: '2', type: 'refund', status: 'success', amount: 2500, accountId: null, reference: '7A3D6E', createdAt: '2025-12-01T04:50:00' },
+  { id: '3', type: 'payment', status: 'success', amount: 2500, accountId: null, reference: '7A3D6F', createdAt: '2025-12-01T04:50:00' },
+  { id: '4', type: 'withdrawal', status: 'success', amount: 2500, accountId: 'bank-1', reference: '7A3D70', createdAt: '2025-12-01T04:50:00' },
 ];
 
 // In-memory state, so this mock must only run in the browser: on the server it
@@ -29,12 +29,14 @@ const randomReference = () =>
     .toUpperCase()
     .padStart(6, '0');
 
-function record(type: WalletTransaction['type'], amount: number) {
+function record(type: WalletTransaction['type'], amount: number, accountId: string | null = null) {
   transactions = [
     {
       id: `${Date.now()}-${transactions.length}`,
       type,
+      status: 'success',
       amount,
+      accountId,
       reference: randomReference(),
       createdAt: new Date().toISOString(),
     },
@@ -80,6 +82,6 @@ export const walletMock: WalletApi = {
       total: summary.total - amount,
       withdrawable: summary.withdrawable - amount,
     };
-    record('withdraw', amount);
+    record('withdrawal', amount, bankAccountId);
   },
 };

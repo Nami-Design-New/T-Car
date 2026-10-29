@@ -23,6 +23,7 @@ steps.
 | 9   | [Form control and validation](09-form-validation.md)     | Which inputs use React Hook Form + Zod, which do not, and where the server remains authoritative |
 | -   | [Tailwind CSS 4.3 migration](09-tailwind-migration.md)   | Proposed replacement for the current SCSS styling layer                                          |
 | -   | [Account routes flow](account-routes-flow.md)            | How account layouts, pages, `children`, and route boundaries compose                             |
+| -   | [Wallet API integration plan](api/wallet-api.md)          | Observed wallet endpoint responses, DTOs, open backend asks, and integration fractions             |
 
 The existing root-level plans stay valid and are referenced where they overlap:
 
@@ -239,6 +240,17 @@ removed Sass configuration and all `src/**/*.scss`. Tailwind is now the only
 styling source; see [doc 9](09-tailwind-migration.md) for verification details.
 
 ### Features
+
+**Wallet API contract fraction W0 (2026-10-29), done:** Recorded the live GET
+and top-up 200 responses, wallet POST 422 responses, GET/POST 401 responses,
+Bruno request DTO, and transaction enums in [wallet-api.md](api/wallet-api.md).
+
+**Wallet API fraction W1 (2026-10-29), done:** Added the transaction/status
+model types, strict `GET /wallet` DTO guards, response mapper, and focused
+tests. Typecheck, lint, build, and protected-route smoke pass. The full test
+suite has 14 failures in unrelated auth/account/layout/shared UI tests; wallet
+tests pass. No HTTP integration has started. Backend follow-ups: resolve
+withdrawal's `amount` validation response and add wallet pagination.
 
 **Phase 1 import-boundary remediation (2026-10-20):** The account shell now receives points data from its App Router section layout and imports the summary card through `features/points/index.ts`. The root layout now supplies the authenticated notifications count to the layout feature. `MapLocationModal` and `LocationData` now live in `shared/ui` and `shared/lib`, respectively, with every caller using that shared API. Rental search now consumes the cars feature only through its public index; that index no longer exposes the server-only `getOffices` read, which the home route imports directly. The initial lint audit is reduced from nine to two boundary errors; both remaining violations are in wallet's bank-account action dependency.
 

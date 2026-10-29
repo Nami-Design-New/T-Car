@@ -997,7 +997,7 @@
       "topup": "Top-up",
       "refund": "Refund",
       "payment": "Payment",
-      "withdraw": "Withdrawal"
+      "withdrawal": "Withdrawal"
     },
     "amount": {
       "rangeMin": "Minimum {min} SAR",

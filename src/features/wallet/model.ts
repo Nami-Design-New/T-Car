@@ -1,9 +1,13 @@
-export type WalletTransactionType = 'topup' | 'refund' | 'payment' | 'withdraw';
+export type WalletTransactionType = 'refund' | 'payment' | 'topup' | 'withdrawal';
+
+export type WalletTransactionStatus = 'pending' | 'success' | 'failed';
 
 export interface WalletTransaction {
   id: string;
   type: WalletTransactionType;
+  status: WalletTransactionStatus;
   amount: number;
+  accountId: string | null;
   reference: string;
   /** ISO date string */
   createdAt: string;

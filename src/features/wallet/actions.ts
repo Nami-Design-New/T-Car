@@ -50,7 +50,9 @@ export async function topUpAction(
         {
           id: `action-${Date.now()}`,
           type: "topup",
+          status: "success",
           amount: values.amount,
+          accountId: null,
           reference: "ACTION",
           createdAt: new Date().toISOString(),
         },
@@ -83,8 +85,10 @@ export async function withdrawAction(
       transactions: [
         {
           id: `action-${Date.now()}`,
-          type: "withdraw",
+          type: "withdrawal",
+          status: "success",
           amount: values.amount,
+          accountId: values.bankAccountId,
           reference: "ACTION",
           createdAt: new Date().toISOString(),
         },
