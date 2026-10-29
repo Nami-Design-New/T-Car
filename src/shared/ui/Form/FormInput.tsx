@@ -38,11 +38,11 @@ export function FormInput({
           className="text-text-primary mb-1 text-sm font-semibold"
         >
           {label}
-          {required && (
+          {/* {required && (
             <span className="text-status-error ms-1" aria-hidden="true">
               *
             </span>
-          )}
+          )} */}
         </label>
       )}
 
@@ -54,7 +54,7 @@ export function FormInput({
               "w-full rounded-md border px-2 py-4 text-sm transition duration-200 focus:outline-none",
               error
                 ? "border-status-error bg-status-error-background focus:border-status-error"
-                : "border-stroke-light bg-white focus:border-action-primary",
+                : "border-stroke-light focus:border-action-primary bg-white",
               "pe-12",
               className,
             )}
@@ -74,7 +74,7 @@ export function FormInput({
             "w-full rounded-md border px-2 py-4 text-sm transition duration-200 focus:outline-none",
             error
               ? "border-status-error bg-status-error-background focus:border-status-error"
-              : "border-stroke-light bg-white focus:border-action-primary",
+              : "border-stroke-light focus:border-action-primary bg-white",
             className,
           )}
           {...props}

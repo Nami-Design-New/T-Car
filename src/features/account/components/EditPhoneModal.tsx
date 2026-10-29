@@ -19,7 +19,7 @@ import {
 } from "@/shared/hooks/useErrorMessage";
 import type { AppError } from "@/shared/lib/errors";
 import { applyFieldErrors } from "@/shared/lib/validation";
-import { phoneChangeSchema, type PhoneChangeValues } from "../validation";
+import { legacyPhoneChangeSchema, type LegacyPhoneChangeValues } from "../validation";
 
 interface Props {
   open: boolean;
@@ -47,8 +47,8 @@ export default function EditPhoneModal({
     setError,
     reset,
     formState: { errors },
-  } = useForm<PhoneChangeValues>({
-    resolver: zodResolver(phoneChangeSchema),
+  } = useForm<LegacyPhoneChangeValues>({
+    resolver: zodResolver(legacyPhoneChangeSchema),
     mode: "onBlur",
     reValidateMode: "onChange",
     defaultValues: { phone: currentPhone },
@@ -77,26 +77,22 @@ export default function EditPhoneModal({
     <Dialog
       open={open}
       onClose={onClose}
-      className="overflow-hidden rounded-xl border-0 p-0"
       closeOnEscape={!loading}
+      size="md"
       closeOnBackdrop={!loading}
     >
-      <Dialog.Header className="border-0 px-10 pt-3">
+      <Dialog.Header>
+        <Dialog.Title> {t("title")}</Dialog.Title>
         <Dialog.Close />
       </Dialog.Header>
 
       {/* Same layout as the sign-in step (features/auth LoginForm). */}
-      <Dialog.Body className="px-10 pt-0 pb-10">
+      <Dialog.Body>
         <form
           className="flex w-full flex-col items-center"
           onSubmit={handleSend}
           noValidate
         >
-          <Dialog.Title className="text-text-primary">
-            {t("title")}
-          </Dialog.Title>
-          <p className="text-text-subtle mb-7">{t("description")}</p>
-
           <div className="mb-6 w-full">
             <Controller
               name="phone"

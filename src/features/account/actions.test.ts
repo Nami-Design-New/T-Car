@@ -1,36 +1,32 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { UserProfile } from "./model";
+import type { ProfileChanges } from "./model";
 import { LICENSE_MAX_SIZE_BYTES } from "./model";
 
-const { auth, accountApi } = vi.hoisted(() => ({
+const { auth, accountApi, updateSessionProfile, signOut } = vi.hoisted(() => ({
   auth: vi.fn(),
+  updateSessionProfile: vi.fn(),
+  signOut: vi.fn(),
   accountApi: {
     getProfile: vi.fn(),
     updateProfile: vi.fn(),
     sendPhoneCode: vi.fn(),
     uploadLicense: vi.fn(),
     verifyPhone: vi.fn(),
+    deleteAccount: vi.fn(),
   },
 }));
 
-vi.mock("@/auth", () => ({ auth, signOut: vi.fn() }));
-vi.mock("@/services/account.api", () => ({ accountApi }));
+vi.mock("@/auth", () => ({ auth, signOut, updateSessionProfile }));
+vi.mock("./api", () => ({ accountApi }));
 vi.mock("@/shared/lib/report", () => ({ reportError: vi.fn() }));
 
 import {
   saveProfileAction,
+  deleteAccountAction,
   sendPhoneCodeAction,
   uploadLicenseAction,
   verifyPhoneAction,
 } from "./actions";
-
-const stored: UserProfile = {
-  fullName: "Stored Name",
-  email: "stored@domain.com",
-  birthDate: "1990-01-01",
-  phone: "+966500000000",
-  licenseUploaded: true,
-};
 
 const edits = {
   fullName: " New Name ",
@@ -41,10 +37,20 @@ const edits = {
 beforeEach(() => {
   vi.clearAllMocks();
   auth.mockResolvedValue({ user: { id: "u1" } });
-  accountApi.getProfile.mockResolvedValue({ ...stored });
   accountApi.updateProfile.mockImplementation(
-    async (_id: string, profile: UserProfile) => profile,
+    async (profile: ProfileChanges) => ({ ok: true, data: profile, message: "Profile updated successfully." }),
   );
+  accountApi.sendPhoneCode.mockResolvedValue({ ok: true, data: undefined, message: "Code sent." });
+  accountApi.uploadLicense.mockResolvedValue({
+    ok: true,
+    data: "https://example.test/licenses/license.jpg",
+    message: "License saved successfully.",
+  });
+  accountApi.deleteAccount.mockResolvedValue({
+    ok: true,
+    data: null,
+    message: "Account deleted successfully.",
+  });
 });
 
 describe("saveProfileAction", () => {
@@ -52,7 +58,7 @@ describe("saveProfileAction", () => {
     auth.mockResolvedValue(null);
     await expect(
       saveProfileAction({ fullName: "", email: "", birthDate: "" }),
-    ).resolves.toEqual({
+    ).resolves.toMatchObject({
       ok: false,
       error: { kind: "unauthorized" },
     });
@@ -61,18 +67,18 @@ describe("saveProfileAction", () => {
 
   it("rejects a malformed profile without saving", async () => {
     const result = await saveProfileAction({ ...edits, email: "nope" });
-    expect(result).toEqual({
+    expect(result).toMatchObject({
       ok: false,
       error: {
         kind: "validation",
-        code: "account.invalidEmail",
-        fieldErrors: { email: "account.invalidEmail" },
+        code: "auth.invalidEmail",
+        fieldErrors: { email: "auth.invalidEmail" },
       },
     });
     expect(accountApi.updateProfile).not.toHaveBeenCalled();
   });
 
-  it("saves the parsed edits and keeps the server-managed fields", async () => {
+  it("saves only the parsed editable fields", async () => {
     const fromClient = {
       ...edits,
       phone: "+966599999999",
@@ -80,56 +86,120 @@ describe("saveProfileAction", () => {
     };
     const result = await saveProfileAction(fromClient);
 
-    expect(accountApi.updateProfile).toHaveBeenCalledWith("u1", {
+    expect(accountApi.updateProfile).toHaveBeenCalledWith({
       fullName: "New Name",
       email: "new@domain.com",
       birthDate: "1993-03-15",
-      phone: "+966500000000",
-      licenseUploaded: true,
     });
     expect(result).toMatchObject({
       ok: true,
-      data: { phone: "+966500000000" },
+      data: { fullName: "New Name", email: "new@domain.com", birthDate: "1993-03-15" },
+      message: "Profile updated successfully.",
     });
+    expect(updateSessionProfile).toHaveBeenCalledWith({ name: "New Name", email: "new@domain.com" });
+  });
+
+  it("rejects an underage customer before calling the service", async () => {
+    const result = await saveProfileAction({ ...edits, birthDate: "2020-01-01" });
+    expect(result).toMatchObject({ ok: false, error: { fieldErrors: { birthDate: "auth.underAge" } } });
+    expect(accountApi.updateProfile).not.toHaveBeenCalled();
+    expect(updateSessionProfile).not.toHaveBeenCalled();
   });
 
   it("passes a service field error through", async () => {
     const { AppError } = await import("@/shared/lib/errors");
-    accountApi.updateProfile.mockRejectedValue(
-      new AppError("validation", "account.profileRejected", undefined, {
+    accountApi.updateProfile.mockResolvedValue({
+      ok: false,
+      error: new AppError("validation", "account.profileRejected", undefined, {
         email: "account.profileRejected",
       }),
-    );
+    });
     await expect(saveProfileAction(edits)).resolves.toMatchObject({
       ok: false,
       error: { fieldErrors: { email: "account.profileRejected" } },
     });
+    expect(updateSessionProfile).not.toHaveBeenCalled();
+  });
+
+  it("preserves the backend validation message without changing the session", async () => {
+    const { AppError } = await import("@/shared/lib/errors");
+    accountApi.updateProfile.mockResolvedValue({
+      ok: false,
+      error: new AppError("validation", undefined, 422, undefined, { serverMessage: "Email already exists." }),
+    });
+    await expect(saveProfileAction(edits)).resolves.toMatchObject({
+      ok: false,
+      error: { kind: "validation", status: 422, serverMessage: "Email already exists." },
+    });
+    expect(updateSessionProfile).not.toHaveBeenCalled();
+  });
+});
+
+describe("deleteAccountAction", () => {
+  it("requires a session before deleting", async () => {
+    auth.mockResolvedValue(null);
+
+    await expect(deleteAccountAction()).resolves.toMatchObject({
+      ok: false,
+      error: { kind: "unauthorized" },
+    });
+    expect(accountApi.deleteAccount).not.toHaveBeenCalled();
+  });
+
+  it("deletes through the API before ending the local session", async () => {
+    await expect(deleteAccountAction()).resolves.toEqual({
+      ok: true,
+      data: null,
+      message: "Account deleted successfully.",
+    });
+    expect(accountApi.deleteAccount).toHaveBeenCalledOnce();
+    expect(signOut).toHaveBeenCalledWith({ redirect: false });
   });
 });
 
 describe("phone actions", () => {
+  it("requires a session before requesting a code", async () => {
+    auth.mockResolvedValue(null);
+    await expect(sendPhoneCodeAction({ countryCode: "+966", phone: "511111111" })).resolves.toMatchObject({
+      ok: false, error: { kind: "unauthorized" },
+    });
+    expect(accountApi.sendPhoneCode).not.toHaveBeenCalled();
+  });
+
   it("rejects a malformed phone without sending a code", async () => {
-    const result = await sendPhoneCodeAction("+966");
+    const result = await sendPhoneCodeAction({ countryCode: "+966", phone: "1234567" });
     expect(result).toMatchObject({
       ok: false,
       error: {
         kind: "validation",
-        fieldErrors: { phone: "account.invalidPhone" },
+        fieldErrors: { phone: "auth.phoneTooShort" },
       },
     });
     expect(accountApi.sendPhoneCode).not.toHaveBeenCalled();
   });
 
-  it("sends the code to the trimmed phone", async () => {
-    await expect(sendPhoneCodeAction(" 966511111111 ")).resolves.toEqual({
+  it("sends the normalized national phone and returns the message", async () => {
+    await expect(sendPhoneCodeAction({ countryCode: "+966", phone: " 0511111111 " })).resolves.toEqual({
       ok: true,
-      data: undefined,
+      data: { countryCode: "+966", phone: "511111111" },
+      message: "Code sent.",
     });
-    expect(accountApi.sendPhoneCode).toHaveBeenCalledWith("u1", "966511111111");
+    expect(accountApi.sendPhoneCode).toHaveBeenCalledWith({ countryCode: "+966", phone: "511111111" });
+  });
+
+  it("preserves the backend validation message", async () => {
+    const { AppError } = await import("@/shared/lib/errors");
+    accountApi.sendPhoneCode.mockResolvedValueOnce({
+      ok: false,
+      error: new AppError("validation", undefined, 422, undefined, { serverMessage: "Phone already in use." }),
+    });
+    await expect(sendPhoneCodeAction({ countryCode: "+966", phone: "511111111" })).resolves.toMatchObject({
+      ok: false, error: { kind: "validation", status: 422, serverMessage: "Phone already in use." },
+    });
   });
 
   it("rejects an incomplete code without verifying", async () => {
-    const result = await verifyPhoneAction("966511111111", "12");
+    const result = await verifyPhoneAction({ countryCode: "+966", phone: "511111111" }, "12");
     expect(result).toMatchObject({
       ok: false,
       error: {
@@ -140,21 +210,18 @@ describe("phone actions", () => {
     expect(accountApi.verifyPhone).not.toHaveBeenCalled();
   });
 
-  it("verifies a well-formed code", async () => {
-    await expect(verifyPhoneAction("966511111111", "1234")).resolves.toEqual({
+  it("updates the session after the phone is verified", async () => {
+    accountApi.verifyPhone.mockResolvedValueOnce({ ok: true, data: "+966511111111", message: "Verified." });
+    await expect(verifyPhoneAction({ countryCode: "+966", phone: "511111111" }, "1234")).resolves.toMatchObject({
       ok: true,
-      data: undefined,
+      data: "+966511111111",
     });
-    expect(accountApi.verifyPhone).toHaveBeenCalledWith(
-      "u1",
-      "966511111111",
-      "1234",
-    );
+    expect(accountApi.verifyPhone).toHaveBeenCalledWith({ countryCode: "+966", phone: "511111111" }, "1234");
   });
 });
 
 describe("uploadLicenseAction", () => {
-  it("rechecks the 5 MB limit before calling the service", async () => {
+  it("rechecks the 15 MB limit before calling the service", async () => {
     const formData = new FormData();
     formData.set(
       "license",
@@ -183,10 +250,10 @@ describe("uploadLicenseAction", () => {
 
     await expect(uploadLicenseAction(formData)).resolves.toEqual({
       ok: true,
-      data: undefined,
+      data: "https://example.test/licenses/license.jpg",
+      message: "License saved successfully.",
     });
     expect(accountApi.uploadLicense).toHaveBeenCalledWith(
-      "u1",
       expect.objectContaining({
         name: "license.jpg",
         size: 7,

@@ -5,7 +5,7 @@
 > `zod` and `@hookform/resolvers` are installed. License images must declare
 > JPG or PNG and be no larger than 5 MB; the same schema runs in the client and
 > Server Action. Wallet amounts use the flow-provided minimum and maximum; the top-up maximum is the current mock contract and withdrawal rechecks the current withdrawable balance. Shared rules live in
-> `shared/lib/validation.ts` and the pure booking-details schema in `shared/lib/booking-validation.ts`. Progress and the
+> `shared/lib/validation/common.ts` and the pure booking-details schema in `shared/lib/booking-validation.ts`. Progress and the
 > assumptions still open are in the [migration status](README.md#what-remains).
 > Every migrated form renders its fields with the shared controls
 > (`shared/ui/Form`, `PhoneField`, `OtpInput`), which take a translated `error`

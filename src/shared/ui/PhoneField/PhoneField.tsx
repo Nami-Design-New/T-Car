@@ -268,11 +268,11 @@ export function PhoneField({
           className="text-text-primary text-sm font-semibold"
         >
           {label}
-          {required && (
+          {/* {required && (
             <span aria-hidden="true" className="text-status-error ms-1">
               *
             </span>
-          )}
+          )} */}
         </label>
       )}
       <div className="flex w-full min-w-0 gap-2" dir="ltr">

@@ -3,6 +3,9 @@
 import { useEffect, useRef } from "react";
 import { cn } from "@/shared/lib/cn";
 import { Dialog } from "@/shared/ui/Dialog";
+import { Button } from "../Button";
+import { RESULT_ANIMATIONS } from "@/shared/config/assets";
+import Image from "next/image";
 
 export interface Props {
   open: boolean;
@@ -59,68 +62,73 @@ export function AlertDialog({
     <Dialog
       open={open}
       onClose={handleClose}
-      size="sm"
-      className={cn(
-        " flex  flex-col items-center justify-between rounded-xl bg-surface-elevated px-7 py-9",
-        showButtons &&
-          "px-5 pt-6 pb-5 text-center",
-      )}
+      size="md"
       closeOnEscape={!loading}
       initialFocusRef={showButtons ? cancelRef : undefined}
     >
-      <div
-        className="  relative grid size-23.5 shrink-0 place-items-center rounded-full bg-status-error"
-        aria-hidden="true"
-      >
-        <span className="absolute h-2.75 w-18 rounded-full bg-text-on-action rotate-45" />
-        <span className="absolute h-2.75 w-18 rounded-full bg-text-on-action -rotate-45" />
-      </div>
+      <Dialog.Body>
+        <Image
+          className="mx-auto mb-2 block size-45 object-contain max-[575px]:size-37.5"
+          src={RESULT_ANIMATIONS.error}
+          alt=""
+          width={180}
+          height={180}
+          unoptimized
+        />
 
-      <div className=" flex flex-col items-center">
-        {title && (
-          <Dialog.Title
-            className={cn(
-              "m-0 font-bold text-text-primary",
-              showButtons ? "text-base" : "text-[17px]",
-            )}
-          >
-            {title}
-          </Dialog.Title>
-        )}
-        {description && (
-          <Dialog.Description className="mx-0 mt-0 mb-0 max-w-97.5 text-[14px] leading-[1.8] text-text-subtle">
-            {description}
-          </Dialog.Description>
-        )}
-        {error && (
-          <p className="mt-2 mb-0 text-sm text-status-error" role="alert">
-            {error}
-          </p>
-        )}
-      </div>
-
-      {showButtons && (
-        <div className=" mt-5.5 flex w-full gap-2.5">
-          <button
-            type="button"
-            className=" h-10.5 flex-1 cursor-pointer rounded-sm border border-status-error bg-status-error text-[13px] font-semibold text-text-on-action transition duration-200 hover:bg-status-error/90 disabled:cursor-not-allowed disabled:opacity-50"
-            disabled={loading}
-            aria-busy={loading}
-            onClick={onPrimary}
-          >
-            {primaryButtonText}
-          </button>
-          <button
-            ref={cancelRef}
-            type="button"
-            className=" h-10.5 flex-1 cursor-pointer rounded-sm border border-action-primary bg-surface-elevated text-[13px] font-semibold text-action-primary transition duration-200 hover:bg-surface-card-primary disabled:cursor-not-allowed disabled:opacity-50"
-            disabled={loading}
-            onClick={onSecondary}
-          >
-            {secondaryButtonText}
-          </button>
+        <div className="flex flex-col items-center">
+          {title && (
+            <Dialog.Title
+              className={cn(
+                "m-0 font-bold",
+                showButtons ? "text-base" : "text-[18px]",
+              )}
+            >
+              {title}
+            </Dialog.Title>
+          )}
+          {description && (
+            <Dialog.Description className="text-text-subtle mx-0 mt-0 mb-0 max-w-97.5 text-center text-[14px] leading-[1.8]">
+              {description}
+            </Dialog.Description>
+          )}
+          {error && (
+            <p className="text-status-error mt-2 mb-0 text-sm" role="alert">
+              {error}
+            </p>
+          )}
         </div>
-      )}
+      </Dialog.Body>
+      <Dialog.Footer>
+        {showButtons && (
+          <div className="flex w-full gap-2.5">
+            <Button
+              type="button"
+              size="lg"
+              variant="destructive"
+              className="flex-1"
+              disabled={loading}
+              aria-busy={loading}
+              loading={loading}
+              onClick={onPrimary}
+            >
+              {primaryButtonText}
+            </Button>
+            <Button
+              ref={cancelRef}
+              type="button"
+              size="lg"
+              className="flex-1"
+              disabled={loading}
+              aria-busy={loading}
+              variant="outline"
+              onClick={onSecondary}
+            >
+              {secondaryButtonText}
+            </Button>
+          </div>
+        )}
+      </Dialog.Footer>
     </Dialog>
   );
 }

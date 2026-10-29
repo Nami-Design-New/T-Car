@@ -88,7 +88,8 @@
       "title": "Driving license",
       "close": "Close",
       "uploadPrompt": "Click here to upload a photo of your driving license",
-      "fileTypes": "JPG or PNG, up to 5 MB",
+      "fileTypes": "JPG, JPEG, or PNG, up to 15 MB",
+      "editImage": "Change driving license image",
       "submit": "Upload"
     },
     "verifyPhone": {
@@ -582,10 +583,11 @@
     "account": {
       "profileRejected": "The profile could not be saved. Check the details and try again.",
       "resendLimited": "The code cannot be resent yet. Wait a moment and try again.",
+      "phoneVerificationUnavailable": "Phone verification is temporarily unavailable. Please try again later.",
       "licenseRequired": "Choose an image of your driving license.",
       "licenseRejected": "The driving license could not be uploaded. Try another image.",
-      "licenseTooLarge": "The driving license image must be 5 MB or smaller.",
-      "licenseInvalidType": "Choose a JPG or PNG image.",
+      "licenseTooLarge": "The driving license image must be 15 MB or smaller.",
+      "licenseInvalidType": "Choose a JPG, JPEG, or PNG image.",
       "deleteRejected": "The account cannot be deleted while it has active bookings.",
       "invalidCode": "The verification code is incorrect. Try again.",
       "nameRequired": "Full name is required.",

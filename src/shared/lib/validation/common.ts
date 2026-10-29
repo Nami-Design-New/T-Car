@@ -1,6 +1,6 @@
 import type { FieldValues, Path, UseFormSetError } from 'react-hook-form';
 import type { ZodError } from 'zod';
-import { AppError } from './errors';
+import { AppError } from '../errors';
 
 // Domain-free rules shared by feature schemas (doc 9 §9.1: promoted once a
 // second feature needed them). Each feature keeps its own `errors.*` keys.
@@ -14,6 +14,15 @@ const PHONE_DIGITS = { min: 8, max: 15 };
 
 export const FULL_NAME_MIN_LENGTH = 2;
 export const FULL_NAME_MAX_LENGTH = 100;
+
+export const MIN_AGE = 18;
+
+/** Whether someone born on a valid YYYY-MM-DD date is at least 18 today (UTC). */
+export function isOldEnough(birthDate: string, now: Date = new Date()): boolean {
+  const [year, month, day] = birthDate.split('-').map(Number);
+  if (!year || !month || !day) return false;
+  return Date.UTC(year + MIN_AGE, month - 1, day) <= now.getTime();
+}
 
 /** Unicode letters and spaces are allowed; punctuation and digits are not. */
 export function isFullName(value: string) {

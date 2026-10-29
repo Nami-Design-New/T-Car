@@ -21,10 +21,10 @@ describe("profile full-name rules", () => {
   });
 
   it.each([
-    ["one character", "A", "account.nameRequired"],
-    ["101 characters", "A".repeat(101), "account.nameRequired"],
-    ["digits", "Ahmed 123", "account.nameRequired"],
-    ["punctuation", "Ahmed-Abdullah", "account.nameRequired"],
+    ["one character", "A", "auth.nameTooShort"],
+    ["101 characters", "A".repeat(101), "auth.nameTooLong"],
+    ["digits", "Ahmed 123", "auth.nameRequired"],
+    ["punctuation", "Ahmed-Abdullah", "auth.nameRequired"],
   ])("rejects %s", (_, fullName, error) => {
     expect(
       fieldErrors(profileFormSchema.safeParse({ ...validProfile, fullName })),
@@ -84,9 +84,9 @@ describe("profileFormSchema", () => {
         }),
       ),
     ).toEqual({
-      fullName: "account.nameRequired",
-      email: "account.emailRequired",
-      birthDate: "account.birthDateRequired",
+      fullName: "auth.nameRequired",
+      email: "auth.emailRequired",
+      birthDate: "auth.birthDateRequired",
     });
   });
 
@@ -104,23 +104,25 @@ describe("profileFormSchema", () => {
         }),
       ),
     ).toEqual({
-      email: "account.invalidEmail",
-      birthDate: "account.invalidBirthDate",
+      email: "auth.invalidEmail",
+      birthDate: "auth.invalidBirthDate",
     });
   });
 });
 
 describe("phone schemas", () => {
   it("checks the new phone number", () => {
-    expect(phoneChangeSchema.safeParse({ phone: "12345678" }).success).toBe(true);
-    expect(phoneChangeSchema.safeParse({ phone: "966511111111" }).success).toBe(
-      true,
-    );
-    expect(fieldErrors(phoneChangeSchema.safeParse({ phone: "1234567" }))).toEqual(
+    expect(phoneChangeSchema.parse({ phone: { countryCode: "+966", phone: "0511111111" } })).toEqual({
+      phone: { countryCode: "+966", phone: "511111111" },
+    });
+    expect(fieldErrors(phoneChangeSchema.safeParse({ phone: { countryCode: "+966", phone: "1234567" } }))).toEqual(
       {
-        phone: "account.invalidPhone",
+        phone: "auth.phoneTooShort",
       },
     );
+    expect(fieldErrors(phoneChangeSchema.safeParse({ phone: { countryCode: "+966", phone: "1".repeat(16) } }))).toEqual({
+      phone: "auth.phoneTooLong",
+    });
   });
 
   it("needs exactly four code digits", () => {
@@ -134,7 +136,7 @@ describe("phone schemas", () => {
     expect(
       fieldErrors(verifyPhoneSchema.safeParse({ phone: "1", code: "abcd" })),
     ).toEqual({
-      phone: "account.invalidPhone",
+      phone: "auth.invalidPhone",
       code: "account.invalidCode",
     });
   });
@@ -147,7 +149,7 @@ describe("licenseUploadSchema", () => {
     type: "image/png",
   };
 
-  it("accepts JPG and PNG files at the 5 MB boundary", () => {
+  it("accepts JPG, JPEG, and PNG files at the 15 MB boundary", () => {
     expect(licenseUploadSchema.safeParse({ file: validLicense }).success).toBe(
       true,
     );
@@ -156,9 +158,14 @@ describe("licenseUploadSchema", () => {
         file: { ...validLicense, name: "license.jpg", type: "image/jpeg" },
       }).success,
     ).toBe(true);
+    expect(
+      licenseUploadSchema.safeParse({
+        file: { ...validLicense, name: "license.jpeg", type: "image/jpeg" },
+      }).success,
+    ).toBe(true);
   });
 
-  it("rejects a file over 5 MB and unsupported declared types", () => {
+  it("rejects a file over 15 MB and unsupported declared types", () => {
     expect(
       fieldErrors(
         licenseUploadSchema.safeParse({

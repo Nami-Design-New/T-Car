@@ -19,7 +19,7 @@ function renderModal(onSubmit = vi.fn().mockResolvedValue(undefined)) {
 }
 
 describe("LicenseModal", () => {
-  it("shows the 5 MB validation error and does not submit an oversized file", async () => {
+  it("shows the 15 MB validation error and does not submit an oversized file", async () => {
     const { user, onSubmit, input } = renderModal();
     const tooLarge = new File(
       [new Uint8Array(LICENSE_MAX_SIZE_BYTES + 1)],
@@ -31,7 +31,7 @@ describe("LicenseModal", () => {
 
     expect(
       await screen.findByText(
-        "The driving license image must be 5 MB or smaller.",
+        "The driving license image must be 15 MB or smaller.",
       ),
     ).toBeVisible();
     await user.click(screen.getByRole("button", { name: "Upload" }));
@@ -42,6 +42,44 @@ describe("LicenseModal", () => {
     const onSubmit = vi.fn().mockResolvedValue(undefined);
     const { user, input } = renderModal(onSubmit);
     const file = new File(["license"], "license.jpg", { type: "image/jpeg" });
+
+    await user.upload(input, file);
+    await user.click(screen.getByRole("button", { name: "Upload" }));
+
+    await waitFor(() => expect(onSubmit).toHaveBeenCalledWith(file));
+  });
+
+  it("shows the stored license image while replacing it", () => {
+    renderWithIntl(
+      <LicenseModal
+        open
+        onClose={vi.fn()}
+        onSubmit={vi.fn()}
+        licenseUrl="https://example.test/licenses/license.jpg"
+      />,
+    );
+
+    expect(screen.getByRole("img", { name: "Driving license" })).toHaveAttribute(
+      "src",
+      "https://example.test/licenses/license.jpg",
+    );
+    expect(
+      screen.getByRole("button", { name: "Change driving license image" }),
+    ).toBeVisible();
+    expect(screen.getByText("JPG, JPEG, or PNG, up to 15 MB")).toHaveClass(
+      "text-xs",
+    );
+    expect(
+      screen.queryByText("Click here to upload a photo of your driving license"),
+    ).not.toBeInTheDocument();
+  });
+
+  it("accepts a .jpeg image", async () => {
+    const onSubmit = vi.fn().mockResolvedValue(undefined);
+    const { user, input } = renderModal(onSubmit);
+    const file = new File(["license"], "license.jpeg", {
+      type: "image/jpeg",
+    });
 
     await user.upload(input, file);
     await user.click(screen.getByRole("button", { name: "Upload" }));
@@ -62,6 +100,8 @@ describe("LicenseModal", () => {
     expect(await screen.findByRole("alert")).toHaveTextContent(
       "The driving license could not be uploaded. Try another image.",
     );
-    expect(screen.getByText("license.jpg")).toBeVisible();
+    expect(
+      screen.getByRole("img", { name: "Driving license" }),
+    ).toBeVisible();
   });
 });

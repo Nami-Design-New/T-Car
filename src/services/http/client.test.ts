@@ -140,4 +140,17 @@ describe("createHttpClient", () => {
     );
     expect(sent).toEqual(["ar", "en"]);
   });
+
+  it("sends FormData unchanged without forcing a JSON content type", async () => {
+    const fetchMock = respond(200, envelope(200, "License saved successfully.", {}));
+    const client = createHttpClient({ baseUrl: "https://api.test/user" });
+    const formData = new FormData();
+    formData.set("license", new Blob(["license"], { type: "image/png" }), "license.png");
+
+    await client.post("/license", formData);
+
+    const [, init] = fetchMock.mock.calls[0];
+    expect(init?.body).toBe(formData);
+    expect(new Headers(init?.headers).has("Content-Type")).toBe(false);
+  });
 });

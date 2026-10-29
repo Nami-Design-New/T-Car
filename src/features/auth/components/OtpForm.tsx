@@ -1,12 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
-import { FiArrowLeft } from "react-icons/fi";
 import { Button } from "@/shared/ui/Button";
 import { OtpInput } from "@/shared/ui/OtpInput";
+import { ResendCountdown } from "@/shared/ui/ResendCountdown";
 import {
   useErrorMessage,
   useFieldErrorMessage,
@@ -41,8 +40,6 @@ export default function OtpForm({
   const errorMessage = useErrorMessage();
   const fieldError = useFieldErrorMessage();
 
-  const [timer, setTimer] = useState(OTP_RESEND_SECONDS);
-
   const {
     control,
     handleSubmit,
@@ -58,12 +55,6 @@ export default function OtpForm({
     defaultValues: { code: "" },
   });
 
-  useEffect(() => {
-    if (timer === 0) return;
-    const interval = setInterval(() => setTimer((prev) => prev - 1), 1000);
-    return () => clearInterval(interval);
-  }, [timer]);
-
   const showServerError = (error: AppError) => {
     if (!applyFieldErrors(error, setError, ["code"])) {
       setError("root.server", {
@@ -76,9 +67,9 @@ export default function OtpForm({
   const handleResend = async () => {
     resetField("code");
     clearErrors();
-    setTimer(OTP_RESEND_SECONDS);
     const error = await onResend?.();
     if (error) showServerError(error);
+    return true;
   };
 
   const onSubmit = handleSubmit(async ({ code }) => {
@@ -141,28 +132,11 @@ export default function OtpForm({
         />
       </div>
 
-      <div
-        className="mb-3 flex min-h-11 items-center justify-between"
-        aria-live="polite"
-      >
-        <p className="text-action-primary m-0 text-sm leading-relaxed">
-          {t("auth.otp.resendIn")}
-        </p>
-        {timer > 0 ? (
-          <span className="text-action-primary text-sm leading-relaxed">
-            {" "}
-            00:{String(timer).padStart(2, "0")}{" "}
-          </span>
-        ) : (
-          <button
-            type="button"
-            className="text-text-primary cursor-pointer border-0 bg-transparent text-xs font-bold underline"
-            onClick={handleResend}
-          >
-            {t("auth.otp.resend")}
-          </button>
-        )}
-      </div>
+      <ResendCountdown
+        seconds={OTP_RESEND_SECONDS}
+        onResend={handleResend}
+        disabled={loading}
+      />
 
       {formError && (
         <p className="text-status-error mt-2 mb-0 text-sm" role="alert">

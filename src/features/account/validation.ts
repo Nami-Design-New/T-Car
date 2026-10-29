@@ -1,11 +1,7 @@
 import { z } from "zod";
-import {
-  FULL_NAME_MAX_LENGTH,
-  FULL_NAME_MIN_LENGTH,
-  isFullName,
-  isPastIsoDate,
-  isPhoneNumber,
-} from "@/shared/lib/validation";
+import { isPhoneNumber } from "@/shared/lib/validation";
+import { profileFieldsSchema } from "@/shared/lib/validation/profile";
+import { phoneValueSchema } from "@/shared/lib/validation/phone";
 
 import {
   LICENSE_MAX_SIZE_BYTES,
@@ -30,39 +26,23 @@ const code = z
     error: "account.invalidCode",
   });
 
-const profileName = z
-  .string({ error: "account.nameRequired" })
-  .trim()
-  .min(1, { error: "account.nameRequired", abort: true })
-  .min(FULL_NAME_MIN_LENGTH, { error: "account.nameRequired", abort: true })
-  .max(FULL_NAME_MAX_LENGTH, { error: "account.nameRequired", abort: true })
-  .refine(isFullName, { error: "account.nameRequired" });
-
 /**
  * The fields the customer edits on the profile page. The phone and license
  * status are server-managed: they change only through their own flows.
  */
-export const profileFormSchema = z.object({
-  fullName: profileName,
-  email: z
-    .string({ error: "account.emailRequired" })
-    .trim()
-    .min(1, { error: "account.emailRequired", abort: true })
-    .pipe(z.email({ error: "account.invalidEmail" })),
-  birthDate: z
-    .string({ error: "account.birthDateRequired" })
-    .min(1, { error: "account.birthDateRequired", abort: true })
-    .refine(isPastIsoDate, { error: "account.invalidBirthDate" }),
-});
+export const profileFormSchema = profileFieldsSchema;
 
 /** Change-phone step: the new number the code is sent to. */
-export const phoneChangeSchema = z.object({ phone });
+export const phoneChangeSchema = z.object({ phone: phoneValueSchema });
+
+/** The legacy edit modal still uses a combined phone string. */
+export const legacyPhoneChangeSchema = z.object({ phone });
 
 /** Verify step, in the dialog: the code the customer typed. */
 export const phoneCodeSchema = z.object({ code });
 
 /** What `verifyPhoneAction` receives. */
-export const verifyPhoneSchema = z.object({ phone, code });
+export const verifyPhoneSchema = z.object({ phone: phoneValueSchema, code });
 
 /** The selected license image. The action parses this same schema from FormData. */
 const licenseFile = z
@@ -91,5 +71,6 @@ const licenseFile = z
 export const licenseUploadSchema = z.object({ file: licenseFile });
 export type ProfileFormValues = z.infer<typeof profileFormSchema>;
 export type PhoneChangeValues = z.infer<typeof phoneChangeSchema>;
+export type LegacyPhoneChangeValues = z.infer<typeof legacyPhoneChangeSchema>;
 export type PhoneCodeValues = z.infer<typeof phoneCodeSchema>;
 export type LicenseUploadValues = z.infer<typeof licenseUploadSchema>;

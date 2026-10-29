@@ -14,7 +14,14 @@ export interface UserProfile {
   birthDate: string;
   phone: string;
   licenseUploaded: boolean;
+  /** Stored license image reference supplied by the profile API. */
+  licenseUrl?: string;
 }
+
+export type ProfileChanges = Pick<
+  UserProfile,
+  "fullName" | "email" | "birthDate"
+>;
 
 export interface LicenseUpload {
   name: string;
@@ -23,8 +30,8 @@ export interface LicenseUpload {
 }
 
 /** Each account section is its own route: /account/<section>. */
-/** Maximum accepted driving-license image size (5 MiB). */
-export const LICENSE_MAX_SIZE_BYTES = 5 * 1024 * 1024;
+/** Maximum accepted driving-license image size (15 MiB). */
+export const LICENSE_MAX_SIZE_BYTES = 15 * 1024 * 1024;
 
 export const LICENSE_FILE_TYPES = ["image/jpeg", "image/png"] as const;
 

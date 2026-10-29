@@ -21,6 +21,7 @@ import {
   phoneCodeSchema,
   type PhoneCodeValues,
 } from "../validation";
+import { BackButton } from "@/shared/ui/BackButton/BackButton";
 
 interface Props {
   open: boolean;
@@ -153,37 +154,33 @@ export default function VerifyPhoneModal({
       <Dialog
         open={open}
         onClose={onClose}
-        className="overflow-hidden rounded-xl border-0 p-0"
+
         closeOnEscape={!loading}
         closeOnBackdrop={!loading}
       >
-        <Dialog.Header className="border-0 px-10 pt-3">
+        <Dialog.Header>
+          <Dialog.Title>
+            <div className="flex items-center gap-2">
+              <BackButton
+                type="button"
+                onClick={() => (onEditPhone ? onEditPhone() : onClose())}
+                aria-label={t("editPhone")}
+              />
+
+              {t("title")}
+            </div>
+          </Dialog.Title>
           <Dialog.Close />
         </Dialog.Header>
 
         {/* Same layout as the sign-in code step (features/auth OtpForm). */}
-        <Dialog.Body className="px-10 pt-0 pb-10">
+        <Dialog.Body>
           <form
             className="relative flex w-full flex-col text-center"
             onSubmit={handleVerify}
             noValidate
           >
-            <div className="mb-6 flex items-center gap-2">
-              <button
-                type="button"
-                className="grid size-9 shrink-0 place-items-center rounded-md border border-stroke-light text-text-primary transition hover:bg-surface-on-background focus-visible:outline-2 focus-visible:outline-action-primary"
-                onClick={() => (onEditPhone ? onEditPhone() : onClose())}
-                aria-label={t("editPhone")}
-              >
-                <FiArrowLeft className="rtl:scale-x-[-1]" aria-hidden="true" />
-              </button>
-
-              <Dialog.Title className="mb-0 text-xl font-extrabold leading-relaxed text-text-primary">
-                {t("title")}
-              </Dialog.Title>
-            </div>
-
-            <p className="mb-4 text-start text-base leading-relaxed text-text-subtle">
+            <p className="text-text-subtle mb-4 text-start text-base leading-relaxed">
               {t("sentTo")} <bdi dir="ltr">{phone}</bdi>
             </p>
 
@@ -213,13 +210,13 @@ export default function VerifyPhoneModal({
               aria-live="polite"
             >
               {timer > 0 ? (
-                <p className="m-0 text-sm leading-relaxed text-action-primary">
+                <p className="text-action-primary m-0 text-sm leading-relaxed">
                   {t("resendIn", { seconds: timer })}
                 </p>
               ) : (
                 <button
                   type="button"
-                  className="cursor-pointer border-0 bg-transparent text-xs font-bold text-text-primary underline disabled:cursor-not-allowed disabled:opacity-50"
+                  className="text-text-primary cursor-pointer border-0 bg-transparent text-xs font-bold underline disabled:cursor-not-allowed disabled:opacity-50"
                   onClick={handleResend}
                   disabled={loading}
                 >
@@ -229,7 +226,7 @@ export default function VerifyPhoneModal({
             </div>
 
             {formError && (
-              <p className="text-status-error text-sm mt-0 mb-4" role="alert">
+              <p className="text-status-error mt-0 mb-4 text-sm" role="alert">
                 {formError}
               </p>
             )}
@@ -250,7 +247,6 @@ export default function VerifyPhoneModal({
       <ResultDialog
         open={successOpen}
         status="success"
-
         description={t("successDescription")}
         onClose={handleSuccessDone}
       />
