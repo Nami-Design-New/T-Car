@@ -1,11 +1,13 @@
 import { describe, expect, it, vi } from "vitest";
 import { AppError } from "@/shared/lib/errors";
 
-const { get, put, post } = vi.hoisted(() => ({ get: vi.fn(), put: vi.fn(), post: vi.fn() }));
+const { get, put, post, delete: deleteRequest } = vi.hoisted(() => ({
+  get: vi.fn(), put: vi.fn(), post: vi.fn(), delete: vi.fn(),
+}));
 
 vi.mock("server-only", () => ({}));
 vi.mock("@/services/http/server", () => ({
-  serverHttp: { get, put, post },
+  serverHttp: { get, put, post, delete: deleteRequest },
 }));
 
 import { accountApi } from "./api";
@@ -61,7 +63,7 @@ describe("accountApi.updateProfile", () => {
       data: { user: { name: "New Name", email: "new@example.com", birth_date: "1993-03-15" } },
     });
 
-    await expect(accountApi.updateProfile("u1", {
+    await expect(accountApi.updateProfile({
       fullName: "New Name", email: "new@example.com", birthDate: "1993-03-15",
     })).resolves.toEqual({
       ok: true,
@@ -75,9 +77,26 @@ describe("accountApi.updateProfile", () => {
 
   it("rejects a malformed update response", async () => {
     put.mockResolvedValue({ code: 200, message: "Saved", data: { user: { name: "New Name" } } });
-    await expect(accountApi.updateProfile("u1", {
+    await expect(accountApi.updateProfile({
       fullName: "New Name", email: "new@example.com", birthDate: "1993-03-15",
     })).resolves.toEqual({ ok: false, error: new AppError("server") });
+  });
+});
+
+describe("accountApi.deleteAccount", () => {
+  it("uses the authenticated DELETE endpoint and returns its message", async () => {
+    deleteRequest.mockResolvedValue({
+      data: null,
+      message: "Account deleted successfully.",
+      code: 200,
+    });
+
+    await expect(accountApi.deleteAccount()).resolves.toEqual({
+      ok: true,
+      data: null,
+      message: "Account deleted successfully.",
+    });
+    expect(deleteRequest).toHaveBeenCalledWith("/delete-account");
   });
 });
 

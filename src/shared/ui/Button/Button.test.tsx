@@ -11,6 +11,14 @@ describe('Button', () => {
     expect(button).toBeEnabled();
   });
 
+  it('renders the destructive variant for irreversible actions', () => {
+    render(<Button variant="destructive">Delete account</Button>);
+    expect(screen.getByRole('button', { name: 'Delete account' })).toHaveClass(
+      'btn-destructive',
+      'bg-status-error',
+    );
+  });
+
   it('is busy and disabled while loading, and keeps its accessible name', async () => {
     const onClick = vi.fn();
     render(

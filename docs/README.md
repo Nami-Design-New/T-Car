@@ -494,6 +494,11 @@ mock keeps its own OTP code `1234` for the phone change.
   authenticated multipart endpoint with the selected file bytes and a server
   action body-size limit that accommodates the 15 MiB client limit. Production
   build and profile-route smoke passed; live upload smoke remains pending.
+- Profile API fraction P7 (2026-10-29): account deletion uses authenticated
+  `DELETE /delete-account`, keeps the confirmation open on failure, then ends
+  the local session only after the backend confirms deletion. Focused tests,
+  TypeScript, lint, production build, and profile-route smoke passed; live
+  deletion smoke remains pending.
 - Profile API live smoke (2026-10-29): the backend accepted authenticated
   change-phone OTP requests and returned validation errors in the documented
   envelope. An initial profile read had null name, email, and birth date; the

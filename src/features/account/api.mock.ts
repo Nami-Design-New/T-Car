@@ -26,7 +26,7 @@ export const accountMock: AccountApi = {
     return { ...MOCK_PROFILE };
   },
 
-  async updateProfile(_accountId, profile) {
+  async updateProfile(profile) {
     // `fail@tcar.test` deterministically exercises validation without keeping server state.
     if (profile.email === "fail@tcar.test") {
       return fail(new AppError("validation", "account.profileRejected", undefined, {
@@ -81,12 +81,9 @@ export const accountMock: AccountApi = {
     );
   },
 
-  async deleteAccount(accountId) {
-    // The seeded sign-in account (u1, +966500000000) has active bookings in the
-    // bookings mock, so its deletion is rejected; any newly registered account
-    // can be deleted.
-    if (accountId === "u1") {
-      throw new AppError("conflict", "account.deleteRejected");
-    }
+  async deleteAccount() {
+    // Account deletion needs a live user contract. The mock always rejects, so
+    // test callers cannot claim a deletion that was never persisted.
+    return fail(new AppError("conflict", "account.deleteRejected"));
   },
 };

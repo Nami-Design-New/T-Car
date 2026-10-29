@@ -25,6 +25,9 @@ describe('AlertDialog', () => {
 
     await user.click(screen.getByRole('button', { name: 'Delete' }));
     await user.click(screen.getByRole('button', { name: 'Keep' }));
+    expect(screen.getByRole('button', { name: 'Delete' })).toHaveClass(
+      'btn-destructive',
+    );
     expect(onPrimary).toHaveBeenCalledOnce();
     expect(onSecondary).toHaveBeenCalledOnce();
   });

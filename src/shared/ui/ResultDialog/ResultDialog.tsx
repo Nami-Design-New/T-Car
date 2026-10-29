@@ -41,7 +41,7 @@ export function ResultDialog({
     >
       <Dialog.Body className="result-dialog__body flex flex-col items-center px-8 pt-5 pb-8 text-center max-[575px]:px-5">
         <Image
-          className="result-dialog__animation mx-auto mb-2 block size-45 object-contain max-[575px]:size-37.5"
+          className="mx-auto mb-2 block size-45 object-contain max-[575px]:size-37.5"
           src={RESULT_ANIMATIONS[status]}
           alt=""
           width={180}
@@ -49,14 +49,14 @@ export function ResultDialog({
           unoptimized
         />
         {description && (
-          <Dialog.Description className="result-dialog__description mx-0 font-semibold text-text-primary">
+          <Dialog.Description className="result-dialog__description text-text-primary mx-0 font-semibold">
             {description}
           </Dialog.Description>
         )}
         {action && (
           <button
             type="button"
-            className="result-dialog__action mt-5 min-h-11 cursor-pointer rounded-md border-0 bg-action-primary px-6 font-semibold text-text-on-action"
+            className="result-dialog__action bg-action-primary text-text-on-action mt-5 min-h-11 cursor-pointer rounded-md border-0 px-6 font-semibold"
             onClick={action.onClick}
           >
             {action.label}

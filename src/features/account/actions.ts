@@ -23,25 +23,6 @@ import {
 } from "./validation";
 
 /**
- * Runs a write for the signed-in customer. Server Actions are public POST
- * endpoints, so each one checks the session itself instead of relying on the
- * page's middleware guard.
- */
-async function run<T>(
-  scope: string,
-  write: (accountId: string) => Promise<T>,
-): Promise<ActionResult<T>> {
-  try {
-    const session = await auth();
-    if (!session?.user?.id) throw new AppError("unauthorized");
-    return toActionResult(ok(await write(session.user.id)));
-  } catch (error) {
-    reportError(error, { scope });
-    return toActionResult(fail(error));
-  }
-}
-
-/**
  * Parses the input again on the server: the client's validation is not
  * trusted. A failure becomes a `validation` AppError with field errors, which
  * `reportError` does not report.
@@ -63,7 +44,7 @@ export async function saveProfileAction(
     const session = await auth();
     if (!session?.user?.id) throw new AppError("unauthorized");
     const changes = parse(profileFormSchema, input);
-    const result = await accountApi.updateProfile(session.user.id, changes);
+    const result = await accountApi.updateProfile(changes);
     if (!result.ok) throw result.error;
     await updateSessionProfile({
       name: result.data.fullName,
@@ -124,7 +105,8 @@ export async function uploadLicenseAction(
           ? value
           : { name: "", size: 0, type: "" },
     });
-    if (!(file instanceof File)) throw new AppError("validation", "account.licenseRequired");
+    if (!(file instanceof File))
+      throw new AppError("validation", "account.licenseRequired");
     const result = await accountApi.uploadLicense(file);
     if (!result.ok) throw result.error;
     return toActionResult(result);
@@ -135,10 +117,16 @@ export async function uploadLicenseAction(
 }
 
 /** Deletes the account and ends the session. */
-export async function deleteAccountAction(): Promise<ActionResult<void>> {
-  const result = await run("account.deleteAccount", (accountId) =>
-    accountApi.deleteAccount(accountId),
-  );
-  if (result.ok) await signOut({ redirect: false });
-  return result;
+export async function deleteAccountAction(): Promise<ActionResult<null>> {
+  try {
+    const session = await auth();
+    if (!session?.user?.id) throw new AppError("unauthorized");
+    const result = await accountApi.deleteAccount();
+    if (!result.ok) throw result.error;
+    await signOut({ redirect: false });
+    return toActionResult(result);
+  } catch (error) {
+    reportError(error, { scope: "account.deleteAccount" });
+    return toActionResult(fail(error));
+  }
 }

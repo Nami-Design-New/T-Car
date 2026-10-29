@@ -10,16 +10,13 @@ import { accountMock } from "./api.mock";
 
 export interface AccountApi {
   getProfile(): Promise<UserProfile>;
-  updateProfile(
-    accountId: string,
-    profile: ProfileChanges,
-  ): Promise<Result<ProfileChanges>>;
+  updateProfile(profile: ProfileChanges): Promise<Result<ProfileChanges>>;
   /** Sends a code to a new phone number; also used to resend it. */
   sendPhoneCode(phone: PhoneFieldValue): Promise<Result<void>>;
   /** Confirms the new phone number with the code that was sent to it. */
   verifyPhone(phone: PhoneFieldValue, code: string): Promise<Result<string>>;
   uploadLicense(file: File): Promise<Result<string>>;
-  deleteAccount(accountId: string): Promise<void>;
+  deleteAccount(): Promise<Result<null>>;
 }
 
 interface ProfileUserDto {
@@ -98,7 +95,6 @@ async function getProfile(): Promise<UserProfile> {
 }
 
 async function updateProfile(
-  _accountId: string,
   profile: ProfileChanges,
 ): Promise<Result<ProfileChanges>> {
   try {
@@ -197,6 +193,19 @@ async function uploadLicense(file: File): Promise<Result<string>> {
   }
 }
 
+async function deleteAccount(): Promise<Result<null>> {
+  try {
+    const response =
+      await serverHttp.delete<ApiEnvelope<unknown>>("/delete-account");
+    if (!isApiEnvelope(response) || response.data !== null) {
+      throw new AppError("server");
+    }
+    return ok(null, response.message);
+  } catch (error) {
+    return fail(error);
+  }
+}
+
 /** Profile reads, edits, phone OTP operations, and license upload are live. */
 export const accountApi: AccountApi = {
   ...accountMock,
@@ -205,4 +214,5 @@ export const accountApi: AccountApi = {
   sendPhoneCode,
   verifyPhone,
   uploadLicense,
+  deleteAccount,
 };

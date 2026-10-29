@@ -6,6 +6,7 @@ import Image from "next/image";
 import { useRouter } from "@/i18n/navigation";
 import { ICONS } from "@/shared/config/assets";
 import { useErrorMessage } from "@/shared/hooks/useErrorMessage";
+import { useNotify } from "@/shared/hooks/useNotify";
 import { fromActionResult } from "@/shared/lib/result";
 import { AlertDialog } from "@/shared/ui/AlertDialog";
 import { deleteAccountAction } from "../actions";
@@ -20,6 +21,7 @@ export default function DeleteAccountSection({
 }: Props) {
   const t = useTranslations("account.profile");
   const errorMessage = useErrorMessage();
+  const notify = useNotify();
   const router = useRouter();
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -30,11 +32,19 @@ export default function DeleteAccountSection({
     try {
       const result = fromActionResult(await deleteAccountAction());
       if (!result.ok) {
-        setDeleteError(errorMessage(result.error));
+        const message =
+          result.error.kind === "validation" && result.error.serverMessage
+            ? result.error.serverMessage
+            : errorMessage(result.error);
+        if (result.error.kind === "validation" && result.error.serverMessage) {
+          notify.error(result.error.serverMessage);
+        }
+        setDeleteError(message);
         return;
       }
       // The action also ended the session; leave the protected page.
       setShowDeleteModal(false);
+      notify.success(result.message);
       router.replace("/");
       router.refresh();
     } catch (error) {

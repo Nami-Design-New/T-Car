@@ -2,24 +2,27 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { ProfileChanges } from "./model";
 import { LICENSE_MAX_SIZE_BYTES } from "./model";
 
-const { auth, accountApi, updateSessionProfile } = vi.hoisted(() => ({
+const { auth, accountApi, updateSessionProfile, signOut } = vi.hoisted(() => ({
   auth: vi.fn(),
   updateSessionProfile: vi.fn(),
+  signOut: vi.fn(),
   accountApi: {
     getProfile: vi.fn(),
     updateProfile: vi.fn(),
     sendPhoneCode: vi.fn(),
     uploadLicense: vi.fn(),
     verifyPhone: vi.fn(),
+    deleteAccount: vi.fn(),
   },
 }));
 
-vi.mock("@/auth", () => ({ auth, signOut: vi.fn(), updateSessionProfile }));
+vi.mock("@/auth", () => ({ auth, signOut, updateSessionProfile }));
 vi.mock("./api", () => ({ accountApi }));
 vi.mock("@/shared/lib/report", () => ({ reportError: vi.fn() }));
 
 import {
   saveProfileAction,
+  deleteAccountAction,
   sendPhoneCodeAction,
   uploadLicenseAction,
   verifyPhoneAction,
@@ -35,13 +38,18 @@ beforeEach(() => {
   vi.clearAllMocks();
   auth.mockResolvedValue({ user: { id: "u1" } });
   accountApi.updateProfile.mockImplementation(
-    async (_id: string, profile: ProfileChanges) => ({ ok: true, data: profile, message: "Profile updated successfully." }),
+    async (profile: ProfileChanges) => ({ ok: true, data: profile, message: "Profile updated successfully." }),
   );
   accountApi.sendPhoneCode.mockResolvedValue({ ok: true, data: undefined, message: "Code sent." });
   accountApi.uploadLicense.mockResolvedValue({
     ok: true,
     data: "https://example.test/licenses/license.jpg",
     message: "License saved successfully.",
+  });
+  accountApi.deleteAccount.mockResolvedValue({
+    ok: true,
+    data: null,
+    message: "Account deleted successfully.",
   });
 });
 
@@ -78,7 +86,7 @@ describe("saveProfileAction", () => {
     };
     const result = await saveProfileAction(fromClient);
 
-    expect(accountApi.updateProfile).toHaveBeenCalledWith("u1", {
+    expect(accountApi.updateProfile).toHaveBeenCalledWith({
       fullName: "New Name",
       email: "new@domain.com",
       birthDate: "1993-03-15",
@@ -124,6 +132,28 @@ describe("saveProfileAction", () => {
       error: { kind: "validation", status: 422, serverMessage: "Email already exists." },
     });
     expect(updateSessionProfile).not.toHaveBeenCalled();
+  });
+});
+
+describe("deleteAccountAction", () => {
+  it("requires a session before deleting", async () => {
+    auth.mockResolvedValue(null);
+
+    await expect(deleteAccountAction()).resolves.toMatchObject({
+      ok: false,
+      error: { kind: "unauthorized" },
+    });
+    expect(accountApi.deleteAccount).not.toHaveBeenCalled();
+  });
+
+  it("deletes through the API before ending the local session", async () => {
+    await expect(deleteAccountAction()).resolves.toEqual({
+      ok: true,
+      data: null,
+      message: "Account deleted successfully.",
+    });
+    expect(accountApi.deleteAccount).toHaveBeenCalledOnce();
+    expect(signOut).toHaveBeenCalledWith({ redirect: false });
   });
 });
 
