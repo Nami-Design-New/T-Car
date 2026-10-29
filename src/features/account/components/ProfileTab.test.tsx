@@ -1,25 +1,34 @@
-import { screen, waitFor } from '@testing-library/react';
+import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { ActionResult } from '@/shared/lib/result';
 import { renderWithIntl } from '@/shared/test/render';
 import type { ProfileChanges, UserProfile } from '../model';
 
-const { saveProfileAction, notify } = vi.hoisted(() => ({
+const { saveProfileAction, sendPhoneCodeAction, verifyPhoneAction, uploadLicenseAction, deleteAccountAction, notify, router } = vi.hoisted(() => ({
   saveProfileAction: vi.fn<(input: unknown) => Promise<ActionResult<ProfileChanges>>>(),
+  sendPhoneCodeAction: vi.fn<(phone: string) => Promise<ActionResult<void>>>(),
+  verifyPhoneAction: vi.fn<(phone: string, code: string) => Promise<ActionResult<void>>>(),
+  uploadLicenseAction: vi.fn<(data: FormData) => Promise<ActionResult<void>>>(),
+  deleteAccountAction: vi.fn<() => Promise<ActionResult<void>>>(),
   notify: { success: vi.fn(), error: vi.fn() },
+  router: { replace: vi.fn(), refresh: vi.fn() },
 }));
 
 vi.mock('@/shared/hooks/useNotify', () => ({ useNotify: () => notify }));
 
 vi.mock('../actions', () => ({
   saveProfileAction,
-  deleteAccountAction: vi.fn(),
-  sendPhoneCodeAction: vi.fn(),
-  uploadLicenseAction: vi.fn(),
-  verifyPhoneAction: vi.fn(),
+  deleteAccountAction,
+  sendPhoneCodeAction,
+  uploadLicenseAction,
+  verifyPhoneAction,
 }));
-vi.mock('@/i18n/navigation', () => ({ useRouter: () => ({ replace: vi.fn(), refresh: vi.fn() }) }));
+vi.mock('@/i18n/navigation', () => ({ useRouter: () => router }));
+vi.mock('@/features/phone-countries', async () => {
+  const { phoneCountriesMock } = await import('@/features/phone-countries/api.mock');
+  return { loadPhoneCountries: phoneCountriesMock.listCountries };
+});
 
 import ProfileTab from './ProfileTab';
 
@@ -31,9 +40,9 @@ const profile: UserProfile = {
   licenseUploaded: true,
 };
 
-function renderTab() {
+function renderTab(initialProfile: UserProfile = profile) {
   const user = userEvent.setup();
-  renderWithIntl(<ProfileTab profile={profile} />);
+  renderWithIntl(<ProfileTab profile={initialProfile} />);
   return {
     user,
     name: screen.getByRole('textbox', { name: 'Full name' }),
@@ -45,6 +54,10 @@ function renderTab() {
 beforeEach(() => {
   saveProfileAction.mockReset();
   vi.clearAllMocks();
+  sendPhoneCodeAction.mockResolvedValue({ ok: true, data: undefined });
+  verifyPhoneAction.mockResolvedValue({ ok: true, data: undefined });
+  uploadLicenseAction.mockResolvedValue({ ok: true, data: undefined });
+  deleteAccountAction.mockResolvedValue({ ok: true, data: undefined });
 });
 
 describe('ProfileTab', () => {
@@ -139,5 +152,52 @@ describe('ProfileTab', () => {
     expect(save).toBeDisabled();
     finish({ ok: true, data: profile });
     await waitFor(() => expect(save).not.toHaveAttribute('aria-busy'));
+  });
+
+  it('sends and verifies a phone code before updating the displayed number', async () => {
+    const { user } = renderTab();
+    await user.click(screen.getByRole('button', { name: /Mobile number/ }));
+    const dialog = await screen.findByRole('dialog');
+    const phone = within(dialog).getByRole('textbox', { name: 'Mobile number' });
+    await user.clear(phone);
+    await user.type(phone, '511111111');
+    await user.click(within(dialog).getByRole('button', { name: 'Send verification code' }));
+
+    await waitFor(() => expect(sendPhoneCodeAction).toHaveBeenCalledOnce());
+    const sentPhone = sendPhoneCodeAction.mock.calls[0][0];
+    expect(screen.getByText('+966500000000')).toBeInTheDocument();
+    await user.type(await screen.findByRole('textbox', { name: 'Digit 1 of 4' }), '1234');
+    await user.click(screen.getByRole('button', { name: 'Verify' }));
+    await waitFor(() => expect(verifyPhoneAction).toHaveBeenCalledWith(sentPhone, '1234'));
+    expect(await screen.findByText(sentPhone)).toBeInTheDocument();
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+  });
+
+  it('uploads a license and updates its status after success', async () => {
+    const { user } = renderTab({ ...profile, licenseUploaded: false });
+    await user.click(screen.getByRole('button', { name: /Driving license/ }));
+    const dialog = await screen.findByRole('dialog');
+    const input = dialog.querySelector('input[type="file"]');
+    if (!(input instanceof HTMLInputElement)) throw new Error('License input is missing');
+    const file = new File(['license'], 'license.jpg', { type: 'image/jpeg' });
+    await user.upload(input, file);
+    await user.click(within(dialog).getByRole('button', { name: 'Upload' }));
+    await waitFor(() => expect(uploadLicenseAction).toHaveBeenCalledOnce());
+    expect(uploadLicenseAction.mock.calls[0][0].get('license')).toEqual(file);
+    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
+    expect(screen.getByRole('status')).toHaveTextContent('Driving license');
+  });
+
+  it('keeps deletion errors in the confirmation and leaves the page only after success', async () => {
+    deleteAccountAction.mockResolvedValueOnce({ ok: false, error: { kind: 'server' } });
+    const { user } = renderTab();
+    await user.click(screen.getByRole('button', { name: /Delete account/ }));
+    const dialog = await screen.findByRole('dialog');
+    await user.click(within(dialog).getByRole('button', { name: 'Delete account' }));
+    expect(await within(dialog).findByRole('alert')).toHaveTextContent('Something went wrong');
+    expect(router.replace).not.toHaveBeenCalled();
+    await user.click(within(dialog).getByRole('button', { name: 'Delete account' }));
+    await waitFor(() => expect(router.replace).toHaveBeenCalledWith('/'));
+    expect(router.refresh).toHaveBeenCalled();
   });
 });
