@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import type { BankAccount } from '@/features/bank-accounts';
-import { walletApi } from '@/services/wallet.api';
+import { walletApi } from '../api';
 import { toAppError, type AppError } from '@/shared/lib/errors';
 import { reportError } from '@/shared/lib/report';
 import { fromActionResult, ok, type Result } from '@/shared/lib/result';

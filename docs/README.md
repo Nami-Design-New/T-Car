@@ -252,6 +252,11 @@ suite has 14 failures in unrelated auth/account/layout/shared UI tests; wallet
 tests pass. No HTTP integration has started. Backend follow-ups: resolve
 withdrawal's `amount` validation response and add wallet pagination.
 
+**Wallet API fraction W2 (2026-10-29), done:** Moved the wallet API interface
+and stateful mock from `services/` into `features/wallet/` without changing
+behavior. The wallet hook now imports its API from the feature. The mock still
+uses the existing bank-accounts service until that feature API migration.
+
 **Phase 1 import-boundary remediation (2026-10-20):** The account shell now receives points data from its App Router section layout and imports the summary card through `features/points/index.ts`. The root layout now supplies the authenticated notifications count to the layout feature. `MapLocationModal` and `LocationData` now live in `shared/ui` and `shared/lib`, respectively, with every caller using that shared API. Rental search now consumes the cars feature only through its public index; that index no longer exposes the server-only `getOffices` read, which the home route imports directly. The initial lint audit is reduced from nine to two boundary errors; both remaining violations are in wallet's bank-account action dependency.
 
 **Phone field replacement follow-up (2026-10-26), fraction 1:** Added the

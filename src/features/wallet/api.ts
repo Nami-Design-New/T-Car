@@ -1,10 +1,29 @@
 import { isApiEnvelope, type ApiEnvelope } from "@/services/http/envelope";
 import { AppError } from "@/shared/lib/errors";
+import { walletMock } from "./api.mock";
 import type {
   WalletData,
   WalletTransactionStatus,
   WalletTransactionType,
+  WithdrawParams,
 } from "./model";
+
+export interface WalletApi {
+  getWallet(): Promise<WalletData>;
+  /** Same accounts the user manages from the bank accounts tab. */
+  getBankAccounts(): Promise<WalletBankAccount[]>;
+  topUp(amount: number): Promise<void>;
+  withdraw(params: WithdrawParams): Promise<void>;
+}
+
+interface WalletBankAccount {
+  id: string;
+  bankId: string;
+  bankName: string;
+  logo?: string;
+  iban: string;
+  maskedNumber: string;
+}
 
 const WALLET_TRANSACTION_TYPES = [
   "refund",
@@ -111,3 +130,7 @@ export function mapWalletResponse(value: unknown): WalletData {
     })),
   };
 }
+
+// Keep the current mock implementation until the wallet integration replaces
+// it with server-owned reads and writes.
+export const walletApi: WalletApi = walletMock;

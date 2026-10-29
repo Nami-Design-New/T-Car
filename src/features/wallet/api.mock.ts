@@ -1,7 +1,7 @@
-import { MAX_TOP_UP, type WalletSummary, type WalletTransaction } from '@/features/wallet/model';
+import { MAX_TOP_UP, type WalletSummary, type WalletTransaction } from './model';
 import { AppError } from '@/shared/lib/errors';
-import { bankAccountsApi } from '../bankAccounts.api';
-import type { WalletApi } from '../wallet.api';
+import { bankAccountsApi } from '@/services/bankAccounts.api';
+import type { WalletApi } from './api';
 
 export const MOCK_WALLET_SUMMARY: WalletSummary = {
   total: 2500,
