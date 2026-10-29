@@ -128,8 +128,10 @@ export default function PhoneVerificationForm({
               onChange={field.onChange}
               length={PHONE_CODE_LENGTH}
               autoFocus
-              ariaLabel={t("title")}
-              digitAriaLabel={(index) => t("digitLabel", { index })}
+              ariaLabel={t("auth.otp.codeLabel")}
+              digitAriaLabel={(position, total) =>
+                t("auth.otp.digitLabel", { position, total })
+              }
               disabled={loading}
               error={fieldError(errors.code?.message)}
             />
