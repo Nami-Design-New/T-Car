@@ -1,20 +1,20 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
+import { useRouter } from '@/i18n/navigation';
 import type { BankAccount } from '@/features/bank-accounts';
-import { walletApi } from '../api';
+import { bankAccountsApi } from '@/services/bankAccounts.api';
 import { toAppError, type AppError } from '@/shared/lib/errors';
 import { reportError } from '@/shared/lib/report';
 import { fromActionResult, ok, type Result } from '@/shared/lib/result';
 import { topUpAction, withdrawAction } from '../actions';
-import type { WalletSummary, WalletTransaction, WithdrawParams } from '../model';
+import type { WalletData, WalletSummary, WalletTransaction, WithdrawParams } from '../model';
 
-const EMPTY_SUMMARY: WalletSummary = { total: 0, withdrawable: 0, nonWithdrawable: 0 };
-
-/** Wallet reads stay on the browser mock; writes cross the Server Action boundary. */
-export function useWallet() {
-  const [summary, setSummary] = useState<WalletSummary>(EMPTY_SUMMARY);
-  const [transactions, setTransactions] = useState<WalletTransaction[]>([]);
+/** Wallet data arrives from the server; bank choices and writes keep their current API paths. */
+export function useWallet(initialData: WalletData) {
+  const router = useRouter();
+  const [summary, setSummary] = useState<WalletSummary>(initialData.summary);
+  const [transactions, setTransactions] = useState<WalletTransaction[]>(initialData.transactions);
   const [bankAccounts, setBankAccounts] = useState<BankAccount[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<AppError | null>(null);
@@ -22,15 +22,18 @@ export function useWallet() {
   const [attempt, setAttempt] = useState(0);
 
   useEffect(() => {
+    setSummary(initialData.summary);
+    setTransactions(initialData.transactions);
+  }, [initialData]);
+
+  useEffect(() => {
     let active = true;
     setLoading(true);
     setError(null);
 
-    Promise.all([walletApi.getWallet(), walletApi.getBankAccounts()])
-      .then(([data, accounts]) => {
+    bankAccountsApi.getBankAccounts()
+      .then((accounts) => {
         if (!active) return;
-        setSummary(data.summary);
-        setTransactions(data.transactions);
         setBankAccounts(accounts);
       })
       .catch((loadError: unknown) => {
@@ -46,7 +49,10 @@ export function useWallet() {
     };
   }, [attempt]);
 
-  const reload = useCallback(() => setAttempt((count) => count + 1), []);
+  const reload = useCallback(() => {
+    setAttempt((count) => count + 1);
+    router.refresh();
+  }, [router]);
 
   const topUp = useCallback(
     async (amount: number): Promise<Result<void>> => {

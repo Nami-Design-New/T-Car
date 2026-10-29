@@ -1,6 +1,7 @@
+import "server-only";
 import { isApiEnvelope, type ApiEnvelope } from "@/services/http/envelope";
+import { serverHttp } from "@/services/http/server";
 import { AppError } from "@/shared/lib/errors";
-import { walletMock } from "./api.mock";
 import type {
   WalletData,
   WalletTransactionStatus,
@@ -131,6 +132,10 @@ export function mapWalletResponse(value: unknown): WalletData {
   };
 }
 
-// Keep the current mock implementation until the wallet integration replaces
-// it with server-owned reads and writes.
-export const walletApi: WalletApi = walletMock;
+async function getWallet(): Promise<WalletData> {
+  const response = await serverHttp.get<ApiEnvelope<unknown>>("/wallet");
+  return mapWalletResponse(response);
+}
+
+/** The authenticated wallet read. Writes remain on their existing actions. */
+export const walletApi: Pick<WalletApi, "getWallet"> = { getWallet };

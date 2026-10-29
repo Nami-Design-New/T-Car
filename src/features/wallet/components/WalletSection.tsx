@@ -6,7 +6,7 @@ import { useTranslations } from "next-intl";
 import type { BankAccount } from "@/features/bank-accounts";
 import { ResultDialog } from "@/shared/ui/ResultDialog";
 import { useWallet } from "../hooks/useWallet";
-import { MAX_TOP_UP, MIN_TOP_UP, MIN_WITHDRAW } from "../model";
+import { MAX_TOP_UP, MIN_TOP_UP, MIN_WITHDRAW, type WalletData } from "../model";
 import WalletTab from "./WalletTab";
 const WalletAmountModal = dynamic(() => import("./WalletAmountModal"), {
   ssr: false,
@@ -17,6 +17,10 @@ const BankSelectModal = dynamic(() => import("./BankSelectModal"), {
 
 type ResultKind = "topup" | "withdraw";
 
+interface Props {
+  initialData: WalletData;
+}
+
 /** One step at a time, so two wallet sheets can never be open together. */
 type WalletFlow =
   | { step: "idle" }
@@ -25,7 +29,7 @@ type WalletFlow =
   | { step: "withdraw-amount"; account: BankAccount }
   | { step: "result"; kind: ResultKind };
 
-export default function WalletSection() {
+export default function WalletSection({ initialData }: Props) {
   const t = useTranslations("wallet");
   const {
     summary,
@@ -37,7 +41,7 @@ export default function WalletSection() {
     submitting,
     topUp,
     withdraw,
-  } = useWallet();
+  } = useWallet(initialData);
   const [flow, setFlow] = useState<WalletFlow>({ step: "idle" });
 
   const close = useCallback(() => setFlow({ step: "idle" }), []);

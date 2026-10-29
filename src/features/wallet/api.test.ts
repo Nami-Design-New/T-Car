@@ -1,6 +1,14 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { AppError } from "@/shared/lib/errors";
-import { isWalletResponse, mapWalletResponse } from "./api";
+
+const { get } = vi.hoisted(() => ({ get: vi.fn() }));
+
+vi.mock("server-only", () => ({}));
+vi.mock("@/services/http/server", () => ({
+  serverHttp: { get },
+}));
+
+import { isWalletResponse, mapWalletResponse, walletApi } from "./api";
 
 const response = {
   data: {
@@ -124,5 +132,29 @@ describe("wallet API response mapping", () => {
     expect(() => mapWalletResponse({ ...response, data: null })).toThrow(
       new AppError("server"),
     );
+  });
+});
+
+describe("walletApi.getWallet", () => {
+  it("fetches the authenticated wallet endpoint and maps its response", async () => {
+    get.mockResolvedValue(response);
+
+    await expect(walletApi.getWallet()).resolves.toEqual(
+      mapWalletResponse(response),
+    );
+    expect(get).toHaveBeenCalledWith("/wallet");
+  });
+
+  it("rejects malformed successful responses", async () => {
+    get.mockResolvedValue({ ...response, data: null });
+
+    await expect(walletApi.getWallet()).rejects.toEqual(new AppError("server"));
+  });
+
+  it("preserves HTTP errors from the shared authenticated client", async () => {
+    const unauthorized = new AppError("unauthorized", undefined, 401);
+    get.mockRejectedValue(unauthorized);
+
+    await expect(walletApi.getWallet()).rejects.toBe(unauthorized);
   });
 });
