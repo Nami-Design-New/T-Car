@@ -35,6 +35,24 @@ describe("accountApi.sendPhoneCode", () => {
   });
 });
 
+describe("accountApi.uploadLicense", () => {
+  it("sends the selected file as multipart data and returns the backend message", async () => {
+    post.mockResolvedValue({
+      data: { id: 1, user_id: 1, license: "licenses/license.png", created_at: "2026-10-29" },
+      message: "License saved successfully.",
+      code: 200,
+    });
+    const file = new File(["license"], "license.png", { type: "image/png" });
+
+    await expect(accountApi.uploadLicense(file)).resolves.toEqual({
+      ok: true, data: "licenses/license.png", message: "License saved successfully.",
+    });
+    const [, formData] = post.mock.calls[0];
+    expect(formData).toBeInstanceOf(FormData);
+    expect((formData as FormData).get("license")).toEqual(file);
+  });
+});
+
 describe("accountApi.updateProfile", () => {
   it("sends editable fields and maps a response that omits the license", async () => {
     put.mockResolvedValue({
@@ -73,7 +91,7 @@ describe("accountApi.getProfile", () => {
           phone: "500000000",
           phone_code: "+966",
           birth_date: "1993-03-15",
-          license: { id: 1 },
+          license: { id: 1, license: "/licenses/license.png" },
         },
       }),
     );
@@ -84,6 +102,7 @@ describe("accountApi.getProfile", () => {
       birthDate: "1993-03-15",
       phone: "+966500000000",
       licenseUploaded: true,
+      licenseUrl: expect.stringContaining("/licenses/license.png"),
     });
     expect(get).toHaveBeenCalledWith("/profile");
   });

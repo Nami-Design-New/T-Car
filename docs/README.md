@@ -490,6 +490,10 @@ mock keeps its own OTP code `1234` for the phone change.
   `/auth/verify-otp`, keeps the country code separate, and updates the
   displayed and session phone from the verified backend response. The production
   build and authenticated profile read passed; live verification smoke remains pending.
+- Profile API fraction P6 (2026-10-29): license upload uses the
+  authenticated multipart endpoint with the selected file bytes and a server
+  action body-size limit that accommodates the 15 MiB client limit. Production
+  build and profile-route smoke passed; live upload smoke remains pending.
 - Profile API live smoke (2026-10-29): the backend accepted authenticated
   change-phone OTP requests and returned validation errors in the documented
   envelope. An initial profile read had null name, email, and birth date; the

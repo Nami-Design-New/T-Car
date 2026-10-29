@@ -23,6 +23,7 @@ export default function ProfileTab({ profile }: Props) {
           <PhoneSection initialPhone={profile.phone} {...flow} />
           <LicenseSection
             initialLicenseUploaded={profile.licenseUploaded}
+            initialLicenseUrl={profile.licenseUrl}
             {...flow}
           />
           <DeleteAccountSection {...flow} />

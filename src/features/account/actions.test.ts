@@ -38,6 +38,11 @@ beforeEach(() => {
     async (_id: string, profile: ProfileChanges) => ({ ok: true, data: profile, message: "Profile updated successfully." }),
   );
   accountApi.sendPhoneCode.mockResolvedValue({ ok: true, data: undefined, message: "Code sent." });
+  accountApi.uploadLicense.mockResolvedValue({
+    ok: true,
+    data: "https://example.test/licenses/license.jpg",
+    message: "License saved successfully.",
+  });
 });
 
 describe("saveProfileAction", () => {
@@ -215,10 +220,10 @@ describe("uploadLicenseAction", () => {
 
     await expect(uploadLicenseAction(formData)).resolves.toEqual({
       ok: true,
-      data: undefined,
+      data: "https://example.test/licenses/license.jpg",
+      message: "License saved successfully.",
     });
     expect(accountApi.uploadLicense).toHaveBeenCalledWith(
-      "u1",
       expect.objectContaining({
         name: "license.jpg",
         size: 7,

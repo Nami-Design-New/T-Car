@@ -10,7 +10,7 @@ const { saveProfileAction, sendPhoneCodeAction, verifyPhoneAction, uploadLicense
   saveProfileAction: vi.fn<(input: unknown) => Promise<ActionResult<ProfileChanges>>>(),
   sendPhoneCodeAction: vi.fn<(phone: PhoneFieldValue) => Promise<ActionResult<PhoneFieldValue>>>(),
   verifyPhoneAction: vi.fn<(phone: PhoneFieldValue, code: string) => Promise<ActionResult<string>>>(),
-  uploadLicenseAction: vi.fn<(data: FormData) => Promise<ActionResult<void>>>(),
+  uploadLicenseAction: vi.fn<(data: FormData) => Promise<ActionResult<string>>>(),
   deleteAccountAction: vi.fn<() => Promise<ActionResult<void>>>(),
   notify: { success: vi.fn(), error: vi.fn() },
   router: { replace: vi.fn(), refresh: vi.fn() },
@@ -57,7 +57,10 @@ beforeEach(() => {
   vi.clearAllMocks();
   sendPhoneCodeAction.mockImplementation(async (phone) => ({ ok: true, data: phone, message: 'Code sent.' }));
   verifyPhoneAction.mockResolvedValue({ ok: false, error: { kind: 'validation', code: 'account.phoneVerificationUnavailable' } });
-  uploadLicenseAction.mockResolvedValue({ ok: true, data: undefined });
+  uploadLicenseAction.mockResolvedValue({
+    ok: true,
+    data: 'https://example.test/licenses/license.jpg',
+  });
   deleteAccountAction.mockResolvedValue({ ok: true, data: undefined });
 });
 

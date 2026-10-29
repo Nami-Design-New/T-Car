@@ -113,17 +113,25 @@ export async function verifyPhoneAction(
 
 export async function uploadLicenseAction(
   formData: FormData,
-): Promise<ActionResult<void>> {
-  const value = formData.get("license");
-  return run("account.uploadLicense", (accountId) => {
+): Promise<ActionResult<string>> {
+  try {
+    const session = await auth();
+    if (!session?.user?.id) throw new AppError("unauthorized");
+    const value = formData.get("license");
     const { file } = parse(licenseUploadSchema, {
       file:
         value !== null && typeof value !== "string"
           ? value
           : { name: "", size: 0, type: "" },
     });
-    return accountApi.uploadLicense(accountId, file);
-  });
+    if (!(file instanceof File)) throw new AppError("validation", "account.licenseRequired");
+    const result = await accountApi.uploadLicense(file);
+    if (!result.ok) throw result.error;
+    return toActionResult(result);
+  } catch (error) {
+    reportError(error, { scope: "account.uploadLicense" });
+    return toActionResult(fail(error));
+  }
 }
 
 /** Deletes the account and ends the session. */

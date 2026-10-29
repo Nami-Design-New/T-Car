@@ -5,6 +5,10 @@ import createNextIntlPlugin from 'next-intl/plugin';
 const withNextIntl = createNextIntlPlugin();
 const nextConfig = {
   reactStrictMode: true,
+  experimental: {
+    // License uploads allow files up to 15 MiB; leave room for multipart framing.
+    serverActions: { bodySizeLimit: '16mb' },
+  },
 
   // Real HTTP redirects, sent before any page renders (a redirect() inside a
   // streamed page only happens in the browser).

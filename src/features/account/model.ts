@@ -14,6 +14,8 @@ export interface UserProfile {
   birthDate: string;
   phone: string;
   licenseUploaded: boolean;
+  /** Stored license image reference supplied by the profile API. */
+  licenseUrl?: string;
 }
 
 export type ProfileChanges = Pick<

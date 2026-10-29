@@ -89,6 +89,7 @@
       "close": "إغلاق",
       "uploadPrompt": "اضغط هنا لرفع صورة رخصة القيادة",
       "fileTypes": "JPG أو JPEG أو PNG، حتى 15 ميجابايت",
+      "editImage": "تغيير صورة رخصة القيادة",
       "submit": "إرسال"
     },
     "verifyPhone": {

@@ -6,8 +6,8 @@ type QueryValue = string | number | boolean | null | undefined;
 
 export interface RequestOptions extends Omit<RequestInit, 'body' | 'method'> {
   query?: Record<string, QueryValue>;
-  /** Sent as JSON. */
-  body?: unknown;
+  /** Sent as JSON, unless it is FormData. */
+  body?: unknown | FormData;
   timeoutMs?: number;
 }
 
@@ -74,7 +74,10 @@ export function createHttpClient({
   ): Promise<T> {
     const requestHeaders = new Headers(headers);
     requestHeaders.set('Accept', 'application/json');
-    if (body !== undefined) requestHeaders.set('Content-Type', 'application/json');
+    const isFormData = typeof FormData !== 'undefined' && body instanceof FormData;
+    if (body !== undefined && !isFormData) {
+      requestHeaders.set('Content-Type', 'application/json');
+    }
 
     const token = await getToken?.();
     if (token) requestHeaders.set('Authorization', `Bearer ${token}`);
@@ -97,7 +100,12 @@ export function createHttpClient({
         ...init,
         method,
         headers: requestHeaders,
-        body: body === undefined ? undefined : JSON.stringify(body),
+        body:
+          body === undefined
+            ? undefined
+            : isFormData
+              ? body
+              : JSON.stringify(body),
         signal: controller.signal,
       });
     } catch (error) {

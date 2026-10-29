@@ -54,27 +54,31 @@ export const accountMock: AccountApi = {
     return ok(`${phone.countryCode}${phone.phone}`, "Profile retrieved successfully.");
   },
 
-  async uploadLicense(_accountId, file) {
+  async uploadLicense(file) {
     // This reserved filename deterministically exercises an upload rejection.
     if (file.name === "reject-license.jpg") {
-      throw new AppError("validation", "account.licenseRejected");
+      return fail(new AppError("validation", "account.licenseRejected"));
     }
-    if (!file.name) throw new AppError("validation", "account.licenseRequired");
+    if (!file.name) return fail(new AppError("validation", "account.licenseRequired"));
     if (file.size > LICENSE_MAX_SIZE_BYTES) {
-      throw new AppError("validation", "account.licenseTooLarge", undefined, {
+      return fail(new AppError("validation", "account.licenseTooLarge", undefined, {
         file: "account.licenseTooLarge",
-      });
+      }));
     }
     if (!isLicenseFileType(file.type)) {
-      throw new AppError(
+      return fail(new AppError(
         "validation",
         "account.licenseInvalidType",
         undefined,
         {
           file: "account.licenseInvalidType",
         },
-      );
+      ));
     }
+    return ok(
+      "https://example.test/licenses/" + encodeURIComponent(file.name),
+      "License saved successfully.",
+    );
   },
 
   async deleteAccount(accountId) {

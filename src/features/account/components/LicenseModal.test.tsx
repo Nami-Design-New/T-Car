@@ -49,6 +49,31 @@ describe("LicenseModal", () => {
     await waitFor(() => expect(onSubmit).toHaveBeenCalledWith(file));
   });
 
+  it("shows the stored license image while replacing it", () => {
+    renderWithIntl(
+      <LicenseModal
+        open
+        onClose={vi.fn()}
+        onSubmit={vi.fn()}
+        licenseUrl="https://example.test/licenses/license.jpg"
+      />,
+    );
+
+    expect(screen.getByRole("img", { name: "Driving license" })).toHaveAttribute(
+      "src",
+      "https://example.test/licenses/license.jpg",
+    );
+    expect(
+      screen.getByRole("button", { name: "Change driving license image" }),
+    ).toBeVisible();
+    expect(screen.getByText("JPG, JPEG, or PNG, up to 15 MB")).toHaveClass(
+      "text-xs",
+    );
+    expect(
+      screen.queryByText("Click here to upload a photo of your driving license"),
+    ).not.toBeInTheDocument();
+  });
+
   it("accepts a .jpeg image", async () => {
     const onSubmit = vi.fn().mockResolvedValue(undefined);
     const { user, input } = renderModal(onSubmit);
@@ -75,6 +100,8 @@ describe("LicenseModal", () => {
     expect(await screen.findByRole("alert")).toHaveTextContent(
       "The driving license could not be uploaded. Try another image.",
     );
-    expect(screen.getByText("license.jpg")).toBeVisible();
+    expect(
+      screen.getByRole("img", { name: "Driving license" }),
+    ).toBeVisible();
   });
 });

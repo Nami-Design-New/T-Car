@@ -1,10 +1,11 @@
 import "server-only";
 import { isApiEnvelope, type ApiEnvelope } from "@/services/http/envelope";
 import { serverHttp } from "@/services/http/server";
+import { env } from "@/shared/config/env";
 import { AppError } from "@/shared/lib/errors";
 import { fail, ok, type Result } from "@/shared/lib/result";
 import type { PhoneFieldValue } from "@/shared/lib/phone";
-import type { LicenseUpload, ProfileChanges, UserProfile } from "./model";
+import type { ProfileChanges, UserProfile } from "./model";
 import { accountMock } from "./api.mock";
 
 export interface AccountApi {
@@ -17,7 +18,7 @@ export interface AccountApi {
   sendPhoneCode(phone: PhoneFieldValue): Promise<Result<void>>;
   /** Confirms the new phone number with the code that was sent to it. */
   verifyPhone(phone: PhoneFieldValue, code: string): Promise<Result<string>>;
-  uploadLicense(accountId: string, file: LicenseUpload): Promise<void>;
+  uploadLicense(file: File): Promise<Result<string>>;
   deleteAccount(accountId: string): Promise<void>;
 }
 
@@ -46,13 +47,44 @@ function isProfileUserDto(value: unknown): value is ProfileUserDto {
 }
 
 function toUserProfile(user: ProfileUserDto): UserProfile {
+  const licenseUrl =
+    isRecord(user.license) && typeof user.license.license === "string"
+      ? user.license.license
+      : undefined;
   return {
     fullName: user.name,
     email: user.email,
     birthDate: user.birth_date,
     phone: `${user.phone_code}${user.phone}`,
     licenseUploaded: user.license !== null,
+    ...(licenseUrl ? { licenseUrl: toLicenseUrl(licenseUrl) } : {}),
   };
+}
+
+/** Backend responses may contain an absolute URL or a path under the API host. */
+function toLicenseUrl(reference: string): string {
+  try {
+    return new URL(reference, env.serverApiUrl).toString();
+  } catch {
+    return reference;
+  }
+}
+
+interface LicenseDto {
+  id: number | string;
+  user_id: number | string;
+  license: string;
+  created_at: string;
+}
+
+function isLicenseDto(value: unknown): value is LicenseDto {
+  return (
+    isRecord(value) &&
+    (typeof value.id === "number" || typeof value.id === "string") &&
+    (typeof value.user_id === "number" || typeof value.user_id === "string") &&
+    typeof value.license === "string" &&
+    typeof value.created_at === "string"
+  );
 }
 
 async function getProfile(): Promise<UserProfile> {
@@ -148,11 +180,29 @@ async function verifyPhone(
   }
 }
 
-/** Profile reads, edits, and change-phone OTP operations are live. */
+async function uploadLicense(file: File): Promise<Result<string>> {
+  try {
+    const formData = new FormData();
+    formData.set("license", file);
+    const response = await serverHttp.post<ApiEnvelope<unknown>>(
+      "/license",
+      formData,
+    );
+    if (!isApiEnvelope(response) || !isLicenseDto(response.data)) {
+      throw new AppError("server");
+    }
+    return ok(toLicenseUrl(response.data.license), response.message);
+  } catch (error) {
+    return fail(error);
+  }
+}
+
+/** Profile reads, edits, phone OTP operations, and license upload are live. */
 export const accountApi: AccountApi = {
   ...accountMock,
   getProfile,
   updateProfile,
   sendPhoneCode,
   verifyPhone,
+  uploadLicense,
 };
