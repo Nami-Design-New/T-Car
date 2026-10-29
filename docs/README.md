@@ -499,6 +499,9 @@ mock keeps its own OTP code `1234` for the phone change.
   the local session only after the backend confirms deletion. Focused tests,
   TypeScript, lint, production build, and profile-route smoke passed; live
   deletion smoke remains pending.
+- Profile API fraction P8 (2026-10-29): the migration status now records all
+  integrated Profile API operations. Live mutation smoke checks remain pending
+  for phone verification, license upload, and account deletion.
 - Profile API live smoke (2026-10-29): the backend accepted authenticated
   change-phone OTP requests and returned validation errors in the documented
   envelope. An initial profile read had null name, email, and birth date; the
