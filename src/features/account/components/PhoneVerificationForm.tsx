@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 
 import {
@@ -13,6 +13,7 @@ import type { AppError } from "@/shared/lib/errors";
 import { applyFieldErrors } from "@/shared/lib/validation";
 import { Button } from "@/shared/ui/Button";
 import { OtpInput } from "@/shared/ui/OtpInput";
+import { ResendCountdown } from "@/shared/ui/ResendCountdown";
 import {
   PHONE_CODE_LENGTH,
   phoneCodeSchema,
@@ -41,7 +42,6 @@ export default function PhoneVerificationForm({
   const t = useTranslations();
   const errorMessage = useErrorMessage();
   const fieldError = useFieldErrorMessage();
-  const [timer, setTimer] = useState(RESEND_SECONDS);
   const {
     control,
     handleSubmit,
@@ -58,17 +58,7 @@ export default function PhoneVerificationForm({
 
   useEffect(() => {
     reset({ code: "" });
-    setTimer(RESEND_SECONDS);
   }, [phone, reset]);
-
-  useEffect(() => {
-    if (timer === 0) return;
-    const interval = window.setInterval(
-      () => setTimer((value) => Math.max(0, value - 1)),
-      1000,
-    );
-    return () => window.clearInterval(interval);
-  }, [timer]);
 
   const showServerError = (error: AppError) => {
     if (!applyFieldErrors(error, setError, ["code"])) {
@@ -87,11 +77,14 @@ export default function PhoneVerificationForm({
   });
 
   const handleResend = async () => {
-    if (timer > 0 || loading) return;
+    if (loading) return false;
     const error = await onResendCode(phone);
-    if (error) return showServerError(error);
+    if (error) {
+      showServerError(error);
+      return false;
+    }
     reset({ code: "" });
-    setTimer(RESEND_SECONDS);
+    return true;
   };
 
   const formError = errors.root?.server?.message;
@@ -144,28 +137,12 @@ export default function PhoneVerificationForm({
         />
       </div>
 
-      <div
-        className="mb-3 flex min-h-11 items-center justify-between"
-        aria-live="polite"
-      >
-        <p className="text-action-primary m-0 text-sm leading-relaxed">
-          {t("auth.otp.resendIn")}
-        </p>
-        {timer > 0 ? (
-          <span className="text-action-primary text-sm leading-relaxed">
-            {" "}
-            00:{String(timer).padStart(2, "0")}{" "}
-          </span>
-        ) : (
-          <button
-            type="button"
-            className="text-text-primary cursor-pointer border-0 bg-transparent text-xs font-bold underline"
-            onClick={handleResend}
-          >
-            {t("auth.otp.resend")}
-          </button>
-        )}
-      </div>
+      <ResendCountdown
+        seconds={RESEND_SECONDS}
+        resetKey={phone}
+        onResend={handleResend}
+        disabled={loading}
+      />
 
       {formError && (
         <p className="text-status-error mt-0 mb-4 text-sm" role="alert">
