@@ -482,11 +482,22 @@ mock keeps its own OTP code `1234` for the phone change.
   maps the documented `data.user` fields into `UserProfile`; malformed payloads
   are server errors and a 401 follows the existing session-clear/sign-in path.
   Account writes remain on the mock until their dedicated fractions.
-- Profile API fraction P3 (2026-10-29): profile edits use authenticated `PUT /update-profile`, with shared registration validation, backend success and validation toasts, and a session update. The response omits license; the form preserves its existing phone and license state. Phone, license, and deletion writes remain on their mocks. Authenticated live mutation verification remains pending a disposable account.
+- Profile API fraction P3 (2026-10-29): profile edits use authenticated `PUT /update-profile`, with shared registration validation, backend success and validation toasts, and a session update. The response omits license; the form preserves its existing phone and license state. Authenticated same-values update and profile form smoke passed with a completed test account.
 - Profile API fraction P4 (2026-10-29): send and resend use authenticated
   `/auth/request-otp` with `otp_type: "change_phone"` and a structured,
-  normalized phone number. Backend messages use toasts. Live verification is
-  pending P5; the mock verification is disabled to avoid a false success.
+  normalized phone number. Backend messages use toasts.
+- Profile API fraction P5 (2026-10-29): verification uses authenticated
+  `/auth/verify-otp`, keeps the country code separate, and updates the
+  displayed and session phone from the verified backend response. The production
+  build and authenticated profile read passed; live verification smoke remains pending.
+- Profile API live smoke (2026-10-29): the backend accepted authenticated
+  change-phone OTP requests and returned validation errors in the documented
+  envelope. An initial profile read had null name, email, and birth date; the
+  current profile read guard requires strings, and an artificial completed
+  session rendered a streamed error. With the profile completed later, a
+  same-values update succeeded and preserved the license. The profile form
+  save and phone OTP request succeeded in the development app using a session
+  created from the supplied token. The OTP verification step was not submitted.
 - Profile flow separation (2026-10-29): `ProfileTab` composes profile, phone,
   license, and account-deletion sections. Each section owns its handlers and
   dialog state; pending-action coordination and API behavior are unchanged.

@@ -9,6 +9,7 @@ import {
   useErrorMessage,
   useFieldErrorMessage,
 } from "@/shared/hooks/useErrorMessage";
+import { useNotify } from "@/shared/hooks/useNotify";
 import type { AppError } from "@/shared/lib/errors";
 import {
   formatPhoneFieldValue,
@@ -46,6 +47,7 @@ export default function PhoneVerificationForm({
   const t = useTranslations();
   const errorMessage = useErrorMessage();
   const fieldError = useFieldErrorMessage();
+  const notify = useNotify();
   const displayPhone = formatPhoneFieldValue(phone);
   const {
     control,
@@ -68,10 +70,7 @@ export default function PhoneVerificationForm({
   const showServerError = (error: AppError) => {
     if (error.kind === "validation" && error.serverMessage) return;
     if (!applyFieldErrors(error, setError, ["code"])) {
-      setError("root.server", {
-        type: error.kind,
-        message: errorMessage(error),
-      });
+      notify.error(errorMessage(error));
     }
   };
 
@@ -93,7 +92,6 @@ export default function PhoneVerificationForm({
     return true;
   };
 
-  const formError = errors.root?.server?.message;
   const isComplete = watch("code").length === PHONE_CODE_LENGTH;
 
   return (
@@ -151,12 +149,6 @@ export default function PhoneVerificationForm({
         onResend={handleResend}
         disabled={loading}
       />
-
-      {formError && (
-        <p className="text-status-error mt-0 mb-4 text-sm" role="alert">
-          {formError}
-        </p>
-      )}
 
       <Button
         type="submit"

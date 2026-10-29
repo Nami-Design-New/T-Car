@@ -16,7 +16,7 @@ export interface AccountApi {
   /** Sends a code to a new phone number; also used to resend it. */
   sendPhoneCode(phone: PhoneFieldValue): Promise<Result<void>>;
   /** Confirms the new phone number with the code that was sent to it. */
-  verifyPhone(accountId: string, phone: string, code: string): Promise<void>;
+  verifyPhone(phone: PhoneFieldValue, code: string): Promise<Result<string>>;
   uploadLicense(accountId: string, file: LicenseUpload): Promise<void>;
   deleteAccount(accountId: string): Promise<void>;
 }
@@ -102,9 +102,7 @@ async function updateProfile(
   }
 }
 
-async function sendPhoneCode(
-  phone: PhoneFieldValue,
-): Promise<Result<void>> {
+async function sendPhoneCode(phone: PhoneFieldValue): Promise<Result<void>> {
   try {
     const response = await serverHttp.post<ApiEnvelope<unknown>>(
       "/auth/request-otp",
@@ -123,10 +121,38 @@ async function sendPhoneCode(
   }
 }
 
-/** Profile reads, edits, and change-phone OTP requests are live. */
+async function verifyPhone(
+  phone: PhoneFieldValue,
+  code: string,
+): Promise<Result<string>> {
+  try {
+    const response = await serverHttp.post<ApiEnvelope<unknown>>(
+      "/auth/verify-otp",
+      {
+        phone: phone.phone,
+        phone_code: phone.countryCode,
+        otp: code,
+        otp_type: "change_phone",
+      },
+    );
+    if (
+      !isApiEnvelope(response) ||
+      !isRecord(response.data) ||
+      !isProfileUserDto(response.data.user)
+    ) {
+      throw new AppError("server");
+    }
+    return ok(toUserProfile(response.data.user).phone, response.message);
+  } catch (error) {
+    return fail(error);
+  }
+}
+
+/** Profile reads, edits, and change-phone OTP operations are live. */
 export const accountApi: AccountApi = {
   ...accountMock,
   getProfile,
   updateProfile,
   sendPhoneCode,
+  verifyPhone,
 };

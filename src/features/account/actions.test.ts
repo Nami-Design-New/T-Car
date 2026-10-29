@@ -164,7 +164,7 @@ describe("phone actions", () => {
   });
 
   it("rejects an incomplete code without verifying", async () => {
-    const result = await verifyPhoneAction("966511111111", "12");
+    const result = await verifyPhoneAction({ countryCode: "+966", phone: "511111111" }, "12");
     expect(result).toMatchObject({
       ok: false,
       error: {
@@ -175,12 +175,13 @@ describe("phone actions", () => {
     expect(accountApi.verifyPhone).not.toHaveBeenCalled();
   });
 
-  it("does not verify through the mock while the live verification endpoint is pending", async () => {
-    await expect(verifyPhoneAction("966511111111", "1234")).resolves.toMatchObject({
-      ok: false,
-      error: { kind: "validation", code: "account.phoneVerificationUnavailable" },
+  it("updates the session after the phone is verified", async () => {
+    accountApi.verifyPhone.mockResolvedValueOnce({ ok: true, data: "+966511111111", message: "Verified." });
+    await expect(verifyPhoneAction({ countryCode: "+966", phone: "511111111" }, "1234")).resolves.toMatchObject({
+      ok: true,
+      data: "+966511111111",
     });
-    expect(accountApi.verifyPhone).not.toHaveBeenCalled();
+    expect(accountApi.verifyPhone).toHaveBeenCalledWith({ countryCode: "+966", phone: "511111111" }, "1234");
   });
 });
 

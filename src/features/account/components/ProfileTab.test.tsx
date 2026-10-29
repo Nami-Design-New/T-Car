@@ -9,7 +9,7 @@ import type { ProfileChanges, UserProfile } from '../model';
 const { saveProfileAction, sendPhoneCodeAction, verifyPhoneAction, uploadLicenseAction, deleteAccountAction, notify, router } = vi.hoisted(() => ({
   saveProfileAction: vi.fn<(input: unknown) => Promise<ActionResult<ProfileChanges>>>(),
   sendPhoneCodeAction: vi.fn<(phone: PhoneFieldValue) => Promise<ActionResult<PhoneFieldValue>>>(),
-  verifyPhoneAction: vi.fn<(phone: string, code: string) => Promise<ActionResult<void>>>(),
+  verifyPhoneAction: vi.fn<(phone: PhoneFieldValue, code: string) => Promise<ActionResult<string>>>(),
   uploadLicenseAction: vi.fn<(data: FormData) => Promise<ActionResult<void>>>(),
   deleteAccountAction: vi.fn<() => Promise<ActionResult<void>>>(),
   notify: { success: vi.fn(), error: vi.fn() },
@@ -171,8 +171,8 @@ describe('ProfileTab', () => {
     expect(screen.getByText('+966500000000')).toBeInTheDocument();
     await user.type(await screen.findByRole('textbox', { name: 'Digit 1 of 4' }), '1234');
     await user.click(screen.getByRole('button', { name: 'Verify' }));
-    await waitFor(() => expect(verifyPhoneAction).toHaveBeenCalledWith('+966511111111', '1234'));
-    expect(await screen.findByRole('alert')).toHaveTextContent('Phone verification is temporarily unavailable');
+    await waitFor(() => expect(verifyPhoneAction).toHaveBeenCalledWith({ countryCode: '+966', phone: '511111111' }, '1234'));
+    expect(notify.error).toHaveBeenCalledWith('Phone verification is temporarily unavailable. Please try again later.');
     expect(screen.getByRole('dialog')).toBeInTheDocument();
   });
 

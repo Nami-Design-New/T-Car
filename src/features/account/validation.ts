@@ -42,7 +42,7 @@ export const legacyPhoneChangeSchema = z.object({ phone });
 export const phoneCodeSchema = z.object({ code });
 
 /** What `verifyPhoneAction` receives. */
-export const verifyPhoneSchema = z.object({ phone, code });
+export const verifyPhoneSchema = z.object({ phone: phoneValueSchema, code });
 
 /** The selected license image. The action parses this same schema from FormData. */
 const licenseFile = z

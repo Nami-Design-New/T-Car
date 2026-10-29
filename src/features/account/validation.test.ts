@@ -136,7 +136,7 @@ describe("phone schemas", () => {
     expect(
       fieldErrors(verifyPhoneSchema.safeParse({ phone: "1", code: "abcd" })),
     ).toEqual({
-      phone: "account.invalidPhone",
+      phone: "auth.invalidPhone",
       code: "account.invalidCode",
     });
   });

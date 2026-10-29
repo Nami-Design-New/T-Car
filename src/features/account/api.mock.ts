@@ -44,13 +44,14 @@ export const accountMock: AccountApi = {
     return ok(undefined, "OTP has been sent successfully.");
   },
 
-  async verifyPhone(_accountId, _phone, code) {
+  async verifyPhone(phone, code) {
     // Same fixed code as sign-in (MOCK_OTP_CODE), so the wrong-code path is reproducible.
     if (code !== MOCK_OTP_CODE) {
-      throw new AppError("validation", "account.invalidCode", undefined, {
+      return fail(new AppError("validation", "account.invalidCode", undefined, {
         code: "account.invalidCode",
-      });
+      }));
     }
+    return ok(`${phone.countryCode}${phone.phone}`, "Profile retrieved successfully.");
   },
 
   async uploadLicense(_accountId, file) {

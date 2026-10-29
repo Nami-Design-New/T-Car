@@ -94,14 +94,21 @@ export async function sendPhoneCodeAction(
 }
 
 export async function verifyPhoneAction(
-  phone: string,
+  phone: PhoneFieldValue,
   code: string,
-): Promise<ActionResult<void>> {
-  return run("account.verifyPhone", async () => {
-    parse(verifyPhoneSchema, { phone, code });
-    // P5 will replace the test-only mock with the live verification endpoint.
-    throw new AppError("validation", "account.phoneVerificationUnavailable");
-  });
+): Promise<ActionResult<string>> {
+  try {
+    const session = await auth();
+    if (!session?.user?.id) throw new AppError("unauthorized");
+    const input = parse(verifyPhoneSchema, { phone, code });
+    const result = await accountApi.verifyPhone(input.phone, input.code);
+    if (!result.ok) throw result.error;
+    await updateSessionProfile({ phone: result.data });
+    return toActionResult(result);
+  } catch (error) {
+    reportError(error, { scope: "account.verifyPhone" });
+    return toActionResult(fail(error));
+  }
 }
 
 export async function uploadLicenseAction(

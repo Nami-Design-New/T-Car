@@ -6,11 +6,9 @@ import Image from "next/image";
 import { ICONS } from "@/shared/config/assets";
 import { AppError, toAppError } from "@/shared/lib/errors";
 import { fromActionResult } from "@/shared/lib/result";
-import {
-  formatPhoneFieldValue,
-  type PhoneFieldValue,
-} from "@/shared/lib/phone";
+import type { PhoneFieldValue } from "@/shared/lib/phone";
 import { useNotify } from "@/shared/hooks/useNotify";
+import { useRouter } from "@/i18n/navigation";
 import { sendPhoneCodeAction, verifyPhoneAction } from "../actions";
 import PhoneChangeModal from "./PhoneChangeModal";
 import type { PendingAction, ProfileFlowProps } from "./ProfileFlowProps";
@@ -30,10 +28,12 @@ export default function PhoneSection({
 }: Props) {
   const t = useTranslations("account.profile");
   const notify = useNotify();
+  const router = useRouter();
   const [phone, setPhone] = useState(initialPhone);
   const [phoneStep, setPhoneStep] = useState<PhoneStep>(null);
-  const [pendingPhone, setPendingPhone] = useState<PhoneFieldValue | null>(null);
-
+  const [pendingPhone, setPendingPhone] = useState<PhoneFieldValue | null>(
+    null,
+  );
   /** The phone actions resolve with their error; the dialogs show it next to the input. */
   const runPhoneAction = async (
     action: Exclude<PendingAction, null>,
@@ -49,8 +49,8 @@ export default function PhoneSection({
     }
   };
 
-  const handleSendCode = (phone: PhoneFieldValue) =>
-    runPhoneAction("send", async () => {
+  const handleSendCode = (phone: PhoneFieldValue) => {
+    return runPhoneAction("send", async () => {
       const result = fromActionResult(await sendPhoneCodeAction(phone));
       if (!result.ok) {
         if (result.error.kind === "validation" && result.error.serverMessage) {
@@ -62,6 +62,7 @@ export default function PhoneSection({
       setPendingPhone(result.data);
       setPhoneStep("verify");
     });
+  };
 
   // ==================== Resend OTP ====================
 
@@ -79,19 +80,27 @@ export default function PhoneSection({
 
   // ==================== Verify Phone ====================
 
-  const handleVerifyCode = (code: string) =>
-    runPhoneAction("verify", async () => {
+  const handleVerifyCode = (code: string) => {
+    return runPhoneAction("verify", async () => {
       if (!pendingPhone) {
         return new AppError("validation", "account.invalidPhone");
       }
       const result = fromActionResult(
-        await verifyPhoneAction(formatPhoneFieldValue(pendingPhone), code),
+        await verifyPhoneAction(pendingPhone, code),
       );
-      if (!result.ok) return result.error;
+      if (!result.ok) {
+        if (result.error.kind === "validation" && result.error.serverMessage) {
+          notify.error(result.error.serverMessage);
+        }
+        return result.error;
+      }
+      setPhone(result.data);
+      notify.success(result.message);
+      router.refresh();
     });
+  };
 
-  const handleVerified = (phone: PhoneFieldValue) => {
-    setPhone(formatPhoneFieldValue(phone));
+  const handleVerified = () => {
     setPhoneStep(null);
     setPendingPhone(null);
   };

@@ -13,7 +13,7 @@ import { SESSION_COOKIE, SESSION_COOKIE_OPTIONS } from '@/shared/config/session'
 const SIGN_IN_GRANT = 'tcar.sign-in-grant';
 
 /** What a session update may change after profile completion. */
-type ProfileUpdate = Partial<Pick<AuthUser, 'name' | 'email'>> & { onboardingStep?: OnboardingStep };
+type ProfileUpdate = Partial<Pick<AuthUser, 'name' | 'email' | 'phone'>> & { onboardingStep?: OnboardingStep };
 
 /**
  * An update also reaches the `jwt` callback from the browser
@@ -66,6 +66,7 @@ export const { handlers, auth, signIn, signOut, unstable_update } = NextAuth({
         if (serverUpdate !== SERVER_UPDATE || !token.user) return token;
         if (typeof update?.name === 'string') token.user = { ...token.user, name: update.name };
         if (typeof update?.email === 'string') token.user = { ...token.user, email: update.email };
+        if (typeof update?.phone === 'string') token.user = { ...token.user, phone: update.phone };
         if (typeof update?.onboardingStep === 'string') {
           token.onboardingStep = toOnboardingStep(update.onboardingStep, Boolean(token.user.name));
         }
@@ -108,7 +109,7 @@ export async function signInWithGrant(grant: AuthGrant): Promise<void> {
 }
 
 /**
- * Updates the signed-in session after a profile write (name, email, and what
+ * Updates the signed-in session after a profile write (name, email, phone, and what
  * is left of onboarding). Server only: the marker keeps browser updates out.
  */
 export async function updateSessionProfile(update: ProfileUpdate): Promise<void> {
