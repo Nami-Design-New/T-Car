@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { isPhoneNumber } from "@/shared/lib/validation";
 import { profileFieldsSchema } from "@/shared/lib/validation/profile";
+import { phoneValueSchema } from "@/shared/lib/validation/phone";
 
 import {
   LICENSE_MAX_SIZE_BYTES,
@@ -32,7 +33,10 @@ const code = z
 export const profileFormSchema = profileFieldsSchema;
 
 /** Change-phone step: the new number the code is sent to. */
-export const phoneChangeSchema = z.object({ phone });
+export const phoneChangeSchema = z.object({ phone: phoneValueSchema });
+
+/** The legacy edit modal still uses a combined phone string. */
+export const legacyPhoneChangeSchema = z.object({ phone });
 
 /** Verify step, in the dialog: the code the customer typed. */
 export const phoneCodeSchema = z.object({ code });
@@ -67,5 +71,6 @@ const licenseFile = z
 export const licenseUploadSchema = z.object({ file: licenseFile });
 export type ProfileFormValues = z.infer<typeof profileFormSchema>;
 export type PhoneChangeValues = z.infer<typeof phoneChangeSchema>;
+export type LegacyPhoneChangeValues = z.infer<typeof legacyPhoneChangeSchema>;
 export type PhoneCodeValues = z.infer<typeof phoneCodeSchema>;
 export type LicenseUploadValues = z.infer<typeof licenseUploadSchema>;

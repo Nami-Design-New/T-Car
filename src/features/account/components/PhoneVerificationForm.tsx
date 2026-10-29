@@ -10,6 +10,10 @@ import {
   useFieldErrorMessage,
 } from "@/shared/hooks/useErrorMessage";
 import type { AppError } from "@/shared/lib/errors";
+import {
+  formatPhoneFieldValue,
+  type PhoneFieldValue,
+} from "@/shared/lib/phone";
 import { applyFieldErrors } from "@/shared/lib/validation";
 import { Button } from "@/shared/ui/Button";
 import { OtpInput } from "@/shared/ui/OtpInput";
@@ -21,11 +25,11 @@ import {
 } from "../validation";
 
 interface Props {
-  phone: string;
+  phone: PhoneFieldValue;
   onEditPhone?: () => void;
-  onResendCode: (phone: string) => Promise<AppError | undefined>;
+  onResendCode: (phone: PhoneFieldValue) => Promise<AppError | undefined>;
   onVerifyCode: (code: string) => Promise<AppError | undefined>;
-  onVerified: (phone: string) => void;
+  onVerified: (phone: PhoneFieldValue) => void;
   loading?: boolean;
 }
 
@@ -42,6 +46,7 @@ export default function PhoneVerificationForm({
   const t = useTranslations();
   const errorMessage = useErrorMessage();
   const fieldError = useFieldErrorMessage();
+  const displayPhone = formatPhoneFieldValue(phone);
   const {
     control,
     handleSubmit,
@@ -58,9 +63,10 @@ export default function PhoneVerificationForm({
 
   useEffect(() => {
     reset({ code: "" });
-  }, [phone, reset]);
+  }, [displayPhone, reset]);
 
   const showServerError = (error: AppError) => {
+    if (error.kind === "validation" && error.serverMessage) return;
     if (!applyFieldErrors(error, setError, ["code"])) {
       setError("root.server", {
         type: error.kind,
@@ -104,7 +110,7 @@ export default function PhoneVerificationForm({
           {t("auth.otp.subtitle")}
         </h3>
         <p className="text-text-subtle mb-4 text-start text-base leading-relaxed">
-          {t("auth.otp.description", { phone })}
+          {t("auth.otp.description", { phone: displayPhone })}
         </p>
         {onEditPhone && (
           <button
@@ -141,7 +147,7 @@ export default function PhoneVerificationForm({
 
       <ResendCountdown
         seconds={RESEND_SECONDS}
-        resetKey={phone}
+        resetKey={displayPhone}
         onResend={handleResend}
         disabled={loading}
       />

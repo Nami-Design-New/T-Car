@@ -19,7 +19,7 @@ import {
 } from "@/shared/hooks/useErrorMessage";
 import type { AppError } from "@/shared/lib/errors";
 import { applyFieldErrors } from "@/shared/lib/validation";
-import { phoneChangeSchema, type PhoneChangeValues } from "../validation";
+import { legacyPhoneChangeSchema, type LegacyPhoneChangeValues } from "../validation";
 
 interface Props {
   open: boolean;
@@ -47,8 +47,8 @@ export default function EditPhoneModal({
     setError,
     reset,
     formState: { errors },
-  } = useForm<PhoneChangeValues>({
-    resolver: zodResolver(phoneChangeSchema),
+  } = useForm<LegacyPhoneChangeValues>({
+    resolver: zodResolver(legacyPhoneChangeSchema),
     mode: "onBlur",
     reValidateMode: "onChange",
     defaultValues: { phone: currentPhone },

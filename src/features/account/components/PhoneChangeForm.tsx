@@ -12,8 +12,8 @@ import {
 } from "@/shared/hooks/useErrorMessage";
 import type { AppError } from "@/shared/lib/errors";
 import {
-  formatPhoneFieldValue,
   parsePhoneFieldValue,
+  type PhoneFieldValue,
 } from "@/shared/lib/phone";
 import { applyFieldErrors } from "@/shared/lib/validation";
 import { Button } from "@/shared/ui/Button";
@@ -22,7 +22,7 @@ import { phoneChangeSchema, type PhoneChangeValues } from "../validation";
 
 interface Props {
   currentPhone: string;
-  onSendCode: (phone: string) => Promise<AppError | undefined>;
+  onSendCode: (phone: PhoneFieldValue) => Promise<AppError | undefined>;
   loading?: boolean;
 }
 
@@ -44,16 +44,17 @@ export default function PhoneChangeForm({
     resolver: zodResolver(phoneChangeSchema),
     mode: "onBlur",
     reValidateMode: "onChange",
-    defaultValues: { phone: currentPhone },
+    defaultValues: { phone: parsePhoneFieldValue(currentPhone) },
   });
 
   useEffect(() => {
-    reset({ phone: currentPhone });
+    reset({ phone: parsePhoneFieldValue(currentPhone) });
   }, [currentPhone, reset]);
 
   const onSubmit = handleSubmit(async ({ phone }) => {
     if (loading) return;
     const error = await onSendCode(phone);
+    if (error?.kind === "validation" && error.serverMessage) return;
     if (error && !applyFieldErrors(error, setError, ["phone"])) {
       setError("root.server", {
         type: error.kind,
@@ -77,8 +78,8 @@ export default function PhoneChangeForm({
           render={({ field }) => (
             <PhoneField
               label={t("phone")}
-              value={parsePhoneFieldValue(field.value)}
-              onChange={(phone) => field.onChange(formatPhoneFieldValue(phone))}
+              value={field.value}
+              onChange={field.onChange}
               loadCountries={loadPhoneCountries}
               onBlur={field.onBlur}
               searchPlaceholder={t("countrySearchPlaceholder")}

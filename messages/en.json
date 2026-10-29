@@ -582,6 +582,7 @@
     "account": {
       "profileRejected": "The profile could not be saved. Check the details and try again.",
       "resendLimited": "The code cannot be resent yet. Wait a moment and try again.",
+      "phoneVerificationUnavailable": "Phone verification is temporarily unavailable. Please try again later.",
       "licenseRequired": "Choose an image of your driving license.",
       "licenseRejected": "The driving license could not be uploaded. Try another image.",
       "licenseTooLarge": "The driving license image must be 15 MB or smaller.",

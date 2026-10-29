@@ -2,6 +2,7 @@
 
 import { Dialog } from "@/shared/ui/Dialog";
 import type { AppError } from "@/shared/lib/errors";
+import type { PhoneFieldValue } from "@/shared/lib/phone";
 import PhoneChangeForm from "./PhoneChangeForm";
 import PhoneVerificationForm from "./PhoneVerificationForm";
 import { useTranslations } from "next-intl";
@@ -11,13 +12,13 @@ interface Props {
   open: boolean;
   onClose: () => void;
   currentPhone?: string;
-  pendingPhone?: string;
+  pendingPhone?: PhoneFieldValue | null;
   step?: "edit" | "verify" | null;
   onStepChange?: (step: "edit" | "verify" | null) => void;
-  onSendCode: (phone: string) => Promise<AppError | undefined>;
-  onResendCode: (phone: string) => Promise<AppError | undefined>;
+  onSendCode: (phone: PhoneFieldValue) => Promise<AppError | undefined>;
+  onResendCode: (phone: PhoneFieldValue) => Promise<AppError | undefined>;
   onVerifyCode: (code: string) => Promise<AppError | undefined>;
-  onVerified?: (phone: string) => void;
+  onVerified?: (phone: PhoneFieldValue) => void;
   loading?: boolean;
 }
 
@@ -25,7 +26,7 @@ export default function PhoneChangeModal({
   open,
   onClose,
   currentPhone = "",
-  pendingPhone = "",
+  pendingPhone = null,
   step = null,
   onStepChange,
   onSendCode,
@@ -64,7 +65,7 @@ export default function PhoneChangeModal({
         <Dialog.Close className="ms-auto" />
       </Dialog.Header>
       <Dialog.Body>
-        {step === "verify" ? (
+        {step === "verify" && pendingPhone ? (
           <PhoneVerificationForm
             phone={pendingPhone}
             onResendCode={onResendCode}

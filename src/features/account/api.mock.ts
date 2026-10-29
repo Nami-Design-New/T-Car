@@ -36,11 +36,12 @@ export const accountMock: AccountApi = {
     return ok(profile, "Profile updated successfully.");
   },
 
-  async sendPhoneCode(_accountId, phone) {
+  async sendPhoneCode(phone) {
     // Any phone ending in 0000 deterministically exercises the rate-limit path.
-    if (phone.replace(/\D/g, "").endsWith("0000")) {
-      throw new AppError("rate_limited", "account.resendLimited");
+    if (phone.phone.replace(/\D/g, "").endsWith("0000")) {
+      return fail(new AppError("rate_limited", "account.resendLimited"));
     }
+    return ok(undefined, "OTP has been sent successfully.");
   },
 
   async verifyPhone(_accountId, _phone, code) {

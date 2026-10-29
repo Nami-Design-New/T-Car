@@ -1,11 +1,11 @@
 import { describe, expect, it, vi } from "vitest";
 import { AppError } from "@/shared/lib/errors";
 
-const { get, put } = vi.hoisted(() => ({ get: vi.fn(), put: vi.fn() }));
+const { get, put, post } = vi.hoisted(() => ({ get: vi.fn(), put: vi.fn(), post: vi.fn() }));
 
 vi.mock("server-only", () => ({}));
 vi.mock("@/services/http/server", () => ({
-  serverHttp: { get, put },
+  serverHttp: { get, put, post },
 }));
 
 import { accountApi } from "./api";
@@ -14,6 +14,25 @@ const envelope = (data: unknown) => ({
   data,
   message: "Profile retrieved successfully.",
   code: 200,
+});
+
+describe("accountApi.sendPhoneCode", () => {
+  it("uses the authenticated change-phone endpoint and returns the backend message", async () => {
+    post.mockResolvedValue({ data: null, message: "OTP has been sent successfully.", code: 200 });
+    await expect(accountApi.sendPhoneCode({ countryCode: "+966", phone: "511111111" }))
+      .resolves.toEqual({ ok: true, data: undefined, message: "OTP has been sent successfully." });
+    expect(post).toHaveBeenCalledWith("/auth/request-otp", {
+      phone: "511111111", phone_code: "+966", otp_type: "change_phone",
+    });
+  });
+
+  it("returns backend validation failures and rejects malformed success payloads", async () => {
+    const error = new AppError("validation", undefined, 422, undefined, { serverMessage: "The phone number is required." });
+    post.mockRejectedValueOnce(error).mockResolvedValueOnce({ data: {}, message: "OK", code: 200 });
+    const phone = { countryCode: "+966", phone: "511111111" };
+    await expect(accountApi.sendPhoneCode(phone)).resolves.toEqual({ ok: false, error });
+    await expect(accountApi.sendPhoneCode(phone)).resolves.toEqual({ ok: false, error: new AppError("server") });
+  });
 });
 
 describe("accountApi.updateProfile", () => {

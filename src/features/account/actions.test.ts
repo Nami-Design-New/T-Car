@@ -37,6 +37,7 @@ beforeEach(() => {
   accountApi.updateProfile.mockImplementation(
     async (_id: string, profile: ProfileChanges) => ({ ok: true, data: profile, message: "Profile updated successfully." }),
   );
+  accountApi.sendPhoneCode.mockResolvedValue({ ok: true, data: undefined, message: "Code sent." });
 });
 
 describe("saveProfileAction", () => {
@@ -122,24 +123,44 @@ describe("saveProfileAction", () => {
 });
 
 describe("phone actions", () => {
+  it("requires a session before requesting a code", async () => {
+    auth.mockResolvedValue(null);
+    await expect(sendPhoneCodeAction({ countryCode: "+966", phone: "511111111" })).resolves.toMatchObject({
+      ok: false, error: { kind: "unauthorized" },
+    });
+    expect(accountApi.sendPhoneCode).not.toHaveBeenCalled();
+  });
+
   it("rejects a malformed phone without sending a code", async () => {
-    const result = await sendPhoneCodeAction("+966");
+    const result = await sendPhoneCodeAction({ countryCode: "+966", phone: "1234567" });
     expect(result).toMatchObject({
       ok: false,
       error: {
         kind: "validation",
-        fieldErrors: { phone: "account.invalidPhone" },
+        fieldErrors: { phone: "auth.phoneTooShort" },
       },
     });
     expect(accountApi.sendPhoneCode).not.toHaveBeenCalled();
   });
 
-  it("sends the code to the trimmed phone", async () => {
-    await expect(sendPhoneCodeAction(" 966511111111 ")).resolves.toEqual({
+  it("sends the normalized national phone and returns the message", async () => {
+    await expect(sendPhoneCodeAction({ countryCode: "+966", phone: " 0511111111 " })).resolves.toEqual({
       ok: true,
-      data: undefined,
+      data: { countryCode: "+966", phone: "511111111" },
+      message: "Code sent.",
     });
-    expect(accountApi.sendPhoneCode).toHaveBeenCalledWith("u1", "966511111111");
+    expect(accountApi.sendPhoneCode).toHaveBeenCalledWith({ countryCode: "+966", phone: "511111111" });
+  });
+
+  it("preserves the backend validation message", async () => {
+    const { AppError } = await import("@/shared/lib/errors");
+    accountApi.sendPhoneCode.mockResolvedValueOnce({
+      ok: false,
+      error: new AppError("validation", undefined, 422, undefined, { serverMessage: "Phone already in use." }),
+    });
+    await expect(sendPhoneCodeAction({ countryCode: "+966", phone: "511111111" })).resolves.toMatchObject({
+      ok: false, error: { kind: "validation", status: 422, serverMessage: "Phone already in use." },
+    });
   });
 
   it("rejects an incomplete code without verifying", async () => {
@@ -154,16 +175,12 @@ describe("phone actions", () => {
     expect(accountApi.verifyPhone).not.toHaveBeenCalled();
   });
 
-  it("verifies a well-formed code", async () => {
-    await expect(verifyPhoneAction("966511111111", "1234")).resolves.toEqual({
-      ok: true,
-      data: undefined,
+  it("does not verify through the mock while the live verification endpoint is pending", async () => {
+    await expect(verifyPhoneAction("966511111111", "1234")).resolves.toMatchObject({
+      ok: false,
+      error: { kind: "validation", code: "account.phoneVerificationUnavailable" },
     });
-    expect(accountApi.verifyPhone).toHaveBeenCalledWith(
-      "u1",
-      "966511111111",
-      "1234",
-    );
+    expect(accountApi.verifyPhone).not.toHaveBeenCalled();
   });
 });
 

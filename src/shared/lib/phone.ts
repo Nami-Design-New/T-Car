@@ -14,6 +14,14 @@ export interface PhoneFieldValue {
   phone: string;
 }
 
+/** National digits accepted by the authentication and account OTP endpoints. */
+export const NATIONAL_NUMBER_DIGITS = { min: 8, max: 15 };
+
+/** Removes separators and leading trunk zeros before sending a national number. */
+export function toNationalNumber(phone: string): string {
+  return phone.replace(/\D/g, "").replace(/^0+/, "");
+}
+
 export interface CountryPageRequest {
   search: string;
   cursor?: string | null;

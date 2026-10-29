@@ -3,6 +3,7 @@ import { isApiEnvelope, type ApiEnvelope } from "@/services/http/envelope";
 import { serverHttp } from "@/services/http/server";
 import { AppError } from "@/shared/lib/errors";
 import { fail, ok, type Result } from "@/shared/lib/result";
+import type { PhoneFieldValue } from "@/shared/lib/phone";
 import type { LicenseUpload, ProfileChanges, UserProfile } from "./model";
 import { accountMock } from "./api.mock";
 
@@ -13,7 +14,7 @@ export interface AccountApi {
     profile: ProfileChanges,
   ): Promise<Result<ProfileChanges>>;
   /** Sends a code to a new phone number; also used to resend it. */
-  sendPhoneCode(accountId: string, phone: string): Promise<void>;
+  sendPhoneCode(phone: PhoneFieldValue): Promise<Result<void>>;
   /** Confirms the new phone number with the code that was sent to it. */
   verifyPhone(accountId: string, phone: string, code: string): Promise<void>;
   uploadLicense(accountId: string, file: LicenseUpload): Promise<void>;
@@ -101,9 +102,31 @@ async function updateProfile(
   }
 }
 
-/** Profile reads and edits are live; other writes remain on their mocks. */
+async function sendPhoneCode(
+  phone: PhoneFieldValue,
+): Promise<Result<void>> {
+  try {
+    const response = await serverHttp.post<ApiEnvelope<unknown>>(
+      "/auth/request-otp",
+      {
+        phone: phone.phone,
+        phone_code: phone.countryCode,
+        otp_type: "change_phone",
+      },
+    );
+    if (!isApiEnvelope(response) || response.data !== null) {
+      throw new AppError("server");
+    }
+    return ok(undefined, response.message);
+  } catch (error) {
+    return fail(error);
+  }
+}
+
+/** Profile reads, edits, and change-phone OTP requests are live. */
 export const accountApi: AccountApi = {
   ...accountMock,
   getProfile,
   updateProfile,
+  sendPhoneCode,
 };

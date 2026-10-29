@@ -4,8 +4,13 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { ICONS } from "@/shared/config/assets";
-import { toAppError, type AppError } from "@/shared/lib/errors";
+import { AppError, toAppError } from "@/shared/lib/errors";
 import { fromActionResult } from "@/shared/lib/result";
+import {
+  formatPhoneFieldValue,
+  type PhoneFieldValue,
+} from "@/shared/lib/phone";
+import { useNotify } from "@/shared/hooks/useNotify";
 import { sendPhoneCodeAction, verifyPhoneAction } from "../actions";
 import PhoneChangeModal from "./PhoneChangeModal";
 import type { PendingAction, ProfileFlowProps } from "./ProfileFlowProps";
@@ -24,9 +29,10 @@ export default function PhoneSection({
   setPendingAction,
 }: Props) {
   const t = useTranslations("account.profile");
+  const notify = useNotify();
   const [phone, setPhone] = useState(initialPhone);
   const [phoneStep, setPhoneStep] = useState<PhoneStep>(null);
-  const [pendingPhone, setPendingPhone] = useState("");
+  const [pendingPhone, setPendingPhone] = useState<PhoneFieldValue | null>(null);
 
   /** The phone actions resolve with their error; the dialogs show it next to the input. */
   const runPhoneAction = async (
@@ -43,36 +49,51 @@ export default function PhoneSection({
     }
   };
 
-  const handleSendCode = (phone: string) =>
+  const handleSendCode = (phone: PhoneFieldValue) =>
     runPhoneAction("send", async () => {
       const result = fromActionResult(await sendPhoneCodeAction(phone));
-      if (!result.ok) return result.error;
-      setPendingPhone(phone);
+      if (!result.ok) {
+        if (result.error.kind === "validation" && result.error.serverMessage) {
+          notify.error(result.error.serverMessage);
+        }
+        return result.error;
+      }
+      notify.success(result.message);
+      setPendingPhone(result.data);
       setPhoneStep("verify");
     });
 
   // ==================== Resend OTP ====================
 
-  const handleResendCode = (phone: string) =>
+  const handleResendCode = (phone: PhoneFieldValue) =>
     runPhoneAction("resend", async () => {
       const result = fromActionResult(await sendPhoneCodeAction(phone));
-      if (!result.ok) return result.error;
+      if (!result.ok) {
+        if (result.error.kind === "validation" && result.error.serverMessage) {
+          notify.error(result.error.serverMessage);
+        }
+        return result.error;
+      }
+      notify.success(result.message);
     });
 
   // ==================== Verify Phone ====================
 
   const handleVerifyCode = (code: string) =>
     runPhoneAction("verify", async () => {
+      if (!pendingPhone) {
+        return new AppError("validation", "account.invalidPhone");
+      }
       const result = fromActionResult(
-        await verifyPhoneAction(pendingPhone, code),
+        await verifyPhoneAction(formatPhoneFieldValue(pendingPhone), code),
       );
       if (!result.ok) return result.error;
     });
 
-  const handleVerified = (phone: string) => {
-    setPhone(phone);
+  const handleVerified = (phone: PhoneFieldValue) => {
+    setPhone(formatPhoneFieldValue(phone));
     setPhoneStep(null);
-    setPendingPhone("");
+    setPendingPhone(null);
   };
 
   return (

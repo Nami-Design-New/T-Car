@@ -13,6 +13,7 @@ import {
 import { toValidationError } from "@/shared/lib/validation";
 import type { ZodType } from "zod";
 import type { ProfileChanges } from "./model";
+import type { PhoneFieldValue } from "@/shared/lib/phone";
 import {
   phoneChangeSchema,
   licenseUploadSchema,
@@ -77,21 +78,29 @@ export async function saveProfileAction(
 
 /** Sends (or resends) the verification code to a new phone number. */
 export async function sendPhoneCodeAction(
-  phone: string,
-): Promise<ActionResult<void>> {
-  return run("account.sendPhoneCode", (accountId) => {
+  phone: PhoneFieldValue,
+): Promise<ActionResult<PhoneFieldValue>> {
+  try {
+    const session = await auth();
+    if (!session?.user?.id) throw new AppError("unauthorized");
     const input = parse(phoneChangeSchema, { phone });
-    return accountApi.sendPhoneCode(accountId, input.phone);
-  });
+    const result = await accountApi.sendPhoneCode(input.phone);
+    if (!result.ok) throw result.error;
+    return toActionResult(ok(input.phone, result.message));
+  } catch (error) {
+    reportError(error, { scope: "account.sendPhoneCode" });
+    return toActionResult(fail(error));
+  }
 }
 
 export async function verifyPhoneAction(
   phone: string,
   code: string,
 ): Promise<ActionResult<void>> {
-  return run("account.verifyPhone", (accountId) => {
-    const input = parse(verifyPhoneSchema, { phone, code });
-    return accountApi.verifyPhone(accountId, input.phone, input.code);
+  return run("account.verifyPhone", async () => {
+    parse(verifyPhoneSchema, { phone, code });
+    // P5 will replace the test-only mock with the live verification endpoint.
+    throw new AppError("validation", "account.phoneVerificationUnavailable");
   });
 }
 

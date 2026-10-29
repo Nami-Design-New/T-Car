@@ -2,12 +2,13 @@ import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { ActionResult } from '@/shared/lib/result';
+import type { PhoneFieldValue } from '@/shared/lib/phone';
 import { renderWithIntl } from '@/shared/test/render';
 import type { ProfileChanges, UserProfile } from '../model';
 
 const { saveProfileAction, sendPhoneCodeAction, verifyPhoneAction, uploadLicenseAction, deleteAccountAction, notify, router } = vi.hoisted(() => ({
   saveProfileAction: vi.fn<(input: unknown) => Promise<ActionResult<ProfileChanges>>>(),
-  sendPhoneCodeAction: vi.fn<(phone: string) => Promise<ActionResult<void>>>(),
+  sendPhoneCodeAction: vi.fn<(phone: PhoneFieldValue) => Promise<ActionResult<PhoneFieldValue>>>(),
   verifyPhoneAction: vi.fn<(phone: string, code: string) => Promise<ActionResult<void>>>(),
   uploadLicenseAction: vi.fn<(data: FormData) => Promise<ActionResult<void>>>(),
   deleteAccountAction: vi.fn<() => Promise<ActionResult<void>>>(),
@@ -54,8 +55,8 @@ function renderTab(initialProfile: UserProfile = profile) {
 beforeEach(() => {
   saveProfileAction.mockReset();
   vi.clearAllMocks();
-  sendPhoneCodeAction.mockResolvedValue({ ok: true, data: undefined });
-  verifyPhoneAction.mockResolvedValue({ ok: true, data: undefined });
+  sendPhoneCodeAction.mockImplementation(async (phone) => ({ ok: true, data: phone, message: 'Code sent.' }));
+  verifyPhoneAction.mockResolvedValue({ ok: false, error: { kind: 'validation', code: 'account.phoneVerificationUnavailable' } });
   uploadLicenseAction.mockResolvedValue({ ok: true, data: undefined });
   deleteAccountAction.mockResolvedValue({ ok: true, data: undefined });
 });
@@ -154,7 +155,7 @@ describe('ProfileTab', () => {
     await waitFor(() => expect(save).not.toHaveAttribute('aria-busy'));
   });
 
-  it('sends and verifies a phone code before updating the displayed number', async () => {
+  it('sends a structured phone number and keeps the current number until verification is integrated', async () => {
     const { user } = renderTab();
     await user.click(screen.getByRole('button', { name: /Mobile number/ }));
     const dialog = await screen.findByRole('dialog');
@@ -165,12 +166,39 @@ describe('ProfileTab', () => {
 
     await waitFor(() => expect(sendPhoneCodeAction).toHaveBeenCalledOnce());
     const sentPhone = sendPhoneCodeAction.mock.calls[0][0];
+    expect(sentPhone).toEqual({ countryCode: '+966', phone: '511111111' });
+    expect(notify.success).toHaveBeenCalledWith('Code sent.');
     expect(screen.getByText('+966500000000')).toBeInTheDocument();
     await user.type(await screen.findByRole('textbox', { name: 'Digit 1 of 4' }), '1234');
     await user.click(screen.getByRole('button', { name: 'Verify' }));
-    await waitFor(() => expect(verifyPhoneAction).toHaveBeenCalledWith(sentPhone, '1234'));
-    expect(await screen.findByText(sentPhone)).toBeInTheDocument();
-    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    await waitFor(() => expect(verifyPhoneAction).toHaveBeenCalledWith('+966511111111', '1234'));
+    expect(await screen.findByRole('alert')).toHaveTextContent('Phone verification is temporarily unavailable');
+    expect(screen.getByRole('dialog')).toBeInTheDocument();
+  });
+
+  it('toasts a backend validation message and keeps the phone form open', async () => {
+    sendPhoneCodeAction.mockResolvedValueOnce({ ok: false, error: { kind: 'validation', status: 422, serverMessage: 'Phone already in use.' } });
+    const { user } = renderTab();
+    await user.click(screen.getByRole('button', { name: /Mobile number/ }));
+    const dialog = await screen.findByRole('dialog');
+    const phone = within(dialog).getByRole('textbox', { name: 'Mobile number' });
+    await user.clear(phone);
+    await user.type(phone, '511111111');
+    await user.click(within(dialog).getByRole('button', { name: 'Send verification code' }));
+    await waitFor(() => expect(notify.error).toHaveBeenCalledWith('Phone already in use.'));
+    expect(within(dialog).getByRole('textbox', { name: 'Mobile number' })).toHaveValue('511111111');
+  });
+
+  it('rejects a short national number before sending a code', async () => {
+    const { user } = renderTab();
+    await user.click(screen.getByRole('button', { name: /Mobile number/ }));
+    const dialog = await screen.findByRole('dialog');
+    const phone = within(dialog).getByRole('textbox', { name: 'Mobile number' });
+    await user.clear(phone);
+    await user.type(phone, '1234567');
+    await user.click(within(dialog).getByRole('button', { name: 'Send verification code' }));
+    expect(await within(dialog).findByText(/at least 8 digits/)).toBeInTheDocument();
+    expect(sendPhoneCodeAction).not.toHaveBeenCalled();
   });
 
   it('uploads a license and updates its status after success', async () => {
