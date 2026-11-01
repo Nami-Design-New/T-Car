@@ -4,6 +4,7 @@ import { useCallback, useState } from "react";
 import { useTranslations } from "next-intl";
 import type { AppError } from "@/shared/lib/errors";
 import { useErrorMessage } from "@/shared/hooks/useErrorMessage";
+import { useNotify } from "@/shared/hooks/useNotify";
 import { ConfirmDialog } from "@/shared/ui/ConfirmDialog";
 import { ResultDialog } from "@/shared/ui/ResultDialog";
 import type { BankAccount, BankAccountPayload } from "../model";
@@ -19,12 +20,14 @@ type BankAccountsFlow =
   | { step: "add" }
   | { step: "edit"; account: BankAccount }
   | { step: "confirm-delete"; account: BankAccount }
-  | { step: "result"; kind: ResultKind; error?: AppError }; // no error means success
+  // No error means success; `message` is the backend's success text, shown in the dialog.
+  | { step: "result"; kind: ResultKind; error?: AppError; message?: string };
 
 export default function BankAccountsSection() {
   const t = useTranslations("bankAccounts");
   const { accounts, submitting, add, update, remove } = useBankAccounts();
   const errorMessage = useErrorMessage();
+  const notify = useNotify();
   const [flow, setFlow] = useState<BankAccountsFlow>({ step: "idle" });
 
   const close = useCallback(() => setFlow({ step: "idle" }), []);
@@ -35,8 +38,15 @@ export default function BankAccountsSection() {
   ): Promise<AppError | undefined> => {
     if (flow.step === "add") {
       const result = await add(payload);
-      if (!result.ok) return result.error;
-      setFlow({ step: "result", kind: "added" });
+      if (!result.ok) {
+        // The backend's validation message is a toast only; the form stays open.
+        if (result.error.kind === "validation" && result.error.serverMessage) {
+          notify.error(result.error.serverMessage);
+          return undefined;
+        }
+        return result.error;
+      }
+      setFlow({ step: "result", kind: "added", message: result.message });
     } else if (flow.step === "edit") {
       const result = await update(flow.account.id, payload);
       if (!result.ok) return result.error;
@@ -105,7 +115,7 @@ export default function BankAccountsSection() {
         <ResultDialog
           open
           status={flow.error ? "error" : "success"}
-          description={flow.error ? errorMessage(flow.error) : undefined}
+          description={flow.error ? errorMessage(flow.error) : flow.message}
           onClose={close}
         />
       )}

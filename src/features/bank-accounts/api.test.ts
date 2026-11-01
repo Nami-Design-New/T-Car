@@ -1,14 +1,15 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { AppError } from "@/shared/lib/errors";
 
-const { get, publicGet } = vi.hoisted(() => ({
+const { get, post, publicGet } = vi.hoisted(() => ({
   get: vi.fn(),
+  post: vi.fn(),
   publicGet: vi.fn(),
 }));
 
 vi.mock("server-only", () => ({}));
 vi.mock("@/services/http/server", () => ({
-  serverHttp: { get },
+  serverHttp: { get, post },
   publicServerHttp: { get: publicGet },
 }));
 
@@ -234,5 +235,92 @@ describe("bankAccountsApi.getBanks", () => {
     publicGet.mockRejectedValue(network);
 
     await expect(bankAccountsApi.getBanks({ page: 1 })).rejects.toBe(network);
+  });
+});
+
+// Observed POST /bank-accounts success (docs/api/bank-accounts-api.md §3.3).
+const created = {
+  data: {
+    id: 18,
+    bank_id: 2,
+    title: "Bank Albilad",
+    logo: null,
+    iban_number: "SA0380000000608010167519",
+  },
+  message: "Bank account added successfully.",
+  code: 201,
+};
+const payload = { bankId: "2", iban: "sa03 8000 0000 6080 1016 7519" };
+
+describe("bankAccountsApi.addBankAccount", () => {
+  it("posts the integer bank ID and the normalized IBAN as JSON", async () => {
+    post.mockResolvedValue(created);
+
+    await bankAccountsApi.addBankAccount(payload);
+    expect(post).toHaveBeenCalledWith("/bank-accounts", {
+      bank_id: 2,
+      iban_number: "SA0380000000608010167519",
+    });
+  });
+
+  it("maps the created account and keeps the backend message (code 201)", async () => {
+    post.mockResolvedValue(created);
+
+    await expect(bankAccountsApi.addBankAccount(payload)).resolves.toEqual({
+      ok: true,
+      data: {
+        id: "18",
+        bankId: "2",
+        bankName: "Bank Albilad",
+        logo: undefined,
+        iban: "SA0380000000608010167519",
+        maskedNumber: "16 75 19",
+      },
+      message: "Bank account added successfully.",
+    });
+  });
+
+  it("accepts body code 200 as success", async () => {
+    post.mockResolvedValue({ ...created, code: 200 });
+    await expect(bankAccountsApi.addBankAccount(payload)).resolves.toMatchObject({
+      ok: true,
+    });
+  });
+
+  it("refuses a bank ID that is not a positive integer without a request", async () => {
+    for (const bankId of ["", "abc", "0", "2.5", "sedad"]) {
+      const result = await bankAccountsApi.addBankAccount({ ...payload, bankId });
+      expect(result).toMatchObject({
+        ok: false,
+        error: { kind: "validation", code: "bankAccounts.unknownBank" },
+      });
+    }
+    expect(post).not.toHaveBeenCalled();
+  });
+
+  it("returns a server error for a malformed or non-integer account", async () => {
+    for (const value of [
+      { ...created, data: null },
+      { ...created, data: { ...created.data, bank_id: "2" } },
+      { ...created, code: 204 },
+    ]) {
+      post.mockResolvedValueOnce(value);
+      await expect(bankAccountsApi.addBankAccount(payload)).resolves.toMatchObject({
+        ok: false,
+        error: { kind: "server" },
+      });
+    }
+  });
+
+  it("returns the client's errors, keeping a backend 422 message", async () => {
+    const invalid = new AppError("validation", undefined, 422, undefined, {
+      serverMessage: "The selected bank does not exist.",
+    });
+    post.mockRejectedValue(invalid);
+
+    await expect(bankAccountsApi.addBankAccount(payload)).resolves.toEqual({
+      ok: false,
+      error: invalid,
+    });
   });
 });

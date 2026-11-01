@@ -2,15 +2,18 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { AppError } from '@/shared/lib/errors';
 import type { BankAccount } from './model';
 
-const { auth, getBankAccounts, getBanks } = vi.hoisted(() => ({
+const { auth, getBankAccounts, getBanks, addBankAccount } = vi.hoisted(() => ({
   auth: vi.fn(),
   getBankAccounts: vi.fn(),
   getBanks: vi.fn(),
+  addBankAccount: vi.fn(),
 }));
 
 vi.mock('@/auth', () => ({ auth }));
 vi.mock('@/shared/lib/report', () => ({ reportError: vi.fn() }));
-vi.mock('./api', () => ({ bankAccountsApi: { getBankAccounts, getBanks } }));
+vi.mock('./api', () => ({
+  bankAccountsApi: { getBankAccounts, getBanks, addBankAccount },
+}));
 
 import {
   addBankAccountAction,
@@ -117,7 +120,64 @@ describe('getBanksAction', () => {
   });
 });
 
-describe('bank-account writes (not sent to the API until B4–B6)', () => {
+describe('addBankAccountAction', () => {
+  const account: BankAccount = {
+    id: '18',
+    bankId: '2',
+    bankName: 'Bank Albilad',
+    iban: 'SA0380000000608010456789',
+    maskedNumber: '45 67 89',
+  };
+
+  it('sends the parsed values and returns the account with the backend message', async () => {
+    addBankAccount.mockResolvedValue({
+      ok: true,
+      data: account,
+      message: 'Bank account added successfully.',
+    });
+
+    await expect(addBankAccountAction(validInput)).resolves.toEqual({
+      ok: true,
+      data: account,
+      message: 'Bank account added successfully.',
+    });
+    expect(addBankAccount).toHaveBeenCalledWith({
+      bankId: '2',
+      iban: 'SA0380000000608010456789',
+    });
+  });
+
+  it('keeps a backend 422 message for the toast', async () => {
+    addBankAccount.mockResolvedValue({
+      ok: false,
+      error: new AppError('validation', undefined, 422, undefined, {
+        serverMessage: 'The selected bank does not exist.',
+      }),
+    });
+
+    await expect(addBankAccountAction(validInput)).resolves.toEqual({
+      ok: false,
+      error: {
+        kind: 'validation',
+        status: 422,
+        serverMessage: 'The selected bank does not exist.',
+      },
+    });
+  });
+
+  it('returns a 401 from the API as unauthorized', async () => {
+    addBankAccount.mockResolvedValue({
+      ok: false,
+      error: new AppError('unauthorized', undefined, 401),
+    });
+    await expect(addBankAccountAction(validInput)).resolves.toMatchObject({
+      ok: false,
+      error: { kind: 'unauthorized' },
+    });
+  });
+});
+
+describe('bank-account writes', () => {
   it('requires a session before it validates a bank account', async () => {
     auth.mockResolvedValue(null);
     await expect(addBankAccountAction({ bankId: '', iban: '' })).resolves.toEqual({
@@ -126,7 +186,7 @@ describe('bank-account writes (not sent to the API until B4–B6)', () => {
     });
   });
 
-  it('rejects malformed input', async () => {
+  it('rejects malformed input without calling the API', async () => {
     await expect(
       addBankAccountAction({ bankId: '', iban: 'GB82WEST12345698765432' })
     ).resolves.toEqual({
@@ -140,10 +200,10 @@ describe('bank-account writes (not sent to the API until B4–B6)', () => {
         },
       },
     });
+    expect(addBankAccount).not.toHaveBeenCalled();
   });
 
-  it('accepts a valid add, edit, and delete without reading the API', async () => {
-    await expect(addBankAccountAction(validInput)).resolves.toEqual({ ok: true, data: null });
+  it('accepts a valid edit and delete without the API until B5–B6', async () => {
     await expect(updateBankAccountAction('5', validInput)).resolves.toEqual({
       ok: true,
       data: null,

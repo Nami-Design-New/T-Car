@@ -29,4 +29,18 @@ describe('bankAccountSchema', () => {
       iban: 'bankAccounts.ibanRequired',
     });
   });
+
+  it('accepts only SA and 22 digits, like the API', () => {
+    for (const iban of [
+      'SA0380ABCDEF608010167519', // letters in the account part
+      'XX0380000000608010167519', // another country
+      'SA038000000060801016751', // 23 characters
+      'SA03800000006080101675199', // 25 characters
+    ]) {
+      expect(fieldErrors({ bankId: '2', iban })).toEqual({
+        iban: 'bankAccounts.invalidIban',
+      });
+    }
+    expect(fieldErrors({ bankId: '2', iban: 'SA0380000000608010167519' })).toBeUndefined();
+  });
 });

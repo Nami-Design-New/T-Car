@@ -3,6 +3,7 @@ import { isApiEnvelope, type ApiEnvelope } from "@/services/http/envelope";
 import { publicServerHttp, serverHttp } from "@/services/http/server";
 import { AppError } from "@/shared/lib/errors";
 import { isPaginationDto, toPage, type Page } from "@/shared/lib/pagination";
+import { fail, ok, type Result } from "@/shared/lib/result";
 import {
   maskIban,
   normalizeIban,
@@ -18,12 +19,15 @@ export interface BanksQuery {
 }
 
 /**
- * The live reads: the customer's accounts (the tab and the wallet's bank
- * picker) and the bank lookup (the add / edit form).
+ * The live API: the customer's accounts (the tab and the wallet's bank
+ * picker), the bank lookup (the add / edit form), and the writes. Edit and
+ * delete join in B5–B6. Writes return the backend's message for the toast.
  */
-export interface BankAccountsReadApi {
+export interface BankAccountsApi {
   getBankAccounts(page: number): Promise<Page<BankAccount>>;
   getBanks(query: BanksQuery): Promise<Page<Bank>>;
+  /** Adds an account (POST /bank-accounts) and returns it. */
+  addBankAccount(payload: BankAccountPayload): Promise<Result<BankAccount>>;
 }
 
 /**
@@ -112,15 +116,24 @@ export function mapBankAccountsResponse(value: unknown): Page<BankAccount> {
     throw new AppError("server");
   }
 
-  const items = value.data.map((account) => ({
+  return toPage(value.data.map(toBankAccount), pagination);
+}
+
+function toBankAccount(account: BankAccountDto): BankAccount {
+  return {
     id: String(account.id),
     bankId: String(account.bank_id),
     bankName: account.title,
     logo: toLogo(account.logo),
     iban: normalizeIban(account.iban_number),
     maskedNumber: maskIban(account.iban_number),
-  }));
-  return toPage(items, pagination);
+  };
+}
+
+/** The API's IDs are positive integers; the model keeps them as strings. */
+function toApiId(id: string): number | undefined {
+  const value = /^\d+$/.test(id) ? Number(id) : Number.NaN;
+  return Number.isSafeInteger(value) && value >= 1 ? value : undefined;
 }
 
 /** Validate one page of GET /banks and map it into the UI model. */
@@ -160,7 +173,40 @@ async function getBanks({ page, search }: BanksQuery): Promise<Page<Bank>> {
   return mapBanksResponse(response);
 }
 
-export const bankAccountsApi: BankAccountsReadApi = {
+/**
+ * POST /bank-accounts as JSON (the API answers JSON with an integer `bank_id`).
+ * Success is body code 201 (R1 accepts 200 too); `data` is the new account.
+ */
+async function addBankAccount({
+  bankId,
+  iban,
+}: BankAccountPayload): Promise<Result<BankAccount>> {
+  try {
+    const bank = toApiId(bankId);
+    if (bank === undefined) {
+      throw new AppError("validation", "bankAccounts.unknownBank", undefined, {
+        bankId: "bankAccounts.unknownBank",
+      });
+    }
+    const response = await serverHttp.post<ApiEnvelope<unknown>>(
+      "/bank-accounts",
+      { bank_id: bank, iban_number: normalizeIban(iban) },
+    );
+    if (
+      !isApiEnvelope(response) ||
+      !isSuccessCode(response.code) ||
+      !isBankAccountDto(response.data)
+    ) {
+      throw new AppError("server");
+    }
+    return ok(toBankAccount(response.data), response.message);
+  } catch (error) {
+    return fail(error);
+  }
+}
+
+export const bankAccountsApi: BankAccountsApi = {
   getBankAccounts,
   getBanks,
+  addBankAccount,
 };

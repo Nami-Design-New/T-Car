@@ -362,7 +362,20 @@ page (`BANK_ACCOUNTS_PER_PAGE`, also used by the wallet picker). Shared fix:
 `usePaginatedList` reports `loading` while enabled until page 1 arrives or
 fails, so the server HTML and the first render show skeletons instead of the
 empty state (the tab showed "empty" on refresh; the wallet picker flashed it
-on open). The browser mock read and `MOCK_BANKS` are no longer used in
+on open).
+
+**Bank accounts API fraction B4 (2026-11-01), done:** Adding an account posts
+`{ bank_id, iban_number }` as JSON to `POST /bank-accounts` through
+`bankAccountsApi.addBankAccount` and `addBankAccountAction` (`ActionResult`).
+Success (body code 201, or 200) returns the new account with an integer
+`bank_id`; the result dialog shows the backend message (no toast),
+and the tab re-reads the list. A backend 422 is a toast only and keeps the form
+open. A bank ID that is not a positive integer is refused without a request.
+The IBAN rule now matches the API: `SA` and 22 digits. No duplicates: an IBAN
+already in the loaded accounts is refused inline before the request
+(`errors.bankAccounts.duplicateIban`); the API accepts duplicates, so accounts
+on pages not loaded yet are not checked. Edit and delete still succeed without
+calling the API until B5–B6. The browser mock read and `MOCK_BANKS` are no longer used in
 production. The add / edit / delete actions no longer keep a client-side copy
 of the list: they check the session, the form values, and the account ID, then
 succeed without calling the API, and the tab re-reads the list. Until B4–B6

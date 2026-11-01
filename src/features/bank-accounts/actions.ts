@@ -88,20 +88,34 @@ export async function getBanksAction(
   }
 }
 
-/*
- * Writes are not sent to the API yet (B4–B6 in docs/api/bank-accounts-api.md):
- * they check the session, the form values, and the account ID, then succeed
- * without changing anything. The tab re-reads the list after each one.
+/**
+ * Adds an account through POST /bank-accounts. The form values are parsed
+ * again here; the API decides the rest (the bank exists, ...). Success carries
+ * the backend's message for the toast; a backend 422 keeps its message as
+ * `serverMessage`.
  */
-
 export async function addBankAccountAction(
   payload: BankAccountPayload,
-): Promise<ActionResult<null>> {
-  return run("bankAccounts.add", () => {
-    parse(bankAccountSchema, payload);
-    return null;
-  });
+): Promise<ActionResult<BankAccount>> {
+  try {
+    const session = await auth();
+    if (!session?.user?.id) throw new AppError("unauthorized");
+    const values = parse(bankAccountSchema, payload);
+    const result = await bankAccountsApi.addBankAccount(values);
+    if (!result.ok) throw result.error;
+    return toActionResult(result);
+  } catch (error) {
+    reportError(error, { scope: "bankAccounts.add" });
+    return toActionResult(fail(error));
+  }
 }
+
+/*
+ * Edit and delete are not sent to the API yet (B5–B6 in
+ * docs/api/bank-accounts-api.md): they check the session, the form values, and
+ * the account ID, then succeed without changing anything. The tab re-reads the
+ * list after each one.
+ */
 
 export async function updateBankAccountAction(
   id: string,

@@ -536,7 +536,8 @@
       "notFound": "Bank account not found.",
       "unknownBank": "Choose a bank from the list.",
       "ibanRequired": "IBAN is required.",
-      "invalidIban": "Enter a valid Saudi IBAN."
+      "invalidIban": "Enter a valid Saudi IBAN.",
+      "duplicateIban": "This IBAN is already one of your bank accounts."
     },
     "bookings": {
       "notFound": "Booking not found.",
