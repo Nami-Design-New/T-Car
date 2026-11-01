@@ -1,5 +1,6 @@
 import { MAX_TOP_UP, type WalletSummary, type WalletTransaction } from './model';
 import { AppError } from '@/shared/lib/errors';
+import { fail, ok } from '@/shared/lib/result';
 import { bankAccountsApi } from '@/services/bankAccounts.api';
 import type { WalletApi } from './api';
 
@@ -57,7 +58,7 @@ export const walletMock: WalletApi = {
 
   async topUp(amount) {
     await delay();
-    if (amount > MAX_TOP_UP) throw new AppError('conflict', 'wallet.topUpRejected');
+    if (amount > MAX_TOP_UP) return fail(new AppError('conflict', 'wallet.topUpRejected'));
 
     summary = {
       ...summary,
@@ -65,6 +66,11 @@ export const walletMock: WalletApi = {
       withdrawable: summary.withdrawable + amount,
     };
     record('topup', amount);
+    return ok({
+      paymentUrl: 'https://example.com/wallet/pay/1',
+      successUrl: 'https://example.com/wallet/success/1',
+      failUrl: 'https://example.com/wallet/fail/1',
+    });
   },
 
   async withdraw({ bankAccountId, amount }) {

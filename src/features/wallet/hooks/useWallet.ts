@@ -8,9 +8,15 @@ import { toAppError, type AppError } from '@/shared/lib/errors';
 import { reportError } from '@/shared/lib/report';
 import { fromActionResult, ok, type Result } from '@/shared/lib/result';
 import { topUpAction, withdrawAction } from '../actions';
-import type { WalletData, WalletSummary, WalletTransaction, WithdrawParams } from '../model';
+import type {
+  WalletData,
+  WalletSummary,
+  WalletTopUpPayment,
+  WalletTransaction,
+  WithdrawParams,
+} from '../model';
 
-/** Wallet data arrives from the server; bank choices and writes keep their current API paths. */
+/** Wallet data arrives from the server; a top-up returns a payment URL. Bank choices and withdrawal keep their current paths. */
 export function useWallet(initialData: WalletData) {
   const router = useRouter();
   const [summary, setSummary] = useState<WalletSummary>(initialData.summary);
@@ -55,19 +61,15 @@ export function useWallet(initialData: WalletData) {
   }, [router]);
 
   const topUp = useCallback(
-    async (amount: number): Promise<Result<void>> => {
+    async (amount: number): Promise<Result<WalletTopUpPayment>> => {
       setSubmitting(true);
       try {
-        const result = fromActionResult(await topUpAction(amount, { summary, transactions }));
-        if (!result.ok) return result;
-        setSummary(result.data.summary);
-        setTransactions(result.data.transactions);
-        return ok(undefined);
+        return fromActionResult(await topUpAction(amount));
       } finally {
         setSubmitting(false);
       }
     },
-    [summary, transactions]
+    []
   );
 
   const withdraw = useCallback(

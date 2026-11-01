@@ -1,11 +1,11 @@
 import { describe, expect, it, vi } from "vitest";
 import { AppError } from "@/shared/lib/errors";
 
-const { get } = vi.hoisted(() => ({ get: vi.fn() }));
+const { get, post } = vi.hoisted(() => ({ get: vi.fn(), post: vi.fn() }));
 
 vi.mock("server-only", () => ({}));
 vi.mock("@/services/http/server", () => ({
-  serverHttp: { get },
+  serverHttp: { get, post },
 }));
 
 import { isWalletResponse, mapWalletResponse, walletApi } from "./api";
@@ -156,5 +156,61 @@ describe("walletApi.getWallet", () => {
     get.mockRejectedValue(unauthorized);
 
     await expect(walletApi.getWallet()).rejects.toBe(unauthorized);
+  });
+});
+
+describe("walletApi.topUp", () => {
+  const topUpResponse = {
+    data: {
+      payment_url: "https://t-car.app/wallet/pay/75?locale=en",
+      success_url: "https://t-car.app/wallet/success/75?locale=en",
+      fail_url: "https://t-car.app/wallet/fail/75?locale=en",
+    },
+    message: "Wallet top-up request created successfully.",
+    code: 200,
+  };
+
+  it("posts the amount only and maps the observed payment URLs", async () => {
+    post.mockResolvedValue(topUpResponse);
+
+    await expect(walletApi.topUp(25)).resolves.toEqual({
+      ok: true,
+      data: {
+        paymentUrl: "https://t-car.app/wallet/pay/75?locale=en",
+        successUrl: "https://t-car.app/wallet/success/75?locale=en",
+        failUrl: "https://t-car.app/wallet/fail/75?locale=en",
+      },
+      message: "Wallet top-up request created successfully.",
+    });
+    expect(post).toHaveBeenCalledWith("/wallet", { amount: 25 });
+  });
+
+  it("fails with a server error for missing or non-https payment URLs", async () => {
+    for (const data of [
+      null,
+      { ...topUpResponse.data, fail_url: undefined },
+      { ...topUpResponse.data, payment_url: "javascript:alert(1)" },
+      { ...topUpResponse.data, payment_url: "http://t-car.app/wallet/pay/75" },
+    ]) {
+      post.mockResolvedValueOnce({ ...topUpResponse, data });
+      await expect(walletApi.topUp(25)).resolves.toEqual({
+        ok: false,
+        error: new AppError("server"),
+      });
+    }
+  });
+
+  it("returns validation and unauthorized errors from the shared client", async () => {
+    for (const error of [
+      new AppError("validation", undefined, 422, undefined, {
+        serverMessage: "The amount field is required.",
+      }),
+      new AppError("unauthorized", undefined, 401),
+    ]) {
+      post.mockRejectedValueOnce(error);
+      const result = await walletApi.topUp(25);
+      expect(result).toEqual({ ok: false, error });
+      if (!result.ok) expect(result.error).toBe(error);
+    }
   });
 });

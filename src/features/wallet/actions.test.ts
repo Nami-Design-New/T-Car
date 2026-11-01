@@ -1,10 +1,15 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { BankAccount } from "@/features/bank-accounts";
+import { AppError } from "@/shared/lib/errors";
 import type { WalletData } from "./model";
 
-const { auth } = vi.hoisted(() => ({ auth: vi.fn() }));
+const { auth, topUp } = vi.hoisted(() => ({
+  auth: vi.fn(),
+  topUp: vi.fn(),
+}));
 
 vi.mock("@/auth", () => ({ auth }));
+vi.mock("./api", () => ({ walletApi: { topUp } }));
 vi.mock("@/shared/lib/report", () => ({ reportError: vi.fn() }));
 
 import { topUpAction, withdrawAction } from "./actions";
@@ -30,14 +35,15 @@ beforeEach(() => {
 describe("topUpAction", () => {
   it("requires a session before validating a top-up", async () => {
     auth.mockResolvedValue(null);
-    await expect(topUpAction(0, wallet)).resolves.toEqual({
+    await expect(topUpAction(0)).resolves.toEqual({
       ok: false,
       error: { kind: "unauthorized" },
     });
+    expect(topUp).not.toHaveBeenCalled();
   });
 
-  it("rejects malformed amounts without changing the wallet", async () => {
-    await expect(topUpAction(9, wallet)).resolves.toEqual({
+  it("rejects malformed amounts without calling the API", async () => {
+    await expect(topUpAction(9)).resolves.toEqual({
       ok: false,
       error: {
         kind: "validation",
@@ -47,12 +53,35 @@ describe("topUpAction", () => {
     });
   });
 
-  it("uses the parsed amount for a valid top-up", async () => {
-    await expect(topUpAction(25, wallet)).resolves.toMatchObject({
+  it("sends the parsed amount and returns the payment and message", async () => {
+    const payment = {
+      paymentUrl: "https://t-car.app/wallet/pay/75",
+      successUrl: "https://t-car.app/wallet/success/75",
+      failUrl: "https://t-car.app/wallet/fail/75",
+    };
+    topUp.mockResolvedValue({ ok: true, data: payment, message: "Created." });
+
+    await expect(topUpAction(25)).resolves.toEqual({
       ok: true,
-      data: {
-        summary: { total: 125, withdrawable: 75 },
-        transactions: [{ type: "topup", amount: 25 }],
+      data: payment,
+      message: "Created.",
+    });
+    expect(topUp).toHaveBeenCalledWith(25);
+  });
+
+  it("carries the backend validation message across the boundary", async () => {
+    topUp.mockResolvedValue({
+      ok: false,
+      error: new AppError("validation", undefined, 422, undefined, {
+        serverMessage: "The amount field is required.",
+      }),
+    });
+
+    await expect(topUpAction(25)).resolves.toMatchObject({
+      ok: false,
+      error: {
+        kind: "validation",
+        serverMessage: "The amount field is required.",
       },
     });
   });

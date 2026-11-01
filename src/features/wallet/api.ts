@@ -2,9 +2,11 @@ import "server-only";
 import { isApiEnvelope, type ApiEnvelope } from "@/services/http/envelope";
 import { serverHttp } from "@/services/http/server";
 import { AppError } from "@/shared/lib/errors";
+import { fail, ok, type Result } from "@/shared/lib/result";
 import type {
   WalletData,
   WalletTransactionStatus,
+  WalletTopUpPayment,
   WalletTransactionType,
   WithdrawParams,
 } from "./model";
@@ -13,7 +15,7 @@ export interface WalletApi {
   getWallet(): Promise<WalletData>;
   /** Same accounts the user manages from the bank accounts tab. */
   getBankAccounts(): Promise<WalletBankAccount[]>;
-  topUp(amount: number): Promise<void>;
+  topUp(amount: number): Promise<Result<WalletTopUpPayment>>;
   withdraw(params: WithdrawParams): Promise<void>;
 }
 
@@ -137,5 +139,58 @@ async function getWallet(): Promise<WalletData> {
   return mapWalletResponse(response);
 }
 
-/** The authenticated wallet read. Writes remain on their existing actions. */
-export const walletApi: Pick<WalletApi, "getWallet"> = { getWallet };
+interface WalletTopUpDto {
+  payment_url: string;
+  success_url: string;
+  fail_url: string;
+}
+
+const isHttpsUrl = (value: unknown): value is string => {
+  if (typeof value !== "string") return false;
+  try {
+    return new URL(value).protocol === "https:";
+  } catch {
+    return false;
+  }
+};
+
+function isWalletTopUpDto(value: unknown): value is WalletTopUpDto {
+  return (
+    isRecord(value) &&
+    isHttpsUrl(value.payment_url) &&
+    isHttpsUrl(value.success_url) &&
+    isHttpsUrl(value.fail_url)
+  );
+}
+
+/**
+ * Creates a payment request; the balance changes only after the customer pays
+ * at `paymentUrl`. Bruno also sends `account_id`; top-up omits it until the
+ * backend confirms it is withdrawal-only (wallet-api.md §2).
+ */
+async function topUp(amount: number): Promise<Result<WalletTopUpPayment>> {
+  try {
+    const response = await serverHttp.post<ApiEnvelope<unknown>>("/wallet", {
+      amount,
+    });
+    if (!isApiEnvelope(response) || !isWalletTopUpDto(response.data)) {
+      throw new AppError("server");
+    }
+    return ok(
+      {
+        paymentUrl: response.data.payment_url,
+        successUrl: response.data.success_url,
+        failUrl: response.data.fail_url,
+      },
+      response.message,
+    );
+  } catch (error) {
+    return fail(error);
+  }
+}
+
+/** The authenticated wallet read and top-up. Withdrawal remains on its action. */
+export const walletApi: Pick<WalletApi, "getWallet" | "topUp"> = {
+  getWallet,
+  topUp,
+};

@@ -12,7 +12,6 @@ interface Props {
 
 export default function TransactionsList({ transactions }: Props) {
   const t = useTranslations("wallet");
-  console.log(transactions);
   return (
     <ul className="m-0 flex list-none flex-col gap-2.5 p-0">
       {transactions.map((tx) => (

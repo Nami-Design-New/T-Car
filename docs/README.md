@@ -268,6 +268,19 @@ mapper, and passed the wallet data from the server page into the client screen.
 The browser token is never exposed; wallet balances and history now come from
 `GET /wallet`. Bank-account choices and writes still use their existing paths.
 
+**Wallet API fraction W7 (2026-11-01), done:** Top-up posts `{ amount }` to
+`POST /wallet` through `walletApi.topUp` and `topUpAction` (`ActionResult`);
+`account_id` is omitted for top-up pending backend confirmation. The API returns
+a payment request (`payment_url`, `success_url`, `fail_url`): the client toasts
+the backend message and opens `payment_url` in a new tab. The backend's result
+page posts `'payment-success'` / `'payment-failed'` to `window.opener`;
+`useTopUpPayment` accepts it only from that tab and the API's origins, closes
+the tab, shows the result dialog, and re-reads `GET /wallet`. A backend 422 is
+toast-only and keeps the sheet open. A blocked pop-up falls back to a same-tab
+redirect. The mock balance
+transition for top-up is gone; withdrawal (W8, blocked on the backend) and bank
+choices (W5) still use their mock paths. W6 is covered by W4.
+
 **Phase 1 import-boundary remediation (2026-10-20):** The account shell now receives points data from its App Router section layout and imports the summary card through `features/points/index.ts`. The root layout now supplies the authenticated notifications count to the layout feature. `MapLocationModal` and `LocationData` now live in `shared/ui` and `shared/lib`, respectively, with every caller using that shared API. Rental search now consumes the cars feature only through its public index; that index no longer exposes the server-only `getOffices` read, which the home route imports directly. The initial lint audit is reduced from nine to two boundary errors; both remaining violations are in wallet's bank-account action dependency.
 
 **Phone field replacement follow-up (2026-10-26), fraction 1:** Added the
