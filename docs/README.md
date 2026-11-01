@@ -345,6 +345,29 @@ mappers now accept body code 200 or 201. The UI is unchanged: the form keeps
 the mock bank list until B3 switches the tab's accounts and banks to the API
 together, because the mock actions only know the mock bank ids.
 
+**Bank accounts API fraction B3 (2026-11-01), done:** The bank accounts tab
+reads the customer's accounts from `GET /bank-accounts` page by page
+(`getBankAccountsAction` + `usePaginatedList` + `InfiniteList`, with card
+skeletons, an inline error with retry, and the empty state). The add / edit
+form's bank field is its own component, `BankSelect`: a combobox whose panel
+reads `GET /banks` (`getBanksAction`) when it opens, searches the API by title
+300 ms after typing pauses (from page 1 again), loads the next page on scroll,
+and shows option skeletons, an inline error with retry, and "no banks" / "no
+results" messages (`bankAccounts.form.{searchBank,noBanks,noBankResults}`). The
+panel is a Radix popover in a portal (like `PhoneField`'s country list): it
+floats over the sheet instead of growing it, flips above the field near the
+bottom of the screen, and an outside click or Escape closes only the panel. An
+edited account shows its own bank without reading the list. Accounts load 5 per
+page (`BANK_ACCOUNTS_PER_PAGE`, also used by the wallet picker). Shared fix:
+`usePaginatedList` reports `loading` while enabled until page 1 arrives or
+fails, so the server HTML and the first render show skeletons instead of the
+empty state (the tab showed "empty" on refresh; the wallet picker flashed it
+on open). The browser mock read and `MOCK_BANKS` are no longer used in
+production. The add / edit / delete actions no longer keep a client-side copy
+of the list: they check the session, the form values, and the account ID, then
+succeed without calling the API, and the tab re-reads the list. Until B4–B6
+send them to the API, a write shows success but the list does not change.
+
 **Phase 1 import-boundary remediation (2026-10-20):** The account shell now receives points data from its App Router section layout and imports the summary card through `features/points/index.ts`. The root layout now supplies the authenticated notifications count to the layout feature. `MapLocationModal` and `LocationData` now live in `shared/ui` and `shared/lib`, respectively, with every caller using that shared API. Rental search now consumes the cars feature only through its public index; that index no longer exposes the server-only `getOffices` read, which the home route imports directly. The initial lint audit is reduced from nine to two boundary errors; both remaining violations are in wallet's bank-account action dependency.
 
 **Phone field replacement follow-up (2026-10-26), fraction 1:** Added the

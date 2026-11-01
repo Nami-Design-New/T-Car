@@ -13,6 +13,8 @@ vi.mock("@/services/http/server", () => ({
 }));
 
 import {
+  BANK_ACCOUNTS_PER_PAGE,
+  BANKS_PER_PAGE,
   bankAccountsApi,
   mapBankAccountsResponse,
   mapBanksResponse,
@@ -116,7 +118,7 @@ describe("bankAccountsApi.getBankAccounts", () => {
       items: [{ id: "5" }, { id: "6" }],
     });
     expect(get).toHaveBeenCalledWith("/bank-accounts", {
-      query: { page: 2, per_page: 10 },
+      query: { page: 2, per_page: BANK_ACCOUNTS_PER_PAGE },
     });
   });
 
@@ -213,7 +215,7 @@ describe("bankAccountsApi.getBanks", () => {
       items: [{ id: "2" }, { id: "7" }],
     });
     expect(publicGet).toHaveBeenCalledWith("/banks", {
-      query: { page: 2, per_page: 10 },
+      query: { page: 2, per_page: BANKS_PER_PAGE },
     });
     expect(get).not.toHaveBeenCalled();
   });
@@ -223,7 +225,7 @@ describe("bankAccountsApi.getBanks", () => {
 
     await bankAccountsApi.getBanks({ page: 1, search: "bilad" });
     expect(publicGet).toHaveBeenCalledWith("/banks", {
-      query: { page: 1, per_page: 10, search: "bilad" },
+      query: { page: 1, per_page: BANKS_PER_PAGE, search: "bilad" },
     });
   });
 

@@ -80,5 +80,17 @@ export function usePaginatedList<T>(
   /** Starts again from page 1. */
   const refresh = useCallback(() => void load(1), [load]);
 
-  return { items, loading, error, hasMore, loadMore, retry, refresh };
+  // Page 1 is requested in an effect, after the first render (and the server
+  // HTML). Until it has arrived or failed the list is loading, not empty.
+  const awaitingFirstPage = enabled && page === 0 && !error;
+
+  return {
+    items,
+    loading: loading || awaitingFirstPage,
+    error,
+    hasMore,
+    loadMore,
+    retry,
+    refresh,
+  };
 }

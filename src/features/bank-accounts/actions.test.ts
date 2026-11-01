@@ -14,13 +14,13 @@ vi.mock('./api', () => ({ bankAccountsApi: { getBankAccounts, getBanks } }));
 
 import {
   addBankAccountAction,
+  deleteBankAccountAction,
   getBankAccountsAction,
   getBanksAction,
   updateBankAccountAction,
 } from './actions';
 
-const current: BankAccount[] = [];
-const validInput = { bankId: 'alrajhi', iban: 'sa03 8000 0000 6080 1045 6789' };
+const validInput = { bankId: '2', iban: 'sa03 8000 0000 6080 1045 6789' };
 
 beforeEach(() => {
   vi.clearAllMocks();
@@ -117,18 +117,18 @@ describe('getBanksAction', () => {
   });
 });
 
-describe('bank-account actions', () => {
+describe('bank-account writes (not sent to the API until B4–B6)', () => {
   it('requires a session before it validates a bank account', async () => {
     auth.mockResolvedValue(null);
-    await expect(addBankAccountAction({ bankId: '', iban: '' }, current)).resolves.toEqual({
+    await expect(addBankAccountAction({ bankId: '', iban: '' })).resolves.toEqual({
       ok: false,
       error: { kind: 'unauthorized' },
     });
   });
 
-  it('rejects malformed input before changing the accounts', async () => {
+  it('rejects malformed input', async () => {
     await expect(
-      addBankAccountAction({ bankId: '', iban: 'GB82WEST12345698765432' }, current)
+      addBankAccountAction({ bankId: '', iban: 'GB82WEST12345698765432' })
     ).resolves.toEqual({
       ok: false,
       error: {
@@ -142,31 +142,38 @@ describe('bank-account actions', () => {
     });
   });
 
-  it('uses the normalized IBAN after a successful add', async () => {
-    await expect(addBankAccountAction(validInput, current)).resolves.toMatchObject({
+  it('accepts a valid add, edit, and delete without reading the API', async () => {
+    await expect(addBankAccountAction(validInput)).resolves.toEqual({ ok: true, data: null });
+    await expect(updateBankAccountAction('5', validInput)).resolves.toEqual({
       ok: true,
-      data: [
-        {
-          bankId: 'alrajhi',
-          iban: 'SA0380000000608010456789',
-          maskedNumber: '45 67 89',
-        },
-      ],
+      data: null,
     });
+    await expect(deleteBankAccountAction('5')).resolves.toEqual({ ok: true, data: null });
+    expect(getBankAccounts).not.toHaveBeenCalled();
   });
 
-  it('keeps an unknown bank as an action-level availability check', async () => {
-    await expect(
-      updateBankAccountAction('account-1', { ...validInput, bankId: 'unknown' }, [
-        { id: 'account-1', bankId: 'alrajhi', bankName: 'Al Rajhi', iban: validInput.iban, maskedNumber: '45 67 89' },
-      ])
-    ).resolves.toEqual({
+  it('rejects an account ID that is not a positive integer as not found', async () => {
+    for (const id of ['', 'abc', '0', '-1', '1.5', '5a', '99999999999999999999']) {
+      await expect(updateBankAccountAction(id, validInput)).resolves.toEqual({
+        ok: false,
+        error: { kind: 'not_found', code: 'bankAccounts.notFound' },
+      });
+      await expect(deleteBankAccountAction(id)).resolves.toEqual({
+        ok: false,
+        error: { kind: 'not_found', code: 'bankAccounts.notFound' },
+      });
+    }
+  });
+
+  it('requires a session before an edit or delete', async () => {
+    auth.mockResolvedValue(null);
+    await expect(updateBankAccountAction('5', validInput)).resolves.toMatchObject({
       ok: false,
-      error: {
-        kind: 'validation',
-        code: 'bankAccounts.unknownBank',
-        fieldErrors: { bankId: 'bankAccounts.unknownBank' },
-      },
+      error: { kind: 'unauthorized' },
+    });
+    await expect(deleteBankAccountAction('5')).resolves.toMatchObject({
+      ok: false,
+      error: { kind: 'unauthorized' },
     });
   });
 });

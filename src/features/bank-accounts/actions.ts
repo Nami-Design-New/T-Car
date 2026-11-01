@@ -13,13 +13,7 @@ import type { Page } from "@/shared/lib/pagination";
 import { toValidationError } from "@/shared/lib/validation";
 import type { ZodType } from "zod";
 import { bankAccountsApi } from "./api";
-import { MOCK_BANKS } from "./api.mock";
-import {
-  maskIban,
-  type Bank,
-  type BankAccount,
-  type BankAccountPayload,
-} from "./model";
+import type { Bank, BankAccount, BankAccountPayload } from "./model";
 import { bankAccountSchema } from "./validation";
 
 function parse<T>(schema: ZodType<T>, input: unknown): T {
@@ -28,22 +22,16 @@ function parse<T>(schema: ZodType<T>, input: unknown): T {
   return result.data;
 }
 
-function toAccount(id: string, payload: BankAccountPayload): BankAccount {
-  const bank = MOCK_BANKS.find((item) => item.id === payload.bankId);
-  if (!bank) {
-    throw new AppError("validation", "bankAccounts.unknownBank", undefined, {
-      bankId: "bankAccounts.unknownBank",
-    });
+/**
+ * The API's account IDs are positive integers; anything else is rejected here,
+ * before a request (a non-numeric path ID is an HTTP 500 on the API).
+ */
+function toAccountId(id: string): number {
+  const value = /^\d+$/.test(id) ? Number(id) : Number.NaN;
+  if (!Number.isSafeInteger(value) || value < 1) {
+    throw new AppError("not_found", "bankAccounts.notFound");
   }
-
-  return {
-    id,
-    bankId: bank.id,
-    bankName: bank.name,
-    logo: bank.logo,
-    iban: payload.iban,
-    maskedNumber: maskIban(payload.iban),
-  };
+  return value;
 }
 
 async function run<T>(scope: string, write: () => T): Promise<ActionResult<T>> {
@@ -100,41 +88,37 @@ export async function getBanksAction(
   }
 }
 
-/** Stateless mock transitions; the real API will replace these when available. */
+/*
+ * Writes are not sent to the API yet (B4–B6 in docs/api/bank-accounts-api.md):
+ * they check the session, the form values, and the account ID, then succeed
+ * without changing anything. The tab re-reads the list after each one.
+ */
+
 export async function addBankAccountAction(
   payload: BankAccountPayload,
-  current: BankAccount[],
-): Promise<ActionResult<BankAccount[]>> {
+): Promise<ActionResult<null>> {
   return run("bankAccounts.add", () => {
-    const values = parse(bankAccountSchema, payload);
-    return [...current, toAccount(`action-${Date.now()}`, values)];
+    parse(bankAccountSchema, payload);
+    return null;
   });
 }
 
 export async function updateBankAccountAction(
   id: string,
   payload: BankAccountPayload,
-  current: BankAccount[],
-): Promise<ActionResult<BankAccount[]>> {
+): Promise<ActionResult<null>> {
   return run("bankAccounts.update", () => {
-    const values = parse(bankAccountSchema, payload);
-    if (!current.some((account) => account.id === id)) {
-      throw new AppError("not_found", "bankAccounts.notFound");
-    }
-    return current.map((account) =>
-      account.id === id ? toAccount(id, values) : account,
-    );
+    toAccountId(id);
+    parse(bankAccountSchema, payload);
+    return null;
   });
 }
 
 export async function deleteBankAccountAction(
   id: string,
-  current: BankAccount[],
-): Promise<ActionResult<BankAccount[]>> {
+): Promise<ActionResult<null>> {
   return run("bankAccounts.delete", () => {
-    if (!current.some((account) => account.id === id)) {
-      throw new AppError("not_found", "bankAccounts.notFound");
-    }
-    return current.filter((account) => account.id !== id);
+    toAccountId(id);
+    return null;
   });
 }

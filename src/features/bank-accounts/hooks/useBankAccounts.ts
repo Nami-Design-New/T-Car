@@ -1,83 +1,57 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { toAppError, type AppError } from '@/shared/lib/errors';
-import { reportError } from '@/shared/lib/report';
-import { fromActionResult, ok, type Result } from '@/shared/lib/result';
-import type { Bank, BankAccount, BankAccountPayload } from '../model';
-import { addBankAccountAction, deleteBankAccountAction, updateBankAccountAction } from '../actions';
-import { bankAccountsMock } from '../api.mock';
+import { useCallback, useState } from "react";
+import { usePaginatedList } from "@/shared/hooks/usePaginatedList";
+import {
+  fromActionResult,
+  ok,
+  type ActionResult,
+  type Result,
+} from "@/shared/lib/result";
+import type { BankAccountPayload } from "../model";
+import {
+  addBankAccountAction,
+  deleteBankAccountAction,
+  getBankAccountsAction,
+  updateBankAccountAction,
+} from "../actions";
 
-/** Bank reads stay on the browser mock; writes cross the Server Action boundary. */
+/**
+ * The customer's accounts, read page by page from GET /bank-accounts, and the
+ * writes (Server Actions). After a successful write the list is read again
+ * from page 1, so it always shows what the API holds.
+ */
 export function useBankAccounts() {
-  const [accounts, setAccounts] = useState<BankAccount[]>([]);
-  const [banks, setBanks] = useState<Bank[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<AppError | null>(null);
+  const fetchPage = useCallback(
+    async (page: number) => fromActionResult(await getBankAccountsAction(page)),
+    [],
+  );
+  const accounts = usePaginatedList(fetchPage, { scope: "bankAccounts.list" });
+  const { refresh } = accounts;
   const [submitting, setSubmitting] = useState(false);
-  const [attempt, setAttempt] = useState(0);
 
-  useEffect(() => {
-    let active = true;
-    setLoading(true);
-    setError(null);
+  const write = useCallback(
+    async (
+      action: () => Promise<ActionResult<null>>,
+    ): Promise<Result<void>> => {
+      setSubmitting(true);
+      try {
+        const result = fromActionResult(await action());
+        if (!result.ok) return result;
+        refresh();
+        return ok(undefined);
+      } finally {
+        setSubmitting(false);
+      }
+    },
+    [refresh],
+  );
 
-    Promise.all([bankAccountsMock.getBankAccounts(), bankAccountsMock.getBanks()])
-      .then(([accountList, bankList]) => {
-        if (!active) return;
-        setAccounts(accountList);
-        setBanks(bankList);
-      })
-      .catch((loadError: unknown) => {
-        reportError(loadError, { scope: 'bankAccounts.load' });
-        if (active) setError(toAppError(loadError));
-      })
-      .finally(() => {
-        if (active) setLoading(false);
-      });
+  const add = (payload: BankAccountPayload) =>
+    write(() => addBankAccountAction(payload));
+  const update = (id: string, payload: BankAccountPayload) =>
+    write(() => updateBankAccountAction(id, payload));
+  const remove = (id: string) => write(() => deleteBankAccountAction(id));
 
-    return () => {
-      active = false;
-    };
-  }, [attempt]);
-
-  const reload = () => setAttempt((count) => count + 1);
-
-  const add = async (payload: BankAccountPayload): Promise<Result<void>> => {
-    setSubmitting(true);
-    try {
-      const result = fromActionResult(await addBankAccountAction(payload, accounts));
-      if (!result.ok) return result;
-      setAccounts(result.data);
-      return ok(undefined);
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
-  const update = async (id: string, payload: BankAccountPayload): Promise<Result<void>> => {
-    setSubmitting(true);
-    try {
-      const result = fromActionResult(await updateBankAccountAction(id, payload, accounts));
-      if (!result.ok) return result;
-      setAccounts(result.data);
-      return ok(undefined);
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
-  const remove = async (id: string): Promise<Result<void>> => {
-    setSubmitting(true);
-    try {
-      const result = fromActionResult(await deleteBankAccountAction(id, accounts));
-      if (!result.ok) return result;
-      setAccounts(result.data);
-      return ok(undefined);
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
-  return { accounts, banks, loading, error, reload, submitting, add, update, remove };
+  return { accounts, submitting, add, update, remove };
 }

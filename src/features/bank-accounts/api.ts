@@ -18,8 +18,8 @@ export interface BanksQuery {
 }
 
 /**
- * The live reads: the customer's accounts (used by the wallet's bank picker)
- * and the bank lookup (not yet used by the tab, which reads the mock until B3).
+ * The live reads: the customer's accounts (the tab and the wallet's bank
+ * picker) and the bank lookup (the add / edit form).
  */
 export interface BankAccountsReadApi {
   getBankAccounts(page: number): Promise<Page<BankAccount>>;
@@ -27,8 +27,9 @@ export interface BankAccountsReadApi {
 }
 
 /**
- * The bank accounts tab's contract. Only `api.mock.ts` implements it, in the
- * browser, until the tab moves to the live API (docs/api/bank-accounts-api.md §6).
+ * The old mock contract, implemented only by `api.mock.ts`. No production code
+ * uses it since the tab reads the API (B3); B7 replaces the mock with one of the
+ * live interface for tests (docs/api/bank-accounts-api.md §6).
  */
 export interface BankAccountsTabApi {
   getBanks(): Promise<Bank[]>;
@@ -39,10 +40,10 @@ export interface BankAccountsTabApi {
 }
 
 /** Accounts per page; the picker loads the next page on scroll. */
-export const BANK_ACCOUNTS_PER_PAGE = 10;
+export const BANK_ACCOUNTS_PER_PAGE = 5;
 
 /** Banks per page of the lookup. */
-export const BANKS_PER_PAGE = 10;
+export const BANKS_PER_PAGE = 5;
 
 /** Success is body code 200 or 201 (create answers 201); either is accepted. */
 const isSuccessCode = (code: number) => code === 200 || code === 201;

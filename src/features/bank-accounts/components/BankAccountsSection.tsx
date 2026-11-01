@@ -23,17 +23,7 @@ type BankAccountsFlow =
 
 export default function BankAccountsSection() {
   const t = useTranslations("bankAccounts");
-  const {
-    accounts,
-    banks,
-    loading,
-    error,
-    reload,
-    submitting,
-    add,
-    update,
-    remove,
-  } = useBankAccounts();
+  const { accounts, submitting, add, update, remove } = useBankAccounts();
   const errorMessage = useErrorMessage();
   const [flow, setFlow] = useState<BankAccountsFlow>({ step: "idle" });
 
@@ -70,10 +60,12 @@ export default function BankAccountsSection() {
   return (
     <>
       <BankAccountsTab
-        accounts={accounts}
-        loading={loading}
-        error={error ?? undefined}
-        onRetry={reload}
+        accounts={accounts.items}
+        loading={accounts.loading}
+        hasMore={accounts.hasMore}
+        error={accounts.error ?? undefined}
+        onLoadMore={accounts.loadMore}
+        onRetry={accounts.retry}
         onAdd={() => setFlow({ step: "add" })}
         onEdit={(account) => setFlow({ step: "edit", account })}
         onDelete={(account) => setFlow({ step: "confirm-delete", account })}
@@ -82,7 +74,6 @@ export default function BankAccountsSection() {
       <BankAccountFormModal
         open={flow.step === "add" || flow.step === "edit"}
         mode={flow.step === "edit" ? "edit" : "add"}
-        banks={banks}
         account={flow.step === "edit" ? flow.account : undefined}
         loading={submitting}
         onClose={close}

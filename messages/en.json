@@ -1040,7 +1040,10 @@
       "bankName": "Bank name",
       "chooseBank": "Choose a bank",
       "iban": "IBAN",
-      "loading": "Processing"
+      "loading": "Processing",
+      "noBanks": "No banks available.",
+      "searchBank": "Search for a bank",
+      "noBankResults": "No banks match your search."
     },
     "empty": {
       "title": "No bank accounts added"

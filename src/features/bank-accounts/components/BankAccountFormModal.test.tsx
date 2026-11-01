@@ -1,12 +1,24 @@
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { AppError } from '@/shared/lib/errors';
 import { renderWithIntl } from '@/shared/test/render';
-import type { Bank } from '../model';
+import type { Bank, BankAccount } from '../model';
 import BankAccountFormModal from './BankAccountFormModal';
 
-const banks: Bank[] = [{ id: 'alrajhi', name: 'Al Rajhi Bank' }];
+const { getBanksAction } = vi.hoisted(() => ({ getBanksAction: vi.fn() }));
+vi.mock('../actions', () => ({ getBanksAction }));
+
+const banks: Bank[] = [{ id: '1', name: 'Al Rajhi Bank' }];
+const page = (items: Bank[]) => ({
+  ok: true,
+  data: { items, page: 1, lastPage: 1, total: items.length },
+});
+
+beforeEach(() => {
+  vi.clearAllMocks();
+  getBanksAction.mockResolvedValue(page(banks));
+});
 
 function renderForm(
   overrides: Partial<React.ComponentProps<typeof BankAccountFormModal>> = {}
@@ -17,7 +29,6 @@ function renderForm(
     <BankAccountFormModal
       open
       mode="add"
-      banks={banks}
       onClose={vi.fn()}
       onConfirm={onConfirm}
       {...overrides}
@@ -27,13 +38,15 @@ function renderForm(
     user,
     onConfirm: overrides.onConfirm ?? onConfirm,
     iban: screen.getByRole('textbox', { name: 'IBAN' }),
-    submit: screen.getByRole('button', { name: 'Add' }),
+    get submit() {
+      return screen.getByRole('button', { name: overrides.mode === 'edit' ? 'Save' : 'Add' });
+    },
   };
 }
 
 async function selectBank(user: ReturnType<typeof userEvent.setup>) {
   await user.click(screen.getByRole('combobox', { name: 'Bank name' }));
-  await user.click(screen.getByRole('button', { name: 'Al Rajhi Bank' }));
+  await user.click(await screen.findByRole('button', { name: 'Al Rajhi Bank' }));
 }
 
 describe('BankAccountFormModal', () => {
@@ -55,7 +68,7 @@ describe('BankAccountFormModal', () => {
 
     await waitFor(() =>
       expect(onConfirm).toHaveBeenCalledWith({
-        bankId: 'alrajhi',
+        bankId: '1',
         iban: 'SA0380000000608010456789',
       })
     );
@@ -82,5 +95,22 @@ describe('BankAccountFormModal', () => {
     const { submit } = renderForm({ loading: true });
     expect(submit).toBeDisabled();
     expect(submit).toHaveAttribute('aria-busy', 'true');
+  });
+
+  it("shows an edited account's bank without reading the bank list", () => {
+    getBanksAction.mockReturnValue(new Promise(() => {}));
+    const account: BankAccount = {
+      id: '5',
+      bankId: '2',
+      bankName: 'Bank Albilad',
+      iban: 'SA0380000000608010456789',
+      maskedNumber: '45 67 89',
+    };
+    renderForm({ mode: 'edit', account });
+
+    expect(screen.getByRole('combobox', { name: 'Bank name' })).toHaveTextContent(
+      'Bank Albilad'
+    );
+    expect(getBanksAction).not.toHaveBeenCalled();
   });
 });
