@@ -5,6 +5,7 @@ import { AppError } from "@/shared/lib/errors";
 import { fail, ok, type Result } from "@/shared/lib/result";
 import type {
   WalletData,
+  WalletTransaction,
   WalletTransactionStatus,
   WalletTopUpPayment,
   WalletTransactionType,
@@ -14,7 +15,8 @@ import type {
 export interface WalletApi {
   getWallet(): Promise<WalletData>;
   topUp(amount: number): Promise<Result<WalletTopUpPayment>>;
-  withdraw(params: WithdrawParams): Promise<void>;
+  /** Creates a pending withdrawal request and returns its transaction. */
+  withdraw(params: WithdrawParams): Promise<Result<WalletTransaction>>;
 }
 
 const WALLET_TRANSACTION_TYPES = [
@@ -109,17 +111,23 @@ export function mapWalletResponse(value: unknown): WalletData {
       withdrawable: value.data.withdrawable_balance,
       nonWithdrawable: value.data.non_withdrawable_balance,
     },
-    transactions: value.data.transactions.map((transaction) => ({
-      id: String(transaction.id),
-      type: transaction.type,
-      status: transaction.status,
-      amount: transaction.value,
-      accountId:
-        transaction.account_id === null ? null : String(transaction.account_id),
-      // GET /wallet has no reference field; use its transaction ID for now.
-      reference: String(transaction.id),
-      createdAt: transaction.created_at,
-    })),
+    transactions: value.data.transactions.map(toWalletTransaction),
+  };
+}
+
+function toWalletTransaction(
+  transaction: WalletTransactionDto,
+): WalletTransaction {
+  return {
+    id: String(transaction.id),
+    type: transaction.type,
+    status: transaction.status,
+    amount: transaction.value,
+    accountId:
+      transaction.account_id === null ? null : String(transaction.account_id),
+    // The API has no reference field; use the transaction ID for now.
+    reference: String(transaction.id),
+    createdAt: transaction.created_at,
   };
 }
 
@@ -178,8 +186,37 @@ async function topUp(amount: number): Promise<Result<WalletTopUpPayment>> {
   }
 }
 
-/** The authenticated wallet read and top-up. Withdrawal remains on its action. */
-export const walletApi: Pick<WalletApi, "getWallet" | "topUp"> = {
+/**
+ * Sends the amount to the chosen account. Success returns the new
+ * transaction (status `pending` until the backend pays it out); the balance
+ * is re-read from GET /wallet rather than adjusted here.
+ */
+async function withdraw({
+  bankAccountId,
+  amount,
+}: WithdrawParams): Promise<Result<WalletTransaction>> {
+  try {
+    const accountId = Number(bankAccountId);
+    // Account IDs come from GET /bank-accounts as numbers.
+    if (!Number.isSafeInteger(accountId) || accountId < 1) {
+      throw new AppError("validation", "wallet.bankAccountRequired");
+    }
+    const response = await serverHttp.post<ApiEnvelope<unknown>>(
+      "/wallet/withdraw",
+      { amount, account_id: accountId },
+    );
+    if (!isApiEnvelope(response) || !isWalletTransactionDto(response.data)) {
+      throw new AppError("server");
+    }
+    return ok(toWalletTransaction(response.data), response.message);
+  } catch (error) {
+    return fail(error);
+  }
+}
+
+/** The authenticated wallet read, top-up, and withdrawal. */
+export const walletApi: WalletApi = {
   getWallet,
   topUp,
+  withdraw,
 };

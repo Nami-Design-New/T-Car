@@ -1,31 +1,25 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useRouter } from '@/i18n/navigation';
-import type { BankAccount } from '@/features/bank-accounts';
-import { fromActionResult, ok, type Result } from '@/shared/lib/result';
+import { fromActionResult, type Result } from '@/shared/lib/result';
 import { topUpAction, withdrawAction } from '../actions';
 import type {
   WalletData,
-  WalletSummary,
   WalletTopUpPayment,
   WalletTransaction,
   WithdrawParams,
 } from '../model';
 
-/** Wallet data arrives from the server; a top-up returns a payment URL. Withdrawal keeps its current path. */
+/**
+ * The API owns the balance: the wallet shows what the server read, and every
+ * write is followed by a re-read (`router.refresh()`) instead of a local change.
+ */
 export function useWallet(initialData: WalletData) {
   const router = useRouter();
-  const [summary, setSummary] = useState<WalletSummary>(initialData.summary);
-  const [transactions, setTransactions] = useState<WalletTransaction[]>(initialData.transactions);
   const [submitting, setSubmitting] = useState(false);
 
-  useEffect(() => {
-    setSummary(initialData.summary);
-    setTransactions(initialData.transactions);
-  }, [initialData]);
-
-  /** Re-reads the wallet and bank accounts on the server. */
+  /** Re-reads the wallet on the server. */
   const reload = useCallback(() => {
     router.refresh();
   }, [router]);
@@ -42,28 +36,24 @@ export function useWallet(initialData: WalletData) {
     []
   );
 
+  /** Requests the withdrawal, then re-reads the wallet for the new balance and row. */
   const withdraw = useCallback(
-    /** `account` is the one chosen in the bank picker. */
-    async (params: WithdrawParams, account: BankAccount): Promise<Result<void>> => {
+    async (params: WithdrawParams): Promise<Result<WalletTransaction>> => {
       setSubmitting(true);
       try {
-        const result = fromActionResult(
-          await withdrawAction(params, { summary, transactions }, [account])
-        );
-        if (!result.ok) return result;
-        setSummary(result.data.summary);
-        setTransactions(result.data.transactions);
-        return ok(undefined);
+        const result = fromActionResult(await withdrawAction(params));
+        if (result.ok) router.refresh();
+        return result;
       } finally {
         setSubmitting(false);
       }
     },
-    [summary, transactions]
+    [router]
   );
 
   return {
-    summary,
-    transactions,
+    summary: initialData.summary,
+    transactions: initialData.transactions,
     reload,
     submitting,
     topUp,

@@ -1,7 +1,6 @@
 import { MAX_TOP_UP, type WalletSummary, type WalletTransaction } from './model';
 import { AppError } from '@/shared/lib/errors';
 import { fail, ok } from '@/shared/lib/result';
-import { bankAccountsApi } from '@/services/bankAccounts.api';
 import type { WalletApi } from './api';
 
 export const MOCK_WALLET_SUMMARY: WalletSummary = {
@@ -45,7 +44,10 @@ function record(type: WalletTransaction['type'], amount: number, accountId: stri
   ];
 }
 
-/** Mock failure rule: top-ups above MAX_TOP_UP are rejected. */
+/**
+ * Mock failure rules: top-ups above MAX_TOP_UP and withdrawals above the
+ * withdrawable balance are rejected.
+ */
 export const walletMock: WalletApi = {
   async getWallet() {
     await delay(300);
@@ -70,13 +72,9 @@ export const walletMock: WalletApi = {
   },
 
   async withdraw({ bankAccountId, amount }) {
-    const accounts = await bankAccountsApi.getBankAccounts();
     await delay();
-    if (!accounts.some((account) => account.id === bankAccountId)) {
-      throw new AppError('not_found', 'bankAccounts.notFound');
-    }
     if (amount > summary.withdrawable) {
-      throw new AppError('conflict', 'wallet.insufficientBalance');
+      return fail(new AppError('conflict', 'wallet.insufficientBalance'));
     }
 
     summary = {
@@ -85,5 +83,6 @@ export const walletMock: WalletApi = {
       withdrawable: summary.withdrawable - amount,
     };
     record('withdrawal', amount, bankAccountId);
+    return ok({ ...transactions[0], status: 'pending' });
   },
 };

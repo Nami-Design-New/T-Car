@@ -303,7 +303,17 @@ and the next page on scroll with `usePaginatedList` + `InfiniteList`, showing
 account-card skeletons, an inline error with retry, and the empty state. The
 wallet's `BankSelectModal` and the browser mock read are gone. The bank accounts
 tab still runs on `services/bankAccounts.api` (mock) until its own integration.
-Withdrawal (W8) still uses its mock action.
+
+**Wallet API fraction W8 (2026-11-01), done:** Withdrawal posts
+`{ amount, account_id }` (the picker's account ID as a number) to
+`POST /wallet/withdraw` through `walletApi.withdraw` and `withdrawAction`
+(`ActionResult`). Success returns the new `pending` transaction (same DTO as a
+`GET /wallet` row, mapped by the shared `toWalletTransaction`); the client
+toasts the backend message, shows the result dialog, and re-reads the wallet.
+A backend 422 (e.g. balance) is toast-only and keeps the sheet open. The
+balance, account ownership, and limits are the API's; the server action keeps
+only the minimum amount and a required account. `useWallet` no longer holds a
+local copy of the wallet: no write changes the balance in the browser.
 
 **Phase 1 import-boundary remediation (2026-10-20):** The account shell now receives points data from its App Router section layout and imports the summary card through `features/points/index.ts`. The root layout now supplies the authenticated notifications count to the layout feature. `MapLocationModal` and `LocationData` now live in `shared/ui` and `shared/lib`, respectively, with every caller using that shared API. Rental search now consumes the cars feature only through its public index; that index no longer exposes the server-only `getOffices` read, which the home route imports directly. The initial lint audit is reduced from nine to two boundary errors; both remaining violations are in wallet's bank-account action dependency.
 

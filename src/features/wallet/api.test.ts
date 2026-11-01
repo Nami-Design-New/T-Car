@@ -214,3 +214,76 @@ describe("walletApi.topUp", () => {
     }
   });
 });
+
+describe("walletApi.withdraw", () => {
+  const withdrawResponse = {
+    data: {
+      id: 84,
+      value: 1,
+      type: "withdrawal",
+      account_id: 5,
+      status: "pending",
+      created_at: "2026-11-01 13:12:58",
+    },
+    message: "Wallet withdrawal request created successfully.",
+    code: 200,
+  };
+
+  it("posts the amount and numeric account ID and maps the new transaction", async () => {
+    post.mockResolvedValue(withdrawResponse);
+
+    await expect(
+      walletApi.withdraw({ bankAccountId: "5", amount: 1 }),
+    ).resolves.toEqual({
+      ok: true,
+      data: {
+        id: "84",
+        type: "withdrawal",
+        status: "pending",
+        amount: 1,
+        accountId: "5",
+        reference: "84",
+        createdAt: "2026-11-01 13:12:58",
+      },
+      message: "Wallet withdrawal request created successfully.",
+    });
+    expect(post).toHaveBeenCalledWith("/wallet/withdraw", {
+      amount: 1,
+      account_id: 5,
+    });
+  });
+
+  it("rejects an account ID that is not a positive integer without a request", async () => {
+    for (const bankAccountId of ["", "bank-1", "0", "1.5"]) {
+      await expect(
+        walletApi.withdraw({ bankAccountId, amount: 1 }),
+      ).resolves.toMatchObject({
+        ok: false,
+        error: { kind: "validation", code: "wallet.bankAccountRequired" },
+      });
+    }
+    expect(post).not.toHaveBeenCalled();
+  });
+
+  it("fails with a server error for a malformed transaction", async () => {
+    for (const data of [null, { ...withdrawResponse.data, status: "processing" }]) {
+      post.mockResolvedValueOnce({ ...withdrawResponse, data });
+      await expect(
+        walletApi.withdraw({ bankAccountId: "5", amount: 1 }),
+      ).resolves.toEqual({ ok: false, error: new AppError("server") });
+    }
+  });
+
+  it("returns validation and unauthorized errors from the shared client", async () => {
+    for (const error of [
+      new AppError("validation", undefined, 422, undefined, {
+        serverMessage: "The amount field is required.",
+      }),
+      new AppError("unauthorized", undefined, 401),
+    ]) {
+      post.mockRejectedValueOnce(error);
+      const result = await walletApi.withdraw({ bankAccountId: "5", amount: 1 });
+      expect(result).toEqual({ ok: false, error });
+    }
+  });
+});

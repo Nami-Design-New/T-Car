@@ -1,31 +1,17 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { BankAccount } from "@/features/bank-accounts";
 import { AppError } from "@/shared/lib/errors";
-import type { WalletData } from "./model";
 
-const { auth, topUp } = vi.hoisted(() => ({
+const { auth, topUp, withdraw } = vi.hoisted(() => ({
   auth: vi.fn(),
   topUp: vi.fn(),
+  withdraw: vi.fn(),
 }));
 
 vi.mock("@/auth", () => ({ auth }));
-vi.mock("./api", () => ({ walletApi: { topUp } }));
+vi.mock("./api", () => ({ walletApi: { topUp, withdraw } }));
 vi.mock("@/shared/lib/report", () => ({ reportError: vi.fn() }));
 
 import { topUpAction, withdrawAction } from "./actions";
-
-const wallet: WalletData = {
-  summary: { total: 100, withdrawable: 50, nonWithdrawable: 50 },
-  transactions: [],
-};
-
-const account: BankAccount = {
-  id: "bank-1",
-  bankId: "alrajhi",
-  bankName: "Al Rajhi Bank",
-  iban: "SA0000000000000000000000",
-  maskedNumber: "00 0000",
-};
 
 beforeEach(() => {
   vi.clearAllMocks();
@@ -88,27 +74,59 @@ describe("topUpAction", () => {
 });
 
 describe("withdrawAction", () => {
-  it("rejects an amount beyond the current withdrawable balance", async () => {
+  const transaction = {
+    id: "84",
+    type: "withdrawal",
+    status: "pending",
+    amount: 10,
+    accountId: "5",
+    reference: "84",
+    createdAt: "2026-11-01 13:12:58",
+  };
+
+  it("requires a session before calling the API", async () => {
+    auth.mockResolvedValue(null);
     await expect(
-      withdrawAction({ bankAccountId: account.id, amount: 51 }, wallet, [
-        account,
-      ]),
-    ).resolves.toEqual({
-      ok: false,
-      error: {
-        kind: "validation",
-        code: "wallet.amountTooHigh",
-        fieldErrors: { amount: "wallet.amountTooHigh" },
-      },
-    });
+      withdrawAction({ bankAccountId: "5", amount: 10 }),
+    ).resolves.toEqual({ ok: false, error: { kind: "unauthorized" } });
+    expect(withdraw).not.toHaveBeenCalled();
   });
 
-  it("keeps bank-account ownership as an action check", async () => {
+  it("rejects a malformed amount or a missing account without calling the API", async () => {
     await expect(
-      withdrawAction({ bankAccountId: "other", amount: 10 }, wallet, [account]),
-    ).resolves.toEqual({
+      withdrawAction({ bankAccountId: "5", amount: 9 }),
+    ).resolves.toMatchObject({
       ok: false,
-      error: { kind: "not_found", code: "bankAccounts.notFound" },
+      error: { kind: "validation", fieldErrors: { amount: "wallet.amountTooLow" } },
+    });
+    await expect(
+      withdrawAction({ bankAccountId: "", amount: 10 }),
+    ).resolves.toMatchObject({ ok: false, error: { kind: "validation" } });
+    expect(withdraw).not.toHaveBeenCalled();
+  });
+
+  it("leaves the balance check to the API", async () => {
+    withdraw.mockResolvedValue({ ok: true, data: transaction, message: "Created." });
+
+    await expect(
+      withdrawAction({ bankAccountId: "5", amount: 1_000_000 }),
+    ).resolves.toEqual({ ok: true, data: transaction, message: "Created." });
+    expect(withdraw).toHaveBeenCalledWith({ bankAccountId: "5", amount: 1_000_000 });
+  });
+
+  it("carries the backend validation message across the boundary", async () => {
+    withdraw.mockResolvedValue({
+      ok: false,
+      error: new AppError("validation", undefined, 422, undefined, {
+        serverMessage: "Insufficient balance.",
+      }),
+    });
+
+    await expect(
+      withdrawAction({ bankAccountId: "5", amount: 10 }),
+    ).resolves.toMatchObject({
+      ok: false,
+      error: { kind: "validation", serverMessage: "Insufficient balance." },
     });
   });
 });

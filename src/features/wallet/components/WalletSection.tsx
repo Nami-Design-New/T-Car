@@ -80,8 +80,17 @@ export default function WalletSection({ initialData }: Props) {
   };
 
   const handleWithdraw = async (account: BankAccount, amount: number) => {
-    const result = await withdraw({ bankAccountId: account.id, amount }, account);
-    if (!result.ok) return result.error;
+    const result = await withdraw({ bankAccountId: account.id, amount });
+    if (!result.ok) {
+      // The backend's validation message (e.g. balance) is a toast only; the sheet stays open.
+      if (result.error.kind === "validation" && result.error.serverMessage) {
+        notify.error(result.error.serverMessage);
+        return undefined;
+      }
+      return result.error;
+    }
+    // The request is created as `pending`; the toast carries the backend's wording.
+    notify.success(result.message);
     setFlow({ step: "result", kind: "withdraw" });
   };
 
