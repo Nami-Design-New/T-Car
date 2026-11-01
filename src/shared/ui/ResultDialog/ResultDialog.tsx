@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import Image from "next/image";
 import { Dialog } from "@/shared/ui/Dialog";
 import { RESULT_ANIMATIONS } from "@/shared/config/assets";
+import { Button } from "../Button";
 
 export interface Props {
   open: boolean;
@@ -34,12 +35,11 @@ export function ResultDialog({
       open={open}
       onClose={onClose}
       size="sm"
-      className="result-dialog"
       placement="bottom-sheet"
       closeOnBackdrop
       label={description || status}
     >
-      <Dialog.Body className="result-dialog__body flex flex-col items-center px-8 pt-5 pb-8 text-center max-[575px]:px-5">
+      <Dialog.Body className="flex flex-col items-center px-8 pt-5 pb-8 text-center max-[575px]:px-5">
         <Image
           className="mx-auto mb-2 block size-45 object-contain max-[575px]:size-37.5"
           src={RESULT_ANIMATIONS[status]}
@@ -49,18 +49,19 @@ export function ResultDialog({
           unoptimized
         />
         {description && (
-          <Dialog.Description className="result-dialog__description text-text-primary mx-0 font-semibold">
+          <Dialog.Description className="text-text-primary! mx-0 font-semibold">
             {description}
           </Dialog.Description>
         )}
         {action && (
-          <button
+          <Button
             type="button"
-            className="result-dialog__action bg-action-primary text-text-on-action mt-5 min-h-11 cursor-pointer rounded-md border-0 px-6 font-semibold"
+            size="lg"
+            className="mt-4 w-full max-w-50"
             onClick={action.onClick}
           >
             {action.label}
-          </button>
+          </Button>
         )}
       </Dialog.Body>
     </Dialog>

@@ -995,7 +995,7 @@
       "topup": "شحن",
       "refund": "استرداد",
       "payment": "دفع",
-      "withdraw": "سحب"
+      "withdrawal": "سحب"
     },
     "amount": {
       "rangeMin": "الحد الأدنى {min} ريال",

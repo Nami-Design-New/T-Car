@@ -2,8 +2,8 @@
 
 import Image from "next/image";
 import { useTranslations } from "next-intl";
-import { PiBank } from "react-icons/pi";
 import type { BankAccount } from "../model";
+import { BankCard } from "@/shared/ui/BankCard";
 import { Loader } from "@/shared/ui/Loader";
 import { EmptyState } from "@/shared/ui/EmptyState";
 import { ErrorState } from "@/shared/ui/ErrorState";
@@ -64,66 +64,39 @@ export default function BankAccountsTab({
       ) : (
         <ul className=" m-0 flex list-none flex-col gap-3 p-0">
           {accounts.map((account) => (
-            <li
-              key={account.id}
-              className=" flex  items-center gap-3 rounded-md border border-dashed border-stroke-light bg-surface-on-background p-4"
-            >
-              <div className=" flex min-w-0 flex-1 flex-col items-start gap-3">
-                <div className=" flex items-center gap-2 text-xs font-semibold leading-4.25 text-text-primary">
-                  {account.logo ? (
+            <li key={account.id}>
+              <BankCard variant="listed">
+                <BankCard.Details>
+                  <BankCard.Bank name={account.bankName} logo={account.logo} />
+                  <BankCard.Number>{account.maskedNumber}</BankCard.Number>
+                </BankCard.Details>
+                <BankCard.Actions>
+                  <BankCard.Action
+                    label={t("edit", { bank: account.bankName })}
+                    onClick={() => onEdit(account)}
+                  >
                     <Image
-                      src={account.logo}
+                      src={editIcon}
+                      className="size-5 max-w-none shrink-0"
                       alt=""
-                      width={45}
+                      width={20}
                       height={20}
-                      className="bank_account_logo object-cover"
                     />
-                  ) : (
-                    <PiBank
-                      className=" text-xl text-status-success"
-                      aria-hidden="true"
+                  </BankCard.Action>
+                  <BankCard.Action
+                    label={t("delete", { bank: account.bankName })}
+                    onClick={() => onDelete(account)}
+                  >
+                    <Image
+                      src={deleteIcon}
+                      alt=""
+                      className="size-5 max-w-none shrink-0"
+                      width={20}
+                      height={20}
                     />
-                  )}
-                  <span>{account.bankName}</span>
-                </div>
-                <span
-                  className=" text-base leading-5.75 text-text-primary"
-                  dir="ltr"
-                >
-                  {account.maskedNumber}
-                </span>
-              </div>
-
-              <div className="flex shrink-0 items-center gap-2">
-                <button
-                  type="button"
-                  className="grid size-7 shrink-0 place-items-center rounded-md border-0 bg-surface-background p-0 transition-shadow hover:shadow-[0_0_0_1px_var(--color-stroke-light)] focus-visible:shadow-[0_0_0_1px_var(--color-stroke-light)] focus-visible:outline-none"
-                  onClick={() => onEdit(account)}
-                  aria-label={t("edit", { bank: account.bankName })}
-                >
-                  <Image
-                    src={editIcon}
-                    className="size-5 max-w-none shrink-0"
-                    alt=""
-                    width={20}
-                    height={20}
-                  />
-                </button>
-                <button
-                  type="button"
-                  className="grid size-7 shrink-0 place-items-center rounded-md border-0 bg-surface-background p-0 transition-shadow hover:shadow-[0_0_0_1px_var(--color-stroke-light)] focus-visible:shadow-[0_0_0_1px_var(--color-stroke-light)] focus-visible:outline-none"
-                  onClick={() => onDelete(account)}
-                  aria-label={t("delete", { bank: account.bankName })}
-                >
-                  <Image
-                    src={deleteIcon}
-                    alt=""
-                    className="size-5 max-w-none shrink-0"
-                    width={20}
-                    height={20}
-                  />
-                </button>
-              </div>
+                  </BankCard.Action>
+                </BankCard.Actions>
+              </BankCard>
             </li>
           ))}
         </ul>

@@ -1,7 +1,7 @@
-import { MAX_TOP_UP, type WalletSummary, type WalletTransaction } from '@/features/wallet/model';
+import { MAX_TOP_UP, type WalletSummary, type WalletTransaction } from './model';
 import { AppError } from '@/shared/lib/errors';
-import { bankAccountsApi } from '../bankAccounts.api';
-import type { WalletApi } from '../wallet.api';
+import { fail, ok } from '@/shared/lib/result';
+import type { WalletApi } from './api';
 
 export const MOCK_WALLET_SUMMARY: WalletSummary = {
   total: 2500,
@@ -10,10 +10,10 @@ export const MOCK_WALLET_SUMMARY: WalletSummary = {
 };
 
 export const MOCK_WALLET_TRANSACTIONS: WalletTransaction[] = [
-  { id: '1', type: 'topup', amount: 2500, reference: '7A3D6D', createdAt: '2025-12-01T04:50:00' },
-  { id: '2', type: 'refund', amount: 2500, reference: '7A3D6E', createdAt: '2025-12-01T04:50:00' },
-  { id: '3', type: 'payment', amount: 2500, reference: '7A3D6F', createdAt: '2025-12-01T04:50:00' },
-  { id: '4', type: 'withdraw', amount: 2500, reference: '7A3D70', createdAt: '2025-12-01T04:50:00' },
+  { id: '1', type: 'topup', status: 'success', amount: 2500, accountId: null, reference: '7A3D6D', createdAt: '2025-12-01T04:50:00' },
+  { id: '2', type: 'refund', status: 'success', amount: 2500, accountId: null, reference: '7A3D6E', createdAt: '2025-12-01T04:50:00' },
+  { id: '3', type: 'payment', status: 'success', amount: 2500, accountId: null, reference: '7A3D6F', createdAt: '2025-12-01T04:50:00' },
+  { id: '4', type: 'withdrawal', status: 'success', amount: 2500, accountId: 'bank-1', reference: '7A3D70', createdAt: '2025-12-01T04:50:00' },
 ];
 
 // In-memory state, so this mock must only run in the browser: on the server it
@@ -29,12 +29,14 @@ const randomReference = () =>
     .toUpperCase()
     .padStart(6, '0');
 
-function record(type: WalletTransaction['type'], amount: number) {
+function record(type: WalletTransaction['type'], amount: number, accountId: string | null = null) {
   transactions = [
     {
       id: `${Date.now()}-${transactions.length}`,
       type,
+      status: 'success',
       amount,
+      accountId,
       reference: randomReference(),
       createdAt: new Date().toISOString(),
     },
@@ -42,20 +44,19 @@ function record(type: WalletTransaction['type'], amount: number) {
   ];
 }
 
-/** Mock failure rule: top-ups above MAX_TOP_UP are rejected. */
+/**
+ * Mock failure rules: top-ups above MAX_TOP_UP and withdrawals above the
+ * withdrawable balance are rejected.
+ */
 export const walletMock: WalletApi = {
   async getWallet() {
     await delay(300);
     return { summary: { ...summary }, transactions: [...transactions] };
   },
 
-  getBankAccounts() {
-    return bankAccountsApi.getBankAccounts();
-  },
-
   async topUp(amount) {
     await delay();
-    if (amount > MAX_TOP_UP) throw new AppError('conflict', 'wallet.topUpRejected');
+    if (amount > MAX_TOP_UP) return fail(new AppError('conflict', 'wallet.topUpRejected'));
 
     summary = {
       ...summary,
@@ -63,16 +64,17 @@ export const walletMock: WalletApi = {
       withdrawable: summary.withdrawable + amount,
     };
     record('topup', amount);
+    return ok({
+      paymentUrl: 'https://example.com/wallet/pay/1',
+      successUrl: 'https://example.com/wallet/success/1',
+      failUrl: 'https://example.com/wallet/fail/1',
+    });
   },
 
   async withdraw({ bankAccountId, amount }) {
-    const accounts = await bankAccountsApi.getBankAccounts();
     await delay();
-    if (!accounts.some((account) => account.id === bankAccountId)) {
-      throw new AppError('not_found', 'bankAccounts.notFound');
-    }
     if (amount > summary.withdrawable) {
-      throw new AppError('conflict', 'wallet.insufficientBalance');
+      return fail(new AppError('conflict', 'wallet.insufficientBalance'));
     }
 
     summary = {
@@ -80,6 +82,7 @@ export const walletMock: WalletApi = {
       total: summary.total - amount,
       withdrawable: summary.withdrawable - amount,
     };
-    record('withdraw', amount);
+    record('withdrawal', amount, bankAccountId);
+    return ok({ ...transactions[0], status: 'pending' });
   },
 };

@@ -5,8 +5,10 @@ import { MOCK_BANKS } from '@/services/mocks/bankAccounts';
 import { AppError } from '@/shared/lib/errors';
 import { reportError } from '@/shared/lib/report';
 import { fail, ok, toActionResult, type ActionResult } from '@/shared/lib/result';
+import type { Page } from '@/shared/lib/pagination';
 import { toValidationError } from '@/shared/lib/validation';
 import type { ZodType } from 'zod';
+import { bankAccountsApi } from './api';
 import { maskIban, type BankAccount, type BankAccountPayload } from './model';
 import { bankAccountSchema } from './validation';
 
@@ -41,6 +43,24 @@ async function run<T>(scope: string, write: () => T): Promise<ActionResult<T>> {
     return toActionResult(ok(write()));
   } catch (error) {
     reportError(error, { scope });
+    return toActionResult(fail(error));
+  }
+}
+
+/**
+ * One page of the customer's accounts from GET /bank-accounts, for the bank
+ * picker (read when it opens, so an account added meanwhile is listed).
+ */
+export async function getBankAccountsAction(
+  page: number
+): Promise<ActionResult<Page<BankAccount>>> {
+  try {
+    const session = await auth();
+    if (!session?.user?.id) throw new AppError('unauthorized');
+    if (!Number.isInteger(page) || page < 1) throw new AppError('validation');
+    return toActionResult(ok(await bankAccountsApi.getBankAccounts(page)));
+  } catch (error) {
+    reportError(error, { scope: 'bankAccounts.list' });
     return toActionResult(fail(error));
   }
 }

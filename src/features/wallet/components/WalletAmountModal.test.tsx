@@ -5,11 +5,13 @@ import { describe, expect, it, vi } from 'vitest';
 import { renderWithIntl } from '@/shared/test/render';
 import WalletAmountModal from './WalletAmountModal';
 
-function renderModal(overrides: Partial<React.ComponentProps<typeof WalletAmountModal>> = {}) {
+type ModalProps = React.ComponentProps<typeof WalletAmountModal>;
+
+function renderModal(overrides: Partial<ModalProps> = {}) {
   const onClose = vi.fn();
   const onConfirm = vi.fn().mockResolvedValue(undefined);
   const user = userEvent.setup();
-  renderWithIntl(
+  const modal = (props: Partial<ModalProps>) => (
     <WalletAmountModal
       open
       title="اشحن المحفظة"
@@ -18,9 +20,12 @@ function renderModal(overrides: Partial<React.ComponentProps<typeof WalletAmount
       onClose={onClose}
       onConfirm={onConfirm}
       {...overrides}
+      {...props}
     />
   );
-  return { onClose, onConfirm, user };
+  const view = renderWithIntl(modal({}));
+  const rerender = (props: Partial<ModalProps>) => view.rerender(modal(props));
+  return { onClose, onConfirm, user, rerender };
 }
 
 describe('WalletAmountModal', () => {
@@ -55,6 +60,16 @@ describe('WalletAmountModal', () => {
     await user.click(within(form).getByRole('button'));
     await screen.findByRole('alert');
     expect(screen.getByRole('spinbutton')).toHaveValue(25);
+  });
+
+  it('clears the amount when the parent closes the sheet', async () => {
+    const { rerender, user } = renderModal();
+    await user.type(screen.getByRole('spinbutton'), '25');
+
+    rerender({ open: false });
+    rerender({ open: true });
+
+    expect(screen.getByRole('spinbutton')).toHaveValue(null);
   });
 
   it('keeps a busy form open', async () => {

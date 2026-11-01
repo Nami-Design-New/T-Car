@@ -17,7 +17,8 @@ export const amountFormSchema = (min: number, max?: number) =>
 
 export const topUpSchema = amountFormSchema(MIN_TOP_UP, MAX_TOP_UP);
 
-export const withdrawSchema = (max: number) =>
+/** `max` is the withdrawable balance where it is known (the sheet); the API rechecks it. */
+export const withdrawSchema = (max?: number) =>
   z.object({
     bankAccountId: z.string().min(1, { error: "wallet.bankAccountRequired" }),
     amount: amountSchema(MIN_WITHDRAW, max),

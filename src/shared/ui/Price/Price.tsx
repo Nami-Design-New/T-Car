@@ -38,11 +38,11 @@ export function Price({
       className={cn(
         "price inline-flex items-center gap-1.5 whitespace-nowrap",
         `price--${size}`,
-        strike && "price--strike text-text-subtle line-through",
+        strike && "text-text-subtle line-through",
         className,
       )}
     >
-      <span className={cn("price__amount", amountClassName)}>
+      <span className={cn(amountClassName)}>
         {amountText ?? formatAmount(amount)}
       </span>
       <Image
@@ -50,9 +50,9 @@ export function Price({
         alt={t("sar")}
         width={iconSize}
         height={iconSize}
-        className="price__currency currency_icon shrink-0 object-contain"
+        className="shrink-0 object-contain"
       />
-      {suffix ? <span className="price__suffix">{suffix}</span> : null}
+      {suffix ? <span>{suffix}</span> : null}
     </Wrapper>
   );
 }

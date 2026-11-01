@@ -1,12 +1,21 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { AppError } from '@/shared/lib/errors';
 import type { BankAccount } from './model';
 
-const { auth } = vi.hoisted(() => ({ auth: vi.fn() }));
+const { auth, getBankAccounts } = vi.hoisted(() => ({
+  auth: vi.fn(),
+  getBankAccounts: vi.fn(),
+}));
 
 vi.mock('@/auth', () => ({ auth }));
 vi.mock('@/shared/lib/report', () => ({ reportError: vi.fn() }));
+vi.mock('./api', () => ({ bankAccountsApi: { getBankAccounts } }));
 
-import { addBankAccountAction, updateBankAccountAction } from './actions';
+import {
+  addBankAccountAction,
+  getBankAccountsAction,
+  updateBankAccountAction,
+} from './actions';
 
 const current: BankAccount[] = [];
 const validInput = { bankId: 'alrajhi', iban: 'sa03 8000 0000 6080 1045 6789' };
@@ -14,6 +23,45 @@ const validInput = { bankId: 'alrajhi', iban: 'sa03 8000 0000 6080 1045 6789' };
 beforeEach(() => {
   vi.clearAllMocks();
   auth.mockResolvedValue({ user: { id: 'user-1' } });
+});
+
+describe('getBankAccountsAction', () => {
+  it('requires a session before reading', async () => {
+    auth.mockResolvedValue(null);
+    await expect(getBankAccountsAction(1)).resolves.toEqual({
+      ok: false,
+      error: { kind: 'unauthorized' },
+    });
+    expect(getBankAccounts).not.toHaveBeenCalled();
+  });
+
+  it('rejects a page that is not a positive integer', async () => {
+    for (const page of [0, -1, 1.5, Number.NaN]) {
+      await expect(getBankAccountsAction(page)).resolves.toMatchObject({
+        ok: false,
+        error: { kind: 'validation' },
+      });
+    }
+    expect(getBankAccounts).not.toHaveBeenCalled();
+  });
+
+  it('returns the requested page of API accounts', async () => {
+    const accounts: BankAccount[] = [
+      { id: '5', bankId: '2', bankName: 'Al Rajhi', iban: 'SA44', maskedNumber: '12 34 56' },
+    ];
+    const page = { items: accounts, page: 2, lastPage: 2, total: 11 };
+    getBankAccounts.mockResolvedValue(page);
+    await expect(getBankAccountsAction(2)).resolves.toEqual({ ok: true, data: page });
+    expect(getBankAccounts).toHaveBeenCalledWith(2);
+  });
+
+  it('returns a read failure as plain error data', async () => {
+    getBankAccounts.mockRejectedValue(new AppError('network'));
+    await expect(getBankAccountsAction(1)).resolves.toMatchObject({
+      ok: false,
+      error: { kind: 'network' },
+    });
+  });
 });
 
 describe('bank-account actions', () => {
