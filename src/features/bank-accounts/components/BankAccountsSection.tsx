@@ -36,24 +36,28 @@ export default function BankAccountsSection() {
   const handleSubmit = async (
     payload: BankAccountPayload,
   ): Promise<AppError | undefined> => {
-    if (flow.step === "add") {
-      const result = await add(payload);
-      if (!result.ok) {
-        // The backend's validation message is a toast only; the form stays open.
-        if (result.error.kind === "validation" && result.error.serverMessage) {
-          notify.error(result.error.serverMessage);
-          return undefined;
-        }
-        return result.error;
-      }
-      setFlow({ step: "result", kind: "added", message: result.message });
-    } else if (flow.step === "edit") {
-      const result = await update(flow.account.id, payload);
-      if (!result.ok) return result.error;
-      setFlow({ step: "result", kind: "updated" });
-    }
+    if (flow.step !== "add" && flow.step !== "edit") return undefined;
+    const kind: ResultKind = flow.step === "add" ? "added" : "updated";
+    const result =
+      flow.step === "add"
+        ? await add(payload)
+        : await update(flow.account.id, payload);
 
-    return undefined;
+    if (result.ok) {
+      setFlow({ step: "result", kind, message: result.message });
+      return undefined;
+    }
+    // The backend's validation message is a toast only; the form stays open.
+    if (result.error.kind === "validation" && result.error.serverMessage) {
+      notify.error(result.error.serverMessage);
+      return undefined;
+    }
+    // The edited account is gone (deleted elsewhere): nothing left to edit.
+    if (result.error.kind === "not_found") {
+      setFlow({ step: "result", kind, error: result.error });
+      return undefined;
+    }
+    return result.error;
   };
 
   const handleDelete = async () => {

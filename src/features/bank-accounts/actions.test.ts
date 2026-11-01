@@ -2,17 +2,20 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { AppError } from '@/shared/lib/errors';
 import type { BankAccount } from './model';
 
-const { auth, getBankAccounts, getBanks, addBankAccount } = vi.hoisted(() => ({
-  auth: vi.fn(),
-  getBankAccounts: vi.fn(),
-  getBanks: vi.fn(),
-  addBankAccount: vi.fn(),
-}));
+const { auth, getBankAccounts, getBanks, addBankAccount, updateBankAccount } = vi.hoisted(
+  () => ({
+    auth: vi.fn(),
+    getBankAccounts: vi.fn(),
+    getBanks: vi.fn(),
+    addBankAccount: vi.fn(),
+    updateBankAccount: vi.fn(),
+  })
+);
 
 vi.mock('@/auth', () => ({ auth }));
 vi.mock('@/shared/lib/report', () => ({ reportError: vi.fn() }));
 vi.mock('./api', () => ({
-  bankAccountsApi: { getBankAccounts, getBanks, addBankAccount },
+  bankAccountsApi: { getBankAccounts, getBanks, addBankAccount, updateBankAccount },
 }));
 
 import {
@@ -203,21 +206,12 @@ describe('bank-account writes', () => {
     expect(addBankAccount).not.toHaveBeenCalled();
   });
 
-  it('accepts a valid edit and delete without the API until B5–B6', async () => {
-    await expect(updateBankAccountAction('5', validInput)).resolves.toEqual({
-      ok: true,
-      data: null,
-    });
+  it('accepts a valid delete without the API until B6', async () => {
     await expect(deleteBankAccountAction('5')).resolves.toEqual({ ok: true, data: null });
-    expect(getBankAccounts).not.toHaveBeenCalled();
   });
 
-  it('rejects an account ID that is not a positive integer as not found', async () => {
+  it('rejects a delete ID that is not a positive integer as not found', async () => {
     for (const id of ['', 'abc', '0', '-1', '1.5', '5a', '99999999999999999999']) {
-      await expect(updateBankAccountAction(id, validInput)).resolves.toEqual({
-        ok: false,
-        error: { kind: 'not_found', code: 'bankAccounts.notFound' },
-      });
       await expect(deleteBankAccountAction(id)).resolves.toEqual({
         ok: false,
         error: { kind: 'not_found', code: 'bankAccounts.notFound' },
@@ -234,6 +228,63 @@ describe('bank-account writes', () => {
     await expect(deleteBankAccountAction('5')).resolves.toMatchObject({
       ok: false,
       error: { kind: 'unauthorized' },
+    });
+  });
+});
+
+describe('updateBankAccountAction', () => {
+  const account: BankAccount = {
+    id: '5',
+    bankId: '3',
+    bankName: 'Riyad Bank',
+    iban: 'SA0380000000608010456789',
+    maskedNumber: '45 67 89',
+  };
+
+  it('sends the ID and the parsed values and returns the backend message', async () => {
+    updateBankAccount.mockResolvedValue({
+      ok: true,
+      data: account,
+      message: 'Bank account updated successfully.',
+    });
+
+    await expect(updateBankAccountAction('5', { ...validInput, bankId: '3' })).resolves.toEqual({
+      ok: true,
+      data: account,
+      message: 'Bank account updated successfully.',
+    });
+    expect(updateBankAccount).toHaveBeenCalledWith('5', {
+      bankId: '3',
+      iban: 'SA0380000000608010456789',
+    });
+  });
+
+  it('rejects malformed input without calling the API', async () => {
+    await expect(
+      updateBankAccountAction('5', { bankId: '3', iban: 'SA12' })
+    ).resolves.toMatchObject({ ok: false, error: { kind: 'validation' } });
+    expect(updateBankAccount).not.toHaveBeenCalled();
+  });
+
+  it('returns not found and a 422 message as plain error data', async () => {
+    updateBankAccount.mockResolvedValueOnce({
+      ok: false,
+      error: new AppError('not_found', 'bankAccounts.notFound', 404),
+    });
+    await expect(updateBankAccountAction('99', validInput)).resolves.toEqual({
+      ok: false,
+      error: { kind: 'not_found', code: 'bankAccounts.notFound', status: 404 },
+    });
+
+    updateBankAccount.mockResolvedValueOnce({
+      ok: false,
+      error: new AppError('validation', undefined, 422, undefined, {
+        serverMessage: 'The selected bank does not exist.',
+      }),
+    });
+    await expect(updateBankAccountAction('5', validInput)).resolves.toMatchObject({
+      ok: false,
+      error: { kind: 'validation', serverMessage: 'The selected bank does not exist.' },
     });
   });
 });

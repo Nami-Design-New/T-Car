@@ -110,24 +110,32 @@ export async function addBankAccountAction(
   }
 }
 
-/*
- * Edit and delete are not sent to the API yet (B5–B6 in
- * docs/api/bank-accounts-api.md): they check the session, the form values, and
- * the account ID, then succeed without changing anything. The tab re-reads the
- * list after each one.
+/**
+ * Changes an account's bank and IBAN through POST /update-bank-accounts/{id}.
+ * Like add: values parsed again, the backend's message on success, a 422's
+ * message as `serverMessage`; an unknown account is `not_found`.
  */
-
 export async function updateBankAccountAction(
   id: string,
   payload: BankAccountPayload,
-): Promise<ActionResult<null>> {
-  return run("bankAccounts.update", () => {
-    toAccountId(id);
-    parse(bankAccountSchema, payload);
-    return null;
-  });
+): Promise<ActionResult<BankAccount>> {
+  try {
+    const session = await auth();
+    if (!session?.user?.id) throw new AppError("unauthorized");
+    const values = parse(bankAccountSchema, payload);
+    const result = await bankAccountsApi.updateBankAccount(id, values);
+    if (!result.ok) throw result.error;
+    return toActionResult(result);
+  } catch (error) {
+    reportError(error, { scope: "bankAccounts.update" });
+    return toActionResult(fail(error));
+  }
 }
 
+/**
+ * Not sent to the API yet (B6 in docs/api/bank-accounts-api.md): checks the
+ * session and the account ID, then succeeds without changing anything.
+ */
 export async function deleteBankAccountAction(
   id: string,
 ): Promise<ActionResult<null>> {

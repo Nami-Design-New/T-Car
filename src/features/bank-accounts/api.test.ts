@@ -324,3 +324,87 @@ describe("bankAccountsApi.addBankAccount", () => {
     });
   });
 });
+
+// Observed POST /update-bank-accounts/{id} success (docs/api/bank-accounts-api.md §3.4).
+const updated = {
+  data: {
+    id: 18,
+    bank_id: 3,
+    title: "Riyad Bank",
+    logo: null,
+    iban_number: "SA0380000000608010164444",
+  },
+  message: "Bank account updated successfully.",
+  code: 200,
+};
+
+describe("bankAccountsApi.updateBankAccount", () => {
+  const changes = { bankId: "3", iban: "SA0380000000608010164444" };
+
+  it("posts the bank and the IBAN to the account's update path", async () => {
+    post.mockResolvedValue(updated);
+
+    await expect(bankAccountsApi.updateBankAccount("18", changes)).resolves.toEqual({
+      ok: true,
+      data: {
+        id: "18",
+        bankId: "3",
+        bankName: "Riyad Bank",
+        logo: undefined,
+        iban: "SA0380000000608010164444",
+        maskedNumber: "16 44 44",
+      },
+      message: "Bank account updated successfully.",
+    });
+    expect(post).toHaveBeenCalledWith("/update-bank-accounts/18", {
+      bank_id: 3,
+      iban_number: "SA0380000000608010164444",
+    });
+  });
+
+  it("refuses an account ID that is not a positive integer without a request", async () => {
+    for (const id of ["", "abc", "0", "-1", "1.5", "5a", "99999999999999999999"]) {
+      await expect(bankAccountsApi.updateBankAccount(id, changes)).resolves.toMatchObject({
+        ok: false,
+        error: { kind: "not_found", code: "bankAccounts.notFound" },
+      });
+    }
+    expect(post).not.toHaveBeenCalled();
+  });
+
+  it("gives the API's 404 (unknown or another customer's account) the bank-account copy", async () => {
+    const missing = new AppError("not_found", undefined, 404, undefined, {
+      serverMessage: "The requested resource was not found.",
+    });
+    post.mockRejectedValue(missing);
+
+    const result = await bankAccountsApi.updateBankAccount("99999", changes);
+    expect(result).toMatchObject({
+      ok: false,
+      error: {
+        kind: "not_found",
+        code: "bankAccounts.notFound",
+        status: 404,
+        serverMessage: "The requested resource was not found.",
+      },
+    });
+  });
+
+  it("keeps a backend 422 and returns a server error for a malformed account", async () => {
+    const invalid = new AppError("validation", undefined, 422, undefined, {
+      serverMessage: "The selected bank does not exist.",
+    });
+    post.mockRejectedValueOnce(invalid);
+    await expect(bankAccountsApi.updateBankAccount("18", changes)).resolves.toEqual({
+      ok: false,
+      error: invalid,
+    });
+
+    post.mockResolvedValueOnce({ ...updated, data: null });
+    await expect(bankAccountsApi.updateBankAccount("18", changes)).resolves.toMatchObject({
+      ok: false,
+      error: { kind: "server" },
+    });
+  });
+});
+

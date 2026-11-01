@@ -2,15 +2,17 @@ import { act, renderHook, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { BankAccount } from "../model";
 
-const { getBankAccountsAction, addBankAccountAction } = vi.hoisted(() => ({
-  getBankAccountsAction: vi.fn(),
-  addBankAccountAction: vi.fn(),
-}));
+const { getBankAccountsAction, addBankAccountAction, updateBankAccountAction } =
+  vi.hoisted(() => ({
+    getBankAccountsAction: vi.fn(),
+    addBankAccountAction: vi.fn(),
+    updateBankAccountAction: vi.fn(),
+  }));
 
 vi.mock("../actions", () => ({
   getBankAccountsAction,
   addBankAccountAction,
-  updateBankAccountAction: vi.fn(),
+  updateBankAccountAction,
   deleteBankAccountAction: vi.fn(),
 }));
 
@@ -22,6 +24,13 @@ const existing: BankAccount = {
   bankName: "Bank Albilad",
   iban: "SA0380000000608010167519",
   maskedNumber: "16 75 19",
+};
+
+const other: BankAccount = {
+  ...existing,
+  id: "6",
+  iban: "SA4420000001234567123456",
+  maskedNumber: "12 34 56",
 };
 
 beforeEach(() => {
@@ -110,3 +119,70 @@ describe("useBankAccounts.add", () => {
     expect(result.current.submitting).toBe(false);
   });
 });
+
+describe("useBankAccounts.update", () => {
+  beforeEach(() => {
+    getBankAccountsAction.mockResolvedValue({
+      ok: true,
+      data: { items: [existing, other], page: 1, lastPage: 1, total: 2 },
+    });
+    updateBankAccountAction.mockResolvedValue({
+      ok: true,
+      data: existing,
+      message: "Bank account updated successfully.",
+    });
+  });
+
+  async function renderBoth() {
+    const hook = renderHook(() => useBankAccounts());
+    await waitFor(() => expect(hook.result.current.accounts.items).toHaveLength(2));
+    return hook;
+  }
+
+  it("lets an account keep its own IBAN (e.g. a bank change)", async () => {
+    const { result } = await renderBoth();
+
+    let outcome: Awaited<ReturnType<typeof result.current.update>> | undefined;
+    await act(async () => {
+      outcome = await result.current.update("5", { bankId: "3", iban: existing.iban });
+    });
+
+    expect(outcome).toMatchObject({
+      ok: true,
+      message: "Bank account updated successfully.",
+    });
+    expect(updateBankAccountAction).toHaveBeenCalledWith("5", {
+      bankId: "3",
+      iban: existing.iban,
+    });
+  });
+
+  it("refuses another account's IBAN without a request", async () => {
+    const { result } = await renderBoth();
+
+    let outcome: Awaited<ReturnType<typeof result.current.update>> | undefined;
+    await act(async () => {
+      outcome = await result.current.update("5", { bankId: "2", iban: other.iban });
+    });
+
+    expect(outcome).toMatchObject({
+      ok: false,
+      error: { fieldErrors: { iban: "bankAccounts.duplicateIban" } },
+    });
+    expect(updateBankAccountAction).not.toHaveBeenCalled();
+  });
+
+  it("reads the list again when the account no longer exists", async () => {
+    const { result } = await renderBoth();
+    updateBankAccountAction.mockResolvedValue({
+      ok: false,
+      error: { kind: "not_found", code: "bankAccounts.notFound" },
+    });
+
+    await act(async () => {
+      await result.current.update("5", { bankId: "2", iban: existing.iban });
+    });
+    await waitFor(() => expect(getBankAccountsAction).toHaveBeenCalledTimes(2));
+  });
+});
+

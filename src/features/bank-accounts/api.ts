@@ -20,14 +20,19 @@ export interface BanksQuery {
 
 /**
  * The live API: the customer's accounts (the tab and the wallet's bank
- * picker), the bank lookup (the add / edit form), and the writes. Edit and
- * delete join in B5–B6. Writes return the backend's message for the toast.
+ * picker), the bank lookup (the add / edit form), and the writes (delete joins
+ * in B6). Writes return the backend's message for the result dialog.
  */
 export interface BankAccountsApi {
   getBankAccounts(page: number): Promise<Page<BankAccount>>;
   getBanks(query: BanksQuery): Promise<Page<Bank>>;
   /** Adds an account (POST /bank-accounts) and returns it. */
   addBankAccount(payload: BankAccountPayload): Promise<Result<BankAccount>>;
+  /** Changes an account's bank and IBAN and returns it. */
+  updateBankAccount(
+    id: string,
+    payload: BankAccountPayload,
+  ): Promise<Result<BankAccount>>;
 }
 
 /**
@@ -173,34 +178,75 @@ async function getBanks({ page, search }: BanksQuery): Promise<Page<Bank>> {
   return mapBanksResponse(response);
 }
 
+/** The add / edit body. A bank ID that is not a positive integer is not sent. */
+function toAccountBody({ bankId, iban }: BankAccountPayload) {
+  const bank = toApiId(bankId);
+  if (bank === undefined) {
+    throw new AppError("validation", "bankAccounts.unknownBank", undefined, {
+      bankId: "bankAccounts.unknownBank",
+    });
+  }
+  return { bank_id: bank, iban_number: normalizeIban(iban) };
+}
+
+/** A write's answer: `data` is the account, with the backend's message. */
+function toAccountResult(response: unknown): Result<BankAccount> {
+  if (
+    !isApiEnvelope(response) ||
+    !isSuccessCode(response.code) ||
+    !isBankAccountDto(response.data)
+  ) {
+    throw new AppError("server");
+  }
+  return ok(toBankAccount(response.data), response.message);
+}
+
 /**
  * POST /bank-accounts as JSON (the API answers JSON with an integer `bank_id`).
  * Success is body code 201 (R1 accepts 200 too); `data` is the new account.
  */
-async function addBankAccount({
-  bankId,
-  iban,
-}: BankAccountPayload): Promise<Result<BankAccount>> {
+async function addBankAccount(
+  payload: BankAccountPayload,
+): Promise<Result<BankAccount>> {
   try {
-    const bank = toApiId(bankId);
-    if (bank === undefined) {
-      throw new AppError("validation", "bankAccounts.unknownBank", undefined, {
-        bankId: "bankAccounts.unknownBank",
-      });
-    }
     const response = await serverHttp.post<ApiEnvelope<unknown>>(
       "/bank-accounts",
-      { bank_id: bank, iban_number: normalizeIban(iban) },
+      toAccountBody(payload),
     );
-    if (
-      !isApiEnvelope(response) ||
-      !isSuccessCode(response.code) ||
-      !isBankAccountDto(response.data)
-    ) {
-      throw new AppError("server");
-    }
-    return ok(toBankAccount(response.data), response.message);
+    return toAccountResult(response);
   } catch (error) {
+    return fail(error);
+  }
+}
+
+/**
+ * POST /update-bank-accounts/{id} as JSON with the bank and the IBAN (changing
+ * the bank is supported, Q3). An unknown account, or another customer's, is
+ * body code 404: `not_found` with the bank-account copy.
+ */
+async function updateBankAccount(
+  id: string,
+  payload: BankAccountPayload,
+): Promise<Result<BankAccount>> {
+  try {
+    const accountId = toApiId(id);
+    if (accountId === undefined) {
+      throw new AppError("not_found", "bankAccounts.notFound");
+    }
+    const response = await serverHttp.post<ApiEnvelope<unknown>>(
+      `/update-bank-accounts/${accountId}`,
+      toAccountBody(payload),
+    );
+    return toAccountResult(response);
+  } catch (error) {
+    if (error instanceof AppError && error.kind === "not_found" && !error.code) {
+      return fail(
+        new AppError("not_found", "bankAccounts.notFound", error.status, undefined, {
+          cause: error,
+          serverMessage: error.serverMessage,
+        }),
+      );
+    }
     return fail(error);
   }
 }
@@ -209,4 +255,5 @@ export const bankAccountsApi: BankAccountsApi = {
   getBankAccounts,
   getBanks,
   addBankAccount,
+  updateBankAccount,
 };

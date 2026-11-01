@@ -32,7 +32,11 @@ export function useBankAccounts() {
   const { refresh } = accounts;
   const [submitting, setSubmitting] = useState(false);
 
-  /** Runs a write; on success re-reads the list and keeps the backend's message. */
+  /**
+   * Runs a write; on success re-reads the list and keeps the backend's
+   * message. An account that no longer exists also re-reads it, so the list
+   * stops showing it.
+   */
   const write = useCallback(
     async <T,>(
       action: () => Promise<ActionResult<T>>,
@@ -40,7 +44,10 @@ export function useBankAccounts() {
       setSubmitting(true);
       try {
         const result = fromActionResult(await action());
-        if (!result.ok) return result;
+        if (!result.ok) {
+          if (result.error.kind === "not_found") refresh();
+          return result;
+        }
         refresh();
         return ok(undefined, result.message);
       } finally {
@@ -53,11 +60,14 @@ export function useBankAccounts() {
   /**
    * No duplicate accounts (docs/api/bank-accounts-api.md R7): an IBAN already
    * in the loaded accounts is refused before the request. The API accepts
-   * duplicates, so accounts on pages not loaded yet are not checked.
+   * duplicates, so accounts on pages not loaded yet are not checked. An edit
+   * may keep its own IBAN.
    */
-  const isDuplicate = (iban: string) => {
+  const isDuplicate = (iban: string, exceptId?: string) => {
     const normalized = normalizeIban(iban);
-    return accounts.items.some((account) => account.iban === normalized);
+    return accounts.items.some(
+      (account) => account.id !== exceptId && account.iban === normalized,
+    );
   };
 
   const add = (payload: BankAccountPayload) =>
@@ -65,7 +75,9 @@ export function useBankAccounts() {
       ? Promise.resolve(fail(duplicateIbanError()))
       : write(() => addBankAccountAction(payload));
   const update = (id: string, payload: BankAccountPayload) =>
-    write(() => updateBankAccountAction(id, payload));
+    isDuplicate(payload.iban, id)
+      ? Promise.resolve(fail(duplicateIbanError()))
+      : write(() => updateBankAccountAction(id, payload));
   const remove = (id: string) => write(() => deleteBankAccountAction(id));
 
   return { accounts, submitting, add, update, remove };
