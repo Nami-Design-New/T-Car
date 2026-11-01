@@ -37,19 +37,6 @@ export interface BankAccountsApi {
   deleteBankAccount(id: string): Promise<Result<null>>;
 }
 
-/**
- * The old mock contract, implemented only by `api.mock.ts`. No production code
- * uses it since the tab reads the API (B3); B7 replaces the mock with one of the
- * live interface for tests (docs/api/bank-accounts-api.md §6).
- */
-export interface BankAccountsTabApi {
-  getBanks(): Promise<Bank[]>;
-  getBankAccounts(): Promise<BankAccount[]>;
-  addBankAccount(payload: BankAccountPayload): Promise<void>;
-  updateBankAccount(id: string, payload: BankAccountPayload): Promise<void>;
-  deleteBankAccount(id: string): Promise<void>;
-}
-
 /** Accounts per page; the picker loads the next page on scroll. */
 export const BANK_ACCOUNTS_PER_PAGE = 5;
 
