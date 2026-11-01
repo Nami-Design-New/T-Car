@@ -19,9 +19,11 @@ import WalletTab from "./WalletTab";
 const WalletAmountModal = dynamic(() => import("./WalletAmountModal"), {
   ssr: false,
 });
-const BankSelectModal = dynamic(() => import("./BankSelectModal"), {
-  ssr: false,
-});
+// Owned by bank-accounts: it reads the accounts page by page while open.
+const BankAccountPicker = dynamic(
+  () => import("@/features/bank-accounts").then((m) => m.BankAccountPicker),
+  { ssr: false },
+);
 
 type ResultKind = "topup" | "withdraw";
 
@@ -39,19 +41,10 @@ type WalletFlow =
 
 export default function WalletSection({ initialData }: Props) {
   const t = useTranslations("wallet");
-  const {
-    summary,
-    transactions,
-    bankAccounts,
-    loading,
-    error,
-    reload,
-    submitting,
-    topUp,
-    withdraw,
-  } = useWallet(initialData);
   const notify = useNotify();
   const [flow, setFlow] = useState<WalletFlow>({ step: "idle" });
+  const { summary, transactions, reload, submitting, topUp, withdraw } =
+    useWallet(initialData);
 
   const close = useCallback(() => setFlow({ step: "idle" }), []);
 
@@ -87,7 +80,7 @@ export default function WalletSection({ initialData }: Props) {
   };
 
   const handleWithdraw = async (account: BankAccount, amount: number) => {
-    const result = await withdraw({ bankAccountId: account.id, amount });
+    const result = await withdraw({ bankAccountId: account.id, amount }, account);
     if (!result.ok) return result.error;
     setFlow({ step: "result", kind: "withdraw" });
   };
@@ -97,9 +90,6 @@ export default function WalletSection({ initialData }: Props) {
       <WalletTab
         summary={summary}
         transactions={transactions}
-        loading={loading}
-        error={error ?? undefined}
-        onRetry={reload}
         onTopUp={() => setFlow({ step: "topup-amount" })}
         onWithdraw={() => setFlow({ step: "withdraw-bank" })}
       />
@@ -115,9 +105,8 @@ export default function WalletSection({ initialData }: Props) {
         onConfirm={handleTopUp}
       />
 
-      <BankSelectModal
+      <BankAccountPicker
         open={flow.step === "withdraw-bank"}
-        accounts={bankAccounts}
         onClose={close}
         onSelect={(account) => setFlow({ step: "withdraw-amount", account })}
       />

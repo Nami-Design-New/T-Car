@@ -66,7 +66,7 @@ export default function WalletSummary({ summary, onTopUp, onWithdraw }: Props) {
         </div>
 
         <div className="border-stroke-light flex flex-col items-center gap-2 border-s">
-          <span className="wallet_breakdown_label text-text-subtle inline-flex items-center gap-1.5 text-[0.78rem] font-semibold">
+          <span className="text-text-subtle inline-flex items-center gap-1.5 text-[0.78rem] font-semibold">
             <Image src={balanceIcon} alt="" width={18} height={18} />
             {t("nonWithdrawableBalance")}
           </span>

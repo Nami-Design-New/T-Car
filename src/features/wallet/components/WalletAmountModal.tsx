@@ -137,14 +137,14 @@ export default function WalletAmountModal({
                   alt=""
                   width={18}
                   height={18}
-                  className="currency_icon block object-contain opacity-70"
+                  className="block object-contain opacity-70"
                 />
               }
             />
           </div>
           <small
             id={hintId}
-            className={`text-text-placeholder my-2 block px-1 text-right text-sm ${amountError ? "invalid text-status-error" : "mb-3"}`}
+            className={`text-text-placeholder my-2 block px-1 text-right text-sm ${amountError ? "text-status-error" : "mb-3"}`}
           >
             {max === undefined
               ? t("rangeMin", { min: formatAmount(min) })

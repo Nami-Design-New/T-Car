@@ -52,10 +52,6 @@ export const walletMock: WalletApi = {
     return { summary: { ...summary }, transactions: [...transactions] };
   },
 
-  getBankAccounts() {
-    return bankAccountsApi.getBankAccounts();
-  },
-
   async topUp(amount) {
     await delay();
     if (amount > MAX_TOP_UP) return fail(new AppError('conflict', 'wallet.topUpRejected'));

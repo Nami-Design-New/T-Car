@@ -281,6 +281,30 @@ redirect. The mock balance
 transition for top-up is gone; withdrawal (W8, blocked on the backend) and bank
 choices (W5) still use their mock paths. W6 is covered by W4.
 
+**Shared infinite list (2026-11-01):** `shared/lib/pagination.ts` (`Page<T>`,
+`isPaginationDto`, `toPage`, `hasNextPage`), `shared/hooks/usePaginatedList`
+(pages appended on demand, stale responses dropped, retry of the failed page),
+and the compound `shared/ui/InfiniteList` (`Items`, `Item`, `Loading` with the
+caller's card skeleton, `Error`, `Empty`; the root watches the list's end with
+an `IntersectionObserver`; usage is documented at the top of `InfiniteList.tsx`).
+`shared/ui/BankCard` (compound: `Details`, `Bank`, `Number`, `Actions`, `Action`;
+variants `option` for the picker and `listed` for the bank accounts tab)
+replaces both hand-written bank cards. Feature skeletons live in
+`features/<x>/components/loading/` (e.g. `BankAccountCardSkeleton`, built on the
+`BankCard` frame). `PhoneField` still has its own
+sentinel loading and can move onto it later.
+
+**Wallet API fraction W5 (2026-11-01), done:** The withdrawal bank choices come
+from `GET /bank-accounts?page=n&per_page=10` through the new server-only
+`features/bank-accounts/api.ts` and `getBankAccountsAction(page)`. The picker
+moved into the feature as `BankAccountPicker` (exported from its index, so the
+wallet stays within the import boundaries): it reads page 1 each time it opens
+and the next page on scroll with `usePaginatedList` + `InfiniteList`, showing
+account-card skeletons, an inline error with retry, and the empty state. The
+wallet's `BankSelectModal` and the browser mock read are gone. The bank accounts
+tab still runs on `services/bankAccounts.api` (mock) until its own integration.
+Withdrawal (W8) still uses its mock action.
+
 **Phase 1 import-boundary remediation (2026-10-20):** The account shell now receives points data from its App Router section layout and imports the summary card through `features/points/index.ts`. The root layout now supplies the authenticated notifications count to the layout feature. `MapLocationModal` and `LocationData` now live in `shared/ui` and `shared/lib`, respectively, with every caller using that shared API. Rental search now consumes the cars feature only through its public index; that index no longer exposes the server-only `getOffices` read, which the home route imports directly. The initial lint audit is reduced from nine to two boundary errors; both remaining violations are in wallet's bank-account action dependency.
 
 **Phone field replacement follow-up (2026-10-26), fraction 1:** Added the

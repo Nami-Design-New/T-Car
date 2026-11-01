@@ -13,19 +13,8 @@ import type {
 
 export interface WalletApi {
   getWallet(): Promise<WalletData>;
-  /** Same accounts the user manages from the bank accounts tab. */
-  getBankAccounts(): Promise<WalletBankAccount[]>;
   topUp(amount: number): Promise<Result<WalletTopUpPayment>>;
   withdraw(params: WithdrawParams): Promise<void>;
-}
-
-interface WalletBankAccount {
-  id: string;
-  bankId: string;
-  bankName: string;
-  logo?: string;
-  iban: string;
-  maskedNumber: string;
 }
 
 const WALLET_TRANSACTION_TYPES = [
