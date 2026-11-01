@@ -42,10 +42,14 @@ export default function BankAccountsTab({
 
   return (
     <div className="border-stroke-light bg-surface-elevated flex flex-col gap-5 rounded-xl border p-6">
-      <h3 className="text-text-primary m-0 text-base leading-5.75 font-semibold">
-        {t("title")}
-      </h3>
-
+      <div className="flex items-end justify-between gap-3.5 max-md:gap-2.5">
+        <h3 className="text-text-primary m-0 text-base leading-5.75 font-semibold">
+          {t("title")}
+        </h3>
+        <Button type="button" className="" size="lg" onClick={onAdd}>
+          {t("add")}
+        </Button>
+      </div>
       <InfiniteList
         loading={loading}
         hasMore={hasMore}
@@ -100,10 +104,6 @@ export default function BankAccountsTab({
           <EmptyState title={t("empty.title")} size="section" />
         </InfiniteList.Empty>
       </InfiniteList>
-
-      <Button type="button" className="w-full" size="lg" onClick={onAdd}>
-        {t("add")}
-      </Button>
     </div>
   );
 }

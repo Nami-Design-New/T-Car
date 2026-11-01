@@ -23,7 +23,7 @@ export default function AccountNav() {
 
   return (
     <nav
-      className="sticky top-25 flex flex-col gap-1 rounded-lg border border-stroke-light bg-surface-elevated p-2 max-lg:static max-lg:flex-row max-lg:overflow-x-auto max-lg:[scrollbar-width:none] max-lg:[&::-webkit-scrollbar]:hidden"
+      className="border-stroke-light bg-surface-elevated sticky top-25 flex flex-col gap-1 rounded-lg border p-2 max-lg:static max-lg:[scrollbar-width:none] max-lg:flex-row max-lg:overflow-x-auto max-lg:[&::-webkit-scrollbar]:hidden"
       aria-label={t("account")}
     >
       {SECTIONS.map(({ id, label, icon: Icon }) => {
@@ -35,9 +35,10 @@ export default function AccountNav() {
             key={id}
             href={href}
             className={cn(
-              "flex shrink-0 items-center gap-2.5 rounded-md border-0 bg-transparent px-3.5 py-3 text-base font-semibold whitespace-nowrap text-text-subtle transition duration-200 hover:bg-surface-card-primary",
-              active &&
-                "bg-action-primary text-text-on-action hover:bg-action-primary",
+              "flex shrink-0 items-center gap-2.5 rounded-md border-0 px-3.5 py-3 text-base font-semibold whitespace-nowrap transition duration-200",
+              active
+                ? "bg-action-primary text-text-on-action hover:bg-action-primary"
+                : "text-text-subtle hover:bg-surface-card-primary bg-transparent",
             )}
             aria-current={active ? "page" : undefined}
           >
