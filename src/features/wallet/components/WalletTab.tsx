@@ -30,13 +30,13 @@ export default function WalletTab({
   onWithdraw,
 }: Props) {
   const t = useTranslations("wallet");
-  if (loading) {
-    return (
-      <div className="border-stroke-light bg-surface-elevated rounded-xl border p-6">
-        <Loader fullScreen={false} />
-      </div>
-    );
-  }
+  // if (loading) {
+  //   return (
+  //     <div className="border-stroke-light bg-surface-elevated rounded-xl border p-6">
+  //       <Loader fullScreen={false} />
+  //     </div>
+  //   );
+  // }
 
   if (error) {
     return (
