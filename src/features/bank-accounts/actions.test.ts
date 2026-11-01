@@ -2,18 +2,20 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { AppError } from '@/shared/lib/errors';
 import type { BankAccount } from './model';
 
-const { auth, getBankAccounts } = vi.hoisted(() => ({
+const { auth, getBankAccounts, getBanks } = vi.hoisted(() => ({
   auth: vi.fn(),
   getBankAccounts: vi.fn(),
+  getBanks: vi.fn(),
 }));
 
 vi.mock('@/auth', () => ({ auth }));
 vi.mock('@/shared/lib/report', () => ({ reportError: vi.fn() }));
-vi.mock('./api', () => ({ bankAccountsApi: { getBankAccounts } }));
+vi.mock('./api', () => ({ bankAccountsApi: { getBankAccounts, getBanks } }));
 
 import {
   addBankAccountAction,
   getBankAccountsAction,
+  getBanksAction,
   updateBankAccountAction,
 } from './actions';
 
@@ -60,6 +62,57 @@ describe('getBankAccountsAction', () => {
     await expect(getBankAccountsAction(1)).resolves.toMatchObject({
       ok: false,
       error: { kind: 'network' },
+    });
+  });
+});
+
+describe('getBanksAction', () => {
+  const page = { items: [{ id: '2', name: 'Bank Albilad' }], page: 1, lastPage: 1, total: 1 };
+
+  it('reads the public lookup without a session', async () => {
+    auth.mockResolvedValue(null);
+    getBanks.mockResolvedValue(page);
+    await expect(getBanksAction(1)).resolves.toEqual({ ok: true, data: page });
+    expect(getBanks).toHaveBeenCalledWith({ page: 1, search: undefined });
+  });
+
+  it('rejects a page that is not a positive integer', async () => {
+    for (const value of [0, -1, 1.5, Number.NaN]) {
+      await expect(getBanksAction(value)).resolves.toMatchObject({
+        ok: false,
+        error: { kind: 'validation' },
+      });
+    }
+    expect(getBanks).not.toHaveBeenCalled();
+  });
+
+  it('trims the search term and drops an empty one', async () => {
+    getBanks.mockResolvedValue(page);
+    await getBanksAction(1, '  bilad ');
+    expect(getBanks).toHaveBeenLastCalledWith({ page: 1, search: 'bilad' });
+    await getBanksAction(1, '   ');
+    expect(getBanks).toHaveBeenLastCalledWith({ page: 1, search: undefined });
+  });
+
+  it('caps the search term length', async () => {
+    getBanks.mockResolvedValue(page);
+    await getBanksAction(1, 'a'.repeat(150));
+    expect(getBanks).toHaveBeenLastCalledWith({ page: 1, search: 'a'.repeat(100) });
+  });
+
+  it('rejects a search term that is not a string', async () => {
+    await expect(getBanksAction(1, 5 as unknown as string)).resolves.toMatchObject({
+      ok: false,
+      error: { kind: 'validation' },
+    });
+    expect(getBanks).not.toHaveBeenCalled();
+  });
+
+  it('returns a read failure as plain error data', async () => {
+    getBanks.mockRejectedValue(new AppError('server'));
+    await expect(getBanksAction(1)).resolves.toMatchObject({
+      ok: false,
+      error: { kind: 'server' },
     });
   });
 });

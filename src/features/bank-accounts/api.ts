@@ -1,6 +1,6 @@
 import "server-only";
 import { isApiEnvelope, type ApiEnvelope } from "@/services/http/envelope";
-import { serverHttp } from "@/services/http/server";
+import { publicServerHttp, serverHttp } from "@/services/http/server";
 import { AppError } from "@/shared/lib/errors";
 import { isPaginationDto, toPage, type Page } from "@/shared/lib/pagination";
 import {
@@ -11,9 +11,19 @@ import {
   type BankAccountPayload,
 } from "./model";
 
-/** The live read, used by the wallet's bank picker. */
+/** A page of the bank lookup; `search` matches the title in the request locale. */
+export interface BanksQuery {
+  page: number;
+  search?: string;
+}
+
+/**
+ * The live reads: the customer's accounts (used by the wallet's bank picker)
+ * and the bank lookup (not yet used by the tab, which reads the mock until B3).
+ */
 export interface BankAccountsReadApi {
   getBankAccounts(page: number): Promise<Page<BankAccount>>;
+  getBanks(query: BanksQuery): Promise<Page<Bank>>;
 }
 
 /**
@@ -30,6 +40,18 @@ export interface BankAccountsTabApi {
 
 /** Accounts per page; the picker loads the next page on scroll. */
 export const BANK_ACCOUNTS_PER_PAGE = 10;
+
+/** Banks per page of the lookup. */
+export const BANKS_PER_PAGE = 10;
+
+/** Success is body code 200 or 201 (create answers 201); either is accepted. */
+const isSuccessCode = (code: number) => code === 200 || code === 201;
+
+interface BankDto {
+  id: number;
+  title: string;
+  logo: string | null;
+}
 
 interface BankAccountDto {
   id: number;
@@ -56,6 +78,15 @@ function isBankAccountDto(value: unknown): value is BankAccountDto {
   );
 }
 
+function isBankDto(value: unknown): value is BankDto {
+  return (
+    isRecord(value) &&
+    isId(value.id) &&
+    typeof value.title === "string" &&
+    (value.logo === null || typeof value.logo === "string")
+  );
+}
+
 /** A logo is shown only when it is an absolute http(s) URL. */
 function toLogo(logo: string | null): string | undefined {
   if (!logo) return undefined;
@@ -72,7 +103,7 @@ export function mapBankAccountsResponse(value: unknown): Page<BankAccount> {
   const pagination = isRecord(value) ? value.pagination : undefined;
   if (
     !isApiEnvelope(value) ||
-    value.code !== 200 ||
+    !isSuccessCode(value.code) ||
     !Array.isArray(value.data) ||
     !value.data.every(isBankAccountDto) ||
     !isPaginationDto(pagination)
@@ -91,6 +122,27 @@ export function mapBankAccountsResponse(value: unknown): Page<BankAccount> {
   return toPage(items, pagination);
 }
 
+/** Validate one page of GET /banks and map it into the UI model. */
+export function mapBanksResponse(value: unknown): Page<Bank> {
+  const pagination = isRecord(value) ? value.pagination : undefined;
+  if (
+    !isApiEnvelope(value) ||
+    !isSuccessCode(value.code) ||
+    !Array.isArray(value.data) ||
+    !value.data.every(isBankDto) ||
+    !isPaginationDto(pagination)
+  ) {
+    throw new AppError("server");
+  }
+
+  const items = value.data.map((bank) => ({
+    id: String(bank.id),
+    name: bank.title,
+    logo: toLogo(bank.logo),
+  }));
+  return toPage(items, pagination);
+}
+
 async function getBankAccounts(page: number): Promise<Page<BankAccount>> {
   const response = await serverHttp.get<ApiEnvelope<unknown>>(
     "/bank-accounts",
@@ -99,4 +151,15 @@ async function getBankAccounts(page: number): Promise<Page<BankAccount>> {
   return mapBankAccountsResponse(response);
 }
 
-export const bankAccountsApi: BankAccountsReadApi = { getBankAccounts };
+/** The bank lookup is public: no bearer token (docs/api/bank-accounts-api.md R3). */
+async function getBanks({ page, search }: BanksQuery): Promise<Page<Bank>> {
+  const response = await publicServerHttp.get<ApiEnvelope<unknown>>("/banks", {
+    query: { page, per_page: BANKS_PER_PAGE, ...(search ? { search } : {}) },
+  });
+  return mapBanksResponse(response);
+}
+
+export const bankAccountsApi: BankAccountsReadApi = {
+  getBankAccounts,
+  getBanks,
+};

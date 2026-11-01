@@ -337,6 +337,14 @@ to the live read, and `services/mocks/bankAccounts.ts` became
 actions still use `MOCK_BANKS` and the client-side `current` transitions, until
 B2–B6 move them to `GET /banks`, `GET /bank-accounts`, and the write endpoints.
 
+**Bank accounts API fraction B2 (2026-11-01), done:** The bank lookup is read
+from `GET /banks` through `bankAccountsApi.getBanks({ page, search })` on
+`publicServerHttp` (the endpoint is public, so no token is sent), and
+`getBanksAction(page, search?)` serves it without a session. Both bank-accounts
+mappers now accept body code 200 or 201. The UI is unchanged: the form keeps
+the mock bank list until B3 switches the tab's accounts and banks to the API
+together, because the mock actions only know the mock bank ids.
+
 **Phase 1 import-boundary remediation (2026-10-20):** The account shell now receives points data from its App Router section layout and imports the summary card through `features/points/index.ts`. The root layout now supplies the authenticated notifications count to the layout feature. `MapLocationModal` and `LocationData` now live in `shared/ui` and `shared/lib`, respectively, with every caller using that shared API. Rental search now consumes the cars feature only through its public index; that index no longer exposes the server-only `getOffices` read, which the home route imports directly. The initial lint audit is reduced from nine to two boundary errors; both remaining violations are in wallet's bank-account action dependency.
 
 **Phone field replacement follow-up (2026-10-26), fraction 1:** Added the

@@ -1,14 +1,22 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { AppError } from "@/shared/lib/errors";
 
-const { get } = vi.hoisted(() => ({ get: vi.fn() }));
+const { get, publicGet } = vi.hoisted(() => ({
+  get: vi.fn(),
+  publicGet: vi.fn(),
+}));
 
 vi.mock("server-only", () => ({}));
 vi.mock("@/services/http/server", () => ({
   serverHttp: { get },
+  publicServerHttp: { get: publicGet },
 }));
 
-import { bankAccountsApi, mapBankAccountsResponse } from "./api";
+import {
+  bankAccountsApi,
+  mapBankAccountsResponse,
+  mapBanksResponse,
+} from "./api";
 
 const response = {
   data: [
@@ -81,6 +89,10 @@ describe("bank accounts response mapping", () => {
     expect(account.logo).toBeUndefined();
   });
 
+  it("accepts body code 201 as success", () => {
+    expect(mapBankAccountsResponse({ ...response, code: 201 }).items).toHaveLength(2);
+  });
+
   it("throws a server AppError for malformed accounts or envelopes", () => {
     for (const value of [
       { ...response, data: null },
@@ -113,5 +125,112 @@ describe("bankAccountsApi.getBankAccounts", () => {
     get.mockRejectedValue(unauthorized);
 
     await expect(bankAccountsApi.getBankAccounts(1)).rejects.toBe(unauthorized);
+  });
+});
+
+// Shape observed on GET /banks (docs/api/bank-accounts-api.md §3.2).
+const banksResponse = {
+  data: [
+    { id: 2, title: "Bank Albilad", logo: null },
+    {
+      id: 7,
+      title: "Rajhi Bank",
+      logo: "https://t-car.app/storage/lookups/banks/rajhi.jpg",
+    },
+  ],
+  pagination: {
+    current_page: 1,
+    last_page: 1,
+    per_page: 10,
+    total: 2,
+    from: 1,
+    to: 2,
+  },
+  message: "Fetched successfully.",
+  code: 200,
+};
+
+describe("banks response mapping", () => {
+  it("maps IDs to strings, title to name, and keeps an absolute logo", () => {
+    expect(mapBanksResponse(banksResponse)).toEqual({
+      items: [
+        { id: "2", name: "Bank Albilad", logo: undefined },
+        {
+          id: "7",
+          name: "Rajhi Bank",
+          logo: "https://t-car.app/storage/lookups/banks/rajhi.jpg",
+        },
+      ],
+      page: 1,
+      lastPage: 1,
+      total: 2,
+    });
+  });
+
+  it("drops a logo that is not an absolute http(s) URL", () => {
+    const {
+      items: [bank],
+    } = mapBanksResponse({
+      ...banksResponse,
+      data: [{ id: 1, title: "Riyad Bank", logo: "banks/riyad.png" }],
+    });
+    expect(bank.logo).toBeUndefined();
+  });
+
+  it("maps an empty search result", () => {
+    expect(
+      mapBanksResponse({
+        ...banksResponse,
+        data: [],
+        pagination: { ...banksResponse.pagination, total: 0, from: null, to: null },
+      }),
+    ).toEqual({ items: [], page: 1, lastPage: 1, total: 0 });
+  });
+
+  it("accepts body code 201 as success", () => {
+    expect(mapBanksResponse({ ...banksResponse, code: 201 }).items).toHaveLength(2);
+  });
+
+  it("throws a server AppError for malformed banks or envelopes", () => {
+    for (const value of [
+      { ...banksResponse, data: null },
+      { ...banksResponse, data: [{ id: "2", title: "Bank Albilad", logo: null }] },
+      { ...banksResponse, data: [{ id: 2, title: null, logo: null }] },
+      { ...banksResponse, data: [{ id: 2, title: "Bank Albilad", logo: 5 }] },
+      { ...banksResponse, code: 422 },
+      { ...banksResponse, pagination: undefined },
+    ]) {
+      expect(() => mapBanksResponse(value)).toThrow(new AppError("server"));
+    }
+  });
+});
+
+describe("bankAccountsApi.getBanks", () => {
+  it("reads the requested page from the public client", async () => {
+    publicGet.mockResolvedValue(banksResponse);
+
+    await expect(bankAccountsApi.getBanks({ page: 2 })).resolves.toMatchObject({
+      items: [{ id: "2" }, { id: "7" }],
+    });
+    expect(publicGet).toHaveBeenCalledWith("/banks", {
+      query: { page: 2, per_page: 10 },
+    });
+    expect(get).not.toHaveBeenCalled();
+  });
+
+  it("sends the search term when there is one", async () => {
+    publicGet.mockResolvedValue(banksResponse);
+
+    await bankAccountsApi.getBanks({ page: 1, search: "bilad" });
+    expect(publicGet).toHaveBeenCalledWith("/banks", {
+      query: { page: 1, per_page: 10, search: "bilad" },
+    });
+  });
+
+  it("preserves HTTP errors from the public client", async () => {
+    const network = new AppError("network");
+    publicGet.mockRejectedValue(network);
+
+    await expect(bankAccountsApi.getBanks({ page: 1 })).rejects.toBe(network);
   });
 });
