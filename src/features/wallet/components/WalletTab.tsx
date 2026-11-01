@@ -1,8 +1,6 @@
 "use client";
 
 import { EmptyState } from "@/shared/ui/EmptyState";
-import { ErrorState } from "@/shared/ui/ErrorState";
-import { Loader } from "@/shared/ui/Loader";
 import { useTranslations } from "next-intl";
 import type { WalletSummary as Summary, WalletTransaction } from "../model";
 
@@ -12,10 +10,6 @@ import WalletSummary from "./WalletSummary";
 interface Props {
   summary: Summary;
   transactions: WalletTransaction[];
-  loading?: boolean;
-  /** Set when the wallet failed to load; ErrorState picks the message. */
-  error?: unknown;
-  onRetry?: () => void;
   onTopUp: () => void;
   onWithdraw: () => void;
 }
@@ -23,29 +17,12 @@ interface Props {
 export default function WalletTab({
   summary,
   transactions,
-  loading = false,
-  error,
-  onRetry,
   onTopUp,
   onWithdraw,
 }: Props) {
   const t = useTranslations("wallet");
-  // if (loading) {
-  //   return (
-  //     <div className="border-stroke-light bg-surface-elevated rounded-xl border p-6">
-  //       <Loader fullScreen={false} />
-  //     </div>
-  //   );
-  // }
-
-  if (error) {
-    return (
-      <div className="border-stroke-light bg-surface-elevated rounded-xl border p-6">
-        <ErrorState error={error} onRetry={onRetry} size="section" />
-      </div>
-    );
-  }
-
+  // Loading and load errors are the route's (account/(sections) loading.tsx
+  // and error.tsx); this only renders a loaded wallet.
   return (
     <div className="border-stroke-light bg-surface-elevated rounded-xl border p-6">
       <WalletSummary
@@ -54,7 +31,7 @@ export default function WalletTab({
         onWithdraw={onWithdraw}
       />
 
-      <div className="">
+      <div>
         <h3 className="text-text-primary mb-3.5 text-base font-bold">
           {t("history")}
         </h3>

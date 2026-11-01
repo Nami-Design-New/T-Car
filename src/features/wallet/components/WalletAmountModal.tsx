@@ -59,7 +59,7 @@ export default function WalletAmountModal({
     formState: { errors },
   } = useForm<WalletAmountValues>({
     resolver: zodResolver(amountFormSchema(min, max)),
-    mode: "onBlur",
+    mode: "onChange",
     reValidateMode: "onChange",
   });
   const { ref: registerRef, ...amountField } = register("amount", {
@@ -144,7 +144,7 @@ export default function WalletAmountModal({
           </div>
           <small
             id={hintId}
-            className={`text-text-placeholder my-2 block px-1 text-right text-sm ${amountError ? "text-status-error" : "mb-3"}`}
+            className={`text-text-placeholder my-2 block px-1 text-right text-xs ${amountError ? "text-status-error" : "mb-3"}`}
           >
             {max === undefined
               ? t("rangeMin", { min: formatAmount(min) })

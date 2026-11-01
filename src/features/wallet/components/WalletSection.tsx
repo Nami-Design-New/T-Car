@@ -9,6 +9,7 @@ import { useCallback, useState } from "react";
 import { useTopUpPayment } from "../hooks/useTopUpPayment";
 import { useWallet } from "../hooks/useWallet";
 import {
+  MAX_TOP_UP,
   MIN_TOP_UP,
   MIN_WITHDRAW,
   type WalletData,
@@ -108,7 +109,7 @@ export default function WalletSection({ initialData }: Props) {
         title={t("topUpTitle")}
         submitLabel={t("topUp")}
         min={MIN_TOP_UP}
-        // max={MAX_TOP_UP}
+        max={MAX_TOP_UP}
         loading={submitting}
         onClose={close}
         onConfirm={handleTopUp}

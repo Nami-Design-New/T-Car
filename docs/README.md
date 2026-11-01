@@ -315,6 +315,17 @@ balance, account ownership, and limits are the API's; the server action keeps
 only the minimum amount and a required account. `useWallet` no longer holds a
 local copy of the wallet: no write changes the balance in the browser.
 
+**Wallet API fraction W9 (2026-11-01), done; wallet integration complete:** The
+top-up limit is the confirmed product value, `MAX_TOP_UP = 100000` (SAR): the
+sheet shows it and blocks a larger amount, and the server action rechecks it; a
+backend rejection is still a toasted 422. `WalletTab`
+lost its unused `loading` / `error` / `onRetry` props: the account section's
+`loading.tsx` and `error.tsx` cover the wallet read. No production path uses the
+wallet mock (`api.mock.ts` is for tests). Open backend follow-ups are listed in
+`docs/api/wallet-api.md` §7: top-up without `account_id`, the payment pages'
+`postMessage` target origin and `Cross-Origin-Opener-Policy`, and `GET /wallet`
+pagination.
+
 **Phase 1 import-boundary remediation (2026-10-20):** The account shell now receives points data from its App Router section layout and imports the summary card through `features/points/index.ts`. The root layout now supplies the authenticated notifications count to the layout feature. `MapLocationModal` and `LocationData` now live in `shared/ui` and `shared/lib`, respectively, with every caller using that shared API. Rental search now consumes the cars feature only through its public index; that index no longer exposes the server-only `getOffices` read, which the home route imports directly. The initial lint audit is reduced from nine to two boundary errors; both remaining violations are in wallet's bank-account action dependency.
 
 **Phone field replacement follow-up (2026-10-26), fraction 1:** Added the
