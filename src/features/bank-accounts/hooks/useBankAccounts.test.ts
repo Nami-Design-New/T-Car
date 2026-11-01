@@ -2,18 +2,23 @@ import { act, renderHook, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { BankAccount } from "../model";
 
-const { getBankAccountsAction, addBankAccountAction, updateBankAccountAction } =
-  vi.hoisted(() => ({
-    getBankAccountsAction: vi.fn(),
-    addBankAccountAction: vi.fn(),
-    updateBankAccountAction: vi.fn(),
-  }));
+const {
+  getBankAccountsAction,
+  addBankAccountAction,
+  updateBankAccountAction,
+  deleteBankAccountAction,
+} = vi.hoisted(() => ({
+  getBankAccountsAction: vi.fn(),
+  addBankAccountAction: vi.fn(),
+  updateBankAccountAction: vi.fn(),
+  deleteBankAccountAction: vi.fn(),
+}));
 
 vi.mock("../actions", () => ({
   getBankAccountsAction,
   addBankAccountAction,
   updateBankAccountAction,
-  deleteBankAccountAction: vi.fn(),
+  deleteBankAccountAction,
 }));
 
 import { useBankAccounts } from "./useBankAccounts";
@@ -182,6 +187,30 @@ describe("useBankAccounts.update", () => {
     await act(async () => {
       await result.current.update("5", { bankId: "2", iban: existing.iban });
     });
+    await waitFor(() => expect(getBankAccountsAction).toHaveBeenCalledTimes(2));
+  });
+});
+
+describe("useBankAccounts.remove", () => {
+  it("keeps the backend message and reads page 1 again", async () => {
+    const { result } = await renderLoaded();
+    deleteBankAccountAction.mockResolvedValue({
+      ok: true,
+      data: null,
+      message: "Bank account deleted successfully.",
+    });
+
+    let outcome: Awaited<ReturnType<typeof result.current.remove>> | undefined;
+    await act(async () => {
+      outcome = await result.current.remove("5");
+    });
+
+    expect(outcome).toEqual({
+      ok: true,
+      data: undefined,
+      message: "Bank account deleted successfully.",
+    });
+    expect(deleteBankAccountAction).toHaveBeenCalledWith("5");
     await waitFor(() => expect(getBankAccountsAction).toHaveBeenCalledTimes(2));
   });
 });

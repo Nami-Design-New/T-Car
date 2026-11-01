@@ -20,8 +20,8 @@ export interface BanksQuery {
 
 /**
  * The live API: the customer's accounts (the tab and the wallet's bank
- * picker), the bank lookup (the add / edit form), and the writes (delete joins
- * in B6). Writes return the backend's message for the result dialog.
+ * picker), the bank lookup (the add / edit form), and the writes. Writes
+ * return the backend's message for the result dialog.
  */
 export interface BankAccountsApi {
   getBankAccounts(page: number): Promise<Page<BankAccount>>;
@@ -33,6 +33,8 @@ export interface BankAccountsApi {
     id: string,
     payload: BankAccountPayload,
   ): Promise<Result<BankAccount>>;
+  /** Deletes an account (DELETE /bank-accounts/{id}). */
+  deleteBankAccount(id: string): Promise<Result<null>>;
 }
 
 /**
@@ -229,26 +231,55 @@ async function updateBankAccount(
   payload: BankAccountPayload,
 ): Promise<Result<BankAccount>> {
   try {
-    const accountId = toApiId(id);
-    if (accountId === undefined) {
-      throw new AppError("not_found", "bankAccounts.notFound");
-    }
     const response = await serverHttp.post<ApiEnvelope<unknown>>(
-      `/update-bank-accounts/${accountId}`,
+      `/update-bank-accounts/${toAccountId(id)}`,
       toAccountBody(payload),
     );
     return toAccountResult(response);
   } catch (error) {
-    if (error instanceof AppError && error.kind === "not_found" && !error.code) {
-      return fail(
-        new AppError("not_found", "bankAccounts.notFound", error.status, undefined, {
-          cause: error,
-          serverMessage: error.serverMessage,
-        }),
-      );
-    }
-    return fail(error);
+    return fail(withAccountNotFound(error));
   }
+}
+
+/**
+ * DELETE /bank-accounts/{id}. Success is body code 200 with `data: null` and
+ * the backend's message; an unknown account is body code 404 (`not_found`).
+ */
+async function deleteBankAccount(id: string): Promise<Result<null>> {
+  try {
+    const response = await serverHttp.delete<ApiEnvelope<unknown>>(
+      `/bank-accounts/${toAccountId(id)}`,
+    );
+    if (!isApiEnvelope(response) || !isSuccessCode(response.code)) {
+      throw new AppError("server");
+    }
+    return ok(null, response.message);
+  } catch (error) {
+    return fail(withAccountNotFound(error));
+  }
+}
+
+/**
+ * An account ID for a path. Anything but a positive integer is `not_found`
+ * without a request (a non-numeric path ID is an HTTP 500 on the API).
+ */
+function toAccountId(id: string): number {
+  const accountId = toApiId(id);
+  if (accountId === undefined) {
+    throw new AppError("not_found", "bankAccounts.notFound");
+  }
+  return accountId;
+}
+
+/** The API's 404 (an unknown account, or another customer's) gets the bank-account copy. */
+function withAccountNotFound(error: unknown): unknown {
+  if (error instanceof AppError && error.kind === "not_found" && !error.code) {
+    return new AppError("not_found", "bankAccounts.notFound", error.status, undefined, {
+      cause: error,
+      serverMessage: error.serverMessage,
+    });
+  }
+  return error;
 }
 
 export const bankAccountsApi: BankAccountsApi = {
@@ -256,4 +287,5 @@ export const bankAccountsApi: BankAccountsApi = {
   getBanks,
   addBankAccount,
   updateBankAccount,
+  deleteBankAccount,
 };

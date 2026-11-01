@@ -2,20 +2,32 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { AppError } from '@/shared/lib/errors';
 import type { BankAccount } from './model';
 
-const { auth, getBankAccounts, getBanks, addBankAccount, updateBankAccount } = vi.hoisted(
-  () => ({
-    auth: vi.fn(),
-    getBankAccounts: vi.fn(),
-    getBanks: vi.fn(),
-    addBankAccount: vi.fn(),
-    updateBankAccount: vi.fn(),
-  })
-);
+const {
+  auth,
+  getBankAccounts,
+  getBanks,
+  addBankAccount,
+  updateBankAccount,
+  deleteBankAccount,
+} = vi.hoisted(() => ({
+  auth: vi.fn(),
+  getBankAccounts: vi.fn(),
+  getBanks: vi.fn(),
+  addBankAccount: vi.fn(),
+  updateBankAccount: vi.fn(),
+  deleteBankAccount: vi.fn(),
+}));
 
 vi.mock('@/auth', () => ({ auth }));
 vi.mock('@/shared/lib/report', () => ({ reportError: vi.fn() }));
 vi.mock('./api', () => ({
-  bankAccountsApi: { getBankAccounts, getBanks, addBankAccount, updateBankAccount },
+  bankAccountsApi: {
+    getBankAccounts,
+    getBanks,
+    addBankAccount,
+    updateBankAccount,
+    deleteBankAccount,
+  },
 }));
 
 import {
@@ -206,17 +218,29 @@ describe('bank-account writes', () => {
     expect(addBankAccount).not.toHaveBeenCalled();
   });
 
-  it('accepts a valid delete without the API until B6', async () => {
-    await expect(deleteBankAccountAction('5')).resolves.toEqual({ ok: true, data: null });
+  it('deletes through the API and returns the backend message', async () => {
+    deleteBankAccount.mockResolvedValue({
+      ok: true,
+      data: null,
+      message: 'Bank account deleted successfully.',
+    });
+    await expect(deleteBankAccountAction('5')).resolves.toEqual({
+      ok: true,
+      data: null,
+      message: 'Bank account deleted successfully.',
+    });
+    expect(deleteBankAccount).toHaveBeenCalledWith('5');
   });
 
-  it('rejects a delete ID that is not a positive integer as not found', async () => {
-    for (const id of ['', 'abc', '0', '-1', '1.5', '5a', '99999999999999999999']) {
-      await expect(deleteBankAccountAction(id)).resolves.toEqual({
-        ok: false,
-        error: { kind: 'not_found', code: 'bankAccounts.notFound' },
-      });
-    }
+  it('returns not found as plain error data', async () => {
+    deleteBankAccount.mockResolvedValue({
+      ok: false,
+      error: new AppError('not_found', 'bankAccounts.notFound', 404),
+    });
+    await expect(deleteBankAccountAction('5')).resolves.toEqual({
+      ok: false,
+      error: { kind: 'not_found', code: 'bankAccounts.notFound', status: 404 },
+    });
   });
 
   it('requires a session before an edit or delete', async () => {
@@ -229,6 +253,8 @@ describe('bank-account writes', () => {
       ok: false,
       error: { kind: 'unauthorized' },
     });
+    expect(updateBankAccount).not.toHaveBeenCalled();
+    expect(deleteBankAccount).not.toHaveBeenCalled();
   });
 });
 

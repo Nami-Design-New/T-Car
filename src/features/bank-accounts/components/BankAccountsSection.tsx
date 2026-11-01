@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import type { AppError } from "@/shared/lib/errors";
 import { useErrorMessage } from "@/shared/hooks/useErrorMessage";
 import { useNotify } from "@/shared/hooks/useNotify";
-import { ConfirmDialog } from "@/shared/ui/ConfirmDialog";
+import { AlertDialog } from "@/shared/ui/AlertDialog";
 import { ResultDialog } from "@/shared/ui/ResultDialog";
 import type { BankAccount, BankAccountPayload } from "../model";
 import { useBankAccounts } from "../hooks/useBankAccounts";
@@ -64,11 +64,11 @@ export default function BankAccountsSection() {
     if (flow.step !== "confirm-delete" || submitting) return;
 
     const result = await remove(flow.account.id);
-    setFlow({
-      step: "result",
-      kind: "deleted",
-      error: result.ok ? undefined : result.error,
-    });
+    setFlow(
+      result.ok
+        ? { step: "result", kind: "deleted", message: result.message }
+        : { step: "result", kind: "deleted", error: result.error },
+    );
   };
 
   return (
@@ -94,23 +94,18 @@ export default function BankAccountsSection() {
         onConfirm={handleSubmit}
       />
 
-      <ConfirmDialog
+      <AlertDialog
         open={flow.step === "confirm-delete"}
         title={t("deleteConfirmTitle")}
         description={t("deleteConfirmDescription")}
-        confirmLabel={
-          submitting
-            ? t("deleting")
-            : t("delete", {
-                bank:
-                  flow.step === "confirm-delete" ? flow.account.bankName : "",
-              })
-        }
-        cancelLabel={t("cancel")}
-        tone="danger"
-        pending={submitting}
-        onConfirm={handleDelete}
-        onCancel={() => {
+        primaryButtonText={t("delete", {
+          bank: flow.step === "confirm-delete" ? flow.account.bankName : "",
+        })}
+        secondaryButtonText={t("cancel")}
+        showButtons
+        loading={submitting}
+        onPrimary={handleDelete}
+        onSecondary={() => {
           if (!submitting) close();
         }}
       />

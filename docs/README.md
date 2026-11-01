@@ -385,8 +385,19 @@ keeps the form open. An account ID that is not a positive integer is
 `not_found` without a request; the API's body code 404 (an unknown account, or
 another customer's) becomes `not_found` with `errors.bankAccounts.notFound`,
 closes the form into the error result dialog, and re-reads the list. The
-duplicate check skips the edited account, so it may keep its own IBAN. Delete
-still succeeds without calling the API until B6. The browser mock read and `MOCK_BANKS` are no longer used in
+duplicate check skips the edited account, so it may keep its own IBAN.
+
+**Bank accounts API fraction B6 (2026-11-01), done:** Deleting calls
+`DELETE /bank-accounts/{id}` through `bankAccountsApi.deleteBankAccount` and
+`deleteBankAccountAction` after the confirmation, which is now `AlertDialog`
+(like account deletion) instead of `ConfirmDialog`; its button spinner replaces
+the `bankAccounts.deleting` label, which is removed. The result dialog
+shows the backend message and the tab re-reads the list. Edit and delete share
+the account-ID check (a non-positive-integer ID is `not_found` without a
+request) and the 404 mapping to `errors.bankAccounts.notFound`, which also
+re-reads the list. Every bank-account read and write now uses the API; the
+local `run` / `toAccountId` helpers in `actions.ts` are gone. Left (B7): the old
+mock (`api.mock.ts`, `BankAccountsTabApi`) is unused in production. The browser mock read and `MOCK_BANKS` are no longer used in
 production. The add / edit / delete actions no longer keep a client-side copy
 of the list: they check the session, the form values, and the account ID, then
 succeed without calling the API, and the tab re-reads the list. Until B4–B6

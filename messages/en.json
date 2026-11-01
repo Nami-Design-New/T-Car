@@ -1026,7 +1026,6 @@
     "delete": "Delete {bank}",
     "deleteConfirmTitle": "Delete bank account?",
     "deleteConfirmDescription": "Are you sure you want to delete this bank account? You will not be able to use it for withdrawals after deletion.",
-    "deleting": "Deleting...",
     "cancel": "Cancel",
     "addedSuccess": "Bank account added successfully",
     "addedFailure": "Failed to add bank account",

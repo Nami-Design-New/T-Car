@@ -1,15 +1,16 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { AppError } from "@/shared/lib/errors";
 
-const { get, post, publicGet } = vi.hoisted(() => ({
+const { get, post, del, publicGet } = vi.hoisted(() => ({
   get: vi.fn(),
   post: vi.fn(),
+  del: vi.fn(),
   publicGet: vi.fn(),
 }));
 
 vi.mock("server-only", () => ({}));
 vi.mock("@/services/http/server", () => ({
-  serverHttp: { get, post },
+  serverHttp: { get, post, delete: del },
   publicServerHttp: { get: publicGet },
 }));
 
@@ -402,6 +403,49 @@ describe("bankAccountsApi.updateBankAccount", () => {
 
     post.mockResolvedValueOnce({ ...updated, data: null });
     await expect(bankAccountsApi.updateBankAccount("18", changes)).resolves.toMatchObject({
+      ok: false,
+      error: { kind: "server" },
+    });
+  });
+});
+
+describe("bankAccountsApi.deleteBankAccount", () => {
+  it("deletes the account and keeps the backend message", async () => {
+    del.mockResolvedValue({
+      data: null,
+      message: "Bank account deleted successfully.",
+      code: 200,
+    });
+
+    await expect(bankAccountsApi.deleteBankAccount("18")).resolves.toEqual({
+      ok: true,
+      data: null,
+      message: "Bank account deleted successfully.",
+    });
+    expect(del).toHaveBeenCalledWith("/bank-accounts/18");
+  });
+
+  it("refuses an account ID that is not a positive integer without a request", async () => {
+    for (const id of ["", "abc", "0", "-1", "1.5", "5a"]) {
+      await expect(bankAccountsApi.deleteBankAccount(id)).resolves.toMatchObject({
+        ok: false,
+        error: { kind: "not_found", code: "bankAccounts.notFound" },
+      });
+    }
+    expect(del).not.toHaveBeenCalled();
+  });
+
+  it("gives the API's 404 the bank-account copy", async () => {
+    del.mockRejectedValue(new AppError("not_found", undefined, 404));
+    await expect(bankAccountsApi.deleteBankAccount("18")).resolves.toMatchObject({
+      ok: false,
+      error: { kind: "not_found", code: "bankAccounts.notFound", status: 404 },
+    });
+  });
+
+  it("returns a server error for an answer that is not an envelope", async () => {
+    del.mockResolvedValue("deleted");
+    await expect(bankAccountsApi.deleteBankAccount("18")).resolves.toMatchObject({
       ok: false,
       error: { kind: "server" },
     });

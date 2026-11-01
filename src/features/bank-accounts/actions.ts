@@ -23,29 +23,6 @@ function parse<T>(schema: ZodType<T>, input: unknown): T {
 }
 
 /**
- * The API's account IDs are positive integers; anything else is rejected here,
- * before a request (a non-numeric path ID is an HTTP 500 on the API).
- */
-function toAccountId(id: string): number {
-  const value = /^\d+$/.test(id) ? Number(id) : Number.NaN;
-  if (!Number.isSafeInteger(value) || value < 1) {
-    throw new AppError("not_found", "bankAccounts.notFound");
-  }
-  return value;
-}
-
-async function run<T>(scope: string, write: () => T): Promise<ActionResult<T>> {
-  try {
-    const session = await auth();
-    if (!session?.user?.id) throw new AppError("unauthorized");
-    return toActionResult(ok(write()));
-  } catch (error) {
-    reportError(error, { scope });
-    return toActionResult(fail(error));
-  }
-}
-
-/**
  * One page of the customer's accounts from GET /bank-accounts, for the bank
  * picker (read when it opens, so an account added meanwhile is listed).
  */
@@ -133,14 +110,20 @@ export async function updateBankAccountAction(
 }
 
 /**
- * Not sent to the API yet (B6 in docs/api/bank-accounts-api.md): checks the
- * session and the account ID, then succeeds without changing anything.
+ * Deletes an account through DELETE /bank-accounts/{id}. Success carries the
+ * backend's message; an unknown account is `not_found`.
  */
 export async function deleteBankAccountAction(
   id: string,
 ): Promise<ActionResult<null>> {
-  return run("bankAccounts.delete", () => {
-    toAccountId(id);
-    return null;
-  });
+  try {
+    const session = await auth();
+    if (!session?.user?.id) throw new AppError("unauthorized");
+    const result = await bankAccountsApi.deleteBankAccount(id);
+    if (!result.ok) throw result.error;
+    return toActionResult(result);
+  } catch (error) {
+    reportError(error, { scope: "bankAccounts.delete" });
+    return toActionResult(fail(error));
+  }
 }
