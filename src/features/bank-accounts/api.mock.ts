@@ -1,12 +1,12 @@
+import { AppError } from '@/shared/lib/errors';
+import type { BankAccountsTabApi } from './api';
 import {
   maskIban,
   normalizeIban,
   type Bank,
   type BankAccount,
   type BankAccountPayload,
-} from '@/features/bank-accounts/model';
-import { AppError } from '@/shared/lib/errors';
-import type { BankAccountsApi } from '../bankAccounts.api';
+} from './model';
 const sedadBankLogo = '/mock/banks/sedad-bank.png';
 
 export const MOCK_BANKS: Bank[] = [
@@ -72,7 +72,7 @@ function toAccount(id: string, { bankId, iban }: BankAccountPayload): BankAccoun
   };
 }
 
-export const bankAccountsMock: BankAccountsApi = {
+export const bankAccountsMock: BankAccountsTabApi = {
   async getBanks() {
     await delay(300);
     return [...MOCK_BANKS];

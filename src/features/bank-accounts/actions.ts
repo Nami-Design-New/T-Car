@@ -1,7 +1,6 @@
 'use server';
 
 import { auth } from '@/auth';
-import { MOCK_BANKS } from '@/services/mocks/bankAccounts';
 import { AppError } from '@/shared/lib/errors';
 import { reportError } from '@/shared/lib/report';
 import { fail, ok, toActionResult, type ActionResult } from '@/shared/lib/result';
@@ -9,6 +8,7 @@ import type { Page } from '@/shared/lib/pagination';
 import { toValidationError } from '@/shared/lib/validation';
 import type { ZodType } from 'zod';
 import { bankAccountsApi } from './api';
+import { MOCK_BANKS } from './api.mock';
 import { maskIban, type BankAccount, type BankAccountPayload } from './model';
 import { bankAccountSchema } from './validation';
 

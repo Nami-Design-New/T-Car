@@ -302,7 +302,8 @@ wallet stays within the import boundaries): it reads page 1 each time it opens
 and the next page on scroll with `usePaginatedList` + `InfiniteList`, showing
 account-card skeletons, an inline error with retry, and the empty state. The
 wallet's `BankSelectModal` and the browser mock read are gone. The bank accounts
-tab still runs on `services/bankAccounts.api` (mock) until its own integration.
+tab still runs on the mock (`features/bank-accounts/api.mock.ts` since B1) until
+its own integration.
 
 **Wallet API fraction W8 (2026-11-01), done:** Withdrawal posts
 `{ amount, account_id }` (the picker's account ID as a number) to
@@ -325,6 +326,16 @@ wallet mock (`api.mock.ts` is for tests). Open backend follow-ups are listed in
 `docs/api/wallet-api.md` §7: top-up without `account_id`, the payment pages'
 `postMessage` target origin and `Cross-Origin-Opener-Policy`, and `GET /wallet`
 pagination.
+
+**Bank accounts API fraction B1 (2026-11-01), done:** Contract in
+`docs/api/bank-accounts-api.md` (B0: all five endpoints probed; fractions
+B1–B7 in §6). The tab's API moved into the feature with no behavior change:
+`features/bank-accounts/api.ts` holds the `BankAccountsTabApi` interface next
+to the live read, and `services/mocks/bankAccounts.ts` became
+`features/bank-accounts/api.mock.ts`. `services/bankAccounts.api.ts` is gone.
+`useBankAccounts` still reads the browser mock, and the add / edit / delete
+actions still use `MOCK_BANKS` and the client-side `current` transitions, until
+B2–B6 move them to `GET /banks`, `GET /bank-accounts`, and the write endpoints.
 
 **Phase 1 import-boundary remediation (2026-10-20):** The account shell now receives points data from its App Router section layout and imports the summary card through `features/points/index.ts`. The root layout now supplies the authenticated notifications count to the layout feature. `MapLocationModal` and `LocationData` now live in `shared/ui` and `shared/lib`, respectively, with every caller using that shared API. Rental search now consumes the cars feature only through its public index; that index no longer exposes the server-only `getOffices` read, which the home route imports directly. The initial lint audit is reduced from nine to two boundary errors; both remaining violations are in wallet's bank-account action dependency.
 

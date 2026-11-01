@@ -3,11 +3,29 @@ import { isApiEnvelope, type ApiEnvelope } from "@/services/http/envelope";
 import { serverHttp } from "@/services/http/server";
 import { AppError } from "@/shared/lib/errors";
 import { isPaginationDto, toPage, type Page } from "@/shared/lib/pagination";
-import { maskIban, normalizeIban, type BankAccount } from "./model";
+import {
+  maskIban,
+  normalizeIban,
+  type Bank,
+  type BankAccount,
+  type BankAccountPayload,
+} from "./model";
 
-/** The live read. The bank accounts tab still uses `services/bankAccounts.api` (mock). */
+/** The live read, used by the wallet's bank picker. */
 export interface BankAccountsReadApi {
   getBankAccounts(page: number): Promise<Page<BankAccount>>;
+}
+
+/**
+ * The bank accounts tab's contract. Only `api.mock.ts` implements it, in the
+ * browser, until the tab moves to the live API (docs/api/bank-accounts-api.md §6).
+ */
+export interface BankAccountsTabApi {
+  getBanks(): Promise<Bank[]>;
+  getBankAccounts(): Promise<BankAccount[]>;
+  addBankAccount(payload: BankAccountPayload): Promise<void>;
+  updateBankAccount(id: string, payload: BankAccountPayload): Promise<void>;
+  deleteBankAccount(id: string): Promise<void>;
 }
 
 /** Accounts per page; the picker loads the next page on scroll. */

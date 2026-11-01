@@ -1,12 +1,12 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { bankAccountsApi } from '@/services/bankAccounts.api';
 import { toAppError, type AppError } from '@/shared/lib/errors';
 import { reportError } from '@/shared/lib/report';
 import { fromActionResult, ok, type Result } from '@/shared/lib/result';
 import type { Bank, BankAccount, BankAccountPayload } from '../model';
 import { addBankAccountAction, deleteBankAccountAction, updateBankAccountAction } from '../actions';
+import { bankAccountsMock } from '../api.mock';
 
 /** Bank reads stay on the browser mock; writes cross the Server Action boundary. */
 export function useBankAccounts() {
@@ -22,7 +22,7 @@ export function useBankAccounts() {
     setLoading(true);
     setError(null);
 
-    Promise.all([bankAccountsApi.getBankAccounts(), bankAccountsApi.getBanks()])
+    Promise.all([bankAccountsMock.getBankAccounts(), bankAccountsMock.getBanks()])
       .then(([accountList, bankList]) => {
         if (!active) return;
         setAccounts(accountList);
