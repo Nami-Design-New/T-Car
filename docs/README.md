@@ -302,7 +302,8 @@ wallet stays within the import boundaries): it reads page 1 each time it opens
 and the next page on scroll with `usePaginatedList` + `InfiniteList`, showing
 account-card skeletons, an inline error with retry, and the empty state. The
 wallet's `BankSelectModal` and the browser mock read are gone. The bank accounts
-tab still runs on `services/bankAccounts.api` (mock) until its own integration.
+tab still runs on the mock (`features/bank-accounts/api.mock.ts` since B1) until
+its own integration.
 
 **Wallet API fraction W8 (2026-11-01), done:** Withdrawal posts
 `{ amount, account_id }` (the picker's account ID as a number) to
@@ -325,6 +326,88 @@ wallet mock (`api.mock.ts` is for tests). Open backend follow-ups are listed in
 `docs/api/wallet-api.md` §7: top-up without `account_id`, the payment pages'
 `postMessage` target origin and `Cross-Origin-Opener-Policy`, and `GET /wallet`
 pagination.
+
+**Bank accounts API fraction B1 (2026-11-01), done:** Contract in
+`docs/api/bank-accounts-api.md` (B0: all five endpoints probed; fractions
+B1–B7 in §6). The tab's API moved into the feature with no behavior change:
+`features/bank-accounts/api.ts` holds the `BankAccountsTabApi` interface next
+to the live read, and `services/mocks/bankAccounts.ts` became
+`features/bank-accounts/api.mock.ts`. `services/bankAccounts.api.ts` is gone.
+`useBankAccounts` still reads the browser mock, and the add / edit / delete
+actions still use `MOCK_BANKS` and the client-side `current` transitions, until
+B2–B6 move them to `GET /banks`, `GET /bank-accounts`, and the write endpoints.
+
+**Bank accounts API fraction B2 (2026-11-01), done:** The bank lookup is read
+from `GET /banks` through `bankAccountsApi.getBanks({ page, search })` on
+`publicServerHttp` (the endpoint is public, so no token is sent), and
+`getBanksAction(page, search?)` serves it without a session. Both bank-accounts
+mappers now accept body code 200 or 201. The UI is unchanged: the form keeps
+the mock bank list until B3 switches the tab's accounts and banks to the API
+together, because the mock actions only know the mock bank ids.
+
+**Bank accounts API fraction B3 (2026-11-01), done:** The bank accounts tab
+reads the customer's accounts from `GET /bank-accounts` page by page
+(`getBankAccountsAction` + `usePaginatedList` + `InfiniteList`, with card
+skeletons, an inline error with retry, and the empty state). The add / edit
+form's bank field is its own component, `BankSelect`: a combobox whose panel
+reads `GET /banks` (`getBanksAction`) when it opens, searches the API by title
+300 ms after typing pauses (from page 1 again), loads the next page on scroll,
+and shows option skeletons, an inline error with retry, and "no banks" / "no
+results" messages (`bankAccounts.form.{searchBank,noBanks,noBankResults}`). The
+panel is a Radix popover in a portal (like `PhoneField`'s country list): it
+floats over the sheet instead of growing it, flips above the field near the
+bottom of the screen, and an outside click or Escape closes only the panel. An
+edited account shows its own bank without reading the list. Accounts load 5 per
+page (`BANK_ACCOUNTS_PER_PAGE`, also used by the wallet picker). Shared fix:
+`usePaginatedList` reports `loading` while enabled until page 1 arrives or
+fails, so the server HTML and the first render show skeletons instead of the
+empty state (the tab showed "empty" on refresh; the wallet picker flashed it
+on open).
+
+**Bank accounts API fraction B4 (2026-11-01), done:** Adding an account posts
+`{ bank_id, iban_number }` as JSON to `POST /bank-accounts` through
+`bankAccountsApi.addBankAccount` and `addBankAccountAction` (`ActionResult`).
+Success (body code 201, or 200) returns the new account with an integer
+`bank_id`; the result dialog shows the backend message (no toast),
+and the tab re-reads the list. A backend 422 is a toast only and keeps the form
+open. A bank ID that is not a positive integer is refused without a request.
+The IBAN rule now matches the API: `SA` and 22 digits. No duplicates: an IBAN
+already in the loaded accounts is refused inline before the request
+(`errors.bankAccounts.duplicateIban`); the API accepts duplicates, so accounts
+on pages not loaded yet are not checked.
+
+**Bank accounts API fraction B5 (2026-11-01), done:** Editing posts
+`{ bank_id, iban_number }` as JSON to `POST /update-bank-accounts/{id}` through
+`bankAccountsApi.updateBankAccount` and `updateBankAccountAction` (changing the
+bank is supported, Q3). Add and edit share the body and the response check.
+The result dialog shows the backend message; a backend 422 is a toast only and
+keeps the form open. An account ID that is not a positive integer is
+`not_found` without a request; the API's body code 404 (an unknown account, or
+another customer's) becomes `not_found` with `errors.bankAccounts.notFound`,
+closes the form into the error result dialog, and re-reads the list. The
+duplicate check skips the edited account, so it may keep its own IBAN.
+
+**Bank accounts API fraction B6 (2026-11-01), done:** Deleting calls
+`DELETE /bank-accounts/{id}` through `bankAccountsApi.deleteBankAccount` and
+`deleteBankAccountAction` after the confirmation, which is now `AlertDialog`
+(like account deletion) instead of `ConfirmDialog`; its button spinner replaces
+the `bankAccounts.deleting` label, which is removed. The result dialog
+shows the backend message and the tab re-reads the list. Edit and delete share
+the account-ID check (a non-positive-integer ID is `not_found` without a
+request) and the 404 mapping to `errors.bankAccounts.notFound`, which also
+re-reads the list. Every bank-account read and write now uses the API; the
+local `run` / `toAccountId` helpers in `actions.ts` are gone.
+
+**Bank accounts API fraction B7 (2026-11-01), done; bank-accounts integration
+complete:** `api.mock.ts` is now a test double of the live `BankAccountsApi`
+(pages, `Result`s with the backend messages, numeric IDs), stateless and with
+no production caller or mock flag. Its failure rules: a bank ID outside
+`MOCK_BANKS` is the API's 422 ("The selected bank does not exist."), and an
+account ID outside `MOCK_BANK_ACCOUNTS` is `not_found`. The old
+`BankAccountsTabApi` contract is removed. Open backend follow-ups are in
+`docs/api/bank-accounts-api.md` §7 (integer `bank_id` on multipart writes, the
+IBAN message example, duplicate IBANs accepted by the API, Q5: deleting an
+account used by a pending withdrawal).
 
 **Phase 1 import-boundary remediation (2026-10-20):** The account shell now receives points data from its App Router section layout and imports the summary card through `features/points/index.ts`. The root layout now supplies the authenticated notifications count to the layout feature. `MapLocationModal` and `LocationData` now live in `shared/ui` and `shared/lib`, respectively, with every caller using that shared API. Rental search now consumes the cars feature only through its public index; that index no longer exposes the server-only `getOffices` read, which the home route imports directly. The initial lint audit is reduced from nine to two boundary errors; both remaining violations are in wallet's bank-account action dependency.
 
@@ -473,7 +556,7 @@ passes it to the Server Action. The Maps key must allow the Geocoding API.
 
 | Feature                            | Moved to `features/` |                  Data behind queries / api                  |                             Actions return `Result`                              | Remaining                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | ---------------------------------- | :------------------: | :---------------------------------------------------------: | :------------------------------------------------------------------------------: | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `wallet`, `bank-accounts`          |         Yes          | Client reads over `*.api.ts`; writes through Server Actions |                                       Yes                                        | Fractions 1–3 complete: wallet and bank-account form, confirmation, and result states use shared dialogs. Left: user-scoped reads/API and forms (doc 3 step 7). Form validation fractions 4–5 add RHF + Zod amount and bank-account rules, re-parsed by the actions                                                                                                                                                                                                                                                                          |
+| `wallet`, `bank-accounts`          |         Yes          | Yes: live API (wallet W0–W9, bank accounts B0–B7); reads through `queries.ts` / Server Actions, writes through Server Actions |                                       Yes                                        | Fractions 1–3 complete: wallet and bank-account form, confirmation, and result states use shared dialogs. User-scoped reads and writes are on the live API (docs/api/wallet-api.md, docs/api/bank-accounts-api.md); left: the backend follow-ups listed there. Form validation fractions 4–5 add RHF + Zod amount and bank-account rules, re-parsed by the actions                                                                                                                                                                                                                                                                          |
 | `my-bookings`                      |         Yes          |                             Yes                             |                               Yes (Server Actions)                               | Fraction 4 complete: extend, cancel, review, and result dialogs use shared Dialog primitives. Form-validation fraction 8 adds RHF + Zod to review, extend, and edit. Left: `router.refresh()` after an action once the API keeps state                                                                                                                                                                                                                                                                                                       |
 | `car-details`, `booking`           |         Yes          |                             Yes                             |                                  Yes (checkout)                                  | Fraction 5 complete: daily booking, confirmation, payment, and booking result dialogs use shared primitives. Left: keep a failed edit request open inside `BookingDailyModal` and migrate remaining booking-flow details                                                                                                                                                                                                                                                                                                                     |
 | `cars`, `cities`                   |         Yes          |                             Yes                             |                                       n/a                                        | Fraction 6 complete: the same `CarFilters` surface serves the hero drawer, `/cars`, and city listings. It preserves the hero's selected URL filters when navigating to `/cars`; `/cars` and each city listing keep independent, URL-backed state on their own routes. City listings use the same office-grouped `CarOfficeRow` swipers as `/cars`. Brand options come from `getCarBrands()` (mocked `carsApi.listBrands()`). Left: consolidate the remaining option data (companies, types, services; doc 4)                                 |

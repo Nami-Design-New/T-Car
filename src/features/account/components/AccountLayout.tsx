@@ -21,7 +21,7 @@ export default async function AccountLayout({
           <BackButton />
           <h1 className="m-0">{t("title")}</h1>
         </div>
-        <PointsSummaryCard summary={pointsSummary} />
+        {/* <PointsSummaryCard summary={pointsSummary} /> */}
 
         <div className="grid items-start gap-8 max-lg:grid-cols-1 lg:grid-cols-[260px_minmax(0,1fr)]">
           <AccountNav />

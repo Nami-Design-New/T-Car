@@ -20,8 +20,33 @@ beforeEach(() => {
 
 describe("usePaginatedList", () => {
   it("does nothing while disabled", () => {
-    renderHook(() => usePaginatedList(fetchPage, { enabled: false }));
+    const { result } = renderHook(() =>
+      usePaginatedList(fetchPage, { enabled: false }),
+    );
     expect(fetchPage).not.toHaveBeenCalled();
+    expect(result.current.loading).toBe(false);
+  });
+
+  it("is loading from the first render until page 1 arrives, never empty", async () => {
+    const renders: boolean[] = [];
+    const { result } = renderHook(() => {
+      const list = usePaginatedList(fetchPage);
+      renders.push(list.loading);
+      return list;
+    });
+
+    // The first render runs before the effect that requests page 1.
+    expect(renders[0]).toBe(true);
+    await waitFor(() => expect(result.current.items).toEqual(["item-1"]));
+    expect(result.current.loading).toBe(false);
+  });
+
+  it("stops loading when page 1 fails", async () => {
+    fetchPage.mockImplementationOnce(async () => fail(new AppError("network")));
+    const { result } = renderHook(() => usePaginatedList(fetchPage));
+
+    await waitFor(() => expect(result.current.error?.kind).toBe("network"));
+    expect(result.current.loading).toBe(false);
   });
 
   it("loads page 1, then appends the next page until the last", async () => {

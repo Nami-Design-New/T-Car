@@ -4,7 +4,8 @@ import { useCallback, useState } from "react";
 import { useTranslations } from "next-intl";
 import type { AppError } from "@/shared/lib/errors";
 import { useErrorMessage } from "@/shared/hooks/useErrorMessage";
-import { ConfirmDialog } from "@/shared/ui/ConfirmDialog";
+import { useNotify } from "@/shared/hooks/useNotify";
+import { AlertDialog } from "@/shared/ui/AlertDialog";
 import { ResultDialog } from "@/shared/ui/ResultDialog";
 import type { BankAccount, BankAccountPayload } from "../model";
 import { useBankAccounts } from "../hooks/useBankAccounts";
@@ -19,22 +20,14 @@ type BankAccountsFlow =
   | { step: "add" }
   | { step: "edit"; account: BankAccount }
   | { step: "confirm-delete"; account: BankAccount }
-  | { step: "result"; kind: ResultKind; error?: AppError }; // no error means success
+  // No error means success; `message` is the backend's success text, shown in the dialog.
+  | { step: "result"; kind: ResultKind; error?: AppError; message?: string };
 
 export default function BankAccountsSection() {
   const t = useTranslations("bankAccounts");
-  const {
-    accounts,
-    banks,
-    loading,
-    error,
-    reload,
-    submitting,
-    add,
-    update,
-    remove,
-  } = useBankAccounts();
+  const { accounts, submitting, add, update, remove } = useBankAccounts();
   const errorMessage = useErrorMessage();
+  const notify = useNotify();
   const [flow, setFlow] = useState<BankAccountsFlow>({ step: "idle" });
 
   const close = useCallback(() => setFlow({ step: "idle" }), []);
@@ -43,37 +36,50 @@ export default function BankAccountsSection() {
   const handleSubmit = async (
     payload: BankAccountPayload,
   ): Promise<AppError | undefined> => {
-    if (flow.step === "add") {
-      const result = await add(payload);
-      if (!result.ok) return result.error;
-      setFlow({ step: "result", kind: "added" });
-    } else if (flow.step === "edit") {
-      const result = await update(flow.account.id, payload);
-      if (!result.ok) return result.error;
-      setFlow({ step: "result", kind: "updated" });
-    }
+    if (flow.step !== "add" && flow.step !== "edit") return undefined;
+    const kind: ResultKind = flow.step === "add" ? "added" : "updated";
+    const result =
+      flow.step === "add"
+        ? await add(payload)
+        : await update(flow.account.id, payload);
 
-    return undefined;
+    if (result.ok) {
+      setFlow({ step: "result", kind, message: result.message });
+      return undefined;
+    }
+    // The backend's validation message is a toast only; the form stays open.
+    if (result.error.kind === "validation" && result.error.serverMessage) {
+      notify.error(result.error.serverMessage);
+      return undefined;
+    }
+    // The edited account is gone (deleted elsewhere): nothing left to edit.
+    if (result.error.kind === "not_found") {
+      setFlow({ step: "result", kind, error: result.error });
+      return undefined;
+    }
+    return result.error;
   };
 
   const handleDelete = async () => {
     if (flow.step !== "confirm-delete" || submitting) return;
 
     const result = await remove(flow.account.id);
-    setFlow({
-      step: "result",
-      kind: "deleted",
-      error: result.ok ? undefined : result.error,
-    });
+    setFlow(
+      result.ok
+        ? { step: "result", kind: "deleted", message: result.message }
+        : { step: "result", kind: "deleted", error: result.error },
+    );
   };
 
   return (
     <>
       <BankAccountsTab
-        accounts={accounts}
-        loading={loading}
-        error={error ?? undefined}
-        onRetry={reload}
+        accounts={accounts.items}
+        loading={accounts.loading}
+        hasMore={accounts.hasMore}
+        error={accounts.error ?? undefined}
+        onLoadMore={accounts.loadMore}
+        onRetry={accounts.retry}
         onAdd={() => setFlow({ step: "add" })}
         onEdit={(account) => setFlow({ step: "edit", account })}
         onDelete={(account) => setFlow({ step: "confirm-delete", account })}
@@ -82,30 +88,24 @@ export default function BankAccountsSection() {
       <BankAccountFormModal
         open={flow.step === "add" || flow.step === "edit"}
         mode={flow.step === "edit" ? "edit" : "add"}
-        banks={banks}
         account={flow.step === "edit" ? flow.account : undefined}
         loading={submitting}
         onClose={close}
         onConfirm={handleSubmit}
       />
 
-      <ConfirmDialog
+      <AlertDialog
         open={flow.step === "confirm-delete"}
         title={t("deleteConfirmTitle")}
         description={t("deleteConfirmDescription")}
-        confirmLabel={
-          submitting
-            ? t("deleting")
-            : t("delete", {
-                bank:
-                  flow.step === "confirm-delete" ? flow.account.bankName : "",
-              })
-        }
-        cancelLabel={t("cancel")}
-        tone="danger"
-        pending={submitting}
-        onConfirm={handleDelete}
-        onCancel={() => {
+        primaryButtonText={t("delete", {
+          bank: flow.step === "confirm-delete" ? flow.account.bankName : "",
+        })}
+        secondaryButtonText={t("cancel")}
+        showButtons
+        loading={submitting}
+        onPrimary={handleDelete}
+        onSecondary={() => {
           if (!submitting) close();
         }}
       />
@@ -114,7 +114,7 @@ export default function BankAccountsSection() {
         <ResultDialog
           open
           status={flow.error ? "error" : "success"}
-          description={flow.error ? errorMessage(flow.error) : undefined}
+          description={flow.error ? errorMessage(flow.error) : flow.message}
           onClose={close}
         />
       )}

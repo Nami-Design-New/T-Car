@@ -1,83 +1,89 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { bankAccountsApi } from '@/services/bankAccounts.api';
-import { toAppError, type AppError } from '@/shared/lib/errors';
-import { reportError } from '@/shared/lib/report';
-import { fromActionResult, ok, type Result } from '@/shared/lib/result';
-import type { Bank, BankAccount, BankAccountPayload } from '../model';
-import { addBankAccountAction, deleteBankAccountAction, updateBankAccountAction } from '../actions';
+import { useCallback, useState } from "react";
+import { usePaginatedList } from "@/shared/hooks/usePaginatedList";
+import { AppError } from "@/shared/lib/errors";
+import {
+  fail,
+  fromActionResult,
+  ok,
+  type ActionResult,
+  type Result,
+} from "@/shared/lib/result";
+import { normalizeIban, type BankAccountPayload } from "../model";
+import {
+  addBankAccountAction,
+  deleteBankAccountAction,
+  getBankAccountsAction,
+  updateBankAccountAction,
+} from "../actions";
 
-/** Bank reads stay on the browser mock; writes cross the Server Action boundary. */
+/**
+ * The customer's accounts, read page by page from GET /bank-accounts, and the
+ * writes (Server Actions). After a successful write the list is read again
+ * from page 1, so it always shows what the API holds.
+ */
 export function useBankAccounts() {
-  const [accounts, setAccounts] = useState<BankAccount[]>([]);
-  const [banks, setBanks] = useState<Bank[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<AppError | null>(null);
+  const fetchPage = useCallback(
+    async (page: number) => fromActionResult(await getBankAccountsAction(page)),
+    [],
+  );
+  const accounts = usePaginatedList(fetchPage, { scope: "bankAccounts.list" });
+  const { refresh } = accounts;
   const [submitting, setSubmitting] = useState(false);
-  const [attempt, setAttempt] = useState(0);
 
-  useEffect(() => {
-    let active = true;
-    setLoading(true);
-    setError(null);
+  /**
+   * Runs a write; on success re-reads the list and keeps the backend's
+   * message. An account that no longer exists also re-reads it, so the list
+   * stops showing it.
+   */
+  const write = useCallback(
+    async <T,>(
+      action: () => Promise<ActionResult<T>>,
+    ): Promise<Result<void>> => {
+      setSubmitting(true);
+      try {
+        const result = fromActionResult(await action());
+        if (!result.ok) {
+          if (result.error.kind === "not_found") refresh();
+          return result;
+        }
+        refresh();
+        return ok(undefined, result.message);
+      } finally {
+        setSubmitting(false);
+      }
+    },
+    [refresh],
+  );
 
-    Promise.all([bankAccountsApi.getBankAccounts(), bankAccountsApi.getBanks()])
-      .then(([accountList, bankList]) => {
-        if (!active) return;
-        setAccounts(accountList);
-        setBanks(bankList);
-      })
-      .catch((loadError: unknown) => {
-        reportError(loadError, { scope: 'bankAccounts.load' });
-        if (active) setError(toAppError(loadError));
-      })
-      .finally(() => {
-        if (active) setLoading(false);
-      });
-
-    return () => {
-      active = false;
-    };
-  }, [attempt]);
-
-  const reload = () => setAttempt((count) => count + 1);
-
-  const add = async (payload: BankAccountPayload): Promise<Result<void>> => {
-    setSubmitting(true);
-    try {
-      const result = fromActionResult(await addBankAccountAction(payload, accounts));
-      if (!result.ok) return result;
-      setAccounts(result.data);
-      return ok(undefined);
-    } finally {
-      setSubmitting(false);
-    }
+  /**
+   * No duplicate accounts (docs/api/bank-accounts-api.md R7): an IBAN already
+   * in the loaded accounts is refused before the request. The API accepts
+   * duplicates, so accounts on pages not loaded yet are not checked. An edit
+   * may keep its own IBAN.
+   */
+  const isDuplicate = (iban: string, exceptId?: string) => {
+    const normalized = normalizeIban(iban);
+    return accounts.items.some(
+      (account) => account.id !== exceptId && account.iban === normalized,
+    );
   };
 
-  const update = async (id: string, payload: BankAccountPayload): Promise<Result<void>> => {
-    setSubmitting(true);
-    try {
-      const result = fromActionResult(await updateBankAccountAction(id, payload, accounts));
-      if (!result.ok) return result;
-      setAccounts(result.data);
-      return ok(undefined);
-    } finally {
-      setSubmitting(false);
-    }
-  };
+  const add = (payload: BankAccountPayload) =>
+    isDuplicate(payload.iban)
+      ? Promise.resolve(fail(duplicateIbanError()))
+      : write(() => addBankAccountAction(payload));
+  const update = (id: string, payload: BankAccountPayload) =>
+    isDuplicate(payload.iban, id)
+      ? Promise.resolve(fail(duplicateIbanError()))
+      : write(() => updateBankAccountAction(id, payload));
+  const remove = (id: string) => write(() => deleteBankAccountAction(id));
 
-  const remove = async (id: string): Promise<Result<void>> => {
-    setSubmitting(true);
-    try {
-      const result = fromActionResult(await deleteBankAccountAction(id, accounts));
-      if (!result.ok) return result;
-      setAccounts(result.data);
-      return ok(undefined);
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
-  return { accounts, banks, loading, error, reload, submitting, add, update, remove };
+  return { accounts, submitting, add, update, remove };
 }
+
+const duplicateIbanError = () =>
+  new AppError("validation", "bankAccounts.duplicateIban", undefined, {
+    iban: "bankAccounts.duplicateIban",
+  });

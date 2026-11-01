@@ -4,21 +4,24 @@ import Image from "next/image";
 import { useTranslations } from "next-intl";
 import type { BankAccount } from "../model";
 import { BankCard } from "@/shared/ui/BankCard";
-import { Loader } from "@/shared/ui/Loader";
 import { EmptyState } from "@/shared/ui/EmptyState";
-import { ErrorState } from "@/shared/ui/ErrorState";
+import { InfiniteList } from "@/shared/ui/InfiniteList";
 
 import { ICONS } from "@/shared/config/assets";
 import { Button } from "@/shared/ui/Button";
+import BankAccountCardSkeleton from "./loading/BankAccountCardSkeleton";
 const deleteIcon = ICONS.bankDelete;
 const editIcon = ICONS.bankEdit;
 
 interface Props {
+  /** The loaded pages of accounts. */
   accounts: BankAccount[];
-  loading?: boolean;
-  /** Set when the accounts failed to load; ErrorState picks the message. */
+  loading: boolean;
+  hasMore: boolean;
+  /** Set when a page failed to load; the list shows it with a retry. */
   error?: unknown;
-  onRetry?: () => void;
+  onLoadMore: () => void;
+  onRetry: () => void;
   onAdd: () => void;
   onEdit: (account: BankAccount) => void;
   onDelete: (account: BankAccount) => void;
@@ -26,45 +29,38 @@ interface Props {
 
 export default function BankAccountsTab({
   accounts,
-  loading = false,
+  loading,
+  hasMore,
   error,
+  onLoadMore,
   onRetry,
   onAdd,
   onEdit,
   onDelete,
 }: Props) {
   const t = useTranslations("bankAccounts");
-  if (loading) {
-    return (
-      <div className="rounded-xl border border-stroke-light bg-surface-elevated p-6">
-        <Loader fullScreen={false} />
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className=" flex flex-col gap-5 rounded-xl border border-stroke-light bg-surface-elevated p-6">
-        <h3 className=" m-0 text-base font-semibold leading-5.75 text-text-primary">
-          {t("title")}
-        </h3>
-        <ErrorState error={error} onRetry={onRetry} size="section" />
-      </div>
-    );
-  }
 
   return (
-    <div className=" flex flex-col gap-5 rounded-xl border border-stroke-light bg-surface-elevated p-6">
-      <h3 className=" m-0 text-base font-semibold leading-5.75 text-text-primary">
-        {t("title")}
-      </h3>
-
-      {accounts.length === 0 ? (
-        <EmptyState title={t("title")} size="section" />
-      ) : (
-        <ul className=" m-0 flex list-none flex-col gap-3 p-0">
+    <div className="border-stroke-light bg-surface-elevated flex flex-col gap-5 rounded-xl border p-6">
+      <div className="flex items-end justify-between gap-3.5 max-md:gap-2.5">
+        <h3 className="text-text-primary m-0 text-base leading-5.75 font-semibold">
+          {t("title")}
+        </h3>
+        <Button type="button" className="" size="lg" onClick={onAdd}>
+          {t("add")}
+        </Button>
+      </div>
+      <InfiniteList
+        loading={loading}
+        hasMore={hasMore}
+        isEmpty={accounts.length === 0}
+        error={error}
+        onLoadMore={onLoadMore}
+        onRetry={onRetry}
+      >
+        <InfiniteList.Items className="flex flex-col gap-3">
           {accounts.map((account) => (
-            <li key={account.id}>
+            <InfiniteList.Item key={account.id}>
               <BankCard variant="listed">
                 <BankCard.Details>
                   <BankCard.Bank name={account.bankName} logo={account.logo} />
@@ -97,14 +93,17 @@ export default function BankAccountsTab({
                   </BankCard.Action>
                 </BankCard.Actions>
               </BankCard>
-            </li>
+            </InfiniteList.Item>
           ))}
-        </ul>
-      )}
-
-      <Button type="button" className=" w-full" size="lg" onClick={onAdd}>
-        {t("add")}
-      </Button>
+        </InfiniteList.Items>
+        <InfiniteList.Loading className="mt-3 flex flex-col gap-3 first:mt-0">
+          <BankAccountCardSkeleton variant="listed" />
+        </InfiniteList.Loading>
+        <InfiniteList.Error />
+        <InfiniteList.Empty>
+          <EmptyState title={t("empty.title")} size="section" />
+        </InfiniteList.Empty>
+      </InfiniteList>
     </div>
   );
 }

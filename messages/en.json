@@ -536,7 +536,8 @@
       "notFound": "Bank account not found.",
       "unknownBank": "Choose a bank from the list.",
       "ibanRequired": "IBAN is required.",
-      "invalidIban": "Enter a valid Saudi IBAN."
+      "invalidIban": "Enter a valid Saudi IBAN.",
+      "duplicateIban": "This IBAN is already one of your bank accounts."
     },
     "bookings": {
       "notFound": "Booking not found.",
@@ -1025,7 +1026,6 @@
     "delete": "Delete {bank}",
     "deleteConfirmTitle": "Delete bank account?",
     "deleteConfirmDescription": "Are you sure you want to delete this bank account? You will not be able to use it for withdrawals after deletion.",
-    "deleting": "Deleting...",
     "cancel": "Cancel",
     "addedSuccess": "Bank account added successfully",
     "addedFailure": "Failed to add bank account",
@@ -1040,7 +1040,10 @@
       "bankName": "Bank name",
       "chooseBank": "Choose a bank",
       "iban": "IBAN",
-      "loading": "Processing"
+      "loading": "Processing",
+      "noBanks": "No banks available.",
+      "searchBank": "Search for a bank",
+      "noBankResults": "No banks match your search."
     },
     "empty": {
       "title": "No bank accounts added"

@@ -13,9 +13,12 @@ const iban = z
   .trim()
   .min(1, { error: 'bankAccounts.ibanRequired', abort: true })
   .transform(normalizeIban)
-  .pipe(z.string().regex(/^SA\d{2}[A-Z0-9]{20}$/, { error: 'bankAccounts.invalidIban' }));
+  .pipe(z.string().regex(/^SA\d{22}$/, { error: 'bankAccounts.invalidIban' }));
 
-/** A normalized Saudi IBAN has the SA prefix, two check digits, and 20 BBAN characters. */
+/**
+ * A normalized Saudi IBAN: `SA` and 22 digits (24 characters), the API's own
+ * rule (docs/api/bank-accounts-api.md Q4). The checksum stays the API's.
+ */
 export const bankAccountSchema = z.object({ bankId, iban });
 
 export type BankAccountFormValues = z.infer<typeof bankAccountSchema>;
