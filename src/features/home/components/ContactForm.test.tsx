@@ -5,14 +5,16 @@ import { renderWithIntl } from "@/shared/test/render";
 import type { Result } from "@/shared/lib/result";
 import { AppError } from "@/shared/lib/errors";
 
-const { send, state } = vi.hoisted(() => ({
-  send: vi.fn<(input: unknown) => Promise<Result<void>>>(),
+const { send, state, notify } = vi.hoisted(() => ({
+  send: vi.fn<(input: unknown) => Promise<Result<null>>>(),
   state: { submitting: false },
+  notify: { success: vi.fn(), error: vi.fn() },
 }));
 
 vi.mock("../hooks/useSendContactMessage", () => ({
   useSendContactMessage: () => ({ submitting: state.submitting, send }),
 }));
+vi.mock("@/shared/hooks/useNotify", () => ({ useNotify: () => notify }));
 
 import ContactForm from "./ContactForm";
 
@@ -23,24 +25,35 @@ function renderForm() {
     user,
     name: screen.getByRole("textbox", { name: "Full Name" }),
     email: screen.getByRole("textbox", { name: "Email Address" }),
-    reason: screen.getByRole("combobox", { name: "Contact reason" }),
+    reason: screen.getByRole("textbox", { name: "Contact reason (optional)" }),
     bookingNumber: screen.getByRole("textbox", { name: /Booking number/ }),
     message: screen.getByRole("textbox", { name: "Your Message" }),
     submit: screen.getByRole("button", { name: "Send Message" }),
   };
 }
 
+async function fillRequired(form: ReturnType<typeof renderForm>) {
+  await form.user.type(form.name, "Ahmed");
+  await form.user.type(form.email, "ahmed@example.com");
+  await form.user.type(form.message, "Need help");
+}
+
 beforeEach(() => {
   state.submitting = false;
-  send.mockReset();
-  send.mockResolvedValue({ ok: true, data: undefined });
+  vi.clearAllMocks();
+  send.mockResolvedValue({
+    ok: true,
+    data: null,
+    message: "Contact request created successfully.",
+  });
 });
 
 describe("ContactForm", () => {
-  it("shows a translated required error on blur and associates it with the field", async () => {
+  it("shows a translated required error while typing and associates it with the field", async () => {
     const { user, name } = renderForm();
-    await user.click(name);
-    await user.tab();
+    // The form validates on change: typing and clearing shows the error.
+    await user.type(name, "A");
+    await user.clear(name);
 
     expect(
       await screen.findByText("Enter your full name."),
@@ -60,11 +73,12 @@ describe("ContactForm", () => {
     expect(send).not.toHaveBeenCalled();
   });
 
-  it("submits normalized values with the keyboard and shows success", async () => {
-    const { user, name, email, reason, bookingNumber, message } = renderForm();
+  it("sends a free-text reason with normalized values, toasts the backend message, and clears", async () => {
+    const form = renderForm();
+    const { user, name, email, reason, bookingNumber, message } = form;
     await user.type(name, " Ahmed ");
     await user.type(email, " ahmed@example.com ");
-    await user.selectOptions(reason, "booking");
+    await user.type(reason, " Order Issue ");
     await user.type(bookingNumber, " BK-123 ");
     await user.type(message, " Need help ");
     await user.tab();
@@ -74,14 +88,62 @@ describe("ContactForm", () => {
       expect(send).toHaveBeenCalledWith({
         name: "Ahmed",
         email: "ahmed@example.com",
-        contactReason: "booking",
+        contactReason: "Order Issue",
         bookingNumber: "BK-123",
         message: "Need help",
       }),
     );
-    expect(await screen.findByRole("status")).toHaveTextContent(
-      "Your message was sent. We will get back to you soon.",
+    expect(notify.success).toHaveBeenCalledWith(
+      "Contact request created successfully.",
     );
+    await waitFor(() => expect(name).toHaveValue(""));
+  });
+
+  it("sends without the optional reason and booking number", async () => {
+    const form = renderForm();
+    await fillRequired(form);
+    await form.user.click(form.submit);
+
+    await waitFor(() =>
+      expect(send).toHaveBeenCalledWith({
+        name: "Ahmed",
+        email: "ahmed@example.com",
+        contactReason: undefined,
+        bookingNumber: undefined,
+        message: "Need help",
+      }),
+    );
+  });
+
+  it("toasts a backend 422 and keeps the input", async () => {
+    send.mockResolvedValue({
+      ok: false,
+      error: new AppError("validation", undefined, 422, undefined, {
+        serverMessage: "The email address must be a valid email address.",
+      }),
+    });
+    const form = renderForm();
+    await fillRequired(form);
+    await form.user.click(form.submit);
+
+    await waitFor(() =>
+      expect(notify.error).toHaveBeenCalledWith(
+        "The email address must be a valid email address.",
+      ),
+    );
+    expect(form.email).toHaveValue("ahmed@example.com");
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+  });
+
+  it("shows other failures inline and keeps the input", async () => {
+    send.mockResolvedValue({ ok: false, error: new AppError("network") });
+    const form = renderForm();
+    await fillRequired(form);
+    await form.user.click(form.submit);
+
+    expect(await screen.findByRole("alert")).toBeInTheDocument();
+    expect(notify.error).not.toHaveBeenCalled();
+    expect(form.message).toHaveValue("Need help");
   });
 
   it("shows the pending state on the submit button", () => {
@@ -90,26 +152,5 @@ describe("ContactForm", () => {
 
     expect(submit).toBeDisabled();
     expect(submit).toHaveAttribute("aria-busy", "true");
-  });
-
-  it("keeps values and maps a server field error", async () => {
-    send.mockResolvedValue({
-      ok: false,
-      error: new AppError("validation", "contact.invalidEmail", undefined, {
-        email: "contact.invalidEmail",
-      }),
-    });
-    const { user, name, email, reason, message } = renderForm();
-    await user.type(name, "Ahmed");
-    await user.type(email, "ahmed@example.com");
-    await user.selectOptions(reason, "booking");
-    await user.type(message, "Need help");
-    await user.tab();
-    await user.keyboard("{Enter}");
-
-    await waitFor(() =>
-      expect(email).toHaveAccessibleDescription("Enter a valid email address."),
-    );
-    expect(email).toHaveValue("ahmed@example.com");
   });
 });

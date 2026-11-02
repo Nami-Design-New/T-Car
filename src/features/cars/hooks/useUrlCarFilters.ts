@@ -3,28 +3,31 @@
 import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from '@/i18n/navigation';
 import { useSearchParams } from 'next/navigation';
-
-export const PRICE_MIN = 100;
-export const PRICE_MAX = 30000;
+import { parseCarFilterDraft, type PriceRange } from '../searchParams';
 
 interface UrlCarFiltersOptions {
+  priceRange: PriceRange;
   onClear?: () => void;
 }
 
 /** Shared URL-backed search and price state for cars and city car listings. */
-export function useUrlCarFilters({ onClear }: UrlCarFiltersOptions = {}) {
+export function useUrlCarFilters({ priceRange, onClear }: UrlCarFiltersOptions) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [search, setSearch] = useState('');
-  const [minPrice, setMinPrice] = useState(PRICE_MIN);
-  const [maxPrice, setMaxPrice] = useState(PRICE_MAX);
+  const [minPrice, setMinPrice] = useState(priceRange.min);
+  const [maxPrice, setMaxPrice] = useState(priceRange.max);
 
   useEffect(() => {
-    setSearch(searchParams.get('q') ?? '');
-    setMinPrice(Number(searchParams.get('priceMin')) || PRICE_MIN);
-    setMaxPrice(Number(searchParams.get('priceMax')) || PRICE_MAX);
-  }, [searchParams]);
+    const filters = parseCarFilterDraft(
+      Object.fromEntries(searchParams.entries()),
+      priceRange,
+    );
+    setSearch(filters.query);
+    setMinPrice(filters.minPrice);
+    setMaxPrice(filters.maxPrice);
+  }, [priceRange, searchParams]);
 
   const updateParams = (updates: Record<string, string | null>) => {
     const next = new URLSearchParams(searchParams.toString());
@@ -42,29 +45,29 @@ export function useUrlCarFilters({ onClear }: UrlCarFiltersOptions = {}) {
 
   const handleMinChange = (value: number) => {
     if (Number.isNaN(value)) return;
-    const next = Math.min(Math.max(value, PRICE_MIN), maxPrice - 1);
+    const next = Math.min(Math.max(value, priceRange.min), maxPrice - 1);
     setMinPrice(next);
-    updateParams({ priceMin: next === PRICE_MIN ? null : String(next) });
+    updateParams({ priceMin: next === priceRange.min ? null : String(next) });
   };
 
   const handleMaxChange = (value: number) => {
     if (Number.isNaN(value)) return;
-    const next = Math.max(Math.min(value, PRICE_MAX), minPrice + 1);
+    const next = Math.max(Math.min(value, priceRange.max), minPrice + 1);
     setMaxPrice(next);
-    updateParams({ priceMax: next === PRICE_MAX ? null : String(next) });
+    updateParams({ priceMax: next === priceRange.max ? null : String(next) });
   };
 
   const clearUrlFilters = () => {
     setSearch('');
-    setMinPrice(PRICE_MIN);
-    setMaxPrice(PRICE_MAX);
+    setMinPrice(priceRange.min);
+    setMaxPrice(priceRange.max);
     onClear?.();
     updateParams({ q: null, priceMin: null, priceMax: null, sort: null });
   };
 
   const clearPriceRange = () => {
-    setMinPrice(PRICE_MIN);
-    setMaxPrice(PRICE_MAX);
+    setMinPrice(priceRange.min);
+    setMaxPrice(priceRange.max);
     updateParams({ priceMin: null, priceMax: null });
   };
 

@@ -68,6 +68,11 @@ Ask the user before: any `git commit` (and which branch it goes on); deleting `B
 - **Navigation**: `Link` and `useRouter` come from `@/i18n/navigation`, with
   locale-less paths.
 - **Props**: `interface Props` sits in the component file.
+- **State** (doc 1 §1.5 item 10): React Context only inside compound
+  components (`InfiniteList`, `BankCard`); app-wide client state in a Zustand
+  store in the owning feature (e.g. `features/settings/siteLinksStore.ts`),
+  written only in the browser (an effect), never in `shared/ui`; server data
+  goes through `queries.ts` and props, not a store.
 - **`shared/ui`**: one folder per component: `<Name>.tsx`, `<Name>.scss` (if
   styled), `<Name>.test.tsx`, `index.ts` exporting the component and
   `<Name>Props`. Named exports; no root `shared/ui/index.ts`. See doc 4 §4.4.

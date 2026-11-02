@@ -50,7 +50,7 @@ export default function FAQ({ faqs }: Props) {
     ));
 
   return (
-    <section className="bg-surface-on-background pb-12 md:pb-20" id="faqs">
+    <section className="bg-surface-on-background pb-12 md:pb-20 lg:pb-45" id="faqs">
       <div className="mx-auto w-full max-w-7xl px-2">
         <SectionTitle title={t("faq.title")} subtitle={t("faq.subtitle")} />
 

@@ -19,7 +19,7 @@ export default function Partners({ offices }: Props) {
   const t = useTranslations();
 
   return (
-    <section className="pt-12" id="partners">
+    <section className="pt-12 lg:pt-24" id="partners">
       <div className="mx-auto w-full max-w-7xl px-2">
         <SectionTitle
           title={t("partners.title")}

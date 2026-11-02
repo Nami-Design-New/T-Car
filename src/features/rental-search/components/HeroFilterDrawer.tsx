@@ -5,6 +5,7 @@ import {
   CarFilters,
   type CarBrand,
   type CarFilterDraft,
+  type PriceRange,
 } from "@/features/cars";
 import { Drawer } from "@/shared/ui/Drawer";
 
@@ -12,6 +13,7 @@ interface Props {
   open: boolean;
   onClose: () => void;
   brands: CarBrand[];
+  priceRange: PriceRange;
   onApply: (filters: CarFilterDraft) => void;
 }
 
@@ -19,6 +21,7 @@ export default function HeroFilterDrawer({
   open,
   onClose,
   brands,
+  priceRange,
   onApply,
 }: Props) {
   const t = useTranslations("cars.filters");
@@ -33,7 +36,12 @@ export default function HeroFilterDrawer({
         <Drawer.Close label={t("close")} />
       </Drawer.Header>
       <Drawer.Body className="pb-0">
-        <CarFilters brands={brands} onApply={onApply} embedded />
+        <CarFilters
+          brands={brands}
+          priceRange={priceRange}
+          onApply={onApply}
+          embedded
+        />
       </Drawer.Body>
     </Drawer>
   );

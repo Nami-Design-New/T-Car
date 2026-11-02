@@ -10,7 +10,7 @@ import type { ContactMessage } from '../model';
 export function useSendContactMessage() {
   const [submitting, setSubmitting] = useState(false);
 
-  const send = useCallback(async (message: ContactMessage): Promise<Result<void>> => {
+  const send = useCallback(async (message: ContactMessage): Promise<Result<null>> => {
     setSubmitting(true);
     try {
       return fromActionResult(await sendContactMessageAction(message));

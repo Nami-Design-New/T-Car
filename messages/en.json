@@ -405,12 +405,7 @@
       "label": "Commercial registration",
       "allowedFormats": "Allowed formats: PDF, JPG, PNG, WEBP"
     },
-    "companySizes": {
-      "small": "1–10 employees",
-      "medium": "11–50 employees",
-      "large": "51–200 employees",
-      "enterprise": "201+ employees"
-    },
+    "companySizeOption": "{size} employees",
     "submit": "Submit request"
   },
   "downloadApp": {
@@ -446,44 +441,24 @@
     "phone": "Phone Number",
     "email": "Email Address",
     "address": "Address",
-    "phoneValue": "+966 500000000",
-    "emailValue": "info@tcar.com",
     "addressValue": "Riyadh, Saudi Arabia",
     "name": "Full Name",
-    "reason": "Contact reason",
-    "reasons": {
-      "booking": "Booking",
-      "carRental": "Car rental",
-      "payment": "Payment",
-      "partnership": "Partnership",
-      "other": "Other"
-    },
+    "reason": "Contact reason (optional)",
+    "reasonPlaceholder": "e.g. a booking issue",
     "bookingNumber": "Booking number (optional)",
     "message": "Your Message",
     "send": "Send Message",
-    "sending": "Sending...",
-    "sent": "Your message was sent. We will get back to you soon."
+    "sending": "Sending..."
   },
   "footer": {
     "rights": "All rights reserved.",
     "quickLinks": "Quick Links",
     "contactUs": "Contact Us",
-    "emailValue": "info@tcar.com",
-    "phoneValue": "+966 500000000",
     "addressValue": "Riyadh, Saudi Arabia",
     "downloadApp": "Download the app",
+    "about": "About us",
     "terms": "Terms & Conditions",
     "privacy": "Privacy Policy"
-  },
-  "terms": {
-    "smallTitle": "Terms",
-    "title": "Terms & Conditions",
-    "subtitle": "Please read these terms carefully before using T-Car services."
-  },
-  "privacy": {
-    "smallTitle": "Privacy",
-    "title": "Privacy Policy",
-    "subtitle": "Your privacy matters to us, and we are committed to protecting your personal information."
   },
   "loading": "Loading...",
   "notFound": {
@@ -575,11 +550,19 @@
       "nameRequired": "Enter your full name.",
       "emailRequired": "Enter your email address.",
       "invalidEmail": "Enter a valid email address.",
-      "reasonRequired": "Choose a contact reason.",
-      "invalidReason": "Choose a valid contact reason.",
+      "nameTooLong": "Your name is too long (255 characters at most).",
+      "reasonTooLong": "The contact reason is too long (255 characters at most).",
       "bookingNumberTooLong": "Booking number is too long.",
       "messageRequired": "Enter your message.",
-      "required": "Complete all required contact fields."
+      "messageTooLong": "Your message is too long (5000 characters at most)."
+    },
+    "joinUs": {
+      "nameRequired": "Enter your name.",
+      "nameTooShort": "Your name must be at least 2 characters.",
+      "nameTooLong": "Your name is too long (100 characters at most).",
+      "companyNameRequired": "Enter the company name.",
+      "companyNameTooLong": "The company name is too long (255 characters at most).",
+      "companySizeRequired": "Choose the company size."
     },
     "account": {
       "profileRejected": "The profile could not be saved. Check the details and try again.",
@@ -613,52 +596,6 @@
       "underAge": "You must be at least 18 years old.",
       "invalidLocation": "Choose a valid location on the map."
     }
-  },
-  "legalContent": {
-    "terms": [
-      {
-        "title": "Acceptance of terms",
-        "content": "By using T-Car, you agree to the terms and conditions on this page and to comply with applicable rules."
-      },
-      {
-        "title": "Bookings and rental",
-        "content": "Bookings depend on vehicle availability. Provide accurate information; inaccurate bookings may be cancelled."
-      },
-      {
-        "title": "Payment and refunds",
-        "content": "Payments follow the prices shown during booking and the refund policy for each booking."
-      },
-      {
-        "title": "Renter responsibilities",
-        "content": "Renters must care for the vehicle and use it legally and safely."
-      },
-      {
-        "title": "Changes to terms",
-        "content": "T-Car may change these terms at any time; continued use means acceptance."
-      }
-    ],
-    "privacy": [
-      {
-        "title": "Information we collect",
-        "content": "We collect account and booking details to provide our services."
-      },
-      {
-        "title": "How we use information",
-        "content": "We use data to manage bookings, confirm operations, communicate, and improve services."
-      },
-      {
-        "title": "Protecting your data",
-        "content": "We take appropriate security measures to protect your personal data."
-      },
-      {
-        "title": "Sharing information",
-        "content": "We do not share data except when necessary to provide the service or required by law."
-      },
-      {
-        "title": "Your rights",
-        "content": "You can request that your personal data be updated, changed, or deleted."
-      }
-    ]
   },
   "citiesPage": {
     "title": "Available cities",

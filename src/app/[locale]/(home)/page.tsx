@@ -6,10 +6,11 @@ import { PopularCities } from '@/features/cities';
 import { getCities } from '@/features/cities/queries';
 import { CTA, Contact, DownloadApp, FAQ, Partners, WhyChooseUs } from '@/features/home';
 import { getFaqs } from '@/features/home/queries';
+import { getBookingTypeAvailability, getSiteSettings } from '@/features/settings/queries';
 import { getTranslations } from 'next-intl/server';
 
 export default async function HomePage() {
-  const [t, searchOptions, brands, cities, offerCars, handpickedCars, faqs, offices] = await Promise.all([
+  const [t, searchOptions, brands, cities, offerCars, handpickedCars, faqs, offices, site, bookingTypes] = await Promise.all([
     getTranslations('carSections'),
     getRentalSearchOptions(),
     getCarBrands(),
@@ -18,11 +19,18 @@ export default async function HomePage() {
     getHandpickedCars(),
     getFaqs(),
     getOffices(),
+    getSiteSettings(),
+    getBookingTypeAvailability(),
   ]);
 
   return (
     <>
-      <Hero options={searchOptions} brands={brands} />
+      <Hero
+        options={searchOptions}
+        brands={brands}
+        bookingTypes={bookingTypes}
+        priceRange={site.priceFilterRange}
+      />
       <PopularCities cities={cities} />
       <CarsRail
         id="offers"
@@ -40,7 +48,7 @@ export default async function HomePage() {
       <WhyChooseUs />
       <FAQ faqs={faqs} />
       <DownloadApp />
-      <Contact />
+      <Contact contact={site.contact} />
       <CTA/>
     </>
   );

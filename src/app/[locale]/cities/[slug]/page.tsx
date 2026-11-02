@@ -12,6 +12,9 @@ import {
 } from "@/features/cars/queries";
 import { CityHero } from "@/features/cities";
 import { getCityDetails } from "@/features/cities/queries";
+import { getBookingTypeAvailability } from "@/features/settings/queries";
+import { getSiteSettings } from "@/features/settings/queries";
+import { isBookingTypeEnabled } from "@/features/settings";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -28,14 +31,21 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function CityDetailsPage({ params, searchParams }: Props) {
-  const { slug } = await params;
-  const filters = parseCarSearchParams(await searchParams);
-  const [city, officeGroups, brands] = await Promise.all([
-    getCityDetails(slug),
+  const [{ slug }, rawSearchParams, bookingTypes, site] = await Promise.all([
+    params,
+    searchParams,
+    getBookingTypeAvailability(),
+    getSiteSettings(),
+  ]);
+  const priceRange = site.priceFilterRange;
+  const filters = parseCarSearchParams(rawSearchParams, priceRange);
+  if (!isBookingTypeEnabled(filters.context.type, bookingTypes)) notFound();
+  const city = await getCityDetails(slug);
+  if (!city) notFound();
+  const [officeGroups, brands] = await Promise.all([
     getOfficeCarGroupsForCity(slug, filters),
     getCarBrands(),
   ]);
-  if (!city) notFound();
 
   return (
     <>
@@ -46,7 +56,7 @@ export default async function CityDetailsPage({ params, searchParams }: Props) {
           {/* <SortBar resultsCount={officeGroups.reduce((count, group) => count + group.cars.length)} value={filters.sort} /> */}
 
           <div className="city-listings-grid grid grid-cols-[280px_1fr] items-start gap-8 max-lg:grid-cols-1">
-            <CarFilters brands={brands} />
+            <CarFilters brands={brands} priceRange={priceRange} />
 
             <div className="office-rows flex min-w-0 flex-col gap-3">
               {officeGroups.map(({ office, cars }) => (

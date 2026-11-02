@@ -1,7 +1,9 @@
 import type { CarListing, OfficeCarGroup } from './model';
 
-export const PRICE_MIN = 100;
-export const PRICE_MAX = 30000;
+export interface PriceRange {
+  min: number;
+  max: number;
+}
 
 export type CarSort = 'recommended' | 'price_asc' | 'price_desc' | 'rating';
 
@@ -51,23 +53,40 @@ function list(value: string | string[] | undefined): string[] {
   ];
 }
 
-export const DEFAULT_CAR_FILTERS: CarFilterDraft = {
-  query: '',
-  minPrice: PRICE_MIN,
-  maxPrice: PRICE_MAX,
-  brandIds: [],
-  types: [],
-  companyIds: [],
-  serviceIds: [],
-};
+export function createDefaultCarFilters(
+  priceRange: PriceRange,
+): CarFilterDraft {
+  return {
+    query: '',
+    minPrice: priceRange.min,
+    maxPrice: priceRange.max,
+    brandIds: [],
+    types: [],
+    companyIds: [],
+    serviceIds: [],
+  };
+}
 
-export function parseCarFilterDraft(input: SearchParamsInput = {}): CarFilterDraft {
-  const minPrice = boundedNumber(first(input.priceMin), PRICE_MIN, PRICE_MIN, PRICE_MAX - 1);
+export function parseCarFilterDraft(
+  input: SearchParamsInput,
+  priceRange: PriceRange,
+): CarFilterDraft {
+  const minPrice = boundedNumber(
+    first(input.priceMin),
+    priceRange.min,
+    priceRange.min,
+    priceRange.max - 1,
+  );
 
   return {
     query: first(input.q)?.trim() ?? '',
     minPrice,
-    maxPrice: boundedNumber(first(input.priceMax), PRICE_MAX, minPrice + 1, PRICE_MAX),
+    maxPrice: boundedNumber(
+      first(input.priceMax),
+      priceRange.max,
+      minPrice + 1,
+      priceRange.max,
+    ),
     brandIds: list(input.brands),
     types: list(input.types),
     companyIds: list(input.companies),
@@ -75,12 +94,16 @@ export function parseCarFilterDraft(input: SearchParamsInput = {}): CarFilterDra
   };
 }
 
-export function applyCarFilterDraft(params: URLSearchParams, filters: CarFilterDraft) {
+export function applyCarFilterDraft(
+  params: URLSearchParams,
+  filters: CarFilterDraft,
+  priceRange: PriceRange,
+) {
   const keys = ['q', 'priceMin', 'priceMax', 'brands', 'types', 'companies', 'services'];
   keys.forEach((key) => params.delete(key));
   if (filters.query.trim()) params.set('q', filters.query.trim());
-  if (filters.minPrice !== PRICE_MIN) params.set('priceMin', String(filters.minPrice));
-  if (filters.maxPrice !== PRICE_MAX) params.set('priceMax', String(filters.maxPrice));
+  if (filters.minPrice !== priceRange.min) params.set('priceMin', String(filters.minPrice));
+  if (filters.maxPrice !== priceRange.max) params.set('priceMax', String(filters.maxPrice));
   if (filters.brandIds.length) params.set('brands', filters.brandIds.join(','));
   if (filters.types.length) params.set('types', filters.types.join(','));
   if (filters.companyIds.length) params.set('companies', filters.companyIds.join(','));
@@ -88,8 +111,11 @@ export function applyCarFilterDraft(params: URLSearchParams, filters: CarFilterD
   return params;
 }
 
-export function parseCarSearchParams(input: SearchParamsInput = {}): CarSearchParams {
-  const filters = parseCarFilterDraft(input);
+export function parseCarSearchParams(
+  input: SearchParamsInput,
+  priceRange: PriceRange,
+): CarSearchParams {
+  const filters = parseCarFilterDraft(input, priceRange);
   const sort = first(input.sort);
 
   const context: Record<string, string> = {};

@@ -1,17 +1,16 @@
 "use server";
 
-import { contactApi } from "@/services/contact.api";
+import { contactApi, joinUsApi } from "./api";
 import { reportError } from "@/shared/lib/report";
 import {
   fail,
-  ok,
   toActionResult,
   type ActionResult,
 } from "@/shared/lib/result";
 import { toValidationError } from "@/shared/lib/validation";
 import type { ZodType } from "zod";
-import type { ContactMessage } from "./model";
-import { contactMessageSchema } from "./validation";
+import type { ContactMessage, JoinUsRequest } from "./model";
+import { contactMessageSchema, joinUsSchema } from "./validation";
 
 function parse<T>(schema: ZodType<T>, input: unknown): T {
   const result = schema.safeParse(input);
@@ -19,15 +18,42 @@ function parse<T>(schema: ZodType<T>, input: unknown): T {
   return result.data;
 }
 
-/** Public contact form write; the action validates before the service boundary. */
+/**
+ * Public contact form write (POST /contact-us, no session needed). The form is
+ * parsed again here; success carries the backend's message for the toast, and
+ * a backend 422 keeps its message as `serverMessage`.
+ */
 export async function sendContactMessageAction(
   message: ContactMessage,
-): Promise<ActionResult<void>> {
+): Promise<ActionResult<null>> {
   try {
-    await contactApi.sendMessage(parse(contactMessageSchema, message));
-    return toActionResult(ok(undefined));
+    const result = await contactApi.sendMessage(
+      parse(contactMessageSchema, message),
+    );
+    if (!result.ok) throw result.error;
+    return toActionResult(result);
   } catch (error) {
     reportError(error, { scope: "contact.send" });
+    return toActionResult(fail(error));
+  }
+}
+
+/**
+ * Public Join Us write (POST /join-us, no session needed). Parsed again here;
+ * success carries the backend's message for the toast, and a backend 422
+ * keeps its message as `serverMessage`.
+ */
+export async function sendJoinRequestAction(
+  request: JoinUsRequest,
+): Promise<ActionResult<null>> {
+  try {
+    const result = await joinUsApi.sendJoinRequest(
+      parse(joinUsSchema, request),
+    );
+    if (!result.ok) throw result.error;
+    return toActionResult(result);
+  } catch (error) {
+    reportError(error, { scope: "joinUs.send" });
     return toActionResult(fail(error));
   }
 }

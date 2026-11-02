@@ -7,6 +7,10 @@ import {
 import { getCarBrands, getOfficeCarGroups } from "@/features/cars/queries";
 import { Link } from "@/i18n/navigation";
 import { getTranslations } from "next-intl/server";
+import { notFound } from "next/navigation";
+import { getBookingTypeAvailability } from "@/features/settings/queries";
+import { getSiteSettings } from "@/features/settings/queries";
+import { isBookingTypeEnabled } from "@/features/settings";
 import { FiArrowLeft } from "react-icons/fi";
 
 interface Props {
@@ -14,8 +18,15 @@ interface Props {
 }
 
 export default async function CarsPage({ searchParams }: Props) {
-  const t = await getTranslations();
-  const params = parseCarSearchParams(await searchParams);
+  const [t, rawParams, bookingTypes, site] = await Promise.all([
+    getTranslations(),
+    searchParams,
+    getBookingTypeAvailability(),
+    getSiteSettings(),
+  ]);
+  const priceRange = site.priceFilterRange;
+  const params = parseCarSearchParams(rawParams, priceRange);
+  if (!isBookingTypeEnabled(params.context.type, bookingTypes)) notFound();
   const [officeGroups, brands] = await Promise.all([
     getOfficeCarGroups(params),
     getCarBrands(),
@@ -38,7 +49,7 @@ export default async function CarsPage({ searchParams }: Props) {
         </header>
 
         <div className="city-listings-grid grid grid-cols-[280px_1fr] items-start gap-8 max-lg:grid-cols-1">
-          <CarFilters brands={brands} />
+          <CarFilters brands={brands} priceRange={priceRange} />
           <div className="office-rows flex min-w-0 flex-col gap-3">
             {/* <SortBar
               resultsCount={officeGroups.reduce((count, group) => count + group.cars.length, 0)}

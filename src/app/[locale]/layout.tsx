@@ -1,6 +1,8 @@
 import { auth } from "@/auth";
 import { Footer, GuestLocationRequest, Header } from "@/features/layout";
 import { getNotifications } from "@/features/notifications/queries";
+import { SiteLinksSync } from "@/features/settings";
+import { getSiteSettings } from "@/features/settings/queries";
 import type { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
 import { getDirection } from "@/shared/config/languages";
@@ -93,12 +95,15 @@ export default async function RootLayout({
     ? (await getNotifications()).filter((notification) => !notification.read)
         .length
     : 0;
+  // Never throws: without the settings, the contact details and site links are hidden.
+  const site = await getSiteSettings();
 
   return (
     <html lang={locale} dir={dir} className={expo.variable}>
       <body className="antialiased max-lg:pb-[calc(5rem+env(safe-area-inset-bottom))]">
         <NextIntlClientProvider>
           <DirectionProvider dir={dir}>
+            <SiteLinksSync links={site.links} />
             <NextTopLoader color="#1f7ffa" height={3} showSpinner={false} />
             {!signedIn && <GuestLocationRequest />}
             <Header
@@ -107,7 +112,7 @@ export default async function RootLayout({
               unreadCount={unreadCount}
             />
             <main>{children}</main>
-            <Footer />
+            <Footer contact={site.contact} links={site.links} />
             <Toaster dir={dir} />
           </DirectionProvider>
         </NextIntlClientProvider>

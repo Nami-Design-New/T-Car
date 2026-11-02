@@ -17,10 +17,6 @@ const STATIC_PAGES: Entry[] = [
   { path: '', changeFrequency: 'weekly', priority: 1 },
   { path: '/cars', changeFrequency: 'daily', priority: 0.9 },
   { path: '/cities', changeFrequency: 'weekly', priority: 0.8 },
-  { path: '/why', changeFrequency: 'monthly', priority: 0.5 },
-  { path: '/contact', changeFrequency: 'monthly', priority: 0.5 },
-  { path: '/privacy', changeFrequency: 'yearly', priority: 0.3 },
-  { path: '/terms', changeFrequency: 'yearly', priority: 0.3 },
 ];
 
 const localized = (locale: string, path: string) => `${siteUrl}/${locale}${path}`;

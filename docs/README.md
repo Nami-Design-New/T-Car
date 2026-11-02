@@ -409,6 +409,91 @@ account ID outside `MOCK_BANK_ACCOUNTS` is `not_found`. The old
 IBAN message example, duplicate IBANs accepted by the API, Q5: deleting an
 account used by a pending withdrawal).
 
+**Contact Us / Join Us API fraction C1 (2026-11-02), done:** Contract in
+`docs/api/contact-join-us-api.md` (C0: both endpoints probed; product decisions
+in §6; fractions C1–C4 in §7). The contact API moved into the feature with no
+behavior change: `services/contact.api.ts` became `features/home/api.ts`
+(server-only, `ContactApi`) and `services/mocks/contact.ts` became
+`features/home/api.mock.ts`; `sendContactMessageAction` still runs on the mock
+until C2. Join Us still has no submit (C3).
+
+**Contact Us / Join Us API fraction C2 (2026-11-02), done:** The contact form
+sends to `POST /contact-us` through `contactApi.sendMessage` on
+`publicServerHttp` (public endpoint, no token; Q1) and
+`sendContactMessageAction` (`ActionResult<null>` with the backend message).
+`contactReason` → `reason` and `bookingNumber` → `order_number`, left out when
+blank. The reason is now an optional free-text field (Q2) instead of the fixed
+select; the schema uses the API's limits (name and reason 255, booking number
+255, message 5000). The backend's success message is a toast (`useNotify`) and
+the form clears; a backend 422 is a toast and keeps the input; other failures
+stay inline. Removed: `contact.reasons.*`, `contact.sent`, and
+`errors.contact.{reasonRequired,invalidReason,required}`. `api.mock.ts` is the
+test double of the live `ContactApi` (failure rule: an email without "@" is a
+422).
+
+**Contact Us / Join Us API fraction C3 (2026-11-02), done (send blocked on the
+backend):** The Join Us dialog is a real form (RHF + Zod, `joinUsSchema`): name
+2–100, phone through the shared `phoneValueSchema` (every country kept, Q4; the
+national number is sent), company name, email, and a company size. It posts to
+`POST /join-us` through `joinUsApi.sendJoinRequest` on `publicServerHttp` with
+`company_size_id` (Bruno's `size` is rejected) and `sendJoinRequestAction`.
+Success is a toast and the dialog closes; a backend 422 is a toast and keeps
+the dialog and the input; other failures are inline. The sizes come from the new
+shared **`features/settings`** feature (`GET /settings`, public): `api.ts`
+(server-only `settingsApi`, maps only the fields in use: `companySizes`),
+`queries.ts` (`getSettings`, React `cache`, for server components),
+`actions.ts` (`getSettingsAction`, for client components), and `index.ts`
+(the action and the `AppSettings` / `CompanySize` types); other features read
+the settings through it and add the fields they need to `AppSettings`. The size
+select loads them when the dialog opens, with a loading status and an inline
+error with retry. Every valid Join Us is an HTTP 500 on the backend today
+(`JoinUsController.php` line 18), shown as the inline server error.
+
+**Contact Us / Join Us API fraction C4 (2026-11-02), done:** The placeholder
+`/contact` page is removed (and its sitemap entry); the nav already points to
+the home Contact section (`/#contact`). T-Car's contact details come from
+`GET /settings` through the settings feature: `AppSettings.contact` (email,
+phone, Facebook / Instagram / X links; an unusable field is left out instead of
+failing the settings) and `getContactSettings()` in `queries.ts`, which never
+throws (it reports the error and returns no details). The root layout passes
+them to the footer and the home page to the Contact section; React `cache`
+reads `/settings` once per request. The Contact card and the footer show the
+email (`mailto:`) and phone (`tel:`, left-to-right) as links and the social
+icons with the API's URLs, hiding what the API does not send; the address stays
+the translated text (the API has none). Removed: the hard-coded
+`contact.{phoneValue,emailValue}` and `footer.{phoneValue,emailValue}`. The
+contact form validates on change since C3; its test follows.
+Backend pages: the app's `/terms`, `/privacy`, and `/why` pages (and their
+sitemap entries and the `legalContent` / `terms` / `privacy` messages) are
+removed; the backend's pages are used instead. `AppSettings.links` (`SiteLinks`:
+`about_us_url`, `terms_url`, `privacy_policy_url`, already in the request's
+language) comes with the contact details from `getSiteSettings()` (never
+throws). The root layout passes them to the footer as props and, for client
+components, to a Zustand store (`zustand` 5.0.15, the app's first store):
+`SiteLinksSync` writes them into `useSiteLinksStore` in an effect, so only the
+browser writes it and the module store on the server stays empty (never
+shared between requests); `useSiteLinks()` reads them (settings index).
+The footer links to terms and privacy and adds an "About us" quick link
+(`footer.about`) to the about page; the register form's consent text links to
+terms and privacy. All open in a new tab (the register dialog keeps its input).
+An unknown link is hidden in the footer and plain text in the form. The nav's
+"Why choose us" still scrolls to the home section, which stays.
+
+**Settings API expansion, booking-type fraction (2026-11-02):** `AppSettings`
+and `mapSettings` map the observed booking-type switches, price bounds (5–55),
+and default map coordinates from `GET /settings`. Missing or invalid optional
+values do not fail the settings read. The home rental tabs now hide types that
+the settings disable; missing flags or a failed settings read keep all options
+available. Direct `/cars` and `/cities/[slug]` searches for a disabled type call
+`notFound()`. Price-filter UI wiring was tracked as the next fraction; map
+coordinates are currently unused by the application.
+
+**Settings API expansion, price-filter fraction (2026-11-02):** `/cars`,
+`/cities/[slug]`, and the home filter drawer receive the server-read range from
+`getSiteSettings()`. The 5–55 bounds apply to URL parsing and filtering, and the
+range inputs show the shared SAR mark. A missing value or settings read failure
+uses the observed 5–55 default.
+
 **Phase 1 import-boundary remediation (2026-10-20):** The account shell now receives points data from its App Router section layout and imports the summary card through `features/points/index.ts`. The root layout now supplies the authenticated notifications count to the layout feature. `MapLocationModal` and `LocationData` now live in `shared/ui` and `shared/lib`, respectively, with every caller using that shared API. Rental search now consumes the cars feature only through its public index; that index no longer exposes the server-only `getOffices` read, which the home route imports directly. The initial lint audit is reduced from nine to two boundary errors; both remaining violations are in wallet's bank-account action dependency.
 
 **Phone field replacement follow-up (2026-10-26), fraction 1:** Added the
