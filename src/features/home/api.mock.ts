@@ -1,5 +1,5 @@
 import { AppError } from '@/shared/lib/errors';
-import type { ContactApi } from '../contact.api';
+import type { ContactApi } from './api';
 
 const delay = (ms = 600) => new Promise((resolve) => setTimeout(resolve, ms));
 

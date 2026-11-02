@@ -1,6 +1,6 @@
 "use server";
 
-import { contactApi } from "@/services/contact.api";
+import { contactApi } from "./api";
 import { reportError } from "@/shared/lib/report";
 import {
   fail,

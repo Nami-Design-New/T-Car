@@ -409,6 +409,14 @@ account ID outside `MOCK_BANK_ACCOUNTS` is `not_found`. The old
 IBAN message example, duplicate IBANs accepted by the API, Q5: deleting an
 account used by a pending withdrawal).
 
+**Contact Us / Join Us API fraction C1 (2026-11-02), done:** Contract in
+`docs/api/contact-join-us-api.md` (C0: both endpoints probed; product decisions
+in §6; fractions C1–C4 in §7). The contact API moved into the feature with no
+behavior change: `services/contact.api.ts` became `features/home/api.ts`
+(server-only, `ContactApi`) and `services/mocks/contact.ts` became
+`features/home/api.mock.ts`; `sendContactMessageAction` still runs on the mock
+until C2. Join Us still has no submit (C3).
+
 **Phase 1 import-boundary remediation (2026-10-20):** The account shell now receives points data from its App Router section layout and imports the summary card through `features/points/index.ts`. The root layout now supplies the authenticated notifications count to the layout feature. `MapLocationModal` and `LocationData` now live in `shared/ui` and `shared/lib`, respectively, with every caller using that shared API. Rental search now consumes the cars feature only through its public index; that index no longer exposes the server-only `getOffices` read, which the home route imports directly. The initial lint audit is reduced from nine to two boundary errors; both remaining violations are in wallet's bank-account action dependency.
 
 **Phone field replacement follow-up (2026-10-26), fraction 1:** Added the

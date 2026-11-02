@@ -3,7 +3,7 @@ import { AppError } from "@/shared/lib/errors";
 
 const { sendMessage } = vi.hoisted(() => ({ sendMessage: vi.fn() }));
 
-vi.mock("@/services/contact.api", () => ({
+vi.mock("./api", () => ({
   contactApi: { sendMessage },
 }));
 vi.mock("@/shared/lib/report", () => ({ reportError: vi.fn() }));
