@@ -8,13 +8,32 @@ import { AppError } from "@/shared/lib/errors";
 import { fail, ok, type Result } from "@/shared/lib/result";
 import type {
   ContactMessage,
+  HomeContent,
   FAQItem,
-  HomeHeroContent,
   JoinUsRequest,
 } from "./model";
 
 export interface HomeApi {
-  getHeroContent(locale: string): Promise<HomeHeroContent>;
+  getContent(locale: string): Promise<HomeContent>;
+}
+
+interface HomeSectionDto {
+  sub_title: string;
+  title: string;
+  description: string;
+}
+
+interface HomeContentDto {
+  hero: HomeSectionDto;
+  partners: HomeSectionDto;
+  support: HomeSectionDto;
+  apps: HomeSectionDto;
+  contacts: HomeSectionDto & {
+    form_title: string;
+    form_description: string;
+  };
+  join_us: { title: string; description: string; image: string };
+  footer: { text: string };
 }
 
 export interface FaqsApi {
@@ -32,46 +51,83 @@ export interface JoinUsApi {
   sendJoinRequest(request: JoinUsRequest): Promise<Result<null>>;
 }
 
-function isHomeHeroContent(value: unknown): value is {
-  sub_title: string;
-  title: string;
-  description: string;
-} {
-  if (typeof value !== "object" || value === null) return false;
-  const hero = value as Record<string, unknown>;
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null;
+}
+
+function isHomeSectionContent(value: unknown): value is HomeSectionDto {
+  if (!isRecord(value)) return false;
+  const section = value;
   return (
-    typeof hero.sub_title === "string" &&
-    typeof hero.title === "string" &&
-    typeof hero.description === "string"
+    typeof section.sub_title === "string" &&
+    typeof section.title === "string" &&
+    typeof section.description === "string"
   );
 }
 
-async function getHeroContent(locale: string): Promise<HomeHeroContent> {
+function isHomeContentData(value: unknown): value is HomeContentDto {
+  if (!isRecord(value)) return false;
+  if (
+    !isHomeSectionContent(value.hero) ||
+    !isHomeSectionContent(value.partners) ||
+    !isHomeSectionContent(value.support) ||
+    !isHomeSectionContent(value.apps) ||
+    !isRecord(value.contacts) ||
+    !isHomeSectionContent(value.contacts) ||
+    typeof value.contacts.form_title !== "string" ||
+    typeof value.contacts.form_description !== "string" ||
+    !isRecord(value.join_us) ||
+    typeof value.join_us.title !== "string" ||
+    typeof value.join_us.description !== "string" ||
+    typeof value.join_us.image !== "string" ||
+    !isRecord(value.footer) ||
+    typeof value.footer.text !== "string"
+  ) {
+    return false;
+  }
+  return true;
+}
+
+function mapHomeSection(section: HomeSectionDto) {
+  return {
+    eyebrow: section.sub_title,
+    title: section.title,
+    description: section.description,
+  };
+}
+
+async function getContent(locale: string): Promise<HomeContent> {
   const response = await publicSiteServerHttp.get<ApiEnvelope<unknown>>("/home", {
     headers: { "Accept-Language": locale },
   });
   if (
     !isApiEnvelope(response) ||
     response.code !== 200 ||
-    typeof response.data !== "object" ||
-    response.data === null ||
-    !isHomeHeroContent((response.data as Record<string, unknown>).hero)
+    !isHomeContentData(response.data)
   ) {
     throw new AppError("server");
   }
-  const hero = (
-    response.data as {
-      hero: { sub_title: string; title: string; description: string };
-    }
-  ).hero;
+  const { data } = response;
   return {
-    eyebrow: hero.sub_title,
-    title: hero.title,
-    description: hero.description,
+    hero: mapHomeSection(data.hero),
+    partners: mapHomeSection(data.partners),
+    support: mapHomeSection(data.support),
+    apps: mapHomeSection(data.apps),
+    contacts: {
+      ...mapHomeSection(data.contacts),
+      formTitle: data.contacts.form_title,
+      formDescription: data.contacts.form_description,
+    },
+    joinUs: {
+      title: data.join_us.title,
+      description: data.join_us.description,
+      image: data.join_us.image,
+    },
+    footer: { text: data.footer.text },
   };
 }
 
-export const homeApi: HomeApi = { getHeroContent };
+export const homeApi: HomeApi = { getContent };
 
 /** Success is body code 200 (201 accepted too); `data` is null. */
 const isSuccessCode = (code: number) => code === 200 || code === 201;

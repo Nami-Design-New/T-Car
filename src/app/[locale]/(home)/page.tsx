@@ -5,14 +5,14 @@ import { getCarBrands, getHandpickedCars, getOfferCars, getOffices } from '@/fea
 import { PopularCities } from '@/features/cities';
 import { getCities } from '@/features/cities/queries';
 import { CTA, Contact, DownloadApp, FAQ, Partners, WhyChooseUs } from '@/features/home';
-import { getFaqs, getHomeHeroContent } from '@/features/home/queries';
+import { getFaqs, getHomeContent } from '@/features/home/queries';
 import { getBookingTypeAvailability, getSiteSettings } from '@/features/settings/queries';
 import { getTranslations } from 'next-intl/server';
 
 export default async function HomePage() {
-  const [t, heroContent, searchOptions, brands, cities, offerCars, handpickedCars, faqs, offices, site, bookingTypes] = await Promise.all([
+  const [t, homeContent, searchOptions, brands, cities, offerCars, handpickedCars, faqs, offices, site, bookingTypes] = await Promise.all([
     getTranslations('carSections'),
-    getHomeHeroContent(),
+    getHomeContent(),
     getRentalSearchOptions(),
     getCarBrands(),
     getCities(),
@@ -27,7 +27,7 @@ export default async function HomePage() {
   return (
     <>
       <Hero
-        content={heroContent}
+        content={homeContent.hero}
         options={searchOptions}
         brands={brands}
         bookingTypes={bookingTypes}
@@ -46,12 +46,12 @@ export default async function HomePage() {
         subtitle={t('selectedForYouSubtitle')}
         cars={handpickedCars}
       />
-      <Partners offices={offices} />
+      <Partners offices={offices} content={homeContent.partners} />
       <WhyChooseUs />
-      <FAQ faqs={faqs} />
-      <DownloadApp />
-      <Contact contact={site.contact} />
-      <CTA/>
+      <FAQ faqs={faqs} content={homeContent.support} />
+      <DownloadApp content={homeContent.apps} />
+      <Contact contact={site.contact} content={homeContent.contacts} />
+      <CTA content={homeContent.joinUs} />
     </>
   );
 }

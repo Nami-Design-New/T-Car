@@ -1,8 +1,6 @@
 "use client";
 
 import Image from "next/image";
-import { useTranslations } from "next-intl";
-
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay } from "swiper/modules";
 
@@ -10,20 +8,21 @@ import "swiper/css";
 
 import { SectionTitle } from "@/shared/ui/SectionTitle";
 import type { Office } from "@/features/cars";
+import type { HomeSectionContent } from "../model";
 
 interface Props {
   offices: Office[];
+  content: HomeSectionContent;
 }
 
-export default function Partners({ offices }: Props) {
-  const t = useTranslations();
-
+export default function Partners({ offices, content }: Props) {
   return (
     <section className="pt-12 lg:pt-24" id="partners">
       <div className="mx-auto w-full max-w-7xl px-2">
         <SectionTitle
-          title={t("partners.title")}
-          subtitle={t("partners.subtitle")}
+          smallTitle={content.eyebrow}
+          title={content.title}
+          subtitle={content.description}
         />
 
         <Swiper
