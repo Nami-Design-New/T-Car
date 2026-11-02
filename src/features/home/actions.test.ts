@@ -1,14 +1,21 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { AppError } from "@/shared/lib/errors";
 
-const { sendMessage } = vi.hoisted(() => ({ sendMessage: vi.fn() }));
+const { sendMessage, sendJoinRequest } = vi.hoisted(() => ({
+  sendMessage: vi.fn(),
+  sendJoinRequest: vi.fn(),
+}));
 
 vi.mock("./api", () => ({
   contactApi: { sendMessage },
+  joinUsApi: { sendJoinRequest },
 }));
 vi.mock("@/shared/lib/report", () => ({ reportError: vi.fn() }));
 
-import { sendContactMessageAction } from "./actions";
+import {
+  sendContactMessageAction,
+  sendJoinRequestAction,
+} from "./actions";
 
 const validMessage = {
   name: " Ahmed ",
@@ -86,6 +93,68 @@ describe("sendContactMessageAction", () => {
     await expect(sendContactMessageAction(validMessage)).resolves.toEqual({
       ok: false,
       error: { kind: "server" },
+    });
+  });
+});
+
+describe("Join Us actions", () => {
+  const request = {
+    name: " Acme Owner ",
+    phone: { countryCode: "+966", phone: "0512345678" },
+    companyName: " Acme ",
+    email: " owner@example.com ",
+    companySizeId: "1",
+  };
+
+  it("sends the parsed request and returns the backend message", async () => {
+    sendJoinRequest.mockResolvedValue({
+      ok: true,
+      data: null,
+      message: "Join request sent.",
+    });
+    await expect(sendJoinRequestAction(request)).resolves.toEqual({
+      ok: true,
+      data: null,
+      message: "Join request sent.",
+    });
+    expect(sendJoinRequest).toHaveBeenCalledWith({
+      name: "Acme Owner",
+      phone: { countryCode: "+966", phone: "512345678" },
+      companyName: "Acme",
+      email: "owner@example.com",
+      companySizeId: "1",
+    });
+  });
+
+  it("rejects malformed input before calling the API", async () => {
+    await expect(
+      sendJoinRequestAction({ ...request, name: "A", companySizeId: "" }),
+    ).resolves.toMatchObject({
+      ok: false,
+      error: {
+        kind: "validation",
+        fieldErrors: {
+          name: "joinUs.nameTooShort",
+          companySizeId: "joinUs.companySizeRequired",
+        },
+      },
+    });
+    expect(sendJoinRequest).not.toHaveBeenCalled();
+  });
+
+  it("keeps a backend 422 message for the toast", async () => {
+    sendJoinRequest.mockResolvedValue({
+      ok: false,
+      error: new AppError("validation", undefined, 422, undefined, {
+        serverMessage: "The phone must be 9 digits and start with 5.",
+      }),
+    });
+    await expect(sendJoinRequestAction(request)).resolves.toMatchObject({
+      ok: false,
+      error: {
+        kind: "validation",
+        serverMessage: "The phone must be 9 digits and start with 5.",
+      },
     });
   });
 });

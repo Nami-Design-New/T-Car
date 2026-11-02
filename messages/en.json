@@ -405,12 +405,7 @@
       "label": "Commercial registration",
       "allowedFormats": "Allowed formats: PDF, JPG, PNG, WEBP"
     },
-    "companySizes": {
-      "small": "1–10 employees",
-      "medium": "11–50 employees",
-      "large": "51–200 employees",
-      "enterprise": "201+ employees"
-    },
+    "companySizeOption": "{size} employees",
     "submit": "Submit request"
   },
   "downloadApp": {
@@ -573,6 +568,14 @@
       "bookingNumberTooLong": "Booking number is too long.",
       "messageRequired": "Enter your message.",
       "messageTooLong": "Your message is too long (5000 characters at most)."
+    },
+    "joinUs": {
+      "nameRequired": "Enter your name.",
+      "nameTooShort": "Your name must be at least 2 characters.",
+      "nameTooLong": "Your name is too long (100 characters at most).",
+      "companyNameRequired": "Enter the company name.",
+      "companyNameTooLong": "The company name is too long (255 characters at most).",
+      "companySizeRequired": "Choose the company size."
     },
     "account": {
       "profileRejected": "The profile could not be saved. Check the details and try again.",

@@ -41,7 +41,7 @@ export default function ContactForm() {
     formState: { errors },
   } = useForm<ContactMessageFormValues, unknown, ContactMessageValues>({
     resolver: zodResolver(contactMessageSchema),
-    mode: "onBlur",
+    mode: "onChange",
     reValidateMode: "onChange",
     defaultValues: {
       name: "",
@@ -78,11 +78,11 @@ export default function ContactForm() {
 
   return (
     <form
-      className="contact_form border-stroke-light bg-surface-elevated flex flex-col gap-5 rounded-xl border p-10 shadow-[0_20px_50px_rgba(30,30,30,0.05)] max-md:p-6.25"
+      className="border-stroke-light bg-surface-elevated flex flex-col gap-5 rounded-xl border p-10 shadow-[0_20px_50px_rgba(30,30,30,0.05)] max-md:p-6.25"
       onSubmit={submit}
       noValidate
     >
-      <div className="contact-form-row grid grid-cols-2 gap-5 *:min-w-0 *:p-0 max-md:grid-cols-1">
+      <div className="grid grid-cols-2 gap-5 *:min-w-0 *:p-0 max-md:grid-cols-1">
         <FormInput
           id="name"
           label={t("contact.name")}
@@ -104,7 +104,7 @@ export default function ContactForm() {
         />
       </div>
 
-      <div className="contact-form-row grid grid-cols-2 gap-5 *:min-w-0 *:p-0 max-md:grid-cols-1">
+      <div className="grid grid-cols-2 gap-5 *:min-w-0 *:p-0 max-md:grid-cols-1">
         <FormInput
           id="contactReason"
           label={t("contact.reason")}
@@ -140,13 +140,7 @@ export default function ContactForm() {
         </p>
       )}
 
-      <Button
-        type="submit"
-        variant="primary"
-        size="md"
-        className="contact_btn mt-1 min-h-11.5 w-full"
-        loading={submitting}
-      >
+      <Button type="submit" variant="primary" size="lg" loading={submitting}>
         {t("contact.send")}
       </Button>
     </form>

@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { phoneValueSchema } from "@/shared/lib/validation/phone";
 
 // Contact form rules, with POST /contact-us's limits
 // (docs/api/contact-join-us-api.md §4.1).
@@ -38,3 +39,34 @@ export const contactMessageSchema = z.object({
 
 export type ContactMessageFormValues = z.input<typeof contactMessageSchema>;
 export type ContactMessageValues = z.output<typeof contactMessageSchema>;
+
+// Join Us rules, with POST /join-us's limits (docs/api/contact-join-us-api.md
+// §4.2). The phone keeps every country (Q4): the API's Saudi rule answers a
+// non-Saudi number with its own 422.
+export const joinUsSchema = z.object({
+  name: z
+    .string({ error: "joinUs.nameRequired" })
+    .trim()
+    .min(1, { error: "joinUs.nameRequired", abort: true })
+    .min(2, { error: "joinUs.nameTooShort" })
+    .max(100, { error: "joinUs.nameTooLong" }),
+  phone: phoneValueSchema,
+  companyName: requiredText(
+    "joinUs.companyNameRequired",
+    255,
+    "joinUs.companyNameTooLong",
+  ),
+  email: z
+    .string({ error: "contact.emailRequired" })
+    .trim()
+    .min(1, { error: "contact.emailRequired" })
+    .pipe(z.email({ error: "contact.invalidEmail" })),
+  /** An `id` from GET /settings → company_sizes. */
+  companySizeId: z
+    .string({ error: "joinUs.companySizeRequired" })
+    .regex(/^[1-9]\d*$/, { error: "joinUs.companySizeRequired" }),
+});
+
+export type JoinUsFormValues = z.input<typeof joinUsSchema>;
+export type JoinUsValues = z.output<typeof joinUsSchema>;
+

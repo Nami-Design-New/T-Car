@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { toValidationError } from "@/shared/lib/validation";
-import { contactMessageSchema } from "./validation";
+import { contactMessageSchema, joinUsSchema } from "./validation";
 
 function fieldErrors(input: unknown) {
   const result = contactMessageSchema.safeParse(input);
@@ -79,5 +79,70 @@ describe("contactMessageSchema", () => {
         message: "m".repeat(5000),
       }),
     ).toBeUndefined();
+  });
+});
+
+describe("joinUsSchema", () => {
+  const valid = {
+    name: " Acme Owner ",
+    phone: { countryCode: "+966", phone: "0512 345 678" },
+    companyName: " Acme ",
+    email: " owner@example.com ",
+    companySizeId: "1",
+  };
+
+  function joinErrors(input: unknown) {
+    const result = joinUsSchema.safeParse(input);
+    return result.success
+      ? undefined
+      : toValidationError(result.error).fieldErrors;
+  }
+
+  it("trims the text and keeps the national number without its leading zero", () => {
+    expect(joinUsSchema.parse(valid)).toEqual({
+      name: "Acme Owner",
+      phone: { countryCode: "+966", phone: "512345678" },
+      companyName: "Acme",
+      email: "owner@example.com",
+      companySizeId: "1",
+    });
+  });
+
+  it("keeps a non-Saudi number for the API to judge", () => {
+    expect(
+      joinUsSchema.parse({
+        ...valid,
+        phone: { countryCode: "+20", phone: "1012345678" },
+      }).phone,
+    ).toEqual({ countryCode: "+20", phone: "1012345678" });
+  });
+
+  it("returns Join Us error keys for required and malformed fields", () => {
+    expect(
+      joinErrors({
+        name: "",
+        phone: { countryCode: "+966", phone: "" },
+        companyName: "",
+        email: "bad",
+        companySizeId: "",
+      }),
+    ).toMatchObject({
+      name: "joinUs.nameRequired",
+      companyName: "joinUs.companyNameRequired",
+      email: "contact.invalidEmail",
+      companySizeId: "joinUs.companySizeRequired",
+    });
+  });
+
+  it("applies the API name limits and a numeric size ID", () => {
+    expect(joinErrors({ ...valid, name: "A" })).toEqual({
+      name: "joinUs.nameTooShort",
+    });
+    expect(joinErrors({ ...valid, name: "a".repeat(101) })).toEqual({
+      name: "joinUs.nameTooLong",
+    });
+    expect(joinErrors({ ...valid, companySizeId: "abc" })).toEqual({
+      companySizeId: "joinUs.companySizeRequired",
+    });
   });
 });

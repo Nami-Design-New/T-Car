@@ -17,7 +17,7 @@ export default function Contact() {
           title={t("contact.title")}
           subtitle={t("contact.subtitle")}
         />
-        <div className="grid grid-cols-[380px_1fr] gap-8.75 max-lg:mt-8.5 max-lg:grid-cols-1">
+        <div className="mt-6 grid grid-cols-[380px_1fr] gap-8.75 max-lg:mt-8.5 max-lg:grid-cols-1">
           <ContactInfo />
           <ContactForm />
         </div>

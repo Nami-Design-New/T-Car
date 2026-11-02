@@ -403,12 +403,7 @@
       "label": "السجل التجاري",
       "allowedFormats": "الصيغ المسموح بها: PDF, JPG, PNG, WEBP"
     },
-    "companySizes": {
-      "small": "من 1 إلى 10 موظفين",
-      "medium": "من 11 إلى 50 موظفًا",
-      "large": "من 51 إلى 200 موظف",
-      "enterprise": "201 موظف فأكثر"
-    },
+    "companySizeOption": "{size} موظف",
     "submit": "إرسال الطلب"
   },
   "downloadApp": {
@@ -571,6 +566,14 @@
       "bookingNumberTooLong": "رقم الحجز طويل جدًا.",
       "messageRequired": "أدخل رسالتك.",
       "messageTooLong": "رسالتك طويلة جدًا (5000 حرف كحد أقصى)."
+    },
+    "joinUs": {
+      "nameRequired": "أدخل اسمك.",
+      "nameTooShort": "يجب ألا يقل الاسم عن حرفين.",
+      "nameTooLong": "الاسم طويل جدًا (100 حرف كحد أقصى).",
+      "companyNameRequired": "أدخل اسم الشركة.",
+      "companyNameTooLong": "اسم الشركة طويل جدًا (255 حرفًا كحد أقصى).",
+      "companySizeRequired": "اختر حجم الشركة."
     },
     "account": {
       "profileRejected": "تعذر حفظ الملف الشخصي. تحقق من البيانات وحاول مرة أخرى.",

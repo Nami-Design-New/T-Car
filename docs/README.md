@@ -431,6 +431,24 @@ stay inline. Removed: `contact.reasons.*`, `contact.sent`, and
 test double of the live `ContactApi` (failure rule: an email without "@" is a
 422).
 
+**Contact Us / Join Us API fraction C3 (2026-11-02), done (send blocked on the
+backend):** The Join Us dialog is a real form (RHF + Zod, `joinUsSchema`): name
+2–100, phone through the shared `phoneValueSchema` (every country kept, Q4; the
+national number is sent), company name, email, and a company size. It posts to
+`POST /join-us` through `joinUsApi.sendJoinRequest` on `publicServerHttp` with
+`company_size_id` (Bruno's `size` is rejected) and `sendJoinRequestAction`.
+Success is a toast and the dialog closes; a backend 422 is a toast and keeps
+the dialog and the input; other failures are inline. The sizes come from the new
+shared **`features/settings`** feature (`GET /settings`, public): `api.ts`
+(server-only `settingsApi`, maps only the fields in use: `companySizes`),
+`queries.ts` (`getSettings`, React `cache`, for server components),
+`actions.ts` (`getSettingsAction`, for client components), and `index.ts`
+(the action and the `AppSettings` / `CompanySize` types); other features read
+the settings through it and add the fields they need to `AppSettings`. The size
+select loads them when the dialog opens, with a loading status and an inline
+error with retry. Every valid Join Us is an HTTP 500 on the backend today
+(`JoinUsController.php` line 18), shown as the inline server error.
+
 **Phase 1 import-boundary remediation (2026-10-20):** The account shell now receives points data from its App Router section layout and imports the summary card through `features/points/index.ts`. The root layout now supplies the authenticated notifications count to the layout feature. `MapLocationModal` and `LocationData` now live in `shared/ui` and `shared/lib`, respectively, with every caller using that shared API. Rental search now consumes the cars feature only through its public index; that index no longer exposes the server-only `getOffices` read, which the home route imports directly. The initial lint audit is reduced from nine to two boundary errors; both remaining violations are in wallet's bank-account action dependency.
 
 **Phone field replacement follow-up (2026-10-26), fraction 1:** Added the
