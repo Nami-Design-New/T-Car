@@ -11,5 +11,6 @@ export type {
   HomeContent,
   HomeHeroContent,
   HomeJoinUsContent,
+  HomePartner,
   HomeSectionContent,
 } from "./model";

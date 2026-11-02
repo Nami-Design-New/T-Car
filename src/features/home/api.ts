@@ -9,6 +9,7 @@ import { fail, ok, type Result } from "@/shared/lib/result";
 import type {
   ContactMessage,
   HomeContent,
+  HomePartner,
   FAQItem,
   JoinUsRequest,
 } from "./model";
@@ -38,6 +39,10 @@ interface HomeContentDto {
 
 export interface FaqsApi {
   listFaqs(locale: string): Promise<FAQItem[]>;
+}
+
+export interface PartnersApi {
+  listPartners(locale: string): Promise<HomePartner[]>;
 }
 
 export interface ContactApi {
@@ -167,6 +172,43 @@ async function listFaqs(locale: string): Promise<FAQItem[]> {
 }
 
 export const faqsApi: FaqsApi = { listFaqs };
+
+function isPartner(value: unknown): value is {
+  id: number;
+  name: string;
+  image_url: string;
+} {
+  if (!isRecord(value)) return false;
+  return (
+    typeof value.id === "number" &&
+    Number.isFinite(value.id) &&
+    typeof value.name === "string" &&
+    typeof value.image_url === "string"
+  );
+}
+
+/** GET /partners: public, localized names, no pagination (home-api.md). */
+async function listPartners(locale: string): Promise<HomePartner[]> {
+  const response = await publicSiteServerHttp.get<ApiEnvelope<unknown>>(
+    "/partners",
+    { headers: { "Accept-Language": locale } },
+  );
+  if (
+    !isApiEnvelope(response) ||
+    response.code !== 200 ||
+    !Array.isArray(response.data) ||
+    !response.data.every(isPartner)
+  ) {
+    throw new AppError("server");
+  }
+  return response.data.map(({ id, name, image_url }) => ({
+    id: String(id),
+    name,
+    imageUrl: image_url,
+  }));
+}
+
+export const partnersApi: PartnersApi = { listPartners };
 
 /**
  * POST /contact-us as JSON. The endpoint is public, so no token is sent

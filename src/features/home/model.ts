@@ -6,6 +6,13 @@ export interface FAQItem {
   answer: string;
 }
 
+/** A partner logo in the home carousel (GET /partners). */
+export interface HomePartner {
+  id: string;
+  name: string;
+  imageUrl: string;
+}
+
 export interface HomeHeroContent {
   eyebrow: string;
   title: string;

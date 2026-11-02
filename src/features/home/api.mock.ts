@@ -1,7 +1,7 @@
 import { AppError } from "@/shared/lib/errors";
 import { fail, ok } from "@/shared/lib/result";
-import type { ContactApi, FaqsApi } from "./api";
-import type { FAQItem } from "./model";
+import type { ContactApi, FaqsApi, PartnersApi } from "./api";
+import type { FAQItem, HomePartner } from "./model";
 
 /*
  * Test double of the live `ContactApi` (no production caller, no mock flag).
@@ -60,5 +60,43 @@ export const faqsMock: FaqsApi = {
   async listFaqs(locale) {
     if (locale !== "ar" && locale !== "en") throw new AppError("server");
     return [...FAQS[locale]];
+  },
+};
+
+const PARTNERS: Record<"ar" | "en", HomePartner[]> = {
+  en: [
+    {
+      id: "1",
+      name: "Partner 1",
+      imageUrl: "https://t-car.app/storage/partners/partner-1.webp",
+    },
+    {
+      id: "2",
+      name: "Partner 2",
+      imageUrl: "https://t-car.app/storage/partners/partner-2.webp",
+    },
+  ],
+  ar: [
+    {
+      id: "1",
+      name: "شريك 1",
+      imageUrl: "https://t-car.app/storage/partners/partner-1.webp",
+    },
+    {
+      id: "2",
+      name: "شريك 2",
+      imageUrl: "https://t-car.app/storage/partners/partner-2.webp",
+    },
+  ],
+};
+
+/**
+ * Test double of the public partners read. Stateless and safe for server tests.
+ * Failure rule: unsupported locale values throw a server AppError.
+ */
+export const partnersMock: PartnersApi = {
+  async listPartners(locale) {
+    if (locale !== "ar" && locale !== "en") throw new AppError("server");
+    return [...PARTNERS[locale]];
   },
 };
