@@ -10,6 +10,7 @@ import type {
   ContactMessage,
   HomeContent,
   HomePartner,
+  HomeWhyUsCard,
   FAQItem,
   JoinUsRequest,
 } from "./model";
@@ -27,6 +28,7 @@ interface HomeSectionDto {
 interface HomeContentDto {
   hero: HomeSectionDto;
   partners: HomeSectionDto;
+  why_us: HomeSectionDto & { image: string };
   support: HomeSectionDto;
   apps: HomeSectionDto;
   contacts: HomeSectionDto & {
@@ -43,6 +45,10 @@ export interface FaqsApi {
 
 export interface PartnersApi {
   listPartners(locale: string): Promise<HomePartner[]>;
+}
+
+export interface WhyUsApi {
+  listCards(locale: string): Promise<HomeWhyUsCard[]>;
 }
 
 export interface ContactApi {
@@ -75,6 +81,9 @@ function isHomeContentData(value: unknown): value is HomeContentDto {
   if (
     !isHomeSectionContent(value.hero) ||
     !isHomeSectionContent(value.partners) ||
+    !isRecord(value.why_us) ||
+    !isHomeSectionContent(value.why_us) ||
+    typeof value.why_us.image !== "string" ||
     !isHomeSectionContent(value.support) ||
     !isHomeSectionContent(value.apps) ||
     !isRecord(value.contacts) ||
@@ -116,6 +125,7 @@ async function getContent(locale: string): Promise<HomeContent> {
   return {
     hero: mapHomeSection(data.hero),
     partners: mapHomeSection(data.partners),
+    whyUs: { ...mapHomeSection(data.why_us), image: data.why_us.image },
     support: mapHomeSection(data.support),
     apps: mapHomeSection(data.apps),
     contacts: {
@@ -209,6 +219,46 @@ async function listPartners(locale: string): Promise<HomePartner[]> {
 }
 
 export const partnersApi: PartnersApi = { listPartners };
+
+function isWhyUsCard(value: unknown): value is {
+  id: number;
+  image_url: string;
+  title: string;
+  description: string;
+} {
+  if (!isRecord(value)) return false;
+  return (
+    typeof value.id === "number" &&
+    Number.isFinite(value.id) &&
+    typeof value.image_url === "string" &&
+    typeof value.title === "string" &&
+    typeof value.description === "string"
+  );
+}
+
+/** GET /why-us: public, localized copy, no pagination (home-api.md). */
+async function listCards(locale: string): Promise<HomeWhyUsCard[]> {
+  const response = await publicSiteServerHttp.get<ApiEnvelope<unknown>>(
+    "/why-us",
+    { headers: { "Accept-Language": locale } },
+  );
+  if (
+    !isApiEnvelope(response) ||
+    response.code !== 200 ||
+    !Array.isArray(response.data) ||
+    !response.data.every(isWhyUsCard)
+  ) {
+    throw new AppError("server");
+  }
+  return response.data.map(({ id, title, description, image_url }) => ({
+    id: String(id),
+    title,
+    description,
+    imageUrl: image_url,
+  }));
+}
+
+export const whyUsApi: WhyUsApi = { listCards };
 
 /**
  * POST /contact-us as JSON. The endpoint is public, so no token is sent

@@ -414,22 +414,6 @@
     "appStoreAlt": "حمّل من App Store",
     "playStoreAlt": "احصل عليه من Google Play"
   },
-  "whyChooseUs": {
-    "smallTitle": "لماذا نحن",
-    "title": "لماذا تختار",
-    "brandQuestion": "TCar؟",
-    "description": "نجعل تجربة استئجار السيارة أسهل وأسرع وأكثر أمانًا، مع أفضل الأسعار وخدمة احترافية أينما كنت.",
-    "features": {
-      "bestCompanies": "أفضل شركات التأجير",
-      "bestCompaniesDescription": "نتعاون مع أفضل شركات ومعارض تأجير السيارات لتوفير تجربة موثوقة وآمنة.",
-      "roundTheClockSupport": "دعم على مدار الساعة",
-      "roundTheClockSupportDescription": "فريق خدمة العملاء متواجد 24/7 للإجابة عن جميع استفساراتك.",
-      "comprehensiveInsurance": "تأمين شامل",
-      "comprehensiveInsuranceDescription": "خيارات تأمين متعددة تمنحك راحة البال أثناء رحلتك.",
-      "flexiblePickup": "استلام وتسليم مرن",
-      "flexiblePickupDescription": "اختر المكان والوقت المناسبين لاستلام وتسليم سيارتك."
-    }
-  },
   "contact": {
     "smallTitle": "تواصل معنا",
     "title": "يسعدنا سماعك",

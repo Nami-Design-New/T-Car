@@ -416,22 +416,6 @@
     "appStoreAlt": "Download on the App Store",
     "playStoreAlt": "Get it on Google Play"
   },
-  "whyChooseUs": {
-    "smallTitle": "Why us",
-    "title": "Why choose",
-    "brandQuestion": "TCar?",
-    "description": "We make car rental easier, faster, and safer, with the best prices and professional service wherever you are.",
-    "features": {
-      "bestCompanies": "Top rental companies",
-      "bestCompaniesDescription": "We work with the best car rental companies and showrooms to provide a reliable and safe experience.",
-      "roundTheClockSupport": "Round-the-clock support",
-      "roundTheClockSupportDescription": "Our customer service team is available 24/7 to answer all your questions.",
-      "comprehensiveInsurance": "Comprehensive insurance",
-      "comprehensiveInsuranceDescription": "Multiple insurance options give you peace of mind throughout your journey.",
-      "flexiblePickup": "Flexible pickup and return",
-      "flexiblePickupDescription": "Choose the right place and time to pick up and return your car."
-    }
-  },
   "contact": {
     "smallTitle": "Contact Us",
     "title": "We'd Love to Hear From You",

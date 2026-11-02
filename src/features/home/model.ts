@@ -13,6 +13,14 @@ export interface HomePartner {
   imageUrl: string;
 }
 
+/** A card in the home Why Us section (GET /why-us). */
+export interface HomeWhyUsCard {
+  id: string;
+  title: string;
+  description: string;
+  imageUrl: string;
+}
+
 export interface HomeHeroContent {
   eyebrow: string;
   title: string;
@@ -30,6 +38,11 @@ export interface HomeContactContent extends HomeSectionContent {
   formDescription: string;
 }
 
+export interface HomeWhyUsContent extends HomeSectionContent {
+  /** Section background image. */
+  image: string;
+}
+
 export interface HomeJoinUsContent {
   title: string;
   description: string;
@@ -39,6 +52,7 @@ export interface HomeJoinUsContent {
 export interface HomeContent {
   hero: HomeHeroContent;
   partners: HomeSectionContent;
+  whyUs: HomeWhyUsContent;
   support: HomeSectionContent;
   apps: HomeSectionContent;
   contacts: HomeContactContent;

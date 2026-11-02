@@ -14,7 +14,7 @@ vi.mock("@/services/http/server", () => ({
   serverHttp: { post: authPost },
 }));
 
-import { contactApi, joinUsApi, partnersApi } from "./api";
+import { contactApi, joinUsApi, partnersApi, whyUsApi } from "./api";
 
 // Observed POST /contact-us success (docs/api/contact-join-us-api.md §3.1).
 const created = {
@@ -188,6 +188,47 @@ describe("partnersApi.listPartners", () => {
       code: 200,
     });
     await expect(partnersApi.listPartners("en")).rejects.toMatchObject({
+      kind: "server",
+    });
+  });
+});
+
+describe("whyUsApi.listCards", () => {
+  it("reads the public site endpoint in the locale and maps the fields", async () => {
+    // Observed GET /why-us record (docs/api/home-api.md).
+    siteGet.mockResolvedValue({
+      data: [
+        {
+          id: 1,
+          image_url: "https://t-car.app/storage/why-us/card.jpg",
+          title: "Top rental companies",
+          description: "We work with the best car rental companies.",
+        },
+      ],
+      message: "",
+      code: 200,
+    });
+
+    await expect(whyUsApi.listCards("en")).resolves.toEqual([
+      {
+        id: "1",
+        title: "Top rental companies",
+        description: "We work with the best car rental companies.",
+        imageUrl: "https://t-car.app/storage/why-us/card.jpg",
+      },
+    ]);
+    expect(siteGet).toHaveBeenCalledWith("/why-us", {
+      headers: { "Accept-Language": "en" },
+    });
+  });
+
+  it("throws a server error for a record without a title", async () => {
+    siteGet.mockResolvedValue({
+      data: [{ id: 1, image_url: "https://t-car.app/x.jpg", description: "" }],
+      message: "",
+      code: 200,
+    });
+    await expect(whyUsApi.listCards("ar")).rejects.toMatchObject({
       kind: "server",
     });
   });

@@ -1,7 +1,7 @@
 import { AppError } from "@/shared/lib/errors";
 import { fail, ok } from "@/shared/lib/result";
-import type { ContactApi, FaqsApi, PartnersApi } from "./api";
-import type { FAQItem, HomePartner } from "./model";
+import type { ContactApi, FaqsApi, PartnersApi, WhyUsApi } from "./api";
+import type { FAQItem, HomePartner, HomeWhyUsCard } from "./model";
 
 /*
  * Test double of the live `ContactApi` (no production caller, no mock flag).
@@ -98,5 +98,37 @@ export const partnersMock: PartnersApi = {
   async listPartners(locale) {
     if (locale !== "ar" && locale !== "en") throw new AppError("server");
     return [...PARTNERS[locale]];
+  },
+};
+
+const WHY_US_CARDS: Record<"ar" | "en", HomeWhyUsCard[]> = {
+  en: [
+    {
+      id: "1",
+      title: "Top rental companies",
+      description:
+        "We work with the best car rental companies and showrooms to provide a reliable and safe experience.",
+      imageUrl: "https://t-car.app/storage/why-us/card-1.jpg",
+    },
+  ],
+  ar: [
+    {
+      id: "1",
+      title: "أفضل شركات التأجير",
+      description:
+        "نتعاون مع أفضل شركات ومعارض تأجير السيارات لتوفير تجربة موثوقة وآمنة.",
+      imageUrl: "https://t-car.app/storage/why-us/card-1.jpg",
+    },
+  ],
+};
+
+/**
+ * Test double of the public Why Us read. Stateless and safe for server tests.
+ * Failure rule: unsupported locale values throw a server AppError.
+ */
+export const whyUsMock: WhyUsApi = {
+  async listCards(locale) {
+    if (locale !== "ar" && locale !== "en") throw new AppError("server");
+    return [...WHY_US_CARDS[locale]];
   },
 };
