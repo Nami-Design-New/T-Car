@@ -6,6 +6,12 @@ export interface FAQItem {
   answer: string;
 }
 
+export interface HomeHeroContent {
+  eyebrow: string;
+  title: string;
+  description: string;
+}
+
 export interface ContactMessage {
   name: string;
   email: string;

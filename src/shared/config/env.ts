@@ -8,4 +8,8 @@ export const env = {
   publicApiUrl,
   /** API base URL for requests sent from the server. Falls back to the public one. */
   serverApiUrl: process.env.API_URL || publicApiUrl,
+  /** API root for public site endpoints such as `GET /home` (outside `/user`). */
+  siteApiUrl:
+    process.env.SITE_API_URL ||
+    (process.env.API_URL || publicApiUrl).replace(/\/user\/?$/, ""),
 };

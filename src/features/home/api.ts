@@ -1,9 +1,21 @@
 import "server-only";
 import { isApiEnvelope, type ApiEnvelope } from "@/services/http/envelope";
-import { publicServerHttp } from "@/services/http/server";
+import {
+  publicServerHttp,
+  publicSiteServerHttp,
+} from "@/services/http/server";
 import { AppError } from "@/shared/lib/errors";
 import { fail, ok, type Result } from "@/shared/lib/result";
-import type { ContactMessage, FAQItem, JoinUsRequest } from "./model";
+import type {
+  ContactMessage,
+  FAQItem,
+  HomeHeroContent,
+  JoinUsRequest,
+} from "./model";
+
+export interface HomeApi {
+  getHeroContent(locale: string): Promise<HomeHeroContent>;
+}
 
 export interface FaqsApi {
   listFaqs(locale: string): Promise<FAQItem[]>;
@@ -19,6 +31,47 @@ export interface JoinUsApi {
   /** Sends a partner request; success carries the backend's message. */
   sendJoinRequest(request: JoinUsRequest): Promise<Result<null>>;
 }
+
+function isHomeHeroContent(value: unknown): value is {
+  sub_title: string;
+  title: string;
+  description: string;
+} {
+  if (typeof value !== "object" || value === null) return false;
+  const hero = value as Record<string, unknown>;
+  return (
+    typeof hero.sub_title === "string" &&
+    typeof hero.title === "string" &&
+    typeof hero.description === "string"
+  );
+}
+
+async function getHeroContent(locale: string): Promise<HomeHeroContent> {
+  const response = await publicSiteServerHttp.get<ApiEnvelope<unknown>>("/home", {
+    headers: { "Accept-Language": locale },
+  });
+  if (
+    !isApiEnvelope(response) ||
+    response.code !== 200 ||
+    typeof response.data !== "object" ||
+    response.data === null ||
+    !isHomeHeroContent((response.data as Record<string, unknown>).hero)
+  ) {
+    throw new AppError("server");
+  }
+  const hero = (
+    response.data as {
+      hero: { sub_title: string; title: string; description: string };
+    }
+  ).hero;
+  return {
+    eyebrow: hero.sub_title,
+    title: hero.title,
+    description: hero.description,
+  };
+}
+
+export const homeApi: HomeApi = { getHeroContent };
 
 /** Success is body code 200 (201 accepted too); `data` is null. */
 const isSuccessCode = (code: number) => code === 200 || code === 201;
