@@ -37,6 +37,35 @@ export type BookingType =
   | "airport"
   | "international";
 
+export type BookingTypeAvailability = Record<BookingType, boolean>;
+
+export const BOOKING_TYPES: readonly BookingType[] = [
+  "daily",
+  "monthly",
+  "station",
+  "airport",
+  "international",
+];
+
+export const DEFAULT_BOOKING_TYPES: BookingTypeAvailability = {
+  daily: true,
+  monthly: true,
+  station: true,
+  airport: true,
+  international: true,
+};
+
+function isBookingType(value: string): value is BookingType {
+  return BOOKING_TYPES.includes(value as BookingType);
+}
+
+export function isBookingTypeEnabled(
+  value: string | undefined,
+  availability: BookingTypeAvailability,
+): boolean {
+  return !value || !isBookingType(value) || availability[value];
+}
+
 export interface PriceFilterRange {
   min: number;
   max: number;

@@ -10,7 +10,7 @@ import {
   type CarFilterDraft,
 } from "@/features/cars";
 import { useRentalFlow } from "../hooks/useRentalFlow";
-import type { RentalSearchOptions } from "../model";
+import type { RentalSearchOptions, RentalType } from "../model";
 import HeroBackground from "./HeroBackground";
 import HeroFilterDrawer from "./HeroFilterDrawer";
 import HeroHeader from "./HeroHeader";
@@ -21,9 +21,10 @@ import RentalTabs from "./RentalTabs";
 interface Props {
   options: RentalSearchOptions;
   brands: CarBrand[];
+  bookingTypes: Record<RentalType, boolean>;
 }
 
-export default function Hero({ options, brands }: Props) {
+export default function Hero({ options, brands, bookingTypes }: Props) {
   const router = useRouter();
   const currentSearchParams = useSearchParams();
   const [showFilters, setShowFilters] = useState(false);
@@ -60,7 +61,7 @@ export default function Hero({ options, brands }: Props) {
           onSearch={handleSearch}
           onOpenFilters={() => setShowFilters(true)}
         />
-        <RentalTabs onSelect={flow.start} />
+        <RentalTabs onSelect={flow.start} availability={bookingTypes} />
       </div>
       <HeroFilterDrawer
         open={showFilters}

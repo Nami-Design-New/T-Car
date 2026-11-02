@@ -14,6 +14,7 @@ import type { RentalType } from "../model";
 
 interface Props {
   onSelect: (type: RentalType) => void;
+  availability: Record<RentalType, boolean>;
 }
 
 const tabs: {
@@ -54,13 +55,13 @@ const tabs: {
   },
 ];
 
-export default function RentalTabs({ onSelect }: Props) {
+export default function RentalTabs({ onSelect, availability }: Props) {
   const t = useTranslations();
 
   return (
     <div className=" rounded-2xl bg-surface-elevated p-6 max-md:p-3 shadow-[0_18px_45px_rgba(30,30,30,0.12)]">
       <div className=" grid grid-cols-5 gap-4.5 max-lg:grid-cols-2 max-md:gap-2.5">
-        {tabs.map((tab) => (
+        {tabs.filter((tab) => availability[tab.type]).map((tab) => (
           <button
             key={tab.id}
             type="button"

@@ -11,7 +11,7 @@ vi.mock("@/shared/lib/report", () => ({ reportError }));
 vi.mock("./api", () => ({ settingsApi: { getSettings } }));
 
 import { MOCK_SETTINGS } from "./api.mock";
-import { getSiteSettings } from "./queries";
+import { getBookingTypeAvailability, getSiteSettings } from "./queries";
 
 beforeEach(() => vi.clearAllMocks());
 
@@ -32,6 +32,38 @@ describe("getSiteSettings", () => {
     });
     expect(reportError).toHaveBeenCalledWith(expect.any(AppError), {
       scope: "settings.site",
+    });
+  });
+});
+
+describe("getBookingTypeAvailability", () => {
+  it("keeps missing switches enabled and honors explicit false values", async () => {
+    getSettings.mockResolvedValue({
+      ...MOCK_SETTINGS,
+      bookingTypes: { daily: false, airport: false },
+    });
+
+    await expect(getBookingTypeAvailability()).resolves.toEqual({
+      daily: false,
+      monthly: true,
+      station: true,
+      airport: false,
+      international: true,
+    });
+  });
+
+  it("reports a failed settings read and keeps all options available", async () => {
+    getSettings.mockRejectedValue(new AppError("server"));
+
+    await expect(getBookingTypeAvailability()).resolves.toEqual({
+      daily: true,
+      monthly: true,
+      station: true,
+      airport: true,
+      international: true,
+    });
+    expect(reportError).toHaveBeenCalledWith(expect.any(AppError), {
+      scope: "settings.booking-types",
     });
   });
 });

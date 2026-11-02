@@ -7,6 +7,9 @@ import {
 import { getCarBrands, getOfficeCarGroups } from "@/features/cars/queries";
 import { Link } from "@/i18n/navigation";
 import { getTranslations } from "next-intl/server";
+import { notFound } from "next/navigation";
+import { getBookingTypeAvailability } from "@/features/settings/queries";
+import { isBookingTypeEnabled } from "@/features/settings";
 import { FiArrowLeft } from "react-icons/fi";
 
 interface Props {
@@ -14,8 +17,12 @@ interface Props {
 }
 
 export default async function CarsPage({ searchParams }: Props) {
-  const t = await getTranslations();
-  const params = parseCarSearchParams(await searchParams);
+  const [t, params, bookingTypes] = await Promise.all([
+    getTranslations(),
+    searchParams.then(parseCarSearchParams),
+    getBookingTypeAvailability(),
+  ]);
+  if (!isBookingTypeEnabled(params.context.type, bookingTypes)) notFound();
   const [officeGroups, brands] = await Promise.all([
     getOfficeCarGroups(params),
     getCarBrands(),

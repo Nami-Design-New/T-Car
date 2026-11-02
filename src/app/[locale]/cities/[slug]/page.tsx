@@ -12,6 +12,8 @@ import {
 } from "@/features/cars/queries";
 import { CityHero } from "@/features/cities";
 import { getCityDetails } from "@/features/cities/queries";
+import { getBookingTypeAvailability } from "@/features/settings/queries";
+import { isBookingTypeEnabled } from "@/features/settings";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -28,14 +30,18 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function CityDetailsPage({ params, searchParams }: Props) {
-  const { slug } = await params;
-  const filters = parseCarSearchParams(await searchParams);
-  const [city, officeGroups, brands] = await Promise.all([
-    getCityDetails(slug),
+  const [{ slug }, filters, bookingTypes] = await Promise.all([
+    params,
+    searchParams.then(parseCarSearchParams),
+    getBookingTypeAvailability(),
+  ]);
+  if (!isBookingTypeEnabled(filters.context.type, bookingTypes)) notFound();
+  const city = await getCityDetails(slug);
+  if (!city) notFound();
+  const [officeGroups, brands] = await Promise.all([
     getOfficeCarGroupsForCity(slug, filters),
     getCarBrands(),
   ]);
-  if (!city) notFound();
 
   return (
     <>
