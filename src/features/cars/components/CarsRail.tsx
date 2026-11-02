@@ -36,7 +36,7 @@ export default function CarsRail({
   if (cars.length === 0) return null;
 
   return (
-    <section className="pt-12 pb-0" id={id}>
+    <section className="pt-12 pb-0 lg:pt-24" id={id}>
       <div className="mx-auto w-full max-w-7xl px-2">
         <div className="mb-6 flex items-center justify-between gap-4 max-md:mb-3">
           <SectionTitle title={title} align="left" />

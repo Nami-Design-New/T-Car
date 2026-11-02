@@ -11,7 +11,7 @@ export default function CTA() {
   const [joinUsOpen, setJoinUsOpen] = useState(false);
 
   return (
-    <section className="mb-20 max-md:mb-12">
+    <section className="mb-20 max-md:mb-12 lg:mb-24">
       <div className="mx-auto w-full max-w-7xl px-2">
         <div className="relative overflow-hidden rounded-xl bg-[linear-gradient(135deg,var(--color-action-primary),#1a6bd4)] px-7.5 py-15 text-center before:absolute before:-start-0.5 before:top-[29%] before:z-[1] before:size-80 before:bg-[url('/images/brand/fav.svg')] before:bg-contain before:bg-center before:bg-no-repeat before:opacity-[0.09] before:brightness-0 before:invert before:content-[''] max-lg:rounded-2xl max-md:px-5 max-md:py-7.5">
           <div className="cta_pattern pointer-events-none absolute inset-0 [background-image:radial-gradient(circle_at_20%_20%,white_2px,transparent_2px),radial-gradient(circle_at_80%_40%,white_2px,transparent_2px),radial-gradient(circle_at_40%_80%,white_2px,transparent_2px)] [background-size:80px_80px] opacity-[0.08]" />

@@ -12,7 +12,7 @@ export default function DownloadApp() {
   const t = useTranslations("downloadApp");
 
   return (
-    <section className="overflow-visible pb-20 max-md:pb-12">
+    <section className="overflow-visible pb-20 max-md:pb-12 lg:pb-24">
       <div className="mx-auto w-full max-w-7xl px-2">
         <div className="text-text-on-brand relative flex min-h-105 items-center justify-end overflow-visible rounded-2xl bg-[linear-gradient(135deg,var(--color-brand),#1a6bd4)] px-17.5 py-15 before:pointer-events-none before:absolute before:inset-0 before:rounded-[inherit] before:bg-[radial-gradient(circle_at_90%_20%,rgba(31,127,250,0.18),transparent_30%),radial-gradient(circle_at_20%_80%,rgba(255,255,255,0.08),transparent_35%)] before:content-[''] max-lg:min-h-0 max-lg:flex-col max-lg:rounded-xl max-lg:px-4.25 max-lg:py-8 max-lg:text-center">
           <div className="absolute inset-e-17.5 -top-25 z-5 hidden w-95 max-lg:relative max-lg:inset-auto max-lg:mx-auto max-lg:-mt-25 max-lg:mb-6.25 max-lg:w-65 md:block">

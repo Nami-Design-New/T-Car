@@ -38,7 +38,7 @@ export default function WhyChooseUs() {
 
   return (
     <section
-      className="relative my-12.5 overflow-hidden bg-[linear-gradient(rgba(30,30,30,0.72),rgba(30,30,30,0.72)),url('/images/hero/hero-2.png')] bg-cover bg-fixed bg-center py-20 max-md:py-12"
+      className="relative my-12.5 lg:my-24 overflow-hidden bg-[linear-gradient(rgba(30,30,30,0.72),rgba(30,30,30,0.72)),url('/images/hero/hero-2.png')] bg-cover bg-fixed bg-center py-20 max-md:py-12"
       id="why-choose-us"
     >
       <div className="overlay absolute inset-0 backdrop-blur-[2px]" />

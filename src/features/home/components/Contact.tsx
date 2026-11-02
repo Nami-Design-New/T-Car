@@ -10,7 +10,7 @@ export default function Contact() {
   const t = useTranslations();
 
   return (
-    <section className="pb-20 max-md:pb-12" id="contact">
+    <section className="pb-20 max-md:pb-12 lg:pb-24" id="contact">
       <div className="mx-auto w-full max-w-7xl px-2">
         <SectionTitle
           smallTitle={t("contact.smallTitle")}
