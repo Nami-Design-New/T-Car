@@ -13,6 +13,7 @@ import {
 import { CityHero } from "@/features/cities";
 import { getCityDetails } from "@/features/cities/queries";
 import { getBookingTypeAvailability } from "@/features/settings/queries";
+import { getSiteSettings } from "@/features/settings/queries";
 import { isBookingTypeEnabled } from "@/features/settings";
 
 interface Props {
@@ -30,11 +31,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function CityDetailsPage({ params, searchParams }: Props) {
-  const [{ slug }, filters, bookingTypes] = await Promise.all([
+  const [{ slug }, rawSearchParams, bookingTypes, site] = await Promise.all([
     params,
-    searchParams.then(parseCarSearchParams),
+    searchParams,
     getBookingTypeAvailability(),
+    getSiteSettings(),
   ]);
+  const priceRange = site.priceFilterRange;
+  const filters = parseCarSearchParams(rawSearchParams, priceRange);
   if (!isBookingTypeEnabled(filters.context.type, bookingTypes)) notFound();
   const city = await getCityDetails(slug);
   if (!city) notFound();
@@ -52,7 +56,7 @@ export default async function CityDetailsPage({ params, searchParams }: Props) {
           {/* <SortBar resultsCount={officeGroups.reduce((count, group) => count + group.cars.length)} value={filters.sort} /> */}
 
           <div className="city-listings-grid grid grid-cols-[280px_1fr] items-start gap-8 max-lg:grid-cols-1">
-            <CarFilters brands={brands} />
+            <CarFilters brands={brands} priceRange={priceRange} />
 
             <div className="office-rows flex min-w-0 flex-col gap-3">
               {officeGroups.map(({ office, cars }) => (

@@ -17,6 +17,8 @@ export interface Props {
   suffix?: ReactNode;
   amountText?: ReactNode;
   amountClassName?: string;
+  /** Render the SAR mark only, for currency indicators beside editable values. */
+  currencyOnly?: boolean;
 }
 
 /** An amount in SAR: the number with the riyal sign (the app's only currency). */
@@ -27,6 +29,7 @@ export function Price({
   suffix,
   amountText,
   amountClassName,
+  currencyOnly = false,
   className,
 }: Props) {
   const t = useTranslations("states.price");
@@ -36,15 +39,18 @@ export function Price({
   return (
     <Wrapper
       className={cn(
-        "price inline-flex items-center gap-1.5 whitespace-nowrap",
+        "price inline-flex items-center whitespace-nowrap",
+        currencyOnly ? "gap-0" : "gap-1.5",
         `price--${size}`,
         strike && "text-text-subtle line-through",
         className,
       )}
     >
-      <span className={cn(amountClassName)}>
-        {amountText ?? formatAmount(amount)}
-      </span>
+      {!currencyOnly && (
+        <span className={cn(amountClassName)}>
+          {amountText ?? formatAmount(amount)}
+        </span>
+      )}
       <Image
         src={sarIcon}
         alt={t("sar")}

@@ -1,5 +1,5 @@
-import { FiDollarSign } from 'react-icons/fi';
 import { useTranslations } from 'next-intl';
+import { Price } from '@/shared/ui/Price';
 interface PriceRangeSliderProps {
   min: number;
   max: number;
@@ -25,7 +25,6 @@ export default function PriceRangeSlider({
     <div className="filter_group mb-7 border-b border-stroke-light pb-7 last:mb-0 last:border-0 last:pb-0">
       <div className="filter_title mb-[18px] flex items-center justify-between">
         <h4 className="m-0 flex items-center gap-2 text-[15px] font-bold text-text-primary [&>svg]:text-action-primary">
-          <FiDollarSign className="text-action-primary" />
           {t('priceRange')}
         </h4>
         <button type="button" className="view_all border-0 bg-transparent text-[13px] font-semibold text-action-primary" onClick={onClear}>
@@ -58,7 +57,7 @@ export default function PriceRangeSlider({
       </div>
       <div className="price_inputs flex gap-3">
         <div className="price_box flex flex-1 items-center gap-2.5 rounded-md border border-stroke-light bg-surface-on-background px-3 py-2.5">
-          <FiDollarSign className="shrink-0 text-lg text-action-primary" />
+          <Price amount={minValue} currencyOnly size="sm" />
           <div>
             <span className="price_label text-[11px] font-medium text-text-placeholder">{t('minimum')}</span>
             <input
@@ -72,7 +71,7 @@ export default function PriceRangeSlider({
           </div>
         </div>
         <div className="price_box flex flex-1 items-center gap-2.5 rounded-md border border-stroke-light bg-surface-on-background px-3 py-2.5">
-          <FiDollarSign className="shrink-0 text-lg text-action-primary" />
+          <Price amount={maxValue} currencyOnly size="sm" />
           <div>
             <span className="price_label text-[11px] font-medium text-text-placeholder">{t('maximum')}</span>
             <input

@@ -31,11 +31,7 @@ export interface SiteLinks {
 }
 
 export type BookingType =
-  | "daily"
-  | "monthly"
-  | "station"
-  | "airport"
-  | "international";
+  "daily" | "monthly" | "station" | "airport" | "international";
 
 export type BookingTypeAvailability = Record<BookingType, boolean>;
 
@@ -71,6 +67,11 @@ export interface PriceFilterRange {
   max: number;
 }
 
+export const DEFAULT_PRICE_FILTER_RANGE: PriceFilterRange = {
+  min: 5,
+  max: 55,
+};
+
 export interface MapDefaultPosition {
   lat: number;
   lng: number;
@@ -90,4 +91,6 @@ export interface AppSettings {
 }
 
 /** What every page needs from the settings: the contact details and the site links. */
-export type SiteSettings = Pick<AppSettings, "contact" | "links">;
+export type SiteSettings = Pick<AppSettings, "contact" | "links"> & {
+  priceFilterRange: PriceFilterRange;
+};

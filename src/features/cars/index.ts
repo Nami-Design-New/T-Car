@@ -14,4 +14,9 @@ export type {
   SearchCarsParams,
 } from "./model";
 export { applyCarFilterDraft, parseCarSearchParams } from "./searchParams";
-export type { CarFilterDraft, CarSearchParams, CarSort } from "./searchParams";
+export type {
+  CarFilterDraft,
+  CarSearchParams,
+  CarSort,
+  PriceRange,
+} from "./searchParams";

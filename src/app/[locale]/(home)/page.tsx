@@ -25,7 +25,12 @@ export default async function HomePage() {
 
   return (
     <>
-      <Hero options={searchOptions} brands={brands} bookingTypes={bookingTypes} />
+      <Hero
+        options={searchOptions}
+        brands={brands}
+        bookingTypes={bookingTypes}
+        priceRange={site.priceFilterRange}
+      />
       <PopularCities cities={cities} />
       <CarsRail
         id="offers"

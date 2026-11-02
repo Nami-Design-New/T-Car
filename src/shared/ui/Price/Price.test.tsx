@@ -17,6 +17,12 @@ describe('Price', () => {
     expect(icon).toHaveAttribute('height', '30');
   });
 
+  it('can render only the SAR mark beside an editable amount', () => {
+    const { container } = renderWithIntl(<Price amount={5} currencyOnly />);
+    expect(screen.getByRole('img', { name: 'SAR' })).toBeInTheDocument();
+    expect(container).not.toHaveTextContent('5');
+  });
+
   it('marks a previous price as deleted text', () => {
     const { container } = renderWithIntl(<Price amount={200} strike className="old" />);
     const del = container.querySelector('del');

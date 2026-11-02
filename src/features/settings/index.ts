@@ -7,6 +7,7 @@ export { useSiteLinks, useSiteLinksStore } from "./siteLinksStore";
 export {
   BOOKING_TYPES,
   DEFAULT_BOOKING_TYPES,
+  DEFAULT_PRICE_FILTER_RANGE,
   isBookingTypeEnabled,
 } from "./model";
 export type {

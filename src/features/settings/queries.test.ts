@@ -10,6 +10,9 @@ vi.mock("server-only", () => ({}));
 vi.mock("@/shared/lib/report", () => ({ reportError }));
 vi.mock("./api", () => ({ settingsApi: { getSettings } }));
 
+import {
+  DEFAULT_PRICE_FILTER_RANGE,
+} from "./model";
 import { MOCK_SETTINGS } from "./api.mock";
 import { getBookingTypeAvailability, getSiteSettings } from "./queries";
 
@@ -21,6 +24,7 @@ describe("getSiteSettings", () => {
     await expect(getSiteSettings()).resolves.toEqual({
       contact: MOCK_SETTINGS.contact,
       links: MOCK_SETTINGS.links,
+      priceFilterRange: MOCK_SETTINGS.priceFilterRange,
     });
   });
 
@@ -29,6 +33,7 @@ describe("getSiteSettings", () => {
     await expect(getSiteSettings()).resolves.toEqual({
       contact: {},
       links: {},
+      priceFilterRange: DEFAULT_PRICE_FILTER_RANGE,
     });
     expect(reportError).toHaveBeenCalledWith(expect.any(AppError), {
       scope: "settings.site",

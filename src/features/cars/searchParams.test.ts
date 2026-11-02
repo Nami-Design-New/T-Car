@@ -7,6 +7,9 @@ import {
 } from './searchParams';
 import type { CarListing } from './model';
 
+const testPriceRange = { min: 5, max: 30000 };
+const settingsPriceRange = { min: 5, max: 55 };
+
 const cars: CarListing[] = [
   {
     id: 'a',
@@ -41,11 +44,14 @@ const cars: CarListing[] = [
 describe('car search params', () => {
   it('parses and clamps URL values', () => {
     expect(
-      parseCarSearchParams({ q: ' sedan ', priceMin: '0', priceMax: '99999', sort: 'price_asc' })
+      parseCarSearchParams(
+        { q: ' sedan ', priceMin: '0', priceMax: '99999', sort: 'price_asc' },
+        settingsPriceRange,
+      )
     ).toEqual({
       query: 'sedan',
-      minPrice: 100,
-      maxPrice: 30000,
+      minPrice: 5,
+      maxPrice: 55,
       brandIds: [],
       types: [],
       companyIds: [],
@@ -56,7 +62,10 @@ describe('car search params', () => {
   });
 
   it('filters by query and sorts by price', () => {
-    const params = parseCarSearchParams({ q: 'road', sort: 'price_desc' });
+    const params = parseCarSearchParams(
+      { q: 'road', sort: 'price_desc' },
+      testPriceRange,
+    );
     expect(filterAndSortCars(cars, params).map((car) => car.id)).toEqual(['b']);
   });
 
@@ -68,12 +77,18 @@ describe('car search params', () => {
       types: ['suv', 'sedan'],
       companies: 'elite',
       services: 'delivery',
-    });
-    const params = applyCarFilterDraft(new URLSearchParams(), draft);
+    }, testPriceRange);
+    const params = applyCarFilterDraft(
+      new URLSearchParams(),
+      draft,
+      testPriceRange,
+    );
 
     expect(params.toString()).toBe(
       'q=suv&priceMin=500&brands=toyota%2Cnissan&types=suv%2Csedan&companies=elite&services=delivery'
     );
-    expect(parseCarFilterDraft(Object.fromEntries(params.entries()))).toEqual(draft);
+    expect(
+      parseCarFilterDraft(Object.fromEntries(params.entries()), testPriceRange),
+    ).toEqual(draft);
   });
 });

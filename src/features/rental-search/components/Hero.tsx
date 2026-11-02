@@ -8,6 +8,7 @@ import {
   applyCarFilterDraft,
   type CarBrand,
   type CarFilterDraft,
+  type PriceRange,
 } from "@/features/cars";
 import { useRentalFlow } from "../hooks/useRentalFlow";
 import type { RentalSearchOptions, RentalType } from "../model";
@@ -22,9 +23,15 @@ interface Props {
   options: RentalSearchOptions;
   brands: CarBrand[];
   bookingTypes: Record<RentalType, boolean>;
+  priceRange: PriceRange;
 }
 
-export default function Hero({ options, brands, bookingTypes }: Props) {
+export default function Hero({
+  options,
+  brands,
+  bookingTypes,
+  priceRange,
+}: Props) {
   const router = useRouter();
   const currentSearchParams = useSearchParams();
   const [showFilters, setShowFilters] = useState(false);
@@ -47,6 +54,7 @@ export default function Hero({ options, brands, bookingTypes }: Props) {
     const params = applyCarFilterDraft(
       new URLSearchParams(currentSearchParams.toString()),
       filters,
+      priceRange,
     );
     setShowFilters(false);
     navigateToCars(params);
@@ -67,6 +75,7 @@ export default function Hero({ options, brands, bookingTypes }: Props) {
         open={showFilters}
         onClose={() => setShowFilters(false)}
         brands={brands}
+        priceRange={priceRange}
         onApply={handleFiltersApply}
       />
 

@@ -16,12 +16,11 @@ import FilterPanel from "./filters/FilterPanel";
 import PriceRangeSlider from "./filters/PriceRangeSlider";
 import CheckboxGroup from "./filters/CheckboxGroup";
 import {
-  DEFAULT_CAR_FILTERS,
-  PRICE_MAX,
-  PRICE_MIN,
+  createDefaultCarFilters,
   applyCarFilterDraft,
   parseCarFilterDraft,
   type CarFilterDraft,
+  type PriceRange,
 } from "../searchParams";
 import { useEffect } from "react";
 import { useForm, useWatch } from "react-hook-form";
@@ -40,6 +39,7 @@ const CAR_TYPES = [
 ];
 interface Props {
   brands: CarBrand[];
+  priceRange: PriceRange;
   onApply?: (filters: CarFilterDraft) => void;
   /** Rendered inside a drawer: show the full panel at every width. */
   embedded?: boolean;
@@ -47,6 +47,7 @@ interface Props {
 
 export default function CarFilters({
   brands: brandOptions,
+  priceRange,
   onApply,
   embedded,
 }: Props) {
@@ -54,25 +55,31 @@ export default function CarFilters({
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const defaultFilters = createDefaultCarFilters(priceRange);
   const { control, handleSubmit, reset, setValue } = useForm<CarFilterDraft>({
-    defaultValues: DEFAULT_CAR_FILTERS,
+    defaultValues: defaultFilters,
   });
   const watchedFilters = useWatch({
     control,
-    defaultValue: DEFAULT_CAR_FILTERS,
+    defaultValue: defaultFilters,
   });
   const filters: CarFilterDraft = {
     query: watchedFilters.query ?? "",
-    minPrice: watchedFilters.minPrice ?? PRICE_MIN,
-    maxPrice: watchedFilters.maxPrice ?? PRICE_MAX,
+    minPrice: watchedFilters.minPrice ?? priceRange.min,
+    maxPrice: watchedFilters.maxPrice ?? priceRange.max,
     brandIds: watchedFilters.brandIds ?? [],
     types: watchedFilters.types ?? [],
     companyIds: watchedFilters.companyIds ?? [],
     serviceIds: watchedFilters.serviceIds ?? [],
   };
   useEffect(() => {
-    reset(parseCarFilterDraft(Object.fromEntries(searchParams.entries())));
-  }, [reset, searchParams]);
+    reset(
+      parseCarFilterDraft(
+        Object.fromEntries(searchParams.entries()),
+        priceRange,
+      ),
+    );
+  }, [reset, searchParams, priceRange]);
 
   const submit = (values: CarFilterDraft) => {
     if (onApply) {
@@ -82,6 +89,7 @@ export default function CarFilters({
     const params = applyCarFilterDraft(
       new URLSearchParams(searchParams.toString()),
       values,
+      priceRange,
     );
     router.replace(`${pathname}${params.toString() ? `?${params}` : ""}`, {
       scroll: false,
@@ -112,11 +120,11 @@ export default function CarFilters({
     setValue(name, [], { shouldDirty: true });
   };
 
-  const clearAll = () => reset(DEFAULT_CAR_FILTERS);
+  const clearAll = () => reset(defaultFilters);
   const active =
     filters.query.trim() !== "" ||
-    filters.minPrice !== PRICE_MIN ||
-    filters.maxPrice !== PRICE_MAX ||
+    filters.minPrice !== priceRange.min ||
+    filters.maxPrice !== priceRange.max ||
     filters.brandIds.length > 0 ||
     filters.types.length > 0 ||
     filters.companyIds.length > 0 ||
@@ -219,27 +227,27 @@ export default function CarFilters({
         </div>
       </section>
       <PriceRangeSlider
-        min={PRICE_MIN}
-        max={PRICE_MAX}
+        min={priceRange.min}
+        max={priceRange.max}
         minValue={filters.minPrice}
         maxValue={filters.maxPrice}
         onMinChange={(value) =>
           setValue(
             "minPrice",
-            Math.min(Math.max(value, PRICE_MIN), filters.maxPrice - 1),
+            Math.min(Math.max(value, priceRange.min), filters.maxPrice - 1),
             { shouldDirty: true },
           )
         }
         onMaxChange={(value) =>
           setValue(
             "maxPrice",
-            Math.max(Math.min(value, PRICE_MAX), filters.minPrice + 1),
+            Math.max(Math.min(value, priceRange.max), filters.minPrice + 1),
             { shouldDirty: true },
           )
         }
         onClear={() => {
-          setValue("minPrice", PRICE_MIN, { shouldDirty: true });
-          setValue("maxPrice", PRICE_MAX, { shouldDirty: true });
+          setValue("minPrice", priceRange.min, { shouldDirty: true });
+          setValue("maxPrice", priceRange.max, { shouldDirty: true });
         }}
       />
       <CheckboxGroup

@@ -5,6 +5,7 @@ import { settingsApi } from "./api";
 import {
   BOOKING_TYPES,
   DEFAULT_BOOKING_TYPES,
+  DEFAULT_PRICE_FILTER_RANGE,
   type AppSettings,
   type BookingTypeAvailability,
   type SiteSettings,
@@ -29,16 +30,23 @@ export async function getBookingTypeAvailability(): Promise<BookingTypeAvailabil
 }
 
 /**
- * What every page needs: the contact details (footer, home Contact card) and
- * the site links (footer, register form). Never throws: if the settings
- * cannot be read, the error is reported and the page renders without them.
+ * Settings used by the shared shell and home page. Never throws: if the
+ * settings cannot be read, the error is reported and known defaults are used.
  */
 export async function getSiteSettings(): Promise<SiteSettings> {
   try {
-    const { contact, links } = await getSettings();
-    return { contact, links };
+    const { contact, links, priceFilterRange } = await getSettings();
+    return {
+      contact,
+      links,
+      priceFilterRange: priceFilterRange ?? DEFAULT_PRICE_FILTER_RANGE,
+    };
   } catch (error) {
     reportError(error, { scope: "settings.site" });
-    return { contact: {}, links: {} };
+    return {
+      contact: {},
+      links: {},
+      priceFilterRange: DEFAULT_PRICE_FILTER_RANGE,
+    };
   }
 }

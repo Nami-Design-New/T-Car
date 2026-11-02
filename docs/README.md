@@ -485,7 +485,14 @@ and default map coordinates from `GET /settings`. Missing or invalid optional
 values do not fail the settings read. The home rental tabs now hide types that
 the settings disable; missing flags or a failed settings read keep all options
 available. Direct `/cars` and `/cities/[slug]` searches for a disabled type call
-`notFound()`. Price-filter and map-center UI wiring remain follow-up fractions.
+`notFound()`. Price-filter UI wiring was tracked as the next fraction; map
+coordinates are currently unused by the application.
+
+**Settings API expansion, price-filter fraction (2026-11-02):** `/cars`,
+`/cities/[slug]`, and the home filter drawer receive the server-read range from
+`getSiteSettings()`. The 5–55 bounds apply to URL parsing and filtering, and the
+range inputs show the shared SAR mark. A missing value or settings read failure
+uses the observed 5–55 default.
 
 **Phase 1 import-boundary remediation (2026-10-20):** The account shell now receives points data from its App Router section layout and imports the summary card through `features/points/index.ts`. The root layout now supplies the authenticated notifications count to the layout feature. `MapLocationModal` and `LocationData` now live in `shared/ui` and `shared/lib`, respectively, with every caller using that shared API. Rental search now consumes the cars feature only through its public index; that index no longer exposes the server-only `getOffices` read, which the home route imports directly. The initial lint audit is reduced from nine to two boundary errors; both remaining violations are in wallet's bank-account action dependency.
 
