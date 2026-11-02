@@ -49,10 +49,11 @@ beforeEach(() => {
 });
 
 describe("ContactForm", () => {
-  it("shows a translated required error on blur and associates it with the field", async () => {
+  it("shows a translated required error while typing and associates it with the field", async () => {
     const { user, name } = renderForm();
-    await user.click(name);
-    await user.tab();
+    // The form validates on change: typing and clearing shows the error.
+    await user.type(name, "A");
+    await user.clear(name);
 
     expect(
       await screen.findByText("Enter your full name."),

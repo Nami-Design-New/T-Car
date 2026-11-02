@@ -2,11 +2,17 @@
 
 import { useTranslations } from "next-intl";
 
+import type { ContactSettings } from "@/features/settings";
 import { SectionTitle } from "@/shared/ui/SectionTitle";
 import ContactInfo from "./ContactInfo";
 import ContactForm from "./ContactForm";
 
-export default function Contact() {
+interface Props {
+  /** From GET /settings; a missing detail is hidden. */
+  contact: ContactSettings;
+}
+
+export default function Contact({ contact }: Props) {
   const t = useTranslations();
 
   return (
@@ -18,7 +24,7 @@ export default function Contact() {
           subtitle={t("contact.subtitle")}
         />
         <div className="mt-6 grid grid-cols-[380px_1fr] gap-8.75 max-lg:mt-8.5 max-lg:grid-cols-1">
-          <ContactInfo />
+          <ContactInfo contact={contact} />
           <ContactForm />
         </div>
       </div>

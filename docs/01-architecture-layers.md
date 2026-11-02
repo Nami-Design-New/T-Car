@@ -317,6 +317,24 @@ change. Each item says why.
    global `*Props` interfaces are gone. What remains is `UserProfile` and
    `AppNotification` (account) plus `types/next-auth.d.ts`.
 
+10. **Where state lives (decided 2026-11-02).**
+
+    | Need | Tool | Example |
+    | ---- | ---- | ------- |
+    | A component's parts share its props | React Context inside the component | `InfiniteList`, `BankCard` (compound components) |
+    | App-wide client state read by unrelated components | Zustand store in the owning feature | `features/settings/siteLinksStore.ts` |
+    | Server data for a page | `queries.ts` on the server, passed down as props | home page data, footer contact details |
+    | One screen's own state | `useState` / the feature's hooks | `useBankAccounts`, `useJoinUs` |
+
+    Zustand rules: a store lives in the feature that owns the data and is
+    exported from its `index.ts` (never in `shared/ui`, which stays free of a
+    state library); only the browser writes it, in an effect (for example
+    `SiteLinksSync`), because on the server the module store is shared by
+    every request; it holds only what client components far apart in the tree
+    need, not server data that can be passed as props. A component that needs
+    the value in the server HTML takes it as a prop instead (the store is empty
+    until the browser has written it).
+
 ### Example: the car details page after migration
 
 ```tsx

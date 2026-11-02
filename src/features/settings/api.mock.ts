@@ -2,7 +2,7 @@ import { AppError } from "@/shared/lib/errors";
 import type { SettingsApi } from "./api";
 import type { AppSettings } from "./model";
 
-/** The company sizes observed on GET /settings (2026-11-02). */
+/** Settings shaped like GET /settings (sizes as observed on 2026-11-02). */
 export const MOCK_SETTINGS: AppSettings = {
   companySizes: [
     { id: "1", size: 10 },
@@ -11,6 +11,18 @@ export const MOCK_SETTINGS: AppSettings = {
     { id: "4", size: 40 },
     { id: "5", size: 50 },
   ],
+  contact: {
+    email: "info@tcar.com",
+    phone: "+966500000000",
+    facebook: "https://facebook.com/tcar",
+    instagram: "https://instagram.com/tcar",
+    twitter: "https://x.com/tcar",
+  },
+  links: {
+    aboutUrl: "https://t-car.app/user/about-us?locale=en",
+    termsUrl: "https://t-car.app/user/terms?locale=en",
+    privacyUrl: "https://t-car.app/user/privacy?locale=en",
+  },
 };
 
 /**

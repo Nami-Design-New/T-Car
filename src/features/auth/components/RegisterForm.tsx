@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
@@ -14,7 +15,7 @@ import { Button } from "@/shared/ui/Button";
 import { FormInput } from "@/shared/ui/Form";
 import { registerFormSchema, type RegisterFormValues } from "../validation";
 import { BackButton } from "@/shared/ui/BackButton/BackButton";
-import { Link } from "@/i18n/navigation";
+import { useSiteLinks } from "@/features/settings";
 
 type Props = {
   onBack: () => void;
@@ -25,12 +26,29 @@ type Props = {
 
 const FIELDS = ["fullName", "email", "birthDate"] as const;
 
+/** A legal text's backend page in a new tab; plain text when it is unknown. */
+function legalLink(href: string | undefined, chunks: ReactNode) {
+  return href ? (
+    <a
+      className="text-action-primary"
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      {chunks}
+    </a>
+  ) : (
+    chunks
+  );
+}
+
 export default function RegisterForm({
   onBack,
   onSubmit,
   loading = false,
 }: Props) {
   const t = useTranslations();
+  const links = useSiteLinks();
   const errorMessage = useErrorMessage();
   const fieldError = useFieldErrorMessage();
 
@@ -113,18 +131,11 @@ export default function RegisterForm({
         />
       </div>
       {/* Consent is implied by continuing; the API has no terms field (Auth-API.md Q8). */}
+      {/* The texts are the backend's pages (GET /settings); a new tab keeps the form. */}
       <p className="mt-4 text-center text-sm">
         {t.rich("auth.register.consent", {
-          terms: (chunks) => (
-            <Link className="text-action-primary" href="/terms">
-              {chunks}
-            </Link>
-          ),
-          privacy: (chunks) => (
-            <Link className="text-action-primary" href="/privacy">
-              {chunks}
-            </Link>
-          ),
+          terms: (chunks) => legalLink(links.termsUrl, chunks),
+          privacy: (chunks) => legalLink(links.privacyUrl, chunks),
         })}
       </p>
 

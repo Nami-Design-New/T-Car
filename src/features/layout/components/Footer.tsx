@@ -17,8 +17,32 @@ const appStore = IMAGES.appStore;
 const googlePlay = IMAGES.googlePlay;
 
 import { NAV_LINKS } from "@/shared/config/site";
+import type { ContactSettings, SiteLinks } from "@/features/settings";
 
-export default async function Footer() {
+const socialClass =
+  "bg-text-on-brand/8 hover:bg-action-primary flex size-11 items-center justify-center rounded-full transition duration-300 hover:-translate-y-1.5 hover:shadow-[0_10px_25px_rgba(31,127,250,0.35)]";
+
+/** Brand names, not translated. */
+const SOCIALS = [
+  { key: "facebook", label: "Facebook", icon: FiFacebook },
+  { key: "instagram", label: "Instagram", icon: FiInstagram },
+  { key: "twitter", label: "X (Twitter)", icon: FiTwitter },
+] as const;
+
+interface Props {
+  /** From GET /settings (read by the root layout); a missing detail is hidden. */
+  contact: ContactSettings;
+  /** The backend's about, terms, and privacy pages; a missing link is hidden. */
+  links: SiteLinks;
+}
+
+const quickLinkClass =
+  "text-text-on-brand/75 hover:text-action-primary transition duration-300 hover:ps-2";
+
+const legalLinkClass =
+  "text-text-on-brand/70 hover:text-action-primary transition duration-300";
+
+export default async function Footer({ contact, links }: Props) {
   const t = await getTranslations();
 
   const year = new Date().getFullYear();
@@ -41,28 +65,24 @@ export default async function Footer() {
           </p>
           {/* </div> */}
 
-          <div className="flex gap-3.5 max-md:justify-start">
-            <a
-              href="#"
-              className="bg-text-on-brand/8 hover:bg-action-primary flex size-11 items-center justify-center rounded-full transition duration-300 hover:-translate-y-1.5 hover:shadow-[0_10px_25px_rgba(31,127,250,0.35)]"
-            >
-              <FiFacebook />
-            </a>
-
-            <a
-              href="#"
-              className="bg-text-on-brand/8 hover:bg-action-primary flex size-11 items-center justify-center rounded-full transition duration-300 hover:-translate-y-1.5 hover:shadow-[0_10px_25px_rgba(31,127,250,0.35)]"
-            >
-              <FiInstagram />
-            </a>
-
-            <a
-              href="#"
-              className="bg-text-on-brand/8 hover:bg-action-primary flex size-11 items-center justify-center rounded-full transition duration-300 hover:-translate-y-1.5 hover:shadow-[0_10px_25px_rgba(31,127,250,0.35)]"
-            >
-              <FiTwitter />
-            </a>
-          </div>
+          {SOCIALS.some(({ key }) => contact[key]) && (
+            <div className="flex gap-3.5 max-md:justify-start">
+              {SOCIALS.filter(({ key }) => contact[key]).map(
+                ({ key, label, icon: Icon }) => (
+                  <a
+                    key={key}
+                    href={contact[key]}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={label}
+                    className={socialClass}
+                  >
+                    <Icon aria-hidden="true" />
+                  </a>
+                ),
+              )}
+            </div>
+          )}
         </div>
         <div className="flex justify-between gap-2">
           {" "}
@@ -74,14 +94,24 @@ export default async function Footer() {
             <ul className="m-0 flex list-none flex-col gap-3.5 p-0">
               {NAV_LINKS.map((link) => (
                 <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    className="text-text-on-brand/75 hover:text-action-primary transition duration-300 hover:ps-2"
-                  >
+                  <Link href={link.href} className={quickLinkClass}>
                     {t(link.label)}
                   </Link>
                 </li>
               ))}
+              {/* The backend's about page (GET /settings), when known. */}
+              {links.aboutUrl && (
+                <li>
+                  <a
+                    href={links.aboutUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={quickLinkClass}
+                  >
+                    {t("footer.about")}
+                  </a>
+                </li>
+              )}
             </ul>
           </div>
           <div className="flex flex-1 flex-col gap-4.5">
@@ -89,25 +119,31 @@ export default async function Footer() {
               {t("footer.contactUs")}
             </h4>
 
-            <div className="text-text-on-brand/75 hover:text-text-on-brand flex items-center gap-3 transition duration-300 max-md:justify-start">
-              <FiMail className="text-action-primary shrink-0 text-lg" />
-              <a
-                href="mailto:info@tcar.com"
-                className="text-text-on-brand/75 hover:text-action-primary transition duration-300"
-              >
-                {t("footer.emailValue")}
-              </a>
-            </div>
+            {contact.email && (
+              <div className="text-text-on-brand/75 hover:text-text-on-brand flex items-center gap-3 transition duration-300 max-md:justify-start">
+                <FiMail className="text-action-primary shrink-0 text-lg" />
+                <a
+                  href={`mailto:${contact.email}`}
+                  dir="ltr"
+                  className="text-text-on-brand/75 hover:text-action-primary min-w-0 truncate transition duration-300"
+                >
+                  {contact.email}
+                </a>
+              </div>
+            )}
 
-            <div className="text-text-on-brand/75 hover:text-text-on-brand flex items-center gap-3 transition duration-300 max-md:justify-start">
-              <FiPhone className="text-action-primary shrink-0 text-lg" />
-              <a
-                href="tel:+966500000000"
-                className="text-text-on-brand/75 hover:text-action-primary transition duration-300"
-              >
-                {t("footer.phoneValue")}
-              </a>
-            </div>
+            {contact.phone && (
+              <div className="text-text-on-brand/75 hover:text-text-on-brand flex items-center gap-3 transition duration-300 max-md:justify-start">
+                <FiPhone className="text-action-primary shrink-0 text-lg" />
+                <a
+                  href={`tel:${contact.phone.replace(/[\s-]/g, "")}`}
+                  dir="ltr"
+                  className="text-text-on-brand/75 hover:text-action-primary transition duration-300"
+                >
+                  {contact.phone}
+                </a>
+              </div>
+            )}
 
             <div className="text-text-on-brand/75 hover:text-text-on-brand flex items-center gap-3 transition duration-300 max-md:justify-start">
               <FiMapPin className="text-action-primary shrink-0 text-lg" />
@@ -160,21 +196,31 @@ export default async function Footer() {
         <div className="text-text-on-brand/70 text-sm">
           © {year} T-Car. {t("footer.rights")}
         </div>
-        <div className="flex gap-6 max-[480px]:gap-3">
-          <Link
-            href="/terms"
-            className="text-text-on-brand/70 hover:text-action-primary transition duration-300"
-          >
-            {t("footer.terms")}
-          </Link>
+        {(links.termsUrl || links.privacyUrl) && (
+          <div className="flex gap-6 max-[480px]:gap-3">
+            {links.termsUrl && (
+              <a
+                href={links.termsUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={legalLinkClass}
+              >
+                {t("footer.terms")}
+              </a>
+            )}
 
-          <Link
-            href="/privacy"
-            className="text-text-on-brand/70 hover:text-action-primary transition duration-300"
-          >
-            {t("footer.privacy")}
-          </Link>
-        </div>
+            {links.privacyUrl && (
+              <a
+                href={links.privacyUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={legalLinkClass}
+              >
+                {t("footer.privacy")}
+              </a>
+            )}
+          </div>
+        )}
       </div>
     </footer>
   );

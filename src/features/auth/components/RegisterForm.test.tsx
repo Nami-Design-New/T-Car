@@ -1,12 +1,16 @@
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { AppError } from '@/shared/lib/errors';
 import { renderWithIntl } from '@/shared/test/render';
+import { useSiteLinksStore } from '@/features/settings';
 import type { RegisterFormValues } from '../validation';
 import RegisterForm from './RegisterForm';
 
-// BackButton and the terms link use the locale-aware navigation, which needs the app router.
+// The settings index also exports a Server Action (server code); only the provider is used here.
+vi.mock('@/features/settings/actions', () => ({ getSettingsAction: vi.fn() }));
+
+// BackButton uses the locale-aware navigation, which needs the app router.
 vi.mock('@/i18n/navigation', () => ({
   useRouter: () => ({ back: vi.fn() }),
   Link: ({ href, children, ...rest }: React.ComponentProps<'a'>) => (
@@ -15,6 +19,9 @@ vi.mock('@/i18n/navigation', () => ({
     </a>
   ),
 }));
+
+// The site links live in a module store: start every test without them.
+afterEach(() => useSiteLinksStore.setState({ links: {} }));
 
 function renderForm(overrides: Partial<React.ComponentProps<typeof RegisterForm>> = {}) {
   const onSubmit = vi.fn<(values: RegisterFormValues) => Promise<AppError | undefined>>(
@@ -120,10 +127,27 @@ describe('RegisterForm', () => {
     expect(form.email).toHaveValue('ahmed@domain.com');
   });
 
-  it('states the implied consent with links to the terms and the privacy policy', () => {
+  it('links the consent to the backend terms and privacy pages in a new tab', () => {
+    useSiteLinksStore.setState({
+      links: {
+        termsUrl: 'https://t-car.app/user/terms?locale=en',
+        privacyUrl: 'https://t-car.app/user/privacy?locale=en',
+      },
+    });
     renderForm();
-    expect(screen.getByRole('link', { name: 'Terms and Conditions' })).toHaveAttribute('href', '/terms');
-    expect(screen.getByRole('link', { name: 'Privacy Policy' })).toHaveAttribute('href', '/privacy');
+    const terms = screen.getByRole('link', { name: 'Terms and Conditions' });
+    expect(terms).toHaveAttribute('href', 'https://t-car.app/user/terms?locale=en');
+    expect(terms).toHaveAttribute('target', '_blank');
+    expect(screen.getByRole('link', { name: 'Privacy Policy' })).toHaveAttribute(
+      'href',
+      'https://t-car.app/user/privacy?locale=en'
+    );
+  });
+
+  it('keeps the consent as plain text when the site links are unknown', () => {
+    renderForm();
+    expect(screen.queryByRole('link', { name: 'Terms and Conditions' })).not.toBeInTheDocument();
+    expect(screen.getByText(/Terms and Conditions/)).toBeInTheDocument();
   });
 
   it('names the back button', () => {

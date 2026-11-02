@@ -449,6 +449,36 @@ select loads them when the dialog opens, with a loading status and an inline
 error with retry. Every valid Join Us is an HTTP 500 on the backend today
 (`JoinUsController.php` line 18), shown as the inline server error.
 
+**Contact Us / Join Us API fraction C4 (2026-11-02), done:** The placeholder
+`/contact` page is removed (and its sitemap entry); the nav already points to
+the home Contact section (`/#contact`). T-Car's contact details come from
+`GET /settings` through the settings feature: `AppSettings.contact` (email,
+phone, Facebook / Instagram / X links; an unusable field is left out instead of
+failing the settings) and `getContactSettings()` in `queries.ts`, which never
+throws (it reports the error and returns no details). The root layout passes
+them to the footer and the home page to the Contact section; React `cache`
+reads `/settings` once per request. The Contact card and the footer show the
+email (`mailto:`) and phone (`tel:`, left-to-right) as links and the social
+icons with the API's URLs, hiding what the API does not send; the address stays
+the translated text (the API has none). Removed: the hard-coded
+`contact.{phoneValue,emailValue}` and `footer.{phoneValue,emailValue}`. The
+contact form validates on change since C3; its test follows.
+Backend pages: the app's `/terms`, `/privacy`, and `/why` pages (and their
+sitemap entries and the `legalContent` / `terms` / `privacy` messages) are
+removed; the backend's pages are used instead. `AppSettings.links` (`SiteLinks`:
+`about_us_url`, `terms_url`, `privacy_policy_url`, already in the request's
+language) comes with the contact details from `getSiteSettings()` (never
+throws). The root layout passes them to the footer as props and, for client
+components, to a Zustand store (`zustand` 5.0.15, the app's first store):
+`SiteLinksSync` writes them into `useSiteLinksStore` in an effect, so only the
+browser writes it and the module store on the server stays empty (never
+shared between requests); `useSiteLinks()` reads them (settings index).
+The footer links to terms and privacy and adds an "About us" quick link
+(`footer.about`) to the about page; the register form's consent text links to
+terms and privacy. All open in a new tab (the register dialog keeps its input).
+An unknown link is hidden in the footer and plain text in the form. The nav's
+"Why choose us" still scrolls to the home section, which stays.
+
 **Phase 1 import-boundary remediation (2026-10-20):** The account shell now receives points data from its App Router section layout and imports the summary card through `features/points/index.ts`. The root layout now supplies the authenticated notifications count to the layout feature. `MapLocationModal` and `LocationData` now live in `shared/ui` and `shared/lib`, respectively, with every caller using that shared API. Rental search now consumes the cars feature only through its public index; that index no longer exposes the server-only `getOffices` read, which the home route imports directly. The initial lint audit is reduced from nine to two boundary errors; both remaining violations are in wallet's bank-account action dependency.
 
 **Phone field replacement follow-up (2026-10-26), fraction 1:** Added the

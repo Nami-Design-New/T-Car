@@ -8,7 +8,11 @@ import LoginForm from "./LoginForm";
 import OtpForm from "./OtpForm";
 import RegisterForm from "./RegisterForm";
 
-// BackButton and the terms link use the locale-aware navigation, which needs the app router.
+// The settings index (used by RegisterForm for the site links) also exports a
+// Server Action, which is server code: replace it here.
+vi.mock("@/features/settings/actions", () => ({ getSettingsAction: vi.fn() }));
+
+// BackButton uses the locale-aware navigation, which needs the app router.
 vi.mock("@/i18n/navigation", () => ({
   useRouter: () => ({ back: vi.fn() }),
   Link: ({ href, children, ...rest }: React.ComponentProps<"a">) => (
