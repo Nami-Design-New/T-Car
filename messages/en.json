@@ -450,19 +450,12 @@
     "emailValue": "info@tcar.com",
     "addressValue": "Riyadh, Saudi Arabia",
     "name": "Full Name",
-    "reason": "Contact reason",
-    "reasons": {
-      "booking": "Booking",
-      "carRental": "Car rental",
-      "payment": "Payment",
-      "partnership": "Partnership",
-      "other": "Other"
-    },
+    "reason": "Contact reason (optional)",
+    "reasonPlaceholder": "e.g. a booking issue",
     "bookingNumber": "Booking number (optional)",
     "message": "Your Message",
     "send": "Send Message",
-    "sending": "Sending...",
-    "sent": "Your message was sent. We will get back to you soon."
+    "sending": "Sending..."
   },
   "footer": {
     "rights": "All rights reserved.",
@@ -575,11 +568,11 @@
       "nameRequired": "Enter your full name.",
       "emailRequired": "Enter your email address.",
       "invalidEmail": "Enter a valid email address.",
-      "reasonRequired": "Choose a contact reason.",
-      "invalidReason": "Choose a valid contact reason.",
+      "nameTooLong": "Your name is too long (255 characters at most).",
+      "reasonTooLong": "The contact reason is too long (255 characters at most).",
       "bookingNumberTooLong": "Booking number is too long.",
       "messageRequired": "Enter your message.",
-      "required": "Complete all required contact fields."
+      "messageTooLong": "Your message is too long (5000 characters at most)."
     },
     "account": {
       "profileRejected": "The profile could not be saved. Check the details and try again.",

@@ -417,6 +417,20 @@ behavior change: `services/contact.api.ts` became `features/home/api.ts`
 `features/home/api.mock.ts`; `sendContactMessageAction` still runs on the mock
 until C2. Join Us still has no submit (C3).
 
+**Contact Us / Join Us API fraction C2 (2026-11-02), done:** The contact form
+sends to `POST /contact-us` through `contactApi.sendMessage` on
+`publicServerHttp` (public endpoint, no token; Q1) and
+`sendContactMessageAction` (`ActionResult<null>` with the backend message).
+`contactReason` → `reason` and `bookingNumber` → `order_number`, left out when
+blank. The reason is now an optional free-text field (Q2) instead of the fixed
+select; the schema uses the API's limits (name and reason 255, booking number
+255, message 5000). The backend's success message is a toast (`useNotify`) and
+the form clears; a backend 422 is a toast and keeps the input; other failures
+stay inline. Removed: `contact.reasons.*`, `contact.sent`, and
+`errors.contact.{reasonRequired,invalidReason,required}`. `api.mock.ts` is the
+test double of the live `ContactApi` (failure rule: an email without "@" is a
+422).
+
 **Phase 1 import-boundary remediation (2026-10-20):** The account shell now receives points data from its App Router section layout and imports the summary card through `features/points/index.ts`. The root layout now supplies the authenticated notifications count to the layout feature. `MapLocationModal` and `LocationData` now live in `shared/ui` and `shared/lib`, respectively, with every caller using that shared API. Rental search now consumes the cars feature only through its public index; that index no longer exposes the server-only `getOffices` read, which the home route imports directly. The initial lint audit is reduced from nine to two boundary errors; both remaining violations are in wallet's bank-account action dependency.
 
 **Phone field replacement follow-up (2026-10-26), fraction 1:** Added the

@@ -13,14 +13,18 @@ import { sendContactMessageAction } from "./actions";
 const validMessage = {
   name: " Ahmed ",
   email: " ahmed@example.com ",
-  contactReason: "booking",
+  contactReason: " Order Issue ",
   bookingNumber: "  BK-123  ",
   message: " Need help ",
 };
 
 beforeEach(() => {
   vi.clearAllMocks();
-  sendMessage.mockResolvedValue(undefined);
+  sendMessage.mockResolvedValue({
+    ok: true,
+    data: null,
+    message: "Contact request created successfully.",
+  });
 });
 
 describe("sendContactMessageAction", () => {
@@ -29,7 +33,7 @@ describe("sendContactMessageAction", () => {
       sendContactMessageAction({
         ...validMessage,
         email: "invalid",
-        contactReason: "",
+        contactReason: "x".repeat(256),
       }),
     ).resolves.toEqual({
       ok: false,
@@ -38,29 +42,47 @@ describe("sendContactMessageAction", () => {
         code: "contact.invalidEmail",
         fieldErrors: {
           email: "contact.invalidEmail",
-          contactReason: "contact.reasonRequired",
+          contactReason: "contact.reasonTooLong",
         },
       },
     });
     expect(sendMessage).not.toHaveBeenCalled();
   });
 
-  it("passes normalized values to the service", async () => {
+  it("passes normalized values and returns the backend message", async () => {
     await expect(sendContactMessageAction(validMessage)).resolves.toEqual({
       ok: true,
-      data: undefined,
+      data: null,
+      message: "Contact request created successfully.",
     });
     expect(sendMessage).toHaveBeenCalledWith({
       name: "Ahmed",
       email: "ahmed@example.com",
-      contactReason: "booking",
+      contactReason: "Order Issue",
       bookingNumber: "BK-123",
       message: "Need help",
     });
   });
 
+  it("keeps a backend 422 message for the toast", async () => {
+    sendMessage.mockResolvedValue({
+      ok: false,
+      error: new AppError("validation", undefined, 422, undefined, {
+        serverMessage: "The message field is required.",
+      }),
+    });
+    await expect(sendContactMessageAction(validMessage)).resolves.toEqual({
+      ok: false,
+      error: {
+        kind: "validation",
+        status: 422,
+        serverMessage: "The message field is required.",
+      },
+    });
+  });
+
   it("preserves a service failure as an ActionResult", async () => {
-    sendMessage.mockRejectedValue(new AppError("server"));
+    sendMessage.mockResolvedValue({ ok: false, error: new AppError("server") });
     await expect(sendContactMessageAction(validMessage)).resolves.toEqual({
       ok: false,
       error: { kind: "server" },

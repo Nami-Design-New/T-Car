@@ -10,22 +10,33 @@ function fieldErrors(input: unknown) {
 }
 
 describe("contactMessageSchema", () => {
-  it("trims submitted text and treats an empty booking number as absent", () => {
+  it("trims submitted text and treats a blank reason or booking number as absent", () => {
     expect(
       contactMessageSchema.parse({
         name: " Ahmed ",
         email: " ahmed@example.com ",
-        contactReason: " booking ",
+        contactReason: "  ",
         bookingNumber: "  ",
         message: " Need help ",
       }),
     ).toEqual({
       name: "Ahmed",
       email: "ahmed@example.com",
-      contactReason: "booking",
+      contactReason: undefined,
       bookingNumber: undefined,
       message: "Need help",
     });
+  });
+
+  it("keeps a free-text reason", () => {
+    expect(
+      contactMessageSchema.parse({
+        name: "Ahmed",
+        email: "ahmed@example.com",
+        contactReason: " Order Issue ",
+        message: "Need help",
+      }).contactReason,
+    ).toBe("Order Issue");
   });
 
   it("returns contact error keys for required and malformed fields", () => {
@@ -40,20 +51,33 @@ describe("contactMessageSchema", () => {
     ).toEqual({
       name: "contact.nameRequired",
       email: "contact.invalidEmail",
-      contactReason: "contact.reasonRequired",
       message: "contact.messageRequired",
+    });
+  });
+
+  it("applies the API's length limits", () => {
+    expect(
+      fieldErrors({
+        name: "a".repeat(256),
+        email: "a@example.com",
+        contactReason: "r".repeat(256),
+        bookingNumber: "x".repeat(256),
+        message: "m".repeat(5001),
+      }),
+    ).toEqual({
+      name: "contact.nameTooLong",
+      contactReason: "contact.reasonTooLong",
+      bookingNumber: "contact.bookingNumberTooLong",
+      message: "contact.messageTooLong",
     });
     expect(
       fieldErrors({
-        name: "A",
+        name: "a".repeat(255),
         email: "a@example.com",
-        contactReason: "unsupported",
-        bookingNumber: "x".repeat(51),
-        message: "Hello",
+        contactReason: "r".repeat(255),
+        bookingNumber: "x".repeat(255),
+        message: "m".repeat(5000),
       }),
-    ).toEqual({
-      contactReason: "contact.invalidReason",
-      bookingNumber: "contact.bookingNumberTooLong",
-    });
+    ).toBeUndefined();
   });
 });

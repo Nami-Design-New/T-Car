@@ -448,19 +448,12 @@
     "emailValue": "info@tcar.com",
     "addressValue": "الرياض، المملكة العربية السعودية",
     "name": "الاسم الكامل",
-    "reason": "سبب التواصل",
-    "reasons": {
-      "booking": "حجز",
-      "carRental": "تأجير سيارة",
-      "payment": "الدفع",
-      "partnership": "شراكة",
-      "other": "أخرى"
-    },
+    "reason": "سبب التواصل (اختياري)",
+    "reasonPlaceholder": "مثال: مشكلة في الحجز",
     "bookingNumber": "رقم الحجز (اختياري)",
     "message": "رسالتك",
     "send": "إرسال الرسالة",
-    "sending": "جاري الإرسال...",
-    "sent": "تم إرسال رسالتك، وسنتواصل معك قريبًا."
+    "sending": "جاري الإرسال..."
   },
   "footer": {
     "rights": "جميع الحقوق محفوظة.",
@@ -573,11 +566,11 @@
       "nameRequired": "أدخل اسمك الكامل.",
       "emailRequired": "أدخل بريدك الإلكتروني.",
       "invalidEmail": "أدخل بريدًا إلكترونيًا صحيحًا.",
-      "reasonRequired": "اختر سبب التواصل.",
-      "invalidReason": "اختر سبب تواصل صالحًا.",
+      "nameTooLong": "الاسم طويل جدًا (255 حرفًا كحد أقصى).",
+      "reasonTooLong": "سبب التواصل طويل جدًا (255 حرفًا كحد أقصى).",
       "bookingNumberTooLong": "رقم الحجز طويل جدًا.",
       "messageRequired": "أدخل رسالتك.",
-      "required": "أكمل جميع حقول التواصل المطلوبة."
+      "messageTooLong": "رسالتك طويلة جدًا (5000 حرف كحد أقصى)."
     },
     "account": {
       "profileRejected": "تعذر حفظ الملف الشخصي. تحقق من البيانات وحاول مرة أخرى.",

@@ -8,9 +8,10 @@ import {
   useErrorMessage,
   useFieldErrorMessage,
 } from "@/shared/hooks/useErrorMessage";
+import { useNotify } from "@/shared/hooks/useNotify";
 import { applyFieldErrors } from "@/shared/lib/validation";
 import { Button } from "@/shared/ui/Button";
-import { FormInput, FormSelect, FormTextarea } from "@/shared/ui/Form";
+import { FormInput, FormTextarea } from "@/shared/ui/Form";
 import { useSendContactMessage } from "../hooks/useSendContactMessage";
 import {
   contactMessageSchema,
@@ -30,6 +31,7 @@ export default function ContactForm() {
   const t = useTranslations();
   const errorMessage = useErrorMessage();
   const fieldError = useFieldErrorMessage();
+  const notify = useNotify();
   const { submitting, send } = useSendContactMessage();
   const {
     register,
@@ -54,11 +56,16 @@ export default function ContactForm() {
     if (submitting) return;
     const result = await send(values);
     if (result.ok) {
+      notify.success(result.message);
       reset();
-      setError("root.server", { type: "success", message: "" });
       return;
     }
 
+    // The backend's validation message is a toast only; the input stays.
+    if (result.error.kind === "validation" && result.error.serverMessage) {
+      notify.error(result.error.serverMessage);
+      return;
+    }
     if (!applyFieldErrors(result.error, setError, CONTACT_FIELDS)) {
       setError("root.server", {
         type: result.error.kind,
@@ -68,11 +75,14 @@ export default function ContactForm() {
   });
 
   const formError = errors.root?.server?.message;
-  const sent = errors.root?.server?.type === "success";
 
   return (
-    <form className="contact_form flex flex-col gap-5 rounded-xl border border-stroke-light bg-surface-elevated p-10 shadow-[0_20px_50px_rgba(30,30,30,0.05)] max-md:p-[25px]" onSubmit={submit} noValidate>
-      <div className="contact-form-row grid grid-cols-2 gap-5 [&>*]:min-w-0 [&>*]:p-0 max-md:grid-cols-1">
+    <form
+      className="contact_form border-stroke-light bg-surface-elevated flex flex-col gap-5 rounded-xl border p-10 shadow-[0_20px_50px_rgba(30,30,30,0.05)] max-md:p-6.25"
+      onSubmit={submit}
+      noValidate
+    >
+      <div className="contact-form-row grid grid-cols-2 gap-5 *:min-w-0 *:p-0 max-md:grid-cols-1">
         <FormInput
           id="name"
           label={t("contact.name")}
@@ -94,18 +104,12 @@ export default function ContactForm() {
         />
       </div>
 
-      <div className="contact-form-row grid grid-cols-2 gap-5 [&>*]:min-w-0 [&>*]:p-0 max-md:grid-cols-1">
-        <FormSelect
+      <div className="contact-form-row grid grid-cols-2 gap-5 *:min-w-0 *:p-0 max-md:grid-cols-1">
+        <FormInput
           id="contactReason"
           label={t("contact.reason")}
-          options={[
-            { value: "booking", label: t("contact.reasons.booking") },
-            { value: "car-rental", label: t("contact.reasons.carRental") },
-            { value: "payment", label: t("contact.reasons.payment") },
-            { value: "partnership", label: t("contact.reasons.partnership") },
-            { value: "other", label: t("contact.reasons.other") },
-          ]}
-          required
+          placeholder={t("contact.reasonPlaceholder")}
+          maxLength={255}
           error={fieldError(errors.contactReason?.message)}
           {...register("contactReason")}
         />
@@ -126,18 +130,13 @@ export default function ContactForm() {
         rows={6}
         required
         error={fieldError(errors.message?.message)}
-        className="min-h-[148px] resize-y"
+        className="min-h-37 resize-y"
         {...register("message")}
       />
 
-      {formError && !sent && (
-        <p className="text-status-error text-sm mt-4 mb-0" role="alert">
+      {formError && (
+        <p className="text-status-error mt-4 mb-0 text-sm" role="alert">
           {formError}
-        </p>
-      )}
-      {sent && (
-        <p className="text-status-success text-sm mt-4 mb-0" role="status">
-          {t("contact.sent")}
         </p>
       )}
 
@@ -145,7 +144,7 @@ export default function ContactForm() {
         type="submit"
         variant="primary"
         size="md"
-        className="contact_btn mt-1 min-h-[46px] w-full"
+        className="contact_btn mt-1 min-h-11.5 w-full"
         loading={submitting}
       >
         {t("contact.send")}

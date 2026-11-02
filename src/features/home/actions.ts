@@ -4,7 +4,6 @@ import { contactApi } from "./api";
 import { reportError } from "@/shared/lib/report";
 import {
   fail,
-  ok,
   toActionResult,
   type ActionResult,
 } from "@/shared/lib/result";
@@ -19,13 +18,20 @@ function parse<T>(schema: ZodType<T>, input: unknown): T {
   return result.data;
 }
 
-/** Public contact form write; the action validates before the service boundary. */
+/**
+ * Public contact form write (POST /contact-us, no session needed). The form is
+ * parsed again here; success carries the backend's message for the toast, and
+ * a backend 422 keeps its message as `serverMessage`.
+ */
 export async function sendContactMessageAction(
   message: ContactMessage,
-): Promise<ActionResult<void>> {
+): Promise<ActionResult<null>> {
   try {
-    await contactApi.sendMessage(parse(contactMessageSchema, message));
-    return toActionResult(ok(undefined));
+    const result = await contactApi.sendMessage(
+      parse(contactMessageSchema, message),
+    );
+    if (!result.ok) throw result.error;
+    return toActionResult(result);
   } catch (error) {
     reportError(error, { scope: "contact.send" });
     return toActionResult(fail(error));
