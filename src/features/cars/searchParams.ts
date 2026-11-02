@@ -19,7 +19,9 @@ export interface CarFilterDraft {
 
 export interface CarSearchParams {
   query: string;
+  /** 0 when the filter starts at the site range's minimum (no lower bound). */
   minPrice: number;
+  /** Infinity when the filter ends at the site range's maximum (no upper bound). */
   maxPrice: number;
   brandIds: string[];
   types: string[];
@@ -135,8 +137,12 @@ export function parseCarSearchParams(
     if (value) context[key] = value;
   }
 
+  // The full site range means "any price": the slider's edges are not limits,
+  // so cars priced outside the settings range still list.
   return {
     ...filters,
+    minPrice: filters.minPrice > priceRange.min ? filters.minPrice : 0,
+    maxPrice: filters.maxPrice < priceRange.max ? filters.maxPrice : Number.POSITIVE_INFINITY,
     sort: sort === 'price_asc' || sort === 'price_desc' || sort === 'rating' ? sort : 'recommended',
     context,
   };

@@ -1,6 +1,6 @@
-import type { City } from '@/features/cities/model';
+import type { City } from './model';
 import { AppError } from '@/shared/lib/errors';
-import type { CitiesApi } from '../cities.api';
+import type { CitiesApi } from './api';
 const c1 = '/mock/cities/city-1.jpg';
 const c2 = '/mock/cities/city-2.jpg';
 const c3 = '/mock/cities/city-3.jpg';
@@ -53,7 +53,10 @@ export const MOCK_CITIES: City[] = [
   }
 ];
 
-// Read-only, so it is safe to run on the server.
+/*
+ * Read-only, so it is safe to run on the server.
+ * Failure rule: a slug that is not in MOCK_CITIES throws a `not_found` AppError.
+ */
 export const citiesMock: CitiesApi = {
   async listCities() {
     return [...MOCK_CITIES];

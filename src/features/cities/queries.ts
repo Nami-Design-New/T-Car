@@ -1,6 +1,6 @@
 import 'server-only';
 import { cache } from 'react';
-import { citiesApi } from '@/services/cities.api';
+import { citiesApi } from './api';
 import { toAppError } from '@/shared/lib/errors';
 import type { City, CityDetails } from './model';
 

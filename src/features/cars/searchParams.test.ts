@@ -42,7 +42,7 @@ const cars: CarListing[] = [
 ];
 
 describe('car search params', () => {
-  it('parses and clamps URL values', () => {
+  it('parses URL values and opens bounds clamped to the range edges', () => {
     expect(
       parseCarSearchParams(
         { q: ' sedan ', priceMin: '0', priceMax: '99999', sort: 'price_asc' },
@@ -50,8 +50,8 @@ describe('car search params', () => {
       )
     ).toEqual({
       query: 'sedan',
-      minPrice: 5,
-      maxPrice: 55,
+      minPrice: 0,
+      maxPrice: Number.POSITIVE_INFINITY,
       brandIds: [],
       types: [],
       companyIds: [],
@@ -59,6 +59,17 @@ describe('car search params', () => {
       sort: 'price_asc',
       context: {},
     });
+  });
+
+  it('lists cars priced outside the site range when the price is not narrowed', () => {
+    const params = parseCarSearchParams({}, settingsPriceRange);
+    expect(filterAndSortCars(cars, params).map((car) => car.id)).toEqual(['b', 'a']);
+  });
+
+  it('filters by a narrowed price range', () => {
+    const params = parseCarSearchParams({ priceMax: '150' }, testPriceRange);
+    expect(params).toMatchObject({ minPrice: 0, maxPrice: 150 });
+    expect(filterAndSortCars(cars, params).map((car) => car.id)).toEqual(['b']);
   });
 
   it('filters by query and sorts by price', () => {
