@@ -30,15 +30,34 @@ export interface SiteLinks {
   privacyUrl?: string;
 }
 
+export type BookingType =
+  | "daily"
+  | "monthly"
+  | "station"
+  | "airport"
+  | "international";
+
+export interface PriceFilterRange {
+  min: number;
+  max: number;
+}
+
+export interface MapDefaultPosition {
+  lat: number;
+  lng: number;
+}
+
 /**
  * The app settings from GET /settings. Only the fields the app uses are mapped;
- * add a field here (and to the mapper in `api.ts`) when a feature needs it,
- * e.g. the booking-type switches, the price filter range, or the map position.
+ * Add fields here and to the mapper in `api.ts` as web features adopt them.
  */
 export interface AppSettings {
   companySizes: CompanySize[];
   contact: ContactSettings;
   links: SiteLinks;
+  bookingTypes?: Partial<Record<BookingType, boolean>>;
+  priceFilterRange?: PriceFilterRange;
+  mapDefaultPosition?: MapDefaultPosition;
 }
 
 /** What every page needs from the settings: the contact details and the site links. */

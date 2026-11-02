@@ -2,7 +2,13 @@ import "server-only";
 import { isApiEnvelope, type ApiEnvelope } from "@/services/http/envelope";
 import { publicServerHttp } from "@/services/http/server";
 import { AppError } from "@/shared/lib/errors";
-import type { AppSettings, ContactSettings } from "./model";
+import type {
+  AppSettings,
+  BookingType,
+  ContactSettings,
+  MapDefaultPosition,
+  PriceFilterRange,
+} from "./model";
 
 export interface SettingsApi {
   getSettings(): Promise<AppSettings>;
@@ -57,6 +63,47 @@ function toContact(data: Record<string, unknown>): ContactSettings {
   };
 }
 
+const BOOKING_TYPE_FIELDS = {
+  daily: "daily_booking_showing",
+  monthly: "monthly_booking_showing",
+  station: "station_booking_showing",
+  airport: "airport_booking_showing",
+  international: "international_booking_showing",
+} satisfies Record<BookingType, string>;
+
+function toBookingTypes(
+  data: Record<string, unknown>,
+): Partial<Record<BookingType, boolean>> | undefined {
+  const entries = Object.entries(BOOKING_TYPE_FIELDS).flatMap(([type, field]) =>
+    typeof data[field] === "boolean" ? [[type, data[field]]] : [],
+  );
+  return entries.length
+    ? (Object.fromEntries(entries) as Partial<Record<BookingType, boolean>>)
+    : undefined;
+}
+
+function toPriceFilterRange(
+  data: Record<string, unknown>,
+): PriceFilterRange | undefined {
+  const min = data.min_filter_price;
+  const max = data.max_filter_price;
+  return typeof min === "number" && Number.isFinite(min) &&
+    typeof max === "number" && Number.isFinite(max) && min < max
+    ? { min, max }
+    : undefined;
+}
+
+function toMapDefaultPosition(
+  data: Record<string, unknown>,
+): MapDefaultPosition | undefined {
+  const lat = data.latitude;
+  const lng = data.longitude;
+  return typeof lat === "number" && Number.isFinite(lat) && lat >= -90 && lat <= 90 &&
+    typeof lng === "number" && Number.isFinite(lng) && lng >= -180 && lng <= 180
+    ? { lat, lng }
+    : undefined;
+}
+
 /** Validate GET /settings and map the fields the app uses. */
 export function mapSettings(value: unknown): AppSettings {
   const data = isApiEnvelope(value) ? value.data : undefined;
@@ -69,14 +116,18 @@ export function mapSettings(value: unknown): AppSettings {
   ) {
     throw new AppError("server");
   }
+  const settingsData = data as Record<string, unknown>;
   return {
     companySizes: sizes.map(({ id, size }) => ({ id: String(id), size })),
-    contact: toContact(data as Record<string, unknown>),
+    contact: toContact(settingsData),
     links: {
-      aboutUrl: link((data as Record<string, unknown>).about_us_url),
-      termsUrl: link((data as Record<string, unknown>).terms_url),
-      privacyUrl: link((data as Record<string, unknown>).privacy_policy_url),
+      aboutUrl: link(settingsData.about_us_url),
+      termsUrl: link(settingsData.terms_url),
+      privacyUrl: link(settingsData.privacy_policy_url),
     },
+    bookingTypes: toBookingTypes(settingsData),
+    priceFilterRange: toPriceFilterRange(settingsData),
+    mapDefaultPosition: toMapDefaultPosition(settingsData),
   };
 }
 

@@ -23,6 +23,15 @@ export const MOCK_SETTINGS: AppSettings = {
     termsUrl: "https://t-car.app/user/terms?locale=en",
     privacyUrl: "https://t-car.app/user/privacy?locale=en",
   },
+  bookingTypes: {
+    daily: true,
+    monthly: true,
+    station: true,
+    airport: true,
+    international: true,
+  },
+  priceFilterRange: { min: 5, max: 55 },
+  mapDefaultPosition: { lat: 24.6477765, lng: 46.8291086 },
 };
 
 /**

@@ -15,6 +15,15 @@ const settings = {
     privacy_policy_url: "https://t-car.app/user/privacy?locale=en",
     about_us_url: "https://t-car.app/user/about-us?locale=en",
     daily_booking_showing: true,
+    monthly_booking_showing: false,
+    station_booking_showing: true,
+    airport_booking_showing: false,
+    international_booking_showing: true,
+    min_filter_price: 5,
+    max_filter_price: 55,
+    latitude: 24.6477765,
+    longitude: 46.8291086,
+    distance: 20,
     email: "info@tcar.com",
     phone: "+966500000000",
     facebook_link: "https://facebook.com/tcar",
@@ -50,6 +59,15 @@ describe("settings mapping", () => {
         termsUrl: "https://t-car.app/user/terms?locale=en",
         privacyUrl: "https://t-car.app/user/privacy?locale=en",
       },
+      bookingTypes: {
+        daily: true,
+        monthly: false,
+        station: true,
+        airport: false,
+        international: true,
+      },
+      priceFilterRange: { min: 5, max: 55 },
+      mapDefaultPosition: { lat: 24.6477765, lng: 46.8291086 },
     });
   });
 
@@ -58,6 +76,9 @@ describe("settings mapping", () => {
       companySizes: [],
       contact: {},
       links: {},
+      bookingTypes: undefined,
+      priceFilterRange: undefined,
+      mapDefaultPosition: undefined,
     });
   });
 

@@ -6,8 +6,11 @@ export { SiteLinksSync } from "./components/SiteLinksSync";
 export { useSiteLinks, useSiteLinksStore } from "./siteLinksStore";
 export type {
   AppSettings,
+  BookingType,
   CompanySize,
   ContactSettings,
+  MapDefaultPosition,
+  PriceFilterRange,
   SiteLinks,
   SiteSettings,
 } from "./model";

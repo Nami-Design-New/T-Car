@@ -479,6 +479,12 @@ terms and privacy. All open in a new tab (the register dialog keeps its input).
 An unknown link is hidden in the footer and plain text in the form. The nav's
 "Why choose us" still scrolls to the home section, which stays.
 
+**Settings API expansion (2026-11-02), mapping fraction:** `AppSettings` and
+`mapSettings` now map the observed booking-type switches, price bounds (5–55),
+and default map coordinates from `GET /settings`. Missing or invalid optional
+values do not fail the settings read. No UI consumes these fields yet; the
+booking tabs, price filters, and map defaults remain follow-up fractions.
+
 **Phase 1 import-boundary remediation (2026-10-20):** The account shell now receives points data from its App Router section layout and imports the summary card through `features/points/index.ts`. The root layout now supplies the authenticated notifications count to the layout feature. `MapLocationModal` and `LocationData` now live in `shared/ui` and `shared/lib`, respectively, with every caller using that shared API. Rental search now consumes the cars feature only through its public index; that index no longer exposes the server-only `getOffices` read, which the home route imports directly. The initial lint audit is reduced from nine to two boundary errors; both remaining violations are in wallet's bank-account action dependency.
 
 **Phone field replacement follow-up (2026-10-26), fraction 1:** Added the
