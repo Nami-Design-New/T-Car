@@ -3,7 +3,11 @@ import { isApiEnvelope, type ApiEnvelope } from "@/services/http/envelope";
 import { publicServerHttp } from "@/services/http/server";
 import { AppError } from "@/shared/lib/errors";
 import { fail, ok, type Result } from "@/shared/lib/result";
-import type { ContactMessage, JoinUsRequest } from "./model";
+import type { ContactMessage, FAQItem, JoinUsRequest } from "./model";
+
+export interface FaqsApi {
+  listFaqs(locale: string): Promise<FAQItem[]>;
+}
 
 export interface ContactApi {
   /** Sends the message; success carries the backend's message for the toast. */
@@ -18,6 +22,42 @@ export interface JoinUsApi {
 
 /** Success is body code 200 (201 accepted too); `data` is null. */
 const isSuccessCode = (code: number) => code === 200 || code === 201;
+
+function isFaq(value: unknown): value is {
+  id: string | number;
+  question: string;
+  answer: string;
+} {
+  if (typeof value !== "object" || value === null) return false;
+  const faq = value as Record<string, unknown>;
+  return (
+    (typeof faq.id === "string" ||
+      (typeof faq.id === "number" && Number.isFinite(faq.id))) &&
+    typeof faq.question === "string" &&
+    typeof faq.answer === "string"
+  );
+}
+
+async function listFaqs(locale: string): Promise<FAQItem[]> {
+  const response = await publicServerHttp.get<ApiEnvelope<unknown>>("/faqs", {
+    headers: { "Accept-Language": locale },
+  });
+  if (
+    !isApiEnvelope(response) ||
+    response.code !== 200 ||
+    !Array.isArray(response.data) ||
+    !response.data.every(isFaq)
+  ) {
+    throw new AppError("server");
+  }
+  return response.data.map(({ id, question, answer }) => ({
+    id: String(id),
+    question,
+    answer,
+  }));
+}
+
+export const faqsApi: FaqsApi = { listFaqs };
 
 /**
  * POST /contact-us as JSON. The endpoint is public, so no token is sent

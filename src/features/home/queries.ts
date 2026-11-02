@@ -1,7 +1,8 @@
 import 'server-only';
-import { faqsApi } from '@/services/faqs.api';
+import { getLocale } from 'next-intl/server';
+import { faqsApi } from './api';
 import type { FAQItem } from './model';
 
-export function getFaqs(): Promise<FAQItem[]> {
-  return faqsApi.listFaqs();
+export async function getFaqs(): Promise<FAQItem[]> {
+  return faqsApi.listFaqs(await getLocale());
 }

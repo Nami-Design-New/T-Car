@@ -1,6 +1,7 @@
 import { AppError } from "@/shared/lib/errors";
 import { fail, ok } from "@/shared/lib/result";
-import type { ContactApi } from "./api";
+import type { ContactApi, FaqsApi } from "./api";
+import type { FAQItem } from "./model";
 
 /*
  * Test double of the live `ContactApi` (no production caller, no mock flag).
@@ -19,5 +20,45 @@ export const contactMock: ContactApi = {
       );
     }
     return ok(null, "Contact request created successfully.");
+  },
+};
+
+const FAQS: Record<"ar" | "en", FAQItem[]> = {
+  en: [
+    {
+      id: "1",
+      question: "What documents do I need to rent a car?",
+      answer:
+        "You need a valid driving licence, a national ID or residence permit, and a payment method in your name.",
+    },
+    {
+      id: "2",
+      question: "Can I cancel my booking?",
+      answer: "You can cancel free of charge up to 24 hours before pickup.",
+    },
+  ],
+  ar: [
+    {
+      id: "1",
+      question: "ما المستندات المطلوبة لاستئجار سيارة؟",
+      answer:
+        "تحتاج إلى رخصة قيادة سارية وهوية وطنية أو إقامة ووسيلة دفع باسمك.",
+    },
+    {
+      id: "2",
+      question: "هل يمكنني إلغاء الحجز؟",
+      answer: "يمكنك الإلغاء مجانًا قبل موعد الاستلام بـ 24 ساعة.",
+    },
+  ],
+};
+
+/**
+ * Test double of the public FAQ read. Stateless and safe for server tests.
+ * Failure rule: unsupported locale values throw a server AppError.
+ */
+export const faqsMock: FaqsApi = {
+  async listFaqs(locale) {
+    if (locale !== "ar" && locale !== "en") throw new AppError("server");
+    return [...FAQS[locale]];
   },
 };

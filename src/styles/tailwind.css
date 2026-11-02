@@ -193,6 +193,17 @@
     grid-template-rows: minmax(0, 1fr);
     visibility: visible;
     opacity: 1;
+    animation: faq-answer-open 300ms ease both;
+  }
+  @keyframes faq-answer-open {
+    from {
+      grid-template-rows: minmax(0, 0fr);
+      opacity: 0;
+    }
+    to {
+      grid-template-rows: minmax(0, 1fr);
+      opacity: 1;
+    }
   }
   .faq-answer > p {
     min-height: 0;
@@ -201,6 +212,7 @@
   @media (prefers-reduced-motion: reduce) {
     .faq-answer {
       transition: none;
+      animation: none;
     }
   }
 

@@ -24,7 +24,7 @@ export default function FAQ({ faqs }: Props) {
       <details
         key={item.id}
         name="faq"
-        className="group border-stroke-light border-b"
+        className="faq-item group border-stroke-light border-b"
         open={item.id === faqs[0]?.id}
       >
         <summary className="text-text-primary flex w-full cursor-pointer list-none items-center justify-between py-5.5 text-start font-medium transition duration-300 max-md:py-4.5">
