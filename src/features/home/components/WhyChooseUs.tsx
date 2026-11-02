@@ -1,44 +1,19 @@
-"use client";
-
-import { FaAward, FaClock } from "react-icons/fa";
-import { FaShieldHeart } from "react-icons/fa6";
-import { LuMapPinCheck } from "react-icons/lu";
-import { useTranslations } from "next-intl";
+import Image from "next/image";
 import FeatureCard from "./FeatureCard";
+import type { HomeWhyUsCard, HomeWhyUsContent } from "../model";
 
-const FEATURES = [
-  {
-    id: 1,
-    icon: FaAward,
-    title: "bestCompanies",
-    description: "bestCompaniesDescription",
-  },
-  {
-    id: 2,
-    icon: FaClock,
-    title: "roundTheClockSupport",
-    description: "roundTheClockSupportDescription",
-  },
-  {
-    id: 3,
-    icon: FaShieldHeart,
-    title: "comprehensiveInsurance",
-    description: "comprehensiveInsuranceDescription",
-  },
-  {
-    id: 4,
-    icon: LuMapPinCheck,
-    title: "flexiblePickup",
-    description: "flexiblePickupDescription",
-  },
-];
+interface Props {
+  content: HomeWhyUsContent;
+  cards: HomeWhyUsCard[];
+}
 
-export default function WhyChooseUs() {
-  const t = useTranslations("whyChooseUs");
-
+export default function WhyChooseUs({ content, cards }: Props) {
   return (
     <section
-      className="relative my-12.5 lg:my-24 overflow-hidden bg-[linear-gradient(rgba(30,30,30,0.72),rgba(30,30,30,0.72)),url('/images/hero/hero-2.png')] bg-cover bg-fixed bg-center py-20 max-md:py-12"
+      className="relative my-12.5 lg:my-24 overflow-hidden bg-cover bg-fixed bg-center py-20 max-md:py-12"
+      style={{
+        backgroundImage: `linear-gradient(rgba(30,30,30,0.72),rgba(30,30,30,0.72)),url(${JSON.stringify(content.image)})`,
+      }}
       id="why-choose-us"
     >
       <div className="overlay absolute inset-0 backdrop-blur-[2px]" />
@@ -47,31 +22,35 @@ export default function WhyChooseUs() {
         <div className="grid grid-cols-[320px_1fr] items-center gap-8 max-lg:grid-cols-1 lg:gap-17.5">
           <div className="text-text-on-brand flex flex-col items-stretch justify-between gap-6">
             <span className="bg-action-primary/18 text-action-primary inline-block w-fit rounded-full px-4.5 py-2 font-bold">
-              {t("smallTitle")}
+              {content.eyebrow}
             </span>
 
             <h2 className="text-text-on-brand m-0 text-3xl leading-[1.1] font-extrabold lg:text-[52px]">
-              {t("title")}
-              {t("brandQuestion")}
+              {content.title}
             </h2>
 
             <p className="text-text-on-brand/85 m-0 text-[18px] leading-[1.9]">
-              {t("description")}
+              {content.description}
             </p>
           </div>
 
           <div className="grid grid-cols-2 gap-2 lg:gap-7">
-            {FEATURES.map((item) => {
-              const Icon = item.icon;
-              return (
-                <FeatureCard
-                  icon={<Icon />}
-                  title={`${t(`features.${item.title}`)}`}
-                  description={`${t(`features.${item.description}`)}`}
-                  key={item.id}
-                />
-              );
-            })}
+            {cards.map((card) => (
+              <FeatureCard
+                icon={
+                  <Image
+                    src={card.imageUrl}
+                    alt=""
+                    width={72}
+                    height={72}
+                    className="size-full rounded-xl object-cover"
+                  />
+                }
+                title={card.title}
+                description={card.description}
+                key={card.id}
+              />
+            ))}
           </div>
         </div>
       </div>

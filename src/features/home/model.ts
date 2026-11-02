@@ -6,6 +6,60 @@ export interface FAQItem {
   answer: string;
 }
 
+/** A partner logo in the home carousel (GET /partners). */
+export interface HomePartner {
+  id: string;
+  name: string;
+  imageUrl: string;
+}
+
+/** A card in the home Why Us section (GET /why-us). */
+export interface HomeWhyUsCard {
+  id: string;
+  title: string;
+  description: string;
+  imageUrl: string;
+}
+
+export interface HomeHeroContent {
+  eyebrow: string;
+  title: string;
+  description: string;
+}
+
+export interface HomeSectionContent {
+  eyebrow: string;
+  title: string;
+  description: string;
+}
+
+export interface HomeContactContent extends HomeSectionContent {
+  formTitle: string;
+  formDescription: string;
+}
+
+export interface HomeWhyUsContent extends HomeSectionContent {
+  /** Section background image. */
+  image: string;
+}
+
+export interface HomeJoinUsContent {
+  title: string;
+  description: string;
+  image: string;
+}
+
+export interface HomeContent {
+  hero: HomeHeroContent;
+  partners: HomeSectionContent;
+  whyUs: HomeWhyUsContent;
+  support: HomeSectionContent;
+  apps: HomeSectionContent;
+  contacts: HomeContactContent;
+  joinUs: HomeJoinUsContent;
+  footer: { text: string };
+}
+
 export interface ContactMessage {
   name: string;
   email: string;

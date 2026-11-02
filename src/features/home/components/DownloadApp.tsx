@@ -4,11 +4,16 @@ import Image from "next/image";
 import { useTranslations } from "next-intl";
 
 import { IMAGES } from "@/shared/config/assets";
+import type { HomeSectionContent } from "../model";
 const phone = IMAGES.appPhone;
 const appStore = IMAGES.appStore;
 const playStore = IMAGES.googlePlay;
 
-export default function DownloadApp() {
+interface Props {
+  content: HomeSectionContent;
+}
+
+export default function DownloadApp({ content }: Props) {
   const t = useTranslations("downloadApp");
 
   return (
@@ -28,15 +33,15 @@ export default function DownloadApp() {
 
           <div className="relative z-10 me-auto w-[48%] text-start max-lg:m-0 max-lg:w-full max-lg:text-center">
             <span className="tag bg-text-on-brand/12 mb-4.5 inline-flex rounded-full px-4.5 py-2 font-bold">
-              {t("tag")}
+              {content.eyebrow}
             </span>
 
             <h2 className="mt-0 mb-4.5 text-[46px] leading-tight font-extrabold max-lg:mb-2.5 max-lg:text-[34px]">
-              {t("title")}
+              {content.title}
             </h2>
 
             <p className="text-text-on-brand/85 mb-8.75 text-[17px] leading-[1.9]">
-              {t("description")}
+              {content.description}
             </p>
 
             <div className="flex items-center gap-4.5 max-lg:justify-center">

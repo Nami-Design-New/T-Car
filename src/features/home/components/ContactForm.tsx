@@ -27,7 +27,12 @@ const CONTACT_FIELDS = [
   "message",
 ] as const;
 
-export default function ContactForm() {
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+export default function ContactForm({ title, description }: Props) {
   const t = useTranslations();
   const errorMessage = useErrorMessage();
   const fieldError = useFieldErrorMessage();
@@ -82,6 +87,16 @@ export default function ContactForm() {
       onSubmit={submit}
       noValidate
     >
+      {(title || description) && (
+        <div>
+          {title && <h3 className="mb-2 text-xl font-semibold">{title}</h3>}
+          {description && (
+            <p className="text-text-subtle mb-0 text-sm leading-[1.8]">
+              {description}
+            </p>
+          )}
+        </div>
+      )}
       <div className="grid grid-cols-2 gap-5 *:min-w-0 *:p-0 max-md:grid-cols-1">
         <FormInput
           id="name"

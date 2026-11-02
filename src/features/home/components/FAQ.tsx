@@ -1,10 +1,11 @@
 import { useTranslations } from "next-intl";
 import { FiMinus, FiPlus } from "react-icons/fi";
 import { SectionTitle } from "@/shared/ui/SectionTitle";
-import type { FAQItem } from "../model";
+import type { FAQItem, HomeSectionContent } from "../model";
 
 interface Props {
   faqs: FAQItem[];
+  content?: HomeSectionContent;
 }
 
 /**
@@ -13,7 +14,7 @@ interface Props {
  * client JavaScript. The shared `name` makes the items exclusive (one open at
  * a time) in current browsers; older ones allow several open.
  */
-export default function FAQ({ faqs }: Props) {
+export default function FAQ({ faqs, content }: Props) {
   const t = useTranslations();
 
   const left = faqs.slice(0, Math.ceil(faqs.length / 2));
@@ -52,7 +53,11 @@ export default function FAQ({ faqs }: Props) {
   return (
     <section className="bg-surface-on-background pb-12 md:pb-20 lg:pb-45" id="faqs">
       <div className="mx-auto w-full max-w-7xl px-2">
-        <SectionTitle title={t("faq.title")} subtitle={t("faq.subtitle")} />
+        <SectionTitle
+          smallTitle={content?.eyebrow}
+          title={content?.title ?? t("faq.title")}
+          subtitle={content?.description ?? t("faq.subtitle")}
+        />
 
         <div className="faq-grid mt-8 grid grid-cols-2 gap-15 max-lg:gap-7.5 max-md:grid-cols-1 max-md:gap-0">
           <div className="faq-column flex flex-col">{renderColumn(left)}</div>

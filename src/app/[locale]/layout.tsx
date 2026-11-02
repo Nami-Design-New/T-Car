@@ -1,5 +1,6 @@
 import { auth } from "@/auth";
 import { Footer, GuestLocationRequest, Header } from "@/features/layout";
+import { getHomeContent } from "@/features/home/queries";
 import { getNotifications } from "@/features/notifications/queries";
 import { SiteLinksSync } from "@/features/settings";
 import { getSiteSettings } from "@/features/settings/queries";
@@ -96,7 +97,10 @@ export default async function RootLayout({
         .length
     : 0;
   // Never throws: without the settings, the contact details and site links are hidden.
-  const site = await getSiteSettings();
+  const [site, homeContent] = await Promise.all([
+    getSiteSettings(),
+    getHomeContent().catch(() => null),
+  ]);
 
   return (
     <html lang={locale} dir={dir} className={expo.variable}>
@@ -112,7 +116,11 @@ export default async function RootLayout({
               unreadCount={unreadCount}
             />
             <main>{children}</main>
-            <Footer contact={site.contact} links={site.links} />
+            <Footer
+              contact={site.contact}
+              links={site.links}
+              siteText={homeContent?.footer.text}
+            />
             <Toaster dir={dir} />
           </DirectionProvider>
         </NextIntlClientProvider>

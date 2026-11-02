@@ -34,6 +34,8 @@ interface Props {
   contact: ContactSettings;
   /** The backend's about, terms, and privacy pages; a missing link is hidden. */
   links: SiteLinks;
+  /** Public GET /home footer copy; absent content falls back to the translation. */
+  siteText?: string;
 }
 
 const quickLinkClass =
@@ -42,7 +44,7 @@ const quickLinkClass =
 const legalLinkClass =
   "text-text-on-brand/70 hover:text-action-primary transition duration-300";
 
-export default async function Footer({ contact, links }: Props) {
+export default async function Footer({ contact, links, siteText }: Props) {
   const t = await getTranslations();
 
   const year = new Date().getFullYear();
@@ -61,7 +63,7 @@ export default async function Footer({ contact, links }: Props) {
           />
 
           <p className="text-text-on-brand/75 mb-6 max-w-80 leading-[1.8] max-lg:max-w-full">
-            {t("hero.subtitle")}
+            {siteText ?? t("hero.subtitle")}
           </p>
           {/* </div> */}
 

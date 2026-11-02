@@ -1,17 +1,17 @@
-'use client';
+"use client";
 
-import { useId, useRef, useState } from 'react';
-import Image from 'next/image';
-import { useTranslations } from 'next-intl';
-import { FiChevronLeft, FiChevronRight } from 'react-icons/fi';
-import { Swiper, SwiperSlide } from 'swiper/react';
-import type { Swiper as SwiperInstance } from 'swiper';
+import { useId, useRef, useState } from "react";
+import Image from "next/image";
+import { useTranslations } from "next-intl";
+import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
+import { Swiper, SwiperSlide } from "swiper/react";
+import type { Swiper as SwiperInstance } from "swiper";
 
-import 'swiper/css';
+import "swiper/css";
 
-import CarCard from './CarCard';
-import type { CarListing, Office } from '../model';
-import { cn } from '@/shared/lib/cn';
+import CarCard from "./CarCard";
+import type { CarListing, Office } from "../model";
+import { cn } from "@/shared/lib/cn";
 
 interface CarOfficeRowProps {
   office: Office;
@@ -30,8 +30,12 @@ const LOCKED: NavState = { isLocked: true, isBeginning: true, isEnd: true };
 
 // Swiper derives direction from the `dir` it inherits, so RTL needs no prop
 // here -- only the arrow icons have to be mirrored in JSX.
-export default function CarOfficeRow({ office, cars, className }: CarOfficeRowProps) {
-  const t = useTranslations('officeRow');
+export default function CarOfficeRow({
+  office,
+  cars,
+  className,
+}: CarOfficeRowProps) {
+  const t = useTranslations("officeRow");
   const titleId = useId();
   const swiperRef = useRef<SwiperInstance | null>(null);
   const [nav, setNav] = useState<NavState>(LOCKED);
@@ -47,20 +51,41 @@ export default function CarOfficeRow({ office, cars, className }: CarOfficeRowPr
   };
 
   const title = (
-    <h2 className="office-row__title flex min-w-0 items-center gap-4" id={titleId}>
-      <span className="office-row__logo grid size-14 shrink-0 place-items-center overflow-hidden rounded-md border border-stroke-light bg-surface-on-background p-3" aria-hidden="true">
-        <Image src={office.logo} alt="" width={56} height={56} className="h-full w-full object-contain" />
+    <h2
+      className="office-row__title flex min-w-0 items-center gap-4"
+      id={titleId}
+    >
+      <span
+        className="office-row__logo border-stroke-light bg-surface-on-background grid size-14 shrink-0 place-items-center overflow-hidden rounded-md border p-3"
+        aria-hidden="true"
+      >
+        <Image
+          src={office.logo}
+          alt=""
+          width={56}
+          height={56}
+          className="h-full w-full object-contain"
+        />
       </span>
-      <span className="office-row__copy flex min-w-0 gap-0.5 overflow-hidden text-ellipsis whitespace-nowrap text-[1.35rem] font-extrabold leading-[1.35]">
-        <span className="office-row__label text-action-primary">{t('office')}</span>
-        <span className="office-row__name truncate text-text-primary">{office.name}</span>
+      <span className="office-row__copy flex min-w-0 gap-0.5 overflow-hidden text-[1.35rem] leading-[1.35] font-extrabold text-ellipsis whitespace-nowrap">
+        <span className="office-row__label text-action-primary">
+          {t("office")}
+        </span>
+        <span className="office-row__name text-text-primary truncate">
+          {office.name}
+        </span>
       </span>
     </h2>
   );
 
   return (
-    <section className={cn('office-row min-w-0', className)} aria-labelledby={titleId}>
-      <header className="office-row__header mb-5 flex min-h-[82px] items-center gap-5 overflow-hidden max-md:flex-wrap max-md:gap-3 max-md:min-h-[72px] max-md:p-4">{title}</header>
+    <section
+      className={cn("office-row min-w-0", className)}
+      aria-labelledby={titleId}
+    >
+      <header className="office-row__header mb-5 flex min-h-20.5 items-center gap-5 overflow-hidden max-md:min-h-[72px] max-md:flex-wrap max-md:gap-3 max-md:p-4">
+        {title}
+      </header>
 
       <Swiper
         onSwiper={(swiper) => {

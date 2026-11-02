@@ -22,6 +22,12 @@ export const publicServerHttp = createHttpClient({
   getLocale: readLocale,
 });
 
+/** Anonymous client for public site content endpoints mounted at `/api`. */
+export const publicSiteServerHttp = createHttpClient({
+  baseUrl: env.siteApiUrl,
+  getLocale: readLocale,
+});
+
 /**
  * Server client: forwards the signed-in customer's backend token as the bearer
  * token. A 401 means the token is dead (revoked; tokens do not expire), so a
