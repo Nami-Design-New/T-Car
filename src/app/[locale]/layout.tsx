@@ -16,22 +16,22 @@ import "../../styles/tailwind.css";
 const expo = localFont({
   src: [
     {
-      path: "../../assets/fonts/Expo-Arabic-Light.ttf",
+      path: "../../assets/fonts/Expo-Arabic-Light.woff2",
       weight: "400",
       style: "normal",
     },
     {
-      path: "../../assets/fonts/Expo-Arabic-Medium.ttf",
+      path: "../../assets/fonts/Expo-Arabic-Medium.woff2",
       weight: "500",
       style: "normal",
     },
     {
-      path: "../../assets/fonts/Expo-Arabic-SemiBold.ttf",
+      path: "../../assets/fonts/Expo-Arabic-SemiBold.woff2",
       weight: "600",
       style: "normal",
     },
     {
-      path: "../../assets/fonts/Expo-Arabic-Bold.ttf",
+      path: "../../assets/fonts/Expo-Arabic-Bold.woff2",
       weight: "700",
       style: "normal",
     },

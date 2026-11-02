@@ -49,6 +49,7 @@ export default function CarsRail({
             <Image
               src={chevronLeft.src}
               alt=""
+              className="scale-x-[-1] rtl:scale-x-100"
               width={chevronLeft.width}
               height={chevronLeft.height}
             />

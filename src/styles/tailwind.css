@@ -87,7 +87,8 @@
   --radius-xl: 24px;
   --radius-2xl: 32px;
 
-  --font-expo: "Expo Arabic", sans-serif;
+  /* --font-expo is set on <html> by next/font (app/[locale]/layout.tsx); a
+     theme value here would override it with an undeclared family. */
   --breakpoint-sm: 576px;
   --breakpoint-md: 768px;
   --breakpoint-lg: 992px;

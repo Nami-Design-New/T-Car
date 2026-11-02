@@ -38,16 +38,16 @@ export default function CarCard({
   return (
     <article
       className={cn(
-        "group h-full min-w-0 overflow-hidden rounded-xl  bg-surface-background shadow-[0_7px_24px_rgba(30,30,30,0.055)] transition duration-300 hover:-translate-y-1 hover:border-action-primary/25 hover:shadow-[0_14px_34px_rgba(30,30,30,0.1)] focus-within:outline-3 focus-within:outline-action-primary/18 focus-within:outline-offset-3 max-sm:rounded-xl",
+        "group bg-surface-background hover:border-action-primary/25 focus-within:outline-action-primary/18 h-full min-w-0 overflow-hidden rounded-xl shadow-[0_7px_24px_rgba(30,30,30,0.055)] transition duration-300 focus-within:outline-3 focus-within:outline-offset-3 hover:-translate-y-1 hover:shadow-[0_14px_34px_rgba(30,30,30,0.1)] max-sm:rounded-xl",
         className,
       )}
     >
       <Link
         href={detailsHref}
-        className=" flex h-full flex-col text-inherit"
+        className="flex h-full flex-col text-inherit"
         aria-label={t("viewCar", { brand: car.brand, name: car.name })}
       >
-        <div className="relative h-52.5 overflow-hidden bg-surface-on-background after:absolute after:bottom-0 after:inset-s-0 after:inset-e-0 after:h-[45%] after:bg-[linear-gradient(to_top,rgba(30,30,30,0.3),transparent)] after:content-[''] max-sm:h-[184px]">
+        <div className="bg-surface-on-background relative h-52.5 overflow-hidden after:absolute after:inset-s-0 after:inset-e-0 after:bottom-0 after:h-[45%] after:bg-[linear-gradient(to_top,rgba(30,30,30,0.3),transparent)] after:content-[''] max-sm:h-46">
           <Image
             src={car.image}
             alt={`${car.brand} ${car.name}`}
@@ -58,15 +58,15 @@ export default function CarCard({
           />
 
           {car.pickupPoint ? (
-            <span className="absolute inset-s-0 top-0 z-2 inline-flex min-h-7.5 items-center gap-1 rounded-bl-md  bg-surface-card-primary text-action-primary px-3 py-2 text-xs font-normal backdrop-blur-sm">
+            <span className="bg-surface-card-primary text-action-primary absolute inset-s-0 top-0 z-2 inline-flex min-h-7.5 items-center gap-1 rounded-ee-md px-3 py-2 text-xs font-normal backdrop-blur-sm">
               {car.pickupPoint === "airport" ? (
                 <LuPlane
-                  className="text-sm text-action-primary"
+                  className="text-action-primary text-sm"
                   aria-hidden="true"
                 />
               ) : (
                 <MdTrain
-                  className="text-sm text-action-primary"
+                  className="text-action-primary text-sm"
                   aria-hidden="true"
                 />
               )}
@@ -77,8 +77,8 @@ export default function CarCard({
           ) : null}
 
           {true ? (
-            <div className="absolute bottom-1 inset-s-1.25 inset-e-1.25 z-2 flex min-h-12 items-stretch justify-between overflow-hidden rounded-md border border-dashed border-status-success bg-surface-background/[0.94] shadow-[0_8px_22px_rgba(30,30,30,0.14)] backdrop-blur-[10px]">
-              <span className="flex min-w-0 items-center gap-3 ">
+            <div className="border-status-success bg-surface-background/[0.94] absolute inset-s-1.25 inset-e-1.25 bottom-1 z-2 flex min-h-12 items-stretch justify-between overflow-hidden rounded-md border border-dashed shadow-[0_8px_22px_rgba(30,30,30,0.14)] backdrop-blur-[10px]">
+              <span className="flex min-w-0 items-center gap-3">
                 <Image
                   src={giftImage.src}
                   alt={t("gift")}
@@ -86,17 +86,17 @@ export default function CarCard({
                   height={giftImage.height}
                   className="shrink-0"
                 />
-                <span className="min-w-0 px-ds-1 py-ds-2 grow">
-                  <small className="mb-px block text-xs leading-[1.3] text-text-subtle">
+                <span className="px-ds-1 py-ds-2 min-w-0 grow">
+                  <small className="text-text-subtle mb-px block text-xs leading-[1.3]">
                     {t("limitedOffer")}
                   </small>
-                  <strong className="block overflow-hidden text-ellipsis whitespace-nowrap text-base font-semibold leading-[1.35] text-ds-green">
+                  <strong className="text-ds-green block overflow-hidden text-base leading-[1.35] font-semibold text-ellipsis whitespace-nowrap">
                     {t("saveNow")}
                   </strong>
                 </span>
               </span>
-              <span className="relative grid min-w-17 place-content-center bg-ds-green px-4 py-2 text-center text-white after:absolute after:inset-e-0 after:top-1/2 after:size-4 after:-translate-x-1/2 after:-translate-y-1/2 after:rounded-full after:bg-surface-background/[0.94] after:content-['']">
-                <strong className="block text-xl ">1</strong>
+              <span className="bg-ds-green after:bg-surface-background/[0.94] relative grid min-w-17 place-content-center px-4 py-2 text-center text-white after:absolute after:inset-e-0 after:top-1/2 after:size-4 after:-translate-y-1/2 ltr:after:translate-x-1/2 rtl:after:-translate-x-1/2 after:rounded-full after:content-['']">
+                <strong className="block text-xl">1</strong>
                 <small className="block text-[10px] leading-none">
                   {t("discount")}
                 </small>
@@ -105,17 +105,17 @@ export default function CarCard({
           ) : null}
         </div>
 
-        <div className=" flex flex-1 flex-col p-3 ">
+        <div className="flex flex-1 flex-col p-3">
           <div className="flex items-center justify-between gap-2">
-            <h3 className="m-0 mb-2  text-base font-bold leading-[1.45] text-text-primary">
+            <h3 className="text-text-primary m-0 mb-2 text-base leading-[1.45] font-bold">
               {car.brand} {car.name}
             </h3>
-            <span className="shrink-0 rounded-sm bg-surface-card-primary px-3 py-2 text-xs font-semibold leading-none text-action-primary">
+            <span className="bg-surface-card-primary text-action-primary shrink-0 rounded-sm px-3 py-2 text-xs leading-none font-semibold">
               {car.year}
             </span>
           </div>
           <div className="mb-2 flex min-w-0 items-center gap-3">
-            <span className="flex min-w-0 flex-1 items-center gap-2 text-xs font-medium text-text-subtle">
+            <span className="text-text-subtle flex min-w-0 flex-1 items-center gap-2 text-xs font-medium">
               <Image
                 src={IMAGES.officePlaceholder.src}
                 width={IMAGES.officePlaceholder.width}
@@ -128,7 +128,7 @@ export default function CarCard({
               </span>
             </span>
             <span
-              className=" inline-flex shrink-0 items-center gap-1 text-xs font-semibold text-text-primary"
+              className="text-text-primary inline-flex shrink-0 items-center gap-1 text-xs font-semibold"
               aria-label={t("rating", { rating: car.rating })}
             >
               <Image
@@ -141,7 +141,7 @@ export default function CarCard({
             </span>
           </div>
 
-          <div className="mt-auto flex items-end justify-between gap-4  pt-2">
+          <div className="mt-auto flex items-end justify-between gap-4 pt-2">
             <span className="flex min-w-0 items-center gap-4 whitespace-nowrap">
               <span className="inline-flex items-center gap-2">
                 <Price
@@ -149,7 +149,7 @@ export default function CarCard({
                   amountClassName="text-action-primary text-base font-semibold"
                   className="text-action-primary"
                 />
-                <small className="whitespace-nowrap text-sm font-bold text-text-subtle">
+                <small className="text-text-subtle text-sm font-bold whitespace-nowrap">
                   {t("perDay")}
                 </small>
               </span>
