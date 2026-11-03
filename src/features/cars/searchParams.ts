@@ -1,11 +1,11 @@
-import type { CarListing, OfficeCarGroup } from './model';
+import type { CarListing, OfficeCarGroup } from "./model";
 
 export interface PriceRange {
   min: number;
   max: number;
 }
 
-export type CarSort = 'recommended' | 'price_asc' | 'price_desc' | 'rating';
+export type CarSort = "recommended" | "price_asc" | "price_desc" | "rating";
 
 export interface CarFilterDraft {
   query: string;
@@ -38,19 +38,26 @@ function first(value: string | string[] | undefined): string | undefined {
   return Array.isArray(value) ? value[0] : value;
 }
 
-function boundedNumber(value: string | undefined, fallback: number, min: number, max: number) {
+function boundedNumber(
+  value: string | undefined,
+  fallback: number,
+  min: number,
+  max: number,
+) {
   const parsed = Number(value);
-  return Number.isFinite(parsed) ? Math.min(Math.max(Math.round(parsed), min), max) : fallback;
+  return Number.isFinite(parsed)
+    ? Math.min(Math.max(Math.round(parsed), min), max)
+    : fallback;
 }
 
 function list(value: string | string[] | undefined): string[] {
-  const values = Array.isArray(value) ? value : value ? value.split(',') : [];
+  const values = Array.isArray(value) ? value : value ? value.split(",") : [];
   return [
     ...new Set(
       values
-        .flatMap((item) => item.split(','))
+        .flatMap((item) => item.split(","))
         .map((item) => item.trim())
-        .filter(Boolean)
+        .filter(Boolean),
     ),
   ];
 }
@@ -59,7 +66,7 @@ export function createDefaultCarFilters(
   priceRange: PriceRange,
 ): CarFilterDraft {
   return {
-    query: '',
+    query: "",
     minPrice: priceRange.min,
     maxPrice: priceRange.max,
     brandIds: [],
@@ -81,7 +88,7 @@ export function parseCarFilterDraft(
   );
 
   return {
-    query: first(input.q)?.trim() ?? '',
+    query: first(input.q)?.trim() ?? "",
     minPrice,
     maxPrice: boundedNumber(
       first(input.priceMax),
@@ -101,15 +108,27 @@ export function applyCarFilterDraft(
   filters: CarFilterDraft,
   priceRange: PriceRange,
 ) {
-  const keys = ['q', 'priceMin', 'priceMax', 'brands', 'types', 'companies', 'services'];
+  const keys = [
+    "q",
+    "priceMin",
+    "priceMax",
+    "brands",
+    "types",
+    "companies",
+    "services",
+  ];
   keys.forEach((key) => params.delete(key));
-  if (filters.query.trim()) params.set('q', filters.query.trim());
-  if (filters.minPrice !== priceRange.min) params.set('priceMin', String(filters.minPrice));
-  if (filters.maxPrice !== priceRange.max) params.set('priceMax', String(filters.maxPrice));
-  if (filters.brandIds.length) params.set('brands', filters.brandIds.join(','));
-  if (filters.types.length) params.set('types', filters.types.join(','));
-  if (filters.companyIds.length) params.set('companies', filters.companyIds.join(','));
-  if (filters.serviceIds.length) params.set('services', filters.serviceIds.join(','));
+  if (filters.query.trim()) params.set("q", filters.query.trim());
+  if (filters.minPrice !== priceRange.min)
+    params.set("priceMin", String(filters.minPrice));
+  if (filters.maxPrice !== priceRange.max)
+    params.set("priceMax", String(filters.maxPrice));
+  if (filters.brandIds.length) params.set("brands", filters.brandIds.join(","));
+  if (filters.types.length) params.set("types", filters.types.join(","));
+  if (filters.companyIds.length)
+    params.set("companies", filters.companyIds.join(","));
+  if (filters.serviceIds.length)
+    params.set("services", filters.serviceIds.join(","));
   return params;
 }
 
@@ -122,18 +141,18 @@ export function parseCarSearchParams(
 
   const context: Record<string, string> = {};
   for (const key of [
-    'type',
-    'city',
-    'branch',
-    'lat',
-    'lng',
-    'from',
-    'to',
-    'airportId',
-    'stationId',
-    'countryId',
-    'pickupDate',
-    'dropoffDate',
+    "type",
+    "city",
+    "branch",
+    "lat",
+    "lng",
+    "from",
+    "to",
+    "airportId",
+    "stationId",
+    "countryId",
+    "pickupDate",
+    "dropoffDate",
   ]) {
     const value = first(input[key]);
     if (value) context[key] = value;
@@ -144,8 +163,14 @@ export function parseCarSearchParams(
   return {
     ...filters,
     minPrice: filters.minPrice > priceRange.min ? filters.minPrice : 0,
-    maxPrice: filters.maxPrice < priceRange.max ? filters.maxPrice : Number.POSITIVE_INFINITY,
-    sort: sort === 'price_asc' || sort === 'price_desc' || sort === 'rating' ? sort : 'recommended',
+    maxPrice:
+      filters.maxPrice < priceRange.max
+        ? filters.maxPrice
+        : Number.POSITIVE_INFINITY,
+    sort:
+      sort === "price_asc" || sort === "price_desc" || sort === "rating"
+        ? sort
+        : "recommended",
     context,
   };
 }
@@ -155,7 +180,7 @@ export function parseCarSearchParams(
  * cars, which are page 1 of `/city-company-cars` at this size (observed
  * 2026-11-03), so a full group means a row may have more.
  */
-export const COMPANY_CARS_PER_PAGE = 10;
+export const COMPANY_CARS_PER_PAGE = 1;
 
 /** The filters GET /city-cars accepts (docs/api/cities-api.md §2). */
 export interface CityCarsQuery {
@@ -250,10 +275,14 @@ export function toCityCarsQuery(params: CarSearchParams): CityCarsQuery {
   };
 }
 
-export function filterAndSortCars(cars: CarListing[], params: CarSearchParams): CarListing[] {
+export function filterAndSortCars(
+  cars: CarListing[],
+  params: CarSearchParams,
+): CarListing[] {
   const query = params.query.toLocaleLowerCase();
   const filtered = cars.filter((car) => {
-    const searchable = `${car.name} ${car.brand} ${car.showroom}`.toLocaleLowerCase();
+    const searchable =
+      `${car.name} ${car.brand} ${car.showroom}`.toLocaleLowerCase();
     return (
       car.pricePerDay >= params.minPrice &&
       car.pricePerDay <= params.maxPrice &&
@@ -263,11 +292,11 @@ export function filterAndSortCars(cars: CarListing[], params: CarSearchParams): 
 
   return [...filtered].sort((a, b) => {
     switch (params.sort) {
-      case 'price_asc':
+      case "price_asc":
         return a.pricePerDay - b.pricePerDay;
-      case 'price_desc':
+      case "price_desc":
         return b.pricePerDay - a.pricePerDay;
-      case 'rating':
+      case "rating":
         return b.rating - a.rating;
       default:
         return b.rating - a.rating;
@@ -277,7 +306,7 @@ export function filterAndSortCars(cars: CarListing[], params: CarSearchParams): 
 
 export function filterOfficeGroups(
   groups: OfficeCarGroup[],
-  params: CarSearchParams
+  params: CarSearchParams,
 ): OfficeCarGroup[] {
   return groups
     .map((group) => ({ ...group, cars: filterAndSortCars(group.cars, params) }))

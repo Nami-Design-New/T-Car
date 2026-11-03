@@ -2,18 +2,17 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import {
   CarFilters,
-  CityCarRows,
   parseCarSearchParams,
   toCityCarsQuery,
 } from "@/features/cars";
-import {
-  getCarBrands,
-} from "@/features/cars/queries";
+import { getCarBrands } from "@/features/cars/queries";
 import { CityHero } from "@/features/cities";
 import { getCity } from "@/features/cities/queries";
 import { getBookingTypeAvailability } from "@/features/settings/queries";
 import { getSiteSettings } from "@/features/settings/queries";
 import { isBookingTypeEnabled } from "@/features/settings";
+import { getRentalSearchOptions } from "@/features/rental-search/queries";
+import CityCarsSection from "./CityCarsSection";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -44,7 +43,10 @@ export default async function CityDetailsPage({ params, searchParams }: Props) {
   // The guest location is intentionally read in CityCarRows after hydration:
   // localStorage is unavailable here on the server.
   const query = toCityCarsQuery(filters);
-  const brands = await getCarBrands();
+  const [brands, rentalOptions] = await Promise.all([
+    getCarBrands(),
+    getRentalSearchOptions(),
+  ]);
 
   return (
     <>
@@ -56,10 +58,10 @@ export default async function CityDetailsPage({ params, searchParams }: Props) {
             <CarFilters brands={brands} priceRange={priceRange} />
 
             <div className="office-rows flex min-w-0 flex-col gap-3">
-              <CityCarRows
-                key={JSON.stringify(query)}
+              <CityCarsSection
                 query={query}
                 cityName={city.name}
+                options={rentalOptions}
               />
             </div>
           </div>

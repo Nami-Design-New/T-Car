@@ -18,6 +18,21 @@ export interface SearchCarsParams {
 
 export type PickupPoint = 'airport' | 'station';
 
+/** Per-car booking and delivery choices returned by `/city-cars`. */
+export interface CarAvailability {
+  bookingTypes: {
+    daily: boolean;
+    monthly: boolean;
+    airport: boolean;
+    station: boolean;
+    international: boolean;
+  };
+  deliveryTypes: {
+    toLocation: boolean;
+    fromBranch: boolean;
+  };
+}
+
 /** A free-days offer: book `requiredDays` and `freeDays` of them are free. */
 export interface CarOffer {
   requiredDays: number;
@@ -40,6 +55,7 @@ export interface CarListing
   showroomLogo?: string;
   pickupPoint?: PickupPoint;
   offer?: CarOffer;
+  availability?: CarAvailability;
 }
 
 /** Car rental office (showroom) used to group cars on the cars page. */

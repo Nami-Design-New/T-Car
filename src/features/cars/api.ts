@@ -4,7 +4,12 @@ import { publicServerHttp } from "@/services/http/server";
 import { IMAGES } from "@/shared/config/assets";
 import { AppError } from "@/shared/lib/errors";
 import { isPaginationDto, toPage, type Page } from "@/shared/lib/pagination";
-import type { CarListing, CarOffer, OfficeCarGroup } from "./model";
+import type {
+  CarAvailability,
+  CarListing,
+  CarOffer,
+  OfficeCarGroup,
+} from "./model";
 import { COMPANY_CARS_PER_PAGE, type CityCarsQuery } from "./searchParams";
 
 export interface CityCarsApi {
@@ -53,6 +58,13 @@ interface CarListingDto {
   type: LookupDto;
   car_model: LookupDto;
   offer: OfferDto | null;
+  availability?: {
+    booking_types: Record<
+      "daily" | "monthly" | "airport" | "station" | "international",
+      boolean
+    >;
+    delivery_types: Record<"to_location" | "from_branch", boolean>;
+  };
 }
 
 interface CompanyCarsGroupDto {
@@ -91,6 +103,21 @@ function isOffer(value: unknown): value is OfferDto {
   );
 }
 
+function isAvailability(value: unknown): boolean {
+  if (!isRecord(value)) return false;
+  const bookingTypes = value.booking_types;
+  const deliveryTypes = value.delivery_types;
+  if (!isRecord(bookingTypes) || !isRecord(deliveryTypes)) return false;
+  return (
+    ["daily", "monthly", "airport", "station", "international"].every(
+      (key) => typeof bookingTypes[key] === "boolean",
+    ) &&
+    ["to_location", "from_branch"].every(
+      (key) => typeof deliveryTypes[key] === "boolean",
+    )
+  );
+}
+
 function isCarListing(value: unknown): value is CarListingDto {
   return (
     isRecord(value) &&
@@ -104,7 +131,8 @@ function isCarListing(value: unknown): value is CarListingDto {
     isNumber(value.rate) &&
     isLookup(value.brand) &&
     isLookup(value.car_model) &&
-    (value.offer === null || isOffer(value.offer))
+    (value.offer === null || isOffer(value.offer)) &&
+    (value.availability === undefined || isAvailability(value.availability))
   );
 }
 
@@ -131,6 +159,18 @@ function toCarOffer(offer: OfferDto | null): CarOffer | undefined {
   };
 }
 
+function toCarAvailability(car: CarListingDto): CarAvailability | undefined {
+  const availability = car.availability;
+  if (!availability) return undefined;
+  return {
+    bookingTypes: availability.booking_types,
+    deliveryTypes: {
+      toLocation: availability.delivery_types.to_location,
+      fromBranch: availability.delivery_types.from_branch,
+    },
+  };
+}
+
 export function mapCarListing(car: CarListingDto): CarListing {
   return {
     id: String(car.id),
@@ -144,6 +184,7 @@ export function mapCarListing(car: CarListingDto): CarListing {
     showroomLogo: car.company_logo || undefined,
     pickupPoint: car.any_car_branches_support_airport ? "airport" : undefined,
     offer: toCarOffer(car.offer),
+    availability: toCarAvailability(car),
   };
 }
 

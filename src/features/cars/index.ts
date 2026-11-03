@@ -7,6 +7,7 @@ export { default as CityCarRows } from "./components/CityCarRows";
 export { discountPercent, groupCarsByOffice } from "./model";
 export type {
   Car,
+  CarAvailability,
   CarBrand,
   CarListing,
   CarOffer,

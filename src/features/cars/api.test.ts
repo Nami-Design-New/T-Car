@@ -35,6 +35,16 @@ const offerCar = {
     free_days: 1,
     max_distance: 0,
   },
+  availability: {
+    booking_types: {
+      daily: true,
+      monthly: true,
+      airport: false,
+      station: false,
+      international: false,
+    },
+    delivery_types: { to_location: true, from_branch: true },
+  },
 };
 
 const plainCar = {
@@ -79,6 +89,16 @@ describe("company car groups", () => {
           showroomLogo: "https://t-car.app/storage/companies/logos/kiayada.png",
           pickupPoint: undefined,
           offer: { requiredDays: 5, freeDays: 1 },
+          availability: {
+            bookingTypes: {
+              daily: true,
+              monthly: true,
+              airport: false,
+              station: false,
+              international: false,
+            },
+            deliveryTypes: { toLocation: true, fromBranch: true },
+          },
         },
         {
           id: "47",
@@ -92,6 +112,16 @@ describe("company car groups", () => {
           showroomLogo: undefined,
           pickupPoint: "airport",
           offer: undefined,
+          availability: {
+            bookingTypes: {
+              daily: true,
+              monthly: true,
+              airport: false,
+              station: false,
+              international: false,
+            },
+            deliveryTypes: { toLocation: true, fromBranch: true },
+          },
         },
       ],
     });

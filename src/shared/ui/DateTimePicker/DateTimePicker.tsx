@@ -33,6 +33,11 @@ export function DateTimePicker({
   const [cursor, setCursor] = useState(() => (value.date ? new Date(value.date) : new Date()));
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
+    if (!value.date) return;
+    const [year, month, day] = value.date.split('-').map(Number);
+    if (year && month && day) setCursor(new Date(year, month - 1, day));
+  }, [value.date]);
+  useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (ref.current && !ref.current.contains(event.target as Node)) setOpen(false);
     };
@@ -104,10 +109,11 @@ export function DateTimePicker({
                   key={index}
                   type="button"
                   disabled={disabled}
+                  aria-pressed={selected}
                   className={cn(
                     'aspect-square cursor-pointer rounded-sm border-0 bg-transparent text-[0.8rem] text-text-primary transition duration-150 hover:bg-surface-card-primary disabled:cursor-not-allowed disabled:text-text-placeholder',
                     today && 'today font-bold text-action-primary',
-                    selected && 'selected bg-action-primary text-text-on-action',
+                    selected && 'selected !bg-action-primary !text-text-on-action',
                   )}
                   onClick={() => onChange({ ...value, date: iso })}
                 >

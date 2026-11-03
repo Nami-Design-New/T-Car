@@ -28,10 +28,21 @@ export default function CityHero({ city }: Props) {
 
   const handleSearch = () => {
     const params = new URLSearchParams(searchParams.toString());
-    if (pickup.date) params.set("pickupDate", pickup.date);
-    if (pickup.time) params.set("pickupTime", pickup.time);
-    if (dropoff.date) params.set("dropoffDate", dropoff.date);
-    if (dropoff.time) params.set("dropoffTime", dropoff.time);
+    ["pickupDate", "pickupTime", "dropoffDate", "dropoffTime"].forEach(
+      (key) => params.delete(key),
+    );
+
+    // The listing API accepts a date range, never one endpoint on its own.
+    // Keep the URL in the same all-or-nothing shape so the visible filter and
+    // the applied city-car query cannot disagree.
+    if (pickup.date && dropoff.date && dropoff.date > pickup.date) {
+      params.set("pickupDate", pickup.date);
+      params.set("dropoffDate", dropoff.date);
+      if (pickup.time && dropoff.time) {
+        params.set("pickupTime", pickup.time);
+        params.set("dropoffTime", dropoff.time);
+      }
+    }
     router.push(`${pathname}?${params.toString()}`);
   };
 

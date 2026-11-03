@@ -201,6 +201,9 @@
         "description": "Pick up the car from the nearest branch."
       }
     },
+    "booking": {
+      "title": "Choose a booking type"
+    },
     "map": {
       "title": "Set pickup location",
       "searchPlaceholder": "Search for an address or place...",

@@ -10,7 +10,7 @@ import { usePaginatedList } from "@/shared/hooks/usePaginatedList";
 import { EmptyState } from "@/shared/ui/EmptyState";
 import { InfiniteList } from "@/shared/ui/InfiniteList";
 import { getCityCarGroups } from "../cityCars.client";
-import type { OfficeCarGroup } from "../model";
+import type { CarListing, OfficeCarGroup } from "../model";
 import {
   withCityCarsLocation,
   type CityCarsLocation,
@@ -23,9 +23,14 @@ interface Props {
   /** Server-safe filters; saved browser location is added after hydration. */
   query: CityCarsQuery;
   cityName: string;
+  onSelectCar?: (car: CarListing) => void;
 }
 
-function CityCarRowsList({ query, cityName }: Props) {
+interface ListProps extends Props {
+  onSelectCar: (car: CarListing) => void;
+}
+
+function CityCarRowsList({ query, cityName, onSelectCar }: ListProps) {
   const t = useTranslations("cities.empty");
   const locale = useLocale();
   const fetchPage = useCallback(
@@ -49,7 +54,11 @@ function CityCarRowsList({ query, cityName }: Props) {
       <InfiniteList.Items className="flex flex-col gap-3">
         {groups.items.map((group) => (
           <InfiniteList.Item key={group.office.id} className="min-w-0">
-            <CityCarOfficeRow group={group} query={query} />
+            <CityCarOfficeRow
+              group={group}
+              query={query}
+              onSelectCar={(car) => car.availability && onSelectCar(car)}
+            />
           </InfiniteList.Item>
         ))}
       </InfiniteList.Items>
@@ -71,7 +80,7 @@ function CityCarRowsList({ query, cityName }: Props) {
  * Browser location is deliberately read after hydration. This keeps it out of
  * server HTML and shows the city-row skeleton while the first request loads.
  */
-export default function CityCarRows({ query, cityName }: Props) {
+export default function CityCarRows({ query, cityName, onSelectCar }: Props) {
   const [location, setLocation] = useState<CityCarsLocation | null | undefined>(
     undefined,
   );
@@ -97,10 +106,13 @@ export default function CityCarRows({ query, cityName }: Props) {
 
   const locationQuery = withCityCarsLocation(query, location);
   return (
-    <CityCarRowsList
-      key={JSON.stringify(locationQuery)}
-      query={locationQuery}
-      cityName={cityName}
-    />
+    <>
+      <CityCarRowsList
+        key={JSON.stringify(locationQuery)}
+        query={locationQuery}
+        cityName={cityName}
+        onSelectCar={onSelectCar ?? (() => undefined)}
+      />
+    </>
   );
 }

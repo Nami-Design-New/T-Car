@@ -155,7 +155,7 @@ export default function FilterPanel({
             </button>
             <button
               type="button"
-              className="filter_action_btn filter_apply_btn border-action-primary bg-action-primary text-text-on-action hover:bg-action-primary/90 h-[50px] min-w-0 flex-1 rounded-md border px-3.5 text-sm font-semibold transition hover:shadow-[0_9px_20px_rgba(31,127,250,0.22)]"
+              className="border-action-primary bg-action-primary text-text-on-action hover:bg-action-primary/90 h-[50px] min-w-0 flex-1 rounded-md border px-3.5 text-sm font-semibold transition hover:shadow-[0_9px_20px_rgba(31,127,250,0.22)]"
               onClick={() => {
                 onApply?.();
                 setIsOpen(false);

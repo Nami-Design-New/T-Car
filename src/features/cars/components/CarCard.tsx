@@ -23,6 +23,8 @@ export interface CarCardProps {
   className?: string;
   imageSizes?: string;
   priority?: boolean;
+  /** Lets contextual listings begin their booking flow instead of navigating. */
+  onSelect?: (car: CarListing) => void;
 }
 
 export default function CarCard({
@@ -30,6 +32,7 @@ export default function CarCard({
   className,
   imageSizes = "(max-width: 767px) 86vw, (max-width: 1199px) 45vw, 350px",
   priority = false,
+  onSelect,
 }: CarCardProps) {
   const t = useTranslations("carCard");
   const detailsHref = `/cars/${car.id}` as const;
@@ -45,6 +48,12 @@ export default function CarCard({
     >
       <Link
         href={detailsHref}
+        onClickCapture={(event) => {
+          if (!onSelect) return;
+          event.preventDefault();
+          event.stopPropagation();
+          onSelect(car);
+        }}
         className="flex h-full flex-col text-inherit"
         aria-label={t("viewCar", { brand: car.brand, name: car.name })}
       >
