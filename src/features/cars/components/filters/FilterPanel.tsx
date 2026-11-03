@@ -66,8 +66,8 @@ export default function FilterPanel({
     <>
       {!embedded && (
         <div className="filters_mobile_bar hidden items-center gap-3 max-lg:flex">
-          <div className="filter_search relative mb-[22px] flex-1">
-            <FiSearch className="text-text-subtle pointer-events-none absolute start-[15px] top-1/2 z-[1] -translate-y-1/2 text-[19px]" />
+          <div className="relative mb-0 flex-1 lg:mb-5.5">
+            <FiSearch className="text-text-subtle start-sm pointer-events-none absolute top-1/2 z-1 -translate-y-1/2 text-[19px]" />
             <input
               type="text"
               value={searchValue}
@@ -147,7 +147,7 @@ export default function FilterPanel({
           >
             <button
               type="button"
-              className="filter_action_btn filter_clear_all_btn border-stroke-heavy bg-surface-elevated text-text-subtle hover:border-action-primary hover:text-action-primary disabled:border-stroke-light disabled:text-text-placeholder h-[50px] min-w-0 flex-1 rounded-md border px-3.5 text-sm font-semibold transition disabled:cursor-not-allowed"
+              className="border-stroke-heavy bg-surface-elevated text-text-subtle hover:border-action-primary hover:text-action-primary disabled:border-stroke-light disabled:text-text-placeholder h-[50px] min-w-0 flex-1 rounded-md border px-3.5 text-sm font-semibold transition disabled:cursor-not-allowed"
               onClick={onClearAll}
               disabled={!hasActiveFilters}
             >
