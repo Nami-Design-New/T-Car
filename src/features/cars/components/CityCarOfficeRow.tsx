@@ -37,7 +37,6 @@ export default function CityCarOfficeRow({ group, query, onSelectCar }: Props) {
     },
     scope: "cityCars.companyCars",
   });
-
   return (
     <CarOfficeRow
       office={group.office}

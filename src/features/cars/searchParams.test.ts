@@ -4,6 +4,7 @@ import {
   filterAndSortCars,
   parseCarFilterDraft,
   parseCarSearchParams,
+  toCityCarsSearchParams,
   toCityCarsQuery,
   withCityCarsLocation,
 } from './searchParams';
@@ -169,5 +170,29 @@ describe('toCityCarsQuery', () => {
       longitude: 46.6753,
     });
     expect(withCityCarsLocation(query, null)).toEqual({});
+  });
+});
+
+describe('toCityCarsSearchParams', () => {
+  it('requests page 2 for a company after its cars were included in the city group', () => {
+    expect(
+      toCityCarsSearchParams(
+        {
+          region: 'Riyadh Province',
+          latitude: 24.7136,
+          longitude: 46.6753,
+          query: 'kia',
+          minPrice: 100,
+          maxPrice: 400,
+          fromDay: '2026-11-10',
+          toDay: '2026-11-12',
+        },
+        2,
+        10,
+        '12',
+      ).toString(),
+    ).toBe(
+      'per_page=10&page=2&region=Riyadh+Province&latitude=24.7136&longitude=46.6753&search=kia&min_price=100&max_price=400&from_day=2026-11-10&to_day=2026-11-12&company_id=12',
+    );
   });
 });

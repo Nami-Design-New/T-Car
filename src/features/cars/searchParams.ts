@@ -180,7 +180,7 @@ export function parseCarSearchParams(
  * cars, which are page 1 of `/city-company-cars` at this size (observed
  * 2026-11-03), so a full group means a row may have more.
  */
-export const COMPANY_CARS_PER_PAGE = 1;
+export const COMPANY_CARS_PER_PAGE = 10;
 
 /** The filters GET /city-cars accepts (docs/api/cities-api.md §2). */
 export interface CityCarsQuery {
