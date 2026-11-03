@@ -1,6 +1,27 @@
-import 'server-only';
-import { IMAGES } from '@/shared/config/assets';
-import type { CarListing, CarOffer, OfficeCarGroup } from './model';
+import "server-only";
+import { isApiEnvelope, type ApiEnvelope } from "@/services/http/envelope";
+import { publicServerHttp } from "@/services/http/server";
+import { IMAGES } from "@/shared/config/assets";
+import { AppError } from "@/shared/lib/errors";
+import { isPaginationDto, toPage, type Page } from "@/shared/lib/pagination";
+import type { CarListing, CarOffer, OfficeCarGroup } from "./model";
+import { COMPANY_CARS_PER_PAGE, type CityCarsQuery } from "./searchParams";
+
+export interface CityCarsApi {
+  /** A page of the region's company rows. */
+  listCityCars(
+    locale: string,
+    query: CityCarsQuery,
+    page: number,
+  ): Promise<Page<OfficeCarGroup>>;
+  /** A page of one company's cars in the region (a row loads from page 2). */
+  listCompanyCars(
+    locale: string,
+    companyId: string,
+    query: CityCarsQuery,
+    page: number,
+  ): Promise<Page<CarListing>>;
+}
 
 interface LookupDto {
   id: number;
@@ -42,20 +63,20 @@ interface CompanyCarsGroupDto {
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null;
+  return typeof value === "object" && value !== null;
 }
 
 const isNumber = (value: unknown): value is number =>
-  typeof value === 'number' && Number.isFinite(value);
+  typeof value === "number" && Number.isFinite(value);
 
 const isNullableString = (value: unknown): value is string | null =>
-  value === null || typeof value === 'string';
+  value === null || typeof value === "string";
 
 function isLookup(value: unknown): value is LookupDto {
   return (
     isRecord(value) &&
     isNumber(value.id) &&
-    typeof value.title === 'string' &&
+    typeof value.title === "string" &&
     isNullableString(value.logo)
   );
 }
@@ -64,7 +85,7 @@ function isOffer(value: unknown): value is OfferDto {
   return (
     isRecord(value) &&
     isNumber(value.id) &&
-    typeof value.type === 'string' &&
+    typeof value.type === "string" &&
     isNumber(value.require_booking_days) &&
     isNumber(value.free_days)
   );
@@ -76,9 +97,9 @@ function isCarListing(value: unknown): value is CarListingDto {
     isNumber(value.id) &&
     isNullableString(value.image_url) &&
     isNumber(value.year) &&
-    typeof value.company_name === 'string' &&
+    typeof value.company_name === "string" &&
     isNullableString(value.company_logo) &&
-    typeof value.any_car_branches_support_airport === 'boolean' &&
+    typeof value.any_car_branches_support_airport === "boolean" &&
     isNumber(value.lower_price) &&
     isNumber(value.rate) &&
     isLookup(value.brand) &&
@@ -88,11 +109,13 @@ function isCarListing(value: unknown): value is CarListingDto {
 }
 
 /** A company and its cars, as `/city-cars` returns them (docs/api/cities-api.md §3.2). */
-export function isCompanyCarsGroup(value: unknown): value is CompanyCarsGroupDto {
+export function isCompanyCarsGroup(
+  value: unknown,
+): value is CompanyCarsGroupDto {
   return (
     isRecord(value) &&
     isNumber(value.company_id) &&
-    typeof value.company_name === 'string' &&
+    typeof value.company_name === "string" &&
     isNullableString(value.company_logo) &&
     Array.isArray(value.cars) &&
     value.cars.every(isCarListing)
@@ -101,8 +124,11 @@ export function isCompanyCarsGroup(value: unknown): value is CompanyCarsGroupDto
 
 /** Only `free_days` is known (Q8); any other type maps to no offer. */
 function toCarOffer(offer: OfferDto | null): CarOffer | undefined {
-  if (offer?.type !== 'free_days' || offer.free_days < 1) return undefined;
-  return { requiredDays: offer.require_booking_days, freeDays: offer.free_days };
+  if (offer?.type !== "free_days" || offer.free_days < 1) return undefined;
+  return {
+    requiredDays: offer.require_booking_days,
+    freeDays: offer.free_days,
+  };
 }
 
 export function mapCarListing(car: CarListingDto): CarListing {
@@ -116,12 +142,14 @@ export function mapCarListing(car: CarListingDto): CarListing {
     year: car.year,
     showroom: car.company_name,
     showroomLogo: car.company_logo || undefined,
-    pickupPoint: car.any_car_branches_support_airport ? 'airport' : undefined,
+    pickupPoint: car.any_car_branches_support_airport ? "airport" : undefined,
     offer: toCarOffer(car.offer),
   };
 }
 
-export function mapCompanyCarsGroup(group: CompanyCarsGroupDto): OfficeCarGroup {
+export function mapCompanyCarsGroup(
+  group: CompanyCarsGroupDto,
+): OfficeCarGroup {
   return {
     office: {
       id: String(group.company_id),
@@ -133,3 +161,90 @@ export function mapCompanyCarsGroup(group: CompanyCarsGroupDto): OfficeCarGroup 
     cars: group.cars.map(mapCarListing),
   };
 }
+
+/** Companies per page; the API allows 1 to 100 (docs/api/cities-api.md §3.5). */
+const CITY_CARS_PER_PAGE = 1;
+
+/** The filters both city car reads share (docs/api/cities-api.md §2). */
+function toCityCarsSearch(
+  query: CityCarsQuery,
+  page: number,
+  perPage: number,
+): string {
+  const search = new URLSearchParams();
+  if (query.region !== undefined) search.set("region", query.region);
+  if (query.latitude !== undefined)
+    search.set("latitude", String(query.latitude));
+  if (query.longitude !== undefined)
+    search.set("longitude", String(query.longitude));
+  if (query.query) search.set("search", query.query);
+  if (query.minPrice !== undefined)
+    search.set("min_price", String(query.minPrice));
+  if (query.maxPrice !== undefined)
+    search.set("max_price", String(query.maxPrice));
+  if (query.fromDay && query.toDay) {
+    search.set("from_day", query.fromDay);
+    search.set("to_day", query.toDay);
+  }
+  search.set("per_page", String(perPage));
+  search.set("page", String(page));
+  return search.toString();
+}
+
+/** A paginated envelope whose items all pass the guard, or a server error. */
+function toCheckedPage<T, D>(
+  response: unknown,
+  isItem: (value: unknown) => value is D,
+  map: (item: D) => T,
+): Page<T> {
+  if (!isApiEnvelope(response) || response.code !== 200) {
+    throw new AppError("server");
+  }
+  const { data, pagination } = response as ApiEnvelope<unknown> & {
+    pagination?: unknown;
+  };
+  if (
+    !Array.isArray(data) ||
+    !data.every(isItem) ||
+    !isPaginationDto(pagination)
+  ) {
+    throw new AppError("server");
+  }
+  return toPage(data.map(map), pagination);
+}
+
+/** GET /city-cars: public; one page of companies, each with up to 10 cars. */
+async function listCityCars(
+  locale: string,
+  query: CityCarsQuery,
+  page: number,
+): Promise<Page<OfficeCarGroup>> {
+  const response = await publicServerHttp.get<ApiEnvelope<unknown>>(
+    `/city-cars?${toCityCarsSearch(query, page, CITY_CARS_PER_PAGE)}`,
+    { headers: { "Accept-Language": locale } },
+  );
+  return toCheckedPage(response, isCompanyCarsGroup, mapCompanyCarsGroup);
+}
+
+/**
+ * GET /city-company-cars: public; one company's cars in the region. Its page 1
+ * is the group's cars in `/city-cars`, so a row loads from page 2.
+ */
+async function listCompanyCars(
+  locale: string,
+  companyId: string,
+  query: CityCarsQuery,
+  page: number,
+): Promise<Page<CarListing>> {
+  const search = new URLSearchParams(
+    toCityCarsSearch(query, page, COMPANY_CARS_PER_PAGE),
+  );
+  search.set("company_id", companyId);
+  const response = await publicServerHttp.get<ApiEnvelope<unknown>>(
+    `/city-company-cars?${search}`,
+    { headers: { "Accept-Language": locale } },
+  );
+  return toCheckedPage(response, isCarListing, mapCarListing);
+}
+
+export const cityCarsApi: CityCarsApi = { listCityCars, listCompanyCars };

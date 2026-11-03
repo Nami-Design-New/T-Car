@@ -83,7 +83,7 @@ describe("GuestLocationRequest", () => {
     );
     const url = new URL(fetchMock.mock.calls[0][0]);
     expect(url.searchParams.get("latlng")).toBe("24.71,46.67");
-    expect(url.searchParams.get("language")).toBe("en");
+    expect(url.searchParams.get("language")).toBe("ar");
   });
 
   it("keeps the coordinates when the lookup fails, and looks up again next visit", async () => {

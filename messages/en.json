@@ -335,6 +335,10 @@
       "dropoff": "Drop-off",
       "dropoffPlaceholder": "Choose drop-off date",
       "search": "Search"
+    },
+    "empty": {
+      "title": "No cars available in {city} right now",
+      "description": "Try other dates, or change the filters."
     }
   },
   "homeCta": {

@@ -309,6 +309,10 @@
       "dropoff": "التسليم",
       "dropoffPlaceholder": "اختر تاريخ التسليم",
       "search": "بحث"
+    },
+    "empty": {
+      "title": "لا توجد سيارات متاحة في {city} حاليًا",
+      "description": "جرّب تواريخ أخرى أو غيّر الفلاتر."
     }
   },
   "carSections": {

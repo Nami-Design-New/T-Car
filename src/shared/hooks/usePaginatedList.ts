@@ -6,9 +6,14 @@ import { hasNextPage, type Page } from "@/shared/lib/pagination";
 import { reportError } from "@/shared/lib/report";
 import type { Result } from "@/shared/lib/result";
 
-interface Options {
+interface Options<T> {
   /** Loads page 1 each time this becomes true (e.g. a dialog opening). */
   enabled?: boolean;
+  /**
+   * A first page already rendered on the server: the list starts from it and
+   * fetches only the pages after it (`refresh` still reloads page 1).
+   */
+  initialPage?: Page<T>;
   /** Scope for `reportError` when the fetch itself throws. */
   scope?: string;
 }
@@ -20,11 +25,15 @@ interface Options {
  */
 export function usePaginatedList<T>(
   fetchPage: (page: number) => Promise<Result<Page<T>>>,
-  { enabled = true, scope = "paginatedList" }: Options = {},
+  { enabled = true, initialPage, scope = "paginatedList" }: Options<T> = {},
 ) {
-  const [items, setItems] = useState<T[]>([]);
-  const [page, setPage] = useState(0);
-  const [hasMore, setHasMore] = useState(false);
+  const [items, setItems] = useState<T[]>(initialPage?.items ?? []);
+  const [page, setPage] = useState(initialPage?.page ?? 0);
+  const [hasMore, setHasMore] = useState(
+    initialPage ? hasNextPage(initialPage) : false,
+  );
+  /** Page 1 is loaded (or loading) for the current enabled period. */
+  const startedRef = useRef(initialPage !== undefined);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<AppError | null>(null);
   const fetchRef = useRef(fetchPage);
@@ -64,10 +73,18 @@ export function usePaginatedList<T>(
     [scope],
   );
 
+  // A ref, not a flag in the effect: Strict Mode runs effects twice, and the
+  // second run must not reload page 1 (or drop a server-rendered first page).
   useEffect(() => {
-    if (enabled) void load(1);
-    // Drop any response still in flight once disabled.
-    else requestRef.current++;
+    if (enabled) {
+      if (startedRef.current) return;
+      startedRef.current = true;
+      void load(1);
+    } else {
+      startedRef.current = false;
+      // Drop any response still in flight once disabled.
+      requestRef.current++;
+    }
   }, [enabled, load]);
 
   const loadMore = useCallback(() => {

@@ -1,5 +1,8 @@
 import "server-only";
+import { getLocale } from "next-intl/server";
 import { carsApi } from "@/services/cars.api";
+import type { Page } from "@/shared/lib/pagination";
+import { cityCarsApi } from "./api";
 import {
   groupCarsByOffice,
   selectHandpickedCars,
@@ -11,6 +14,7 @@ import {
 import {
   filterAndSortCars,
   filterOfficeGroups,
+  type CityCarsQuery,
   type CarSearchParams,
 } from "./searchParams";
 
@@ -34,16 +38,14 @@ export async function getCarsForCity(
   return params ? filterAndSortCars(cars, params) : cars;
 }
 
-/** The mock has no city association yet, so every city groups the same cars by office. */
-export async function getOfficeCarGroupsForCity(
-  slug: string,
-  params?: CarSearchParams,
-): Promise<OfficeCarGroup[]> {
-  const [offices, cars] = await Promise.all([
-    carsApi.listOffices(),
-    getCarsForCity(slug, params),
-  ]);
-  return groupCarsByOffice(offices, cars);
+/**
+ * The city page's first page of company rows (GET /city-cars); the client
+ * loads the next pages through `getCityCarGroupsAction`.
+ */
+export async function getCityCarGroups(
+  query: CityCarsQuery,
+): Promise<Page<OfficeCarGroup>> {
+  return cityCarsApi.listCityCars(await getLocale(), query, 1);
 }
 
 export async function getOfferCars(): Promise<CarListing[]> {

@@ -24,11 +24,14 @@ import {
 } from "../searchParams";
 import { useEffect } from "react";
 import { useForm, useWatch } from "react-hook-form";
+import { useDebouncedCallback } from "use-debounce";
 import type { CarBrand } from "../model";
 import { cn } from "@/shared/lib/cn";
 
 const COMPANIES = ["elite", "elite", "elite", "elite", "elite"];
 const SERVICES = ["delivery", "delivery", "delivery", "delivery"];
+/** How long typing pauses before the search reaches the URL. */
+const SEARCH_DEBOUNCE_MS = 400;
 const CAR_TYPES = [
   { id: "family", key: "family", icon: TbCarSuv },
   { id: "convertible", key: "convertible", icon: TbCar },
@@ -72,14 +75,28 @@ export default function CarFilters({
     companyIds: watchedFilters.companyIds ?? [],
     serviceIds: watchedFilters.serviceIds ?? [],
   };
+  // Keep fields the user is editing: a live search changes the URL, and that
+  // must not drop brands or types picked but not applied yet.
   useEffect(() => {
     reset(
       parseCarFilterDraft(
         Object.fromEntries(searchParams.entries()),
         priceRange,
       ),
+      { keepDirtyValues: true },
     );
   }, [reset, searchParams, priceRange]);
+
+  /** Live search: only `q` changes; the other filters still wait for Apply. */
+  const searchInUrl = useDebouncedCallback((value: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    const query = value.trim();
+    if (query) params.set("q", query);
+    else params.delete("q");
+    router.replace(`${pathname}${params.toString() ? `?${params}` : ""}`, {
+      scroll: false,
+    });
+  }, SEARCH_DEBOUNCE_MS);
 
   const submit = (values: CarFilterDraft) => {
     if (onApply) {
@@ -97,6 +114,8 @@ export default function CarFilters({
   };
 
   const apply = () => {
+    // The submit carries the search too.
+    searchInUrl.cancel();
     void handleSubmit(submit)();
   };
 
@@ -132,27 +151,31 @@ export default function CarFilters({
   return (
     <FilterPanel
       searchValue={filters.query}
-      onSearchChange={(value) =>
-        setValue("query", value, { shouldDirty: true })
-      }
+      onSearchChange={(value) => {
+        setValue("query", value, { shouldDirty: true });
+        // The hero drawer (onApply) searches only when applied.
+        if (!onApply) searchInUrl(value);
+      }}
       hasActiveFilters={active}
       onClearAll={clearAll}
       onApply={apply}
       embedded={embedded}
     >
-      <section className="filter_group chip_filter_group mb-7 border-b border-stroke-light pb-7 last:mb-0 last:border-0 last:pb-0">
-        <div className="filter_title mb-3 flex items-center justify-between">
-          <h4 className="m-0 text-[15px] font-extrabold text-text-primary">{t("filters.brand")}</h4>
+      <section className="border-stroke-light mb-7 border-b pb-7 last:mb-0 last:border-0 last:pb-0">
+        <div className="mb-3 flex items-center justify-between">
+          <h4 className="text-text-primary m-0 text-[15px] font-extrabold">
+            {t("filters.brand")}
+          </h4>
           <button
             type="button"
-            className="view_all border-0 bg-transparent text-xs font-medium text-text-primary underline underline-offset-2 disabled:text-text-placeholder disabled:no-underline"
+            className="text-text-primary disabled:text-text-placeholder border-0 bg-transparent text-xs font-medium underline underline-offset-2 disabled:no-underline"
             onClick={() => clear("brandIds")}
             disabled={!filters.brandIds.length}
           >
             {t("filters.clear")}
           </button>
         </div>
-        <div className="filter_chip_list flex flex-wrap gap-x-2 gap-y-2.5">
+        <div className="flex flex-wrap gap-x-2 gap-y-2.5">
           {brandOptions.map(({ id, slug, logo }) => {
             const selected = filters.brandIds.includes(id);
             return (
@@ -160,18 +183,30 @@ export default function CarFilters({
                 type="button"
                 key={id}
                 className={cn(
-                  "filter_chip brand_filter_chip inline-flex min-h-[42px] max-w-full flex-[1_1_calc(50%_-_4px)] items-center justify-center gap-1.5 rounded-md border border-transparent bg-surface-on-background px-2.5 py-1.5 text-text-primary transition duration-200 hover:-translate-y-px hover:border-action-primary/25 hover:bg-surface-card-primary",
-                  selected && "is-selected !border-action-primary !bg-action-primary !text-text-on-action shadow-[0_7px_16px_rgba(31,127,250,0.18)]",
+                  "filter_chip brand_filter_chip bg-surface-on-background text-text-primary hover:border-action-primary/25 hover:bg-surface-card-primary inline-flex min-h-[42px] max-w-full flex-[1_1_calc(50%_-_4px)] items-center justify-center gap-1.5 rounded-md border border-transparent px-2.5 py-1.5 transition duration-200 hover:-translate-y-px",
+                  selected &&
+                    "is-selected !border-action-primary !bg-action-primary !text-text-on-action shadow-[0_7px_16px_rgba(31,127,250,0.18)]",
                 )}
                 aria-pressed={selected}
                 onClick={() => toggle("brandIds", id)}
               >
-                <span className="filter_chip_visual brand_chip_logo grid size-[26px] shrink-0 place-items-center rounded-full bg-surface-elevated">
-                  <Image src={logo} alt="" width={24} height={24} className="size-[22px] object-contain" />
+                <span className="filter_chip_visual brand_chip_logo bg-surface-elevated grid size-[26px] shrink-0 place-items-center rounded-full">
+                  <Image
+                    src={logo}
+                    alt=""
+                    width={24}
+                    height={24}
+                    className="size-[22px] object-contain"
+                  />
                 </span>
-                <span className="filter_chip_label min-w-0 overflow-hidden text-ellipsis whitespace-nowrap text-[13px] font-medium leading-[1.35]">{t(`brands.${slug}`)}</span>
+                <span className="filter_chip_label min-w-0 overflow-hidden text-[13px] leading-[1.35] font-medium text-ellipsis whitespace-nowrap">
+                  {t(`brands.${slug}`)}
+                </span>
                 {selected && (
-                  <span className="filter_chip_remove grid size-[21px] shrink-0 place-items-center rounded-full bg-surface-elevated text-text-primary" aria-hidden="true">
+                  <span
+                    className="filter_chip_remove bg-surface-elevated text-text-primary grid size-[21px] shrink-0 place-items-center rounded-full"
+                    aria-hidden="true"
+                  >
                     <FiX className="text-[15px]" />
                   </span>
                 )}
@@ -180,19 +215,21 @@ export default function CarFilters({
           })}
         </div>
       </section>
-      <section className="filter_group chip_filter_group mb-7 border-b border-stroke-light pb-7 last:mb-0 last:border-0 last:pb-0">
-        <div className="filter_title mb-3 flex items-center justify-between">
-          <h4 className="m-0 text-[15px] font-extrabold text-text-primary">{t("filters.type")}</h4>
+      <section className="border-stroke-light mb-7 border-b pb-7 last:mb-0 last:border-0 last:pb-0">
+        <div className="mb-3 flex items-center justify-between">
+          <h4 className="text-text-primary m-0 text-[15px] font-extrabold">
+            {t("filters.type")}
+          </h4>
           <button
             type="button"
-            className="view_all border-0 bg-transparent text-xs font-medium text-text-primary underline underline-offset-2 disabled:text-text-placeholder disabled:no-underline"
+            className="text-text-primary disabled:text-text-placeholder border-0 bg-transparent text-xs font-medium underline underline-offset-2 disabled:no-underline"
             onClick={() => clear("types")}
             disabled={!filters.types.length}
           >
             {t("filters.clear")}
           </button>
         </div>
-        <div className="filter_chip_list car_type_chip_list flex flex-wrap gap-x-2 gap-y-2.5">
+        <div className="flex flex-wrap gap-x-2 gap-y-2.5">
           {CAR_TYPES.map(({ id, key, icon: Icon }) => {
             const selected = filters.types.includes(id);
             return (
@@ -200,24 +237,30 @@ export default function CarFilters({
                 type="button"
                 key={id}
                 className={cn(
-                  "filter_chip car_type_filter_chip inline-flex min-h-[42px] flex-[0_1_auto] items-center justify-center gap-1.5 rounded-md border border-transparent bg-surface-on-background px-2.5 py-1.5 text-text-primary transition duration-200 hover:-translate-y-px hover:border-action-primary/25 hover:bg-surface-card-primary",
-                  selected && "is-selected !border-action-primary !bg-action-primary !text-text-on-action shadow-[0_7px_16px_rgba(31,127,250,0.18)] [&_.car_type_icon]:!text-text-on-action",
+                  "bg-surface-on-background text-text-primary hover:border-action-primary/25 hover:bg-surface-card-primary inline-flex min-h-[42px] flex-[0_1_auto] items-center justify-center gap-1.5 rounded-md border border-transparent px-2.5 py-1.5 transition duration-200 hover:-translate-y-px",
+                  selected &&
+                    "is-selected !border-action-primary !bg-action-primary !text-text-on-action [&_.car_type_icon]:!text-text-on-action shadow-[0_7px_16px_rgba(31,127,250,0.18)]",
                 )}
                 aria-pressed={selected}
                 onClick={() => toggle("types", id)}
               >
                 <span
                   className={cn(
-                    "filter_chip_visual car_type_icon grid shrink-0 place-items-center text-[27px] leading-none text-text-subtle",
+                    "text-text-subtle grid shrink-0 place-items-center text-[27px] leading-none",
                     selected && "!text-text-on-action",
                   )}
                   aria-hidden="true"
                 >
                   <Icon />
                 </span>
-                <span className="filter_chip_label min-w-0 overflow-hidden text-ellipsis whitespace-nowrap text-[13px] font-medium leading-[1.35]">{t(`types.${key}`)}</span>
+                <span className="min-w-0 overflow-hidden text-[13px] leading-[1.35] font-medium text-ellipsis whitespace-nowrap">
+                  {t(`types.${key}`)}
+                </span>
                 {selected && (
-                  <span className="filter_chip_remove grid size-[21px] shrink-0 place-items-center rounded-full bg-surface-elevated text-text-primary" aria-hidden="true">
+                  <span
+                    className="bg-surface-elevated text-text-primary grid size-5 shrink-0 place-items-center rounded-full"
+                    aria-hidden="true"
+                  >
                     <FiX className="text-[15px]" />
                   </span>
                 )}
@@ -271,10 +314,10 @@ export default function CarFilters({
         itemClassName="check_item service_item"
         renderExtra={() => (
           <div className="flex flex-col gap-0.5">
-            <span className="service_title block text-sm font-semibold leading-[1.3] text-text-primary">
+            <span className="service_title text-text-primary block text-sm leading-[1.3] font-semibold">
               {t("services.delivery.title")}
             </span>
-            <span className="service_desc block text-xs font-normal leading-[1.35] text-text-placeholder">
+            <span className="service_desc text-text-placeholder block text-xs leading-[1.35] font-normal">
               {t("services.delivery.description")}
             </span>
           </div>

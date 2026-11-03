@@ -10,13 +10,23 @@ import type { Swiper as SwiperInstance } from "swiper";
 import "swiper/css";
 
 import CarCard from "./CarCard";
+import CarCardSkeleton from "./CarCardSkeleton";
 import type { CarListing, Office } from "../model";
 import { cn } from "@/shared/lib/cn";
+import { ErrorState } from "@/shared/ui/ErrorState";
 
 interface CarOfficeRowProps {
   office: Office;
   cars: CarListing[];
   className?: string;
+  /** Another page of cars exists; reaching the row's end loads it. */
+  hasMore?: boolean;
+  /** A next page is loading: a skeleton slide follows the cars. */
+  loadingMore?: boolean;
+  /** The next page failed: a retry slide follows the cars. */
+  loadError?: unknown;
+  onLoadMore?: () => void;
+  onRetry?: () => void;
 }
 
 interface NavState {
@@ -34,6 +44,11 @@ export default function CarOfficeRow({
   office,
   cars,
   className,
+  hasMore = false,
+  loadingMore = false,
+  loadError,
+  onLoadMore,
+  onRetry,
 }: CarOfficeRowProps) {
   const t = useTranslations("officeRow");
   const titleId = useId();
@@ -94,6 +109,9 @@ export default function CarOfficeRow({
         }}
         onInit={syncNav}
         onSlideChange={syncNav}
+        onReachEnd={() => {
+          if (hasMore && !loadingMore && !loadError) onLoadMore?.();
+        }}
         onResize={syncNav}
         onLock={syncNav}
         onUnlock={syncNav}
@@ -116,6 +134,18 @@ export default function CarOfficeRow({
             />
           </SwiperSlide>
         ))}
+        {loadingMore && (
+          <SwiperSlide className="office-row__slide !h-auto" aria-busy="true">
+            <CarCardSkeleton />
+          </SwiperSlide>
+        )}
+        {Boolean(loadError) && (
+          <SwiperSlide className="office-row__slide !h-auto">
+            <div className="grid h-full place-items-center">
+              <ErrorState error={loadError} onRetry={onRetry} size="inline" />
+            </div>
+          </SwiperSlide>
+        )}
       </Swiper>
     </section>
   );

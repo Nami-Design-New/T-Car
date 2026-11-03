@@ -55,14 +55,14 @@ export function DateTimePicker({
     ? `${new Date(value.date).toLocaleDateString('ar-SA', { weekday: 'long', day: 'numeric', month: 'long' })}${value.time ? ` - ${value.time}` : ''}`
     : placeholder;
   return (
-    <div className="dt-picker relative flex-1" ref={ref}>
+    <div className="dt-picker relative min-w-0 flex-1" ref={ref}>
       <button
         type="button"
-        className="dt-picker-trigger flex w-full cursor-pointer flex-col items-start border-0 bg-transparent px-5 py-2.5 text-start"
+        className="dt-picker-trigger flex w-full cursor-pointer flex-col items-start border-0 bg-transparent px-5 py-2.5 text-start max-sm:px-2 max-sm:py-1"
         onClick={() => setOpen((previous) => !previous)}
       >
         <span className="dt-picker-label text-[0.7rem] font-semibold text-text-subtle">{label}</span>
-        <span className="dt-picker-value text-[0.9rem] font-bold text-text-primary">{displayText}</span>
+        <span className="dt-picker-value w-full truncate text-[0.9rem] font-bold text-text-primary max-sm:text-[0.78rem]">{displayText}</span>
       </button>
       {open && (
         <div className="dt-picker-popover absolute top-[calc(100%+12px)] start-0 z-50 w-80 rounded-lg bg-surface-elevated p-4 shadow-[0_8px_24px_rgba(30,30,30,0.1)]">

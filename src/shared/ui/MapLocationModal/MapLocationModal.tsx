@@ -105,12 +105,15 @@ export default function MapLocationModal({
 
     const geocoder = new window.google.maps.Geocoder();
 
-    geocoder.geocode({ location: { lat, lng } }, (results, status) => {
+    geocoder.geocode(
+      { location: { lat, lng }, language: "ar" },
+      (results, status) => {
       if (status === "OK" && results?.[0]) {
         setAddress(results[0].formatted_address);
         setRegion(regionOf(results[0]));
       }
-    });
+      },
+    );
   }, []);
 
   const handleDragEnd = (e: google.maps.MapMouseEvent) => {
@@ -189,7 +192,7 @@ export default function MapLocationModal({
 
     const geocoder = new window.google.maps.Geocoder();
 
-    geocoder.geocode({ placeId }, (results, status) => {
+    geocoder.geocode({ placeId, language: "ar" }, (results, status) => {
       if (status === "OK" && results?.[0] && results[0].geometry?.location) {
         const lat = results[0].geometry.location.lat();
         const lng = results[0].geometry.location.lng();

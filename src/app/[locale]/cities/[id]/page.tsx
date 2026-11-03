@@ -1,14 +1,13 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import {
-  CarOfficeRow,
   CarFilters,
-  SortBar,
+  CityCarRows,
   parseCarSearchParams,
+  toCityCarsQuery,
 } from "@/features/cars";
 import {
   getCarBrands,
-  getOfficeCarGroupsForCity,
 } from "@/features/cars/queries";
 import { CityHero } from "@/features/cities";
 import { getCity } from "@/features/cities/queries";
@@ -42,10 +41,10 @@ export default async function CityDetailsPage({ params, searchParams }: Props) {
   if (!isBookingTypeEnabled(filters.context.type, bookingTypes)) notFound();
   const city = await getCity(id);
   if (!city) notFound();
-  const [officeGroups, brands] = await Promise.all([
-    getOfficeCarGroupsForCity(city.region, filters),
-    getCarBrands(),
-  ]);
+  // The guest location is intentionally read in CityCarRows after hydration:
+  // localStorage is unavailable here on the server.
+  const query = toCityCarsQuery(filters);
+  const brands = await getCarBrands();
 
   return (
     <>
@@ -57,9 +56,11 @@ export default async function CityDetailsPage({ params, searchParams }: Props) {
             <CarFilters brands={brands} priceRange={priceRange} />
 
             <div className="office-rows flex min-w-0 flex-col gap-3">
-              {officeGroups.map(({ office, cars }) => (
-                <CarOfficeRow key={office.id} office={office} cars={cars} />
-              ))}
+              <CityCarRows
+                key={JSON.stringify(query)}
+                query={query}
+                cityName={city.name}
+              />
             </div>
           </div>
         </div>

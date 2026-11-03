@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect } from "react";
-import { useLocale } from "next-intl";
 import { reverseGeocode } from "@/shared/lib/geocode";
 import {
   readGuestLocationRecord,
@@ -17,14 +16,15 @@ const POSITION_OPTIONS: PositionOptions = {
 
 /**
  * Saves the coordinates at once, then the address and region in the site's
- * language (as `MapLocationModal` does). A failed lookup keeps the coordinates
- * and is retried on the next visit, without asking the guest again.
+ * Arabic so the saved region always matches the city-cars API. A failed lookup
+ * keeps the coordinates and is retried on the next visit, without asking the
+ * guest again.
  */
-async function saveWithAddress(location: GuestLocation, language: string) {
+async function saveWithAddress(location: GuestLocation) {
   const savedAt = new Date().toISOString();
   const { lat, lng } = location;
   saveGuestLocationRecord({ status: "granted", lat, lng, savedAt });
-  const place = await reverseGeocode(location, language);
+  const place = await reverseGeocode(location, "ar");
   if (place) {
     saveGuestLocationRecord({ status: "granted", lat, lng, ...place, savedAt });
   }
@@ -36,13 +36,11 @@ async function saveWithAddress(location: GuestLocation, language: string) {
  * unavailable position is not an answer, so the next visit asks again.
  */
 export default function GuestLocationRequest() {
-  const locale = useLocale();
-
   useEffect(() => {
     const record = readGuestLocationRecord();
     if (record) {
       if (record.status === "granted" && !record.address) {
-        void saveWithAddress(record, locale);
+        void saveWithAddress(record);
       }
       return;
     }
@@ -50,10 +48,7 @@ export default function GuestLocationRequest() {
 
     navigator.geolocation.getCurrentPosition(
       ({ coords }) =>
-        void saveWithAddress(
-          { lat: coords.latitude, lng: coords.longitude },
-          locale,
-        ),
+        void saveWithAddress({ lat: coords.latitude, lng: coords.longitude }),
       (error) => {
         if (error.code === error.PERMISSION_DENIED) {
           saveGuestLocationRecord({
@@ -64,7 +59,7 @@ export default function GuestLocationRequest() {
       },
       POSITION_OPTIONS,
     );
-  }, [locale]);
+  }, []);
 
   return null;
 }
