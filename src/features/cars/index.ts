@@ -8,6 +8,7 @@ export type {
   Car,
   CarBrand,
   CarListing,
+  CarOffer,
   Office,
   OfficeCarGroup,
   PickupPoint,

@@ -18,12 +18,28 @@ export interface SearchCarsParams {
 
 export type PickupPoint = 'airport' | 'station';
 
-export interface CarListing extends Car {
+/** A free-days offer: book `requiredDays` and `freeDays` of them are free. */
+export interface CarOffer {
+  requiredDays: number;
+  freeDays: number;
+}
+
+/**
+ * A car in a list. The API listings (GET /city-cars) carry no specification
+ * fields or review count, so those are optional here.
+ */
+export interface CarListing
+  extends Omit<Car, 'seats' | 'transmission' | 'fuelType'> {
+  seats?: number;
+  transmission?: Car['transmission'];
+  fuelType?: Car['fuelType'];
   originalPrice?: number;
-  reviewsCount: number;
+  reviewsCount?: number;
   year: number;
   showroom: string;
+  showroomLogo?: string;
   pickupPoint?: PickupPoint;
+  offer?: CarOffer;
 }
 
 /** Car rental office (showroom) used to group cars on the cars page. */

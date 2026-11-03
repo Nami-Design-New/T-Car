@@ -34,6 +34,7 @@ export default function CarCard({
   const t = useTranslations("carCard");
   const detailsHref = `/cars/${car.id}` as const;
   const discountPercent = getDiscountPercent(car);
+  const { offer } = car;
 
   return (
     <article
@@ -76,7 +77,7 @@ export default function CarCard({
             </span>
           ) : null}
 
-          {true ? (
+          {offer || discountPercent ? (
             <div className="border-status-success bg-surface-background/[0.94] absolute inset-s-1.25 inset-e-1.25 bottom-1 z-2 flex min-h-12 items-stretch justify-between overflow-hidden rounded-md border border-dashed shadow-[0_8px_22px_rgba(30,30,30,0.14)] backdrop-blur-[10px]">
               <span className="flex min-w-0 items-center gap-3">
                 <Image
@@ -91,14 +92,23 @@ export default function CarCard({
                     {t("limitedOffer")}
                   </small>
                   <strong className="text-ds-green block overflow-hidden text-base leading-[1.35] font-semibold text-ellipsis whitespace-nowrap">
-                    {t("saveNow")}
+                    {offer
+                      ? t("freeDaysOffer", {
+                          days: offer.requiredDays,
+                          free: offer.freeDays,
+                        })
+                      : t("saveNow")}
                   </strong>
                 </span>
               </span>
               <span className="bg-ds-green after:bg-surface-background/[0.94] relative grid min-w-17 place-content-center px-4 py-2 text-center text-white after:absolute after:inset-e-0 after:top-1/2 after:size-4 after:-translate-y-1/2 ltr:after:translate-x-1/2 rtl:after:-translate-x-1/2 after:rounded-full after:content-['']">
-                <strong className="block text-xl">1</strong>
+                <strong className="block text-xl">
+                  {offer ? offer.freeDays : `${discountPercent}%`}
+                </strong>
                 <small className="block text-[10px] leading-none">
-                  {t("discount")}
+                  {offer
+                    ? t("freeDays", { count: offer.freeDays })
+                    : t("discount")}
                 </small>
               </span>
             </div>
@@ -117,7 +127,7 @@ export default function CarCard({
           <div className="mb-2 flex min-w-0 items-center gap-3">
             <span className="text-text-subtle flex min-w-0 flex-1 items-center gap-2 text-xs font-medium">
               <Image
-                src={IMAGES.officePlaceholder.src}
+                src={car.showroomLogo ?? IMAGES.officePlaceholder.src}
                 width={IMAGES.officePlaceholder.width}
                 height={IMAGES.officePlaceholder.height}
                 alt=""

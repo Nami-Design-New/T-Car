@@ -234,6 +234,8 @@
     "limitedOffer": "Limited-time offer",
     "saveNow": "Save when you book now",
     "discount": "off",
+    "freeDaysOffer": "Book {days} days, get {free, plural, one {# day} other {# days}} free",
+    "freeDays": "{count, plural, one {free day} other {free days}}",
     "rating": "Rated {rating} out of 5",
     "perDay": "/ day",
     "currency": "Saudi Riyal"

@@ -229,9 +229,11 @@
     "gift": "هدية",
     "airportPickup": "استلام من المطار",
     "stationPickup": "استلام من المحطة",
-    "limitedOffer": "احجز 3 أيام واحصل على",
-    "saveNow": "يوم مجاناً",
+    "limitedOffer": "عرض لفترة محدودة",
+    "saveNow": "وفّر عند الحجز الآن",
     "discount": "خصم",
+    "freeDaysOffer": "احجز {days} أيام واحصل على {free, plural, one {يوم مجاني} two {يومين مجانيين} few {# أيام مجانية} many {# يومًا مجانيًا} other {# يوم مجاني}}",
+    "freeDays": "{count, plural, one {يوم مجاني} two {يومان مجانيان} few {أيام مجانية} many {يومًا مجانيًا} other {يوم مجاني}}",
     "rating": "التقييم {rating} من 5",
     "perDay": "/ يوم",
     "currency": "ريال سعودي"
