@@ -199,6 +199,9 @@
         "title": "استلام من الفرع"
       }
     },
+    "booking": {
+      "title": "اختر نوع الحجز"
+    },
     "map": {
       "title": "حدد موقع الاستلام",
       "searchPlaceholder": "ابحث عن عنوان أو مكان...",
@@ -229,9 +232,11 @@
     "gift": "هدية",
     "airportPickup": "استلام من المطار",
     "stationPickup": "استلام من المحطة",
-    "limitedOffer": "احجز 3 أيام واحصل على",
-    "saveNow": "يوم مجاناً",
+    "saveNow": "وفّر عند الحجز الآن",
     "discount": "خصم",
+    "offerBook": "احجز {days} أيام واحصل على",
+    "offerFree": "{free, plural, one {يوم مجاناً} two {يومين مجاناً} few {# أيام مجاناً} many {# يومًا مجاناً} other {# يوم مجاناً}}",
+    "extraDays": "{count, plural, one {يوم إضافي} two {يومان إضافيان} few {أيام إضافية} many {يومًا إضافيًا} other {يوم إضافي}}",
     "rating": "التقييم {rating} من 5",
     "perDay": "/ يوم",
     "currency": "ريال سعودي"
@@ -259,6 +264,7 @@
       "clear": "مسح",
       "showLess": "عرض أقل",
       "showAll": "عرض الكل",
+      "showMore": "+{count} المزيد",
       "priceRange": "نطاق السعر",
       "minimum": "الحد الأدنى",
       "maximum": "الحد الأقصى",
@@ -307,6 +313,10 @@
       "dropoff": "التسليم",
       "dropoffPlaceholder": "اختر تاريخ التسليم",
       "search": "بحث"
+    },
+    "empty": {
+      "title": "لا توجد سيارات متاحة في {city} حاليًا",
+      "description": "جرّب تواريخ أخرى أو غيّر الفلاتر."
     }
   },
   "carSections": {

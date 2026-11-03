@@ -129,22 +129,22 @@ export default function NotFound() {
           </svg>
         </div>
 
-        <span className="mb-4 inline-flex items-center justify-center rounded-full bg-surface-card-primary px-[0.9rem] py-[0.35rem] text-[0.8rem] font-bold text-action-primary">
+        <span className="bg-surface-card-primary text-action-primary mb-4 inline-flex items-center justify-center rounded-full px-[0.9rem] py-[0.35rem] text-[0.8rem] font-bold">
           {t("notFound.error")}
         </span>
 
-        <h1 className="mt-0 mb-3 text-[clamp(1.7rem,3vw,2.2rem)] font-extrabold text-text-primary">
+        <h1 className="text-text-primary mt-0 mb-3 text-[clamp(1.7rem,3vw,2.2rem)] font-extrabold">
           {t("notFound.title")}
         </h1>
 
-        <p className="mx-auto mt-0 mb-8 max-w-[430px] text-base leading-[1.8] text-text-subtle max-md:text-[0.95rem]">
+        <p className="text-text-subtle mx-auto mt-0 mb-8 max-w-[430px] text-base leading-[1.8] max-md:text-[0.95rem]">
           {t("notFound.description")}
         </p>
 
         <div className="flex flex-wrap items-center justify-center gap-4 max-md:w-full max-md:flex-col">
           <Link
             href="/"
-            className="inline-flex h-[38px] items-center justify-center rounded-md border border-action-primary bg-action-primary px-5 font-semibold text-text-on-action hover:opacity-90 max-md:w-full"
+            className="border-action-primary bg-action-primary text-text-on-action inline-flex h-[38px] items-center justify-center rounded-md border px-5 font-semibold hover:opacity-90 max-md:w-full"
           >
             <span>
               <FiHome className="me-2" />
@@ -154,7 +154,7 @@ export default function NotFound() {
 
           <Link
             href="/cities"
-            className="inline-flex h-[38px] items-center justify-center rounded-md border border-stroke-light bg-transparent px-5 font-semibold text-text-primary hover:bg-neutral-100 max-md:w-full"
+            className="border-stroke-light text-text-primary inline-flex h-[38px] items-center justify-center rounded-md border bg-transparent px-5 font-semibold hover:bg-neutral-100 max-md:w-full"
           >
             <span>
               <FiSearch className="me-2" />

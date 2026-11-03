@@ -201,6 +201,9 @@
         "description": "Pick up the car from the nearest branch."
       }
     },
+    "booking": {
+      "title": "Choose a booking type"
+    },
     "map": {
       "title": "Set pickup location",
       "searchPlaceholder": "Search for an address or place...",
@@ -231,9 +234,11 @@
     "gift": "Gift",
     "airportPickup": "Airport pickup",
     "stationPickup": "Station pickup",
-    "limitedOffer": "Limited-time offer",
     "saveNow": "Save when you book now",
     "discount": "off",
+    "offerBook": "Book {days} days and get",
+    "offerFree": "{free, plural, one {a free day} other {# free days}}",
+    "extraDays": "{count, plural, one {extra day} other {extra days}}",
     "rating": "Rated {rating} out of 5",
     "perDay": "/ day",
     "currency": "Saudi Riyal"
@@ -285,6 +290,7 @@
       "clear": "Clear",
       "showLess": "Show less",
       "showAll": "Show all",
+      "showMore": "+{count} more",
       "priceRange": "Price range",
       "minimum": "Minimum",
       "maximum": "Maximum",
@@ -333,6 +339,10 @@
       "dropoff": "Drop-off",
       "dropoffPlaceholder": "Choose drop-off date",
       "search": "Search"
+    },
+    "empty": {
+      "title": "No cars available in {city} right now",
+      "description": "Try other dates, or change the filters."
     }
   },
   "homeCta": {

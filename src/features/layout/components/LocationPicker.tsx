@@ -28,34 +28,26 @@ function readGuestLocationData(): LocationData | null {
   return stored && { ...stored, address: stored.address ?? "" };
 }
 
-interface Props {
-  /** No session: show the guest's stored location, and store what they pick. */
-  guest?: boolean;
-}
-
-export default function LocationPicker({ guest = false }: Props) {
+export default function LocationPicker() {
   const t = useTranslations("layout.location");
   const [open, setOpen] = useState(false);
   const [location, setLocation] = useState<LocationData | null>(null);
 
   // localStorage is read after hydration, so the server and first render agree.
   useEffect(() => {
-    if (!guest) return;
     const sync = () => setLocation(readGuestLocationData());
     sync();
     return subscribeGuestLocation(sync);
-  }, [guest]);
+  }, []);
 
   const handleConfirm = (nextLocation: LocationData) => {
     setLocation(nextLocation);
     setOpen(false);
-    if (guest) {
-      saveGuestLocationRecord({
-        status: "granted",
-        ...nextLocation,
-        savedAt: new Date().toISOString(),
-      });
-    }
+    saveGuestLocationRecord({
+      status: "granted",
+      ...nextLocation,
+      savedAt: new Date().toISOString(),
+    });
   };
 
   return (

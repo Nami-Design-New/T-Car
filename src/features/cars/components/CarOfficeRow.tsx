@@ -1,22 +1,32 @@
 "use client";
 
-import { useId, useRef, useState } from "react";
-import Image from "next/image";
 import { useTranslations } from "next-intl";
-import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
-import { Swiper, SwiperSlide } from "swiper/react";
+import Image from "next/image";
+import { useId, useRef, useState } from "react";
 import type { Swiper as SwiperInstance } from "swiper";
+import { Swiper, SwiperSlide } from "swiper/react";
 
 import "swiper/css";
 
-import CarCard from "./CarCard";
-import type { CarListing, Office } from "../model";
 import { cn } from "@/shared/lib/cn";
+import { ErrorState } from "@/shared/ui/ErrorState";
+import type { CarListing, Office } from "../model";
+import CarCard from "./CarCard";
+import CarCardSkeleton from "./CarCardSkeleton";
 
 interface CarOfficeRowProps {
   office: Office;
   cars: CarListing[];
   className?: string;
+  /** Another page of cars exists; reaching the row's end loads it. */
+  hasMore?: boolean;
+  /** A next page is loading: a skeleton slide follows the cars. */
+  loadingMore?: boolean;
+  /** The next page failed: a retry slide follows the cars. */
+  loadError?: unknown;
+  onLoadMore?: () => void;
+  onRetry?: () => void;
+  onSelectCar?: (car: CarListing) => void;
 }
 
 interface NavState {
@@ -34,10 +44,17 @@ export default function CarOfficeRow({
   office,
   cars,
   className,
+  hasMore = false,
+  loadingMore = false,
+  loadError,
+  onLoadMore,
+  onRetry,
+  onSelectCar,
 }: CarOfficeRowProps) {
   const t = useTranslations("officeRow");
   const titleId = useId();
   const swiperRef = useRef<SwiperInstance | null>(null);
+  const wasDragging = useRef(false);
   const [nav, setNav] = useState<NavState>(LOCKED);
 
   if (cars.length === 0) return null;
@@ -79,21 +96,33 @@ export default function CarOfficeRow({
   );
 
   return (
-    <section
-      className={cn("office-row min-w-0", className)}
-      aria-labelledby={titleId}
-    >
-      <header className="office-row__header mb-5 flex min-h-20.5 items-center gap-5 overflow-hidden max-md:min-h-[72px] max-md:flex-wrap max-md:gap-3 max-md:p-4">
+    <section className={cn("min-w-0", className)} aria-labelledby={titleId}>
+      <header className="mb-5 flex min-h-20.5 items-center gap-5 overflow-hidden max-md:min-h-18 max-md:flex-wrap max-md:gap-3 max-md:p-4">
         {title}
       </header>
 
       <Swiper
+        onTouchStart={() => {
+          wasDragging.current = false;
+        }}
+        onSliderMove={() => {
+          wasDragging.current = true;
+        }}
+        onTouchEnd={() => {
+          // Let the click that follows a touch end see the drag state first.
+          window.setTimeout(() => {
+            wasDragging.current = false;
+          });
+        }}
         onSwiper={(swiper) => {
           swiperRef.current = swiper;
           syncNav(swiper);
         }}
         onInit={syncNav}
         onSlideChange={syncNav}
+        onReachEnd={() => {
+          if (hasMore && !loadingMore && !loadError) onLoadMore?.();
+        }}
         onResize={syncNav}
         onLock={syncNav}
         onUnlock={syncNav}
@@ -102,20 +131,39 @@ export default function CarOfficeRow({
         speed={500}
         grabCursor={!nav.isLocked}
         watchOverflow
-        className="office-row__swiper min-w-0 px-0.5 pb-1.5 active:cursor-grabbing [&_.swiper-slide]:h-auto [&_.swiper-slide_.car-card]:h-full"
+        className="min-w-0 px-0.5 pb-1.5 active:cursor-grabbing [&_.swiper-slide]:h-auto [&_.swiper-slide_.car-card]:h-full"
         breakpoints={{
           576: { slidesPerView: 2, spaceBetween: 18 },
           992: { slidesPerView: 3, spaceBetween: 20 },
         }}
       >
         {cars.map((car) => (
-          <SwiperSlide key={car.id} className="office-row__slide !h-auto">
+          <SwiperSlide key={car.id} className="h-auto!">
             <CarCard
               car={car}
+              onSelect={
+                onSelectCar
+                  ? (selectedCar) => {
+                      if (!wasDragging.current) onSelectCar(selectedCar);
+                    }
+                  : undefined
+              }
               imageSizes="(max-width: 575px) 84vw, (max-width: 991px) 44vw, 300px"
             />
           </SwiperSlide>
         ))}
+        {loadingMore && (
+          <SwiperSlide className="office-row__slide h-auto!" aria-busy="true">
+            <CarCardSkeleton />
+          </SwiperSlide>
+        )}
+        {Boolean(loadError) && (
+          <SwiperSlide className="office-row__slide h-auto!">
+            <div className="grid h-full place-items-center">
+              <ErrorState error={loadError} onRetry={onRetry} size="inline" />
+            </div>
+          </SwiperSlide>
+        )}
       </Swiper>
     </section>
   );

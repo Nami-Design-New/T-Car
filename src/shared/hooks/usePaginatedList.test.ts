@@ -113,4 +113,34 @@ describe("usePaginatedList", () => {
     );
     expect(result.current.items).toEqual(["item-1"]);
   });
+
+  it("starts from a server-rendered first page and fetches only the next one", async () => {
+    const initialPage = { items: ["server-1"], page: 1, lastPage: 2, total: 2 };
+    const { result } = renderHook(() =>
+      usePaginatedList(fetchPage, { initialPage }),
+    );
+
+    expect(result.current.loading).toBe(false);
+    expect(result.current.items).toEqual(["server-1"]);
+    expect(result.current.hasMore).toBe(true);
+    expect(fetchPage).not.toHaveBeenCalled();
+
+    act(() => result.current.loadMore());
+    await waitFor(() =>
+      expect(result.current.items).toEqual(["server-1", "item-2"]),
+    );
+    expect(fetchPage).toHaveBeenCalledWith(2);
+    expect(result.current.hasMore).toBe(false);
+  });
+
+  it("reloads page 1 on refresh even with a server-rendered page", async () => {
+    const initialPage = { items: ["server-1"], page: 1, lastPage: 1, total: 1 };
+    const { result } = renderHook(() =>
+      usePaginatedList(fetchPage, { initialPage }),
+    );
+
+    act(() => result.current.refresh());
+    await waitFor(() => expect(result.current.items).toEqual(["item-1"]));
+    expect(fetchPage).toHaveBeenCalledWith(1);
+  });
 });

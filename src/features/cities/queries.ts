@@ -1,23 +1,19 @@
 import 'server-only';
 import { cache } from 'react';
+import { getLocale } from 'next-intl/server';
 import { citiesApi } from './api';
-import { toAppError } from '@/shared/lib/errors';
-import type { City, CityDetails } from './model';
-
-export function getCities(): Promise<City[]> {
-  return citiesApi.listCities();
-}
+import type { City } from './model';
 
 /**
- * Null for an unknown slug, so the page can call notFound(). Other failures
- * throw to error.tsx. Cached per request: generateMetadata and the page share one read.
+ * Cached per request: the city page, its metadata, and the home rail share one
+ * read. Outside a localized request (the sitemap), pass the locale.
  */
-export const getCityDetails = cache(async (slug: string): Promise<CityDetails | null> => {
-  try {
-    return await citiesApi.getCityDetails(slug);
-  } catch (error) {
-    const appError = toAppError(error);
-    if (appError.kind === 'not_found') return null;
-    throw appError;
-  }
-});
+export const getCities = cache(async (locale?: string): Promise<City[]> =>
+  citiesApi.listCities(locale ?? (await getLocale())),
+);
+
+/** Null for an unknown id, so the page can call notFound(). */
+export async function getCity(id: string): Promise<City | null> {
+  const cities = await getCities();
+  return cities.find((city) => city.id === id) ?? null;
+}

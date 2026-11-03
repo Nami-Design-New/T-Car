@@ -48,7 +48,7 @@ export default async function CarsPage({ searchParams }: Props) {
           </h1>
         </header>
 
-        <div className="city-listings-grid grid grid-cols-[280px_1fr] items-start gap-8 max-lg:grid-cols-1">
+        <div className="city-listings-grid grid grid-cols-[320px_1fr] items-start gap-8 max-lg:grid-cols-1">
           <CarFilters brands={brands} priceRange={priceRange} />
           <div className="office-rows flex min-w-0 flex-col gap-3">
             {/* <SortBar

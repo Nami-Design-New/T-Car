@@ -45,6 +45,7 @@ export interface CarPickupInfo {
 }
 
 export interface CarDetails extends CarListing {
+  reviewsCount: number;
   images: string[];
   showroom: string;
   showroomLogo?: string;

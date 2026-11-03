@@ -36,13 +36,13 @@ function expand({ path, changeFrequency, priority }: Entry): MetadataRoute.Sitem
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  // The mock cars have no city yet, so any slug returns the full list.
-  const [cities, cars] = await Promise.all([getCities(), getCarsForCity('')]);
+  // City ids do not depend on the locale; the mock cars have no city yet.
+  const [cities, cars] = await Promise.all([getCities(routing.defaultLocale), getCarsForCity('')]);
 
   const entries: Entry[] = [
     ...STATIC_PAGES,
     ...cities.map((city): Entry => ({
-      path: `/cities/${city.slug}`,
+      path: `/cities/${city.id}`,
       changeFrequency: 'weekly',
       priority: 0.7,
     })),

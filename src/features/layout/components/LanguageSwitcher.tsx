@@ -47,7 +47,7 @@ export default function LanguageSwitcher() {
         <Menu.Trigger asChild>
           <button
             type="button"
-            className="flex h-11 w-full cursor-pointer items-center justify-center gap-2 rounded-lg border-0 bg-surface-on-background px-3 text-sm font-semibold text-text-primary shadow-[inset_0px_8px_12px_0px_#FCFEFA,inset_0px_-4px_4px_0px_#0C0C0C26] transition hover:bg-surface-card-primary focus-visible:outline-3 focus-visible:outline-action-primary/20 focus-visible:outline-offset-2"
+            className="bg-surface-on-background text-text-primary hover:bg-surface-card-primary focus-visible:outline-action-primary/20 flex h-11 w-full cursor-pointer items-center justify-center gap-2 rounded-lg border-0 px-3 text-sm font-semibold shadow-[inset_0px_8px_12px_0px_#FCFEFA,inset_0px_-4px_4px_0px_#0C0C0C26] transition focus-visible:outline-3 focus-visible:outline-offset-2"
             aria-label={t("layout.languageSwitcher.label")}
           >
             <Image
@@ -58,19 +58,19 @@ export default function LanguageSwitcher() {
               alt=""
               className="size-5 shrink-0 object-contain"
             />
-            <span className=" text-xs font-extrabold tracking-[0.04em]">
+            <span className="text-xs font-extrabold tracking-[0.04em]">
               {current.code.toUpperCase()}
             </span>
-            <FiChevronDown className=" shrink-0 text-sm" aria-hidden="true" />
+            <FiChevronDown className="shrink-0 text-sm" aria-hidden="true" />
           </button>
         </Menu.Trigger>
 
-        <Menu.Content className=" min-w-30 z-[10002]!" align="end">
+        <Menu.Content className="z-10002! min-w-30" align="end">
           {SUPPORTED_LANGUAGES.map((lang) => (
             <Menu.Item
               key={lang.code}
               className={cn(
-                "justify-between",
+                "cursor-pointer justify-between",
                 lang.code === locale &&
                   "text-action-primary data-highlighted:bg-surface-card-primary",
               )}

@@ -1,37 +1,35 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import {
-  CarOfficeRow,
   CarFilters,
-  SortBar,
   parseCarSearchParams,
+  toCityCarsQuery,
 } from "@/features/cars";
-import {
-  getCarBrands,
-  getOfficeCarGroupsForCity,
-} from "@/features/cars/queries";
+import { getCarBrands, getCityCarFilterOptions } from "@/features/cars/queries";
 import { CityHero } from "@/features/cities";
-import { getCityDetails } from "@/features/cities/queries";
+import { getCity } from "@/features/cities/queries";
 import { getBookingTypeAvailability } from "@/features/settings/queries";
 import { getSiteSettings } from "@/features/settings/queries";
 import { isBookingTypeEnabled } from "@/features/settings";
+import { getRentalSearchOptions } from "@/features/rental-search/queries";
+import CityCarsSection from "./CityCarsSection";
 
 interface Props {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ id: string }>;
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }
 
 /** The city's own title; the query is cached, so the page reuses this read. */
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { slug } = await params;
-  const city = await getCityDetails(slug);
+  const { id } = await params;
+  const city = await getCity(id);
   if (!city) notFound();
 
   return { title: city.name };
 }
 
 export default async function CityDetailsPage({ params, searchParams }: Props) {
-  const [{ slug }, rawSearchParams, bookingTypes, site] = await Promise.all([
+  const [{ id }, rawSearchParams, bookingTypes, site] = await Promise.all([
     params,
     searchParams,
     getBookingTypeAvailability(),
@@ -40,11 +38,15 @@ export default async function CityDetailsPage({ params, searchParams }: Props) {
   const priceRange = site.priceFilterRange;
   const filters = parseCarSearchParams(rawSearchParams, priceRange);
   if (!isBookingTypeEnabled(filters.context.type, bookingTypes)) notFound();
-  const city = await getCityDetails(slug);
+  const city = await getCity(id);
   if (!city) notFound();
-  const [officeGroups, brands] = await Promise.all([
-    getOfficeCarGroupsForCity(slug, filters),
+  // The guest location is intentionally read in CityCarRows after hydration:
+  // localStorage is unavailable here on the server.
+  const query = toCityCarsQuery(filters);
+  const [brands, cityFilterOptions, rentalOptions] = await Promise.all([
     getCarBrands(),
+    getCityCarFilterOptions(),
+    getRentalSearchOptions(),
   ]);
 
   return (
@@ -53,15 +55,19 @@ export default async function CityDetailsPage({ params, searchParams }: Props) {
 
       <section className="py-20 pt-0 max-md:py-12 max-md:pt-0">
         <div className="mx-auto w-full max-w-7xl px-2">
-          {/* <SortBar resultsCount={officeGroups.reduce((count, group) => count + group.cars.length)} value={filters.sort} /> */}
-
-          <div className="city-listings-grid grid grid-cols-[280px_1fr] items-start gap-8 max-lg:grid-cols-1">
-            <CarFilters brands={brands} priceRange={priceRange} />
+          <div className="city-listings-grid grid grid-cols-[320px_1fr] items-start gap-8 max-lg:grid-cols-1">
+            <CarFilters
+              brands={brands}
+              cityOptions={cityFilterOptions}
+              priceRange={priceRange}
+            />
 
             <div className="office-rows flex min-w-0 flex-col gap-3">
-              {officeGroups.map(({ office, cars }) => (
-                <CarOfficeRow key={office.id} office={office} cars={cars} />
-              ))}
+              <CityCarsSection
+                query={query}
+                cityName={city.name}
+                options={rentalOptions}
+              />
             </div>
           </div>
         </div>

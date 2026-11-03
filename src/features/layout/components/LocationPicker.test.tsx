@@ -48,14 +48,14 @@ beforeEach(() => {
 describe("LocationPicker", () => {
   it("shows a guest's stored address", () => {
     save("Alsahafa, Riyadh");
-    renderWithIntl(<LocationPicker guest />);
+    renderWithIntl(<LocationPicker />);
 
     expect(choose()).toHaveTextContent("Alsahafa, Riyadh");
   });
 
   it("shows the address once the lookup stores it", () => {
     save();
-    renderWithIntl(<LocationPicker guest />);
+    renderWithIntl(<LocationPicker />);
     expect(choose()).toHaveTextContent("Riyadh, Al Hurriya Street");
 
     act(() => save("Alsahafa, Riyadh"));
@@ -64,7 +64,7 @@ describe("LocationPicker", () => {
 
   it("stores the place a guest picks on the map", async () => {
     const user = userEvent.setup();
-    renderWithIntl(<LocationPicker guest />);
+    renderWithIntl(<LocationPicker />);
 
     await user.click(choose());
     await user.click(screen.getByRole("button", { name: "Confirm pick" }));
@@ -73,14 +73,14 @@ describe("LocationPicker", () => {
     expect(readGuestLocation()).toEqual(picked);
   });
 
-  it("ignores the guest location for a session", async () => {
+  it("uses and replaces the saved location", async () => {
     const user = userEvent.setup();
     save("Alsahafa, Riyadh");
     renderWithIntl(<LocationPicker />);
-    expect(choose()).toHaveTextContent("Riyadh, Al Hurriya Street");
+    expect(choose()).toHaveTextContent("Alsahafa, Riyadh");
 
     await user.click(choose());
     await user.click(screen.getByRole("button", { name: "Confirm pick" }));
-    expect(readGuestLocation()?.address).toBe("Alsahafa, Riyadh");
+    expect(readGuestLocation()).toEqual(picked);
   });
 });

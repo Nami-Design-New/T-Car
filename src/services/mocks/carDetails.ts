@@ -147,6 +147,7 @@ export const carDetailsMock: CarDetailsApi = {
     return {
       ...listing,
       ...MOCK_DETAILS_EXTRAS,
+      reviewsCount: listing.reviewsCount ?? 0,
       showroomLogo: MOCK_OFFICES.find((office) => office.showroom === listing.showroom)?.logo,
     };
   },

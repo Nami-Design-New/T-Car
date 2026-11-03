@@ -35,6 +35,11 @@ export const ICONS = {
     width: 12,
     height: 12,
   },
+  chevronLeftPrimary: {
+    src: "/icons/chevron-left-primary.svg",
+    width: 12,
+    height: 12,
+  },
 } as const;
 
 export const POINTS_ICONS = {
@@ -80,6 +85,12 @@ export const IMAGES = {
     src: "/images/placeholders/flag.svg",
     width: 24,
     height: 18,
+  },
+  /** Any API image that is null (city, car, company), docs/api/cities-api.md R7. */
+  imageFallback: {
+    src: "/images/placeholders/image-fallback.svg",
+    width: 400,
+    height: 300,
   },
   /** Until the cars API returns the office logo with each car. */
   officePlaceholder: {
