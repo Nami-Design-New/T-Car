@@ -3,10 +3,8 @@
 import { Link } from "@/i18n/navigation";
 import { IMAGES } from "@/shared/config/assets";
 import { ICONS } from "@/shared/config/assets";
-import {
-  discountPercent as getDiscountPercent,
-  type CarListing,
-} from "../model";
+import type { CarListing } from "../model";
+import CarOfferBadge from "./CarOfferBadge";
 
 import { cn } from "@/shared/lib/cn";
 import { Price } from "@/shared/ui/Price";
@@ -15,7 +13,6 @@ import Image from "next/image";
 import { LuPlane } from "react-icons/lu";
 import { MdTrain } from "react-icons/md";
 
-const giftImage = IMAGES.gift;
 const star = ICONS.starFill;
 
 export interface CarCardProps {
@@ -36,7 +33,6 @@ export default function CarCard({
 }: CarCardProps) {
   const t = useTranslations("carCard");
   const detailsHref = `/cars/${car.id}` as const;
-  const discountPercent = getDiscountPercent(car);
   const { offer } = car;
 
   return (
@@ -86,42 +82,7 @@ export default function CarCard({
             </span>
           ) : null}
 
-          {offer || discountPercent ? (
-            <div className="border-status-success bg-surface-background/[0.94] absolute inset-s-1.25 inset-e-1.25 bottom-1 z-2 flex min-h-12 items-stretch justify-between overflow-hidden rounded-md border border-dashed shadow-[0_8px_22px_rgba(30,30,30,0.14)] backdrop-blur-[10px]">
-              <span className="flex min-w-0 items-center gap-3">
-                <Image
-                  src={giftImage.src}
-                  alt={t("gift")}
-                  width={giftImage.width}
-                  height={giftImage.height}
-                  className="shrink-0"
-                />
-                <span className="px-ds-1 py-ds-2 min-w-0 grow">
-                  <small className="text-text-subtle mb-px block text-xs leading-[1.3]">
-                    {t("limitedOffer")}
-                  </small>
-                  <strong className="text-ds-green block overflow-hidden text-base leading-[1.35] font-semibold text-ellipsis whitespace-nowrap">
-                    {offer
-                      ? t("freeDaysOffer", {
-                          days: offer.requiredDays,
-                          free: offer.freeDays,
-                        })
-                      : t("saveNow")}
-                  </strong>
-                </span>
-              </span>
-              <span className="bg-ds-green after:bg-surface-background/[0.94] relative grid min-w-17 place-content-center px-4 py-2 text-center text-white after:absolute after:inset-e-0 after:top-1/2 after:size-4 after:-translate-y-1/2 ltr:after:translate-x-1/2 rtl:after:-translate-x-1/2 after:rounded-full after:content-['']">
-                <strong className="block text-xl">
-                  {offer ? offer.freeDays : `${discountPercent}%`}
-                </strong>
-                <small className="block text-[10px] leading-none">
-                  {offer
-                    ? t("freeDays", { count: offer.freeDays })
-                    : t("discount")}
-                </small>
-              </span>
-            </div>
-          ) : null}
+          {offer ? <CarOfferBadge offer={offer} /> : null}
         </div>
 
         <div className="flex flex-1 flex-col p-3">
@@ -160,23 +121,25 @@ export default function CarCard({
             </span>
           </div>
 
-          <div className="mt-auto flex items-end justify-between gap-4 pt-2">
-            <span className="flex min-w-0 items-center gap-4 whitespace-nowrap">
-              <span className="inline-flex items-center gap-2">
-                <Price
-                  amount={car.pricePerDay}
-                  amountClassName="text-action-primary text-base font-semibold"
-                  className="text-action-primary"
-                />
-                <small className="text-text-subtle text-sm font-bold whitespace-nowrap">
-                  {t("perDay")}
-                </small>
+          {car.pricePerDay > 0 && (
+            <div className="mt-auto flex items-end justify-between gap-4 pt-2">
+              <span className="flex min-w-0 items-center gap-4 whitespace-nowrap">
+                <span className="inline-flex items-center gap-2">
+                  <Price
+                    amount={car.pricePerDay}
+                    amountClassName="text-action-primary text-base font-semibold"
+                    className="text-action-primary"
+                  />
+                  <small className="text-text-subtle text-sm font-bold whitespace-nowrap">
+                    {t("perDay")}
+                  </small>
+                </span>
+                {car.originalPrice ? (
+                  <Price amount={car.originalPrice} strike={true} />
+                ) : null}
               </span>
-              {car.originalPrice ? (
-                <Price amount={car.originalPrice} strike={true} />
-              ) : null}
-            </span>
-          </div>
+            </div>
+          )}
         </div>
       </Link>
     </article>

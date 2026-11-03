@@ -9,6 +9,14 @@ import { AppError } from "@/shared/lib/errors";
 
 const isoDay = z.string().regex(/^\d{4}-\d{2}-\d{2}$/);
 const optionalString = z.string().trim().min(1).optional();
+const optionalIds = z.array(z.string().regex(/^\d+$/)).optional();
+
+function idsFrom(search: URLSearchParams, name: string): string[] | undefined {
+  const ids = [...search.entries()]
+    .filter(([key]) => new RegExp(`^${name}\\[\\d+\\]$`).test(key))
+    .map(([, value]) => value);
+  return ids.length ? ids : undefined;
+}
 
 const requestSchema = z
   .object({
@@ -22,6 +30,10 @@ const requestSchema = z
     toDay: isoDay.optional(),
     page: z.coerce.number().int().min(1).max(1000),
     companyId: z.string().regex(/^\d+$/).optional(),
+    brandIds: optionalIds,
+    typeIds: optionalIds,
+    serviceIds: optionalIds,
+    companyIds: optionalIds,
   })
   .refine(
     ({ region, latitude, longitude }) =>
@@ -42,6 +54,10 @@ function queryFrom(request: NextRequest) {
     toDay: search.get("to_day") ?? undefined,
     page: search.get("page") ?? undefined,
     companyId: search.get("company_id") ?? undefined,
+    brandIds: idsFrom(search, "brand_id"),
+    typeIds: idsFrom(search, "type_id"),
+    serviceIds: idsFrom(search, "service_id"),
+    companyIds: idsFrom(search, "company_id"),
   });
 }
 

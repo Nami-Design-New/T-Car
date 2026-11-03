@@ -76,18 +76,23 @@ export interface CarBrand {
   logo: string;
 }
 
+/** A localized option returned by the city-car filter lookup endpoints. */
+export interface CarFilterOption {
+  id: string;
+  title: string;
+  logo?: string;
+}
+
+export interface CityCarFilterOptions {
+  brands: CarFilterOption[];
+  types: CarFilterOption[];
+  services: CarFilterOption[];
+  companies: CarFilterOption[];
+}
+
 export interface OfficeCarGroup {
   office: Office;
   cars: CarListing[];
-}
-
-/** Whole-percent saving against the original price, at least 1; null when there is no offer. */
-export function discountPercent({
-  pricePerDay,
-  originalPrice,
-}: Pick<CarListing, 'pricePerDay' | 'originalPrice'>): number | null {
-  if (!originalPrice) return null;
-  return Math.max(1, Math.round((1 - pricePerDay / originalPrice) * 100));
 }
 
 /**
@@ -106,12 +111,12 @@ export function groupCarsByOffice(offices: Office[], cars: CarListing[]): Office
 
 /** Cars with a discount, for the home page offers rail. */
 export function selectOfferCars(cars: CarListing[]): CarListing[] {
-  return cars.filter((car) => discountPercent(car) !== null);
+  return cars.filter((car) => car.offer !== undefined);
 }
 
 /** Full-price cars, best rated first, for the "selected for you" rail. */
 export function selectHandpickedCars(cars: CarListing[]): CarListing[] {
   return cars
-    .filter((car) => discountPercent(car) === null)
+    .filter((car) => car.offer === undefined)
     .sort((a, b) => b.rating - a.rating);
 }

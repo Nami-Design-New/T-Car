@@ -6,6 +6,8 @@ import { AppError } from "@/shared/lib/errors";
 import { isPaginationDto, toPage, type Page } from "@/shared/lib/pagination";
 import type {
   CarAvailability,
+  CarFilterOption,
+  CityCarFilterOptions,
   CarListing,
   CarOffer,
   OfficeCarGroup,
@@ -26,6 +28,7 @@ export interface CityCarsApi {
     query: CityCarsQuery,
     page: number,
   ): Promise<Page<CarListing>>;
+  getFilterOptions(locale: string): Promise<CityCarFilterOptions>;
 }
 
 interface LookupDto {
@@ -74,6 +77,12 @@ interface CompanyCarsGroupDto {
   cars: CarListingDto[];
 }
 
+interface CompanyLookupDto {
+  id: number;
+  title: string;
+  logo_url: string | null;
+}
+
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null;
 }
@@ -90,6 +99,15 @@ function isLookup(value: unknown): value is LookupDto {
     isNumber(value.id) &&
     typeof value.title === "string" &&
     isNullableString(value.logo)
+  );
+}
+
+function isCompanyLookup(value: unknown): value is CompanyLookupDto {
+  return (
+    isRecord(value) &&
+    isNumber(value.id) &&
+    typeof value.title === "string" &&
+    isNullableString(value.logo_url)
   );
 }
 
@@ -172,12 +190,19 @@ function toCarAvailability(car: CarListingDto): CarAvailability | undefined {
 }
 
 export function mapCarListing(car: CarListingDto): CarListing {
+  const salePrice = car.lower_price > 0 ? car.lower_price : car.max_price;
+  const originalPrice =
+    car.lower_price > 0 && car.max_price > car.lower_price
+      ? car.max_price
+      : undefined;
+
   return {
     id: String(car.id),
     name: car.car_model.title,
     brand: car.brand.title,
     image: car.image_url || IMAGES.imageFallback.src,
-    pricePerDay: car.lower_price,
+    pricePerDay: salePrice,
+    originalPrice,
     rating: car.rate,
     year: car.year,
     showroom: car.company_name,
@@ -227,9 +252,54 @@ function toCityCarsSearch(
     search.set("from_day", query.fromDay);
     search.set("to_day", query.toDay);
   }
+  const appendIds = (key: string, ids: string[] | undefined) =>
+    ids?.forEach((id, index) => search.append(`${key}[${index}]`, id));
+  appendIds("brand_id", query.brandIds);
+  appendIds("type_id", query.typeIds);
+  appendIds("service_id", query.serviceIds);
+  appendIds("company_id", query.companyIds);
   search.set("per_page", String(perPage));
   search.set("page", String(page));
   return search.toString();
+}
+
+function mapLookup(lookup: LookupDto): CarFilterOption {
+  return {
+    id: String(lookup.id),
+    title: lookup.title,
+    logo: lookup.logo || undefined,
+  };
+}
+
+function mapCompanyLookup(lookup: CompanyLookupDto): CarFilterOption {
+  return {
+    id: String(lookup.id),
+    title: lookup.title,
+    logo: lookup.logo_url || undefined,
+  };
+}
+
+async function listLookup<T>(
+  path: string,
+  locale: string,
+  guard: (value: unknown) => value is T,
+  map: (value: T) => CarFilterOption,
+): Promise<CarFilterOption[]> {
+  const response = await publicServerHttp.get<ApiEnvelope<unknown>>(
+    `${path}?per_page=100&page=1`,
+    { headers: { "Accept-Language": locale } },
+  );
+  return toCheckedPage(response, guard, map).items;
+}
+
+async function getFilterOptions(locale: string): Promise<CityCarFilterOptions> {
+  const [brands, types, services, companies] = await Promise.all([
+    listLookup("/car-brands", locale, isLookup, mapLookup),
+    listLookup("/car-types", locale, isLookup, mapLookup),
+    listLookup("/car-additional-services", locale, isLookup, mapLookup),
+    listLookup("/companies", locale, isCompanyLookup, mapCompanyLookup),
+  ]);
+  return { brands, types, services, companies };
 }
 
 /** A paginated envelope whose items all pass the guard, or a server error. */
@@ -288,4 +358,8 @@ async function listCompanyCars(
   return toCheckedPage(response, isCarListing, mapCarListing);
 }
 
-export const cityCarsApi: CityCarsApi = { listCityCars, listCompanyCars };
+export const cityCarsApi: CityCarsApi = {
+  listCityCars,
+  listCompanyCars,
+  getFilterOptions,
+};

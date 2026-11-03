@@ -35,8 +35,9 @@ describe("CarCard offer badge", () => {
     renderWithIntl(
       <CarCard car={{ ...car, offer: { requiredDays: 5, freeDays: 1 } }} />,
     );
-    expect(screen.getByText("Book 5 days, get 1 day free")).toBeInTheDocument();
-    expect(screen.getByText("free day")).toBeInTheDocument();
+    expect(screen.getByText("Book 5 days and get")).toBeInTheDocument();
+    expect(screen.getByText("a free day")).toBeInTheDocument();
+    expect(screen.getByText("extra day")).toBeInTheDocument();
   });
 
   it("shows a discount percent for a car with an original price", () => {
@@ -49,6 +50,7 @@ describe("CarCard offer badge", () => {
 
   it("shows no badge for a car without an offer or discount", () => {
     renderWithIntl(<CarCard car={car} />);
-    expect(screen.queryByText("Limited-time offer")).not.toBeInTheDocument();
+    expect(screen.queryByText("Save when you book now")).not.toBeInTheDocument();
+    expect(screen.queryByText(/free day/)).not.toBeInTheDocument();
   });
 });

@@ -74,3 +74,28 @@ describe("CarFilters live search", () => {
     expect(replace).not.toHaveBeenCalled();
   });
 });
+
+describe("CarFilters brands", () => {
+  const cityOptions = {
+    brands: Array.from({ length: 9 }, (_, index) => ({
+      id: `b${index}`,
+      title: `Brand ${index}`,
+    })),
+    types: [],
+    companies: [],
+    services: [],
+  };
+
+  it("shows three brands and expands the rest from the +N more chip", () => {
+    renderWithIntl(
+      <CarFilters brands={[]} cityOptions={cityOptions} priceRange={priceRange} />,
+    );
+
+    expect(screen.queryAllByText(/^Brand \d$/)).toHaveLength(3);
+    fireEvent.click(screen.getAllByRole("button", { name: "+6 more" })[0]);
+    expect(screen.queryAllByText(/^Brand \d$/)).toHaveLength(9);
+    expect(
+      screen.getAllByRole("button", { name: "Show less" }).length,
+    ).toBeGreaterThan(0);
+  });
+});

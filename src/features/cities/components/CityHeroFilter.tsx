@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { FiCalendar, FiRotateCcw, FiSearch } from "react-icons/fi";
+import { FiCalendar, FiLoader, FiRotateCcw, FiSearch } from "react-icons/fi";
 import { DateTimePicker } from "@/shared/ui/DateTimePicker";
 
 interface DateValue {
@@ -18,6 +18,7 @@ export default function CityHeroFilter() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const [isSearching, startSearch] = useTransition();
   const [pickup, setPickup] = useState<DateValue>({
     date: searchParams.get("pickupDate") ?? "",
     time: searchParams.get("pickupTime") ?? "",
@@ -49,7 +50,7 @@ export default function CityHeroFilter() {
         params.set("dropoffTime", dropoff.time);
       }
     }
-    updateUrl(params);
+    startSearch(() => updateUrl(params));
   };
 
   const handleReset = () => {
@@ -85,9 +86,15 @@ export default function CityHeroFilter() {
           type="button"
           className="from-action-primary text-text-on-action flex size-14 shrink-0 items-center justify-center rounded-full border-0 bg-gradient-to-br to-[#3b8bfb] transition duration-300 hover:-translate-y-0.5 hover:shadow-[0_15px_30px_rgba(31,127,250,0.28)] active:scale-[0.98] max-sm:size-12"
           onClick={handleSearch}
+          disabled={isSearching}
+          aria-busy={isSearching}
           aria-label={t("search")}
         >
-          <FiSearch className="text-xl" aria-hidden="true" />
+          {isSearching ? (
+            <FiLoader className="animate-spin text-xl" aria-hidden="true" />
+          ) : (
+            <FiSearch className="text-xl" aria-hidden="true" />
+          )}
         </button>
         <button
           type="button"

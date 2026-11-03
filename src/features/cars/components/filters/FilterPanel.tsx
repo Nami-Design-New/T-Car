@@ -1,7 +1,7 @@
 "use client";
 
 import { ReactNode, useEffect, useState } from "react";
-import { FiSearch, FiX } from "react-icons/fi";
+import { FiLoader, FiSearch, FiX } from "react-icons/fi";
 import { useTranslations } from "next-intl";
 import { cn } from "@/shared/lib/cn";
 
@@ -16,6 +16,7 @@ interface FilterPanelProps {
   clearAllLabel?: string;
   onApply?: () => void;
   onClearAll?: () => void;
+  applying?: boolean;
   /**
    * Already inside a drawer or dialog: always show the full panel, without
    * the small-screen search bar and bottom sheet of its own.
@@ -38,6 +39,7 @@ export default function FilterPanel({
   clearAllLabel,
   onApply,
   onClearAll,
+  applying = false,
   embedded = false,
 }: FilterPanelProps) {
   const t = useTranslations("cars.filters");
@@ -91,7 +93,7 @@ export default function FilterPanel({
       )}
       {isOpen && (
         <div
-          className="filters_overlay fixed inset-0 z-[1099] bg-black/[0.42] backdrop-blur-[4px]"
+          className="filters_overlay fixed inset-0 z-1099 bg-black/42 backdrop-blur-xs"
           onClick={() => setIsOpen(false)}
         />
       )}
@@ -141,8 +143,8 @@ export default function FilterPanel({
           <div
             className={
               embedded
-                ? "filter_actions border-stroke-light bg-surface-elevated sticky bottom-0 z-[4] mt-1 flex gap-2.5 border-t pt-[18px] pb-5"
-                : "filter_actions border-stroke-light max-lg:bg-surface-elevated/98 mt-1 flex gap-2.5 border-t pt-4.5 max-lg:sticky max-lg:bottom-[-24px] max-lg:z-[4] max-lg:-mx-6 max-lg:mt-0 max-lg:mb-[-24px] max-lg:px-6 max-lg:pb-[max(16px,env(safe-area-inset-bottom))] max-lg:shadow-[0_-10px_26px_rgba(30,30,30,0.07)]"
+                ? "border-stroke-light bg-surface-elevated sticky bottom-0 z-[4] mt-1 flex gap-2.5 border-t pt-[18px] pb-5"
+                : "max-lg:bg-surface-elevated/98 mt-1 flex gap-2.5 pt-4.5 max-lg:sticky max-lg:bottom-[-24px] max-lg:z-[4] max-lg:-mx-6 max-lg:mt-0 max-lg:mb-[-24px] max-lg:px-6 max-lg:pb-[max(16px,env(safe-area-inset-bottom))] max-lg:shadow-[0_-10px_26px_rgba(30,30,30,0.07)]"
             }
           >
             <button
@@ -160,8 +162,17 @@ export default function FilterPanel({
                 onApply?.();
                 setIsOpen(false);
               }}
+              disabled={applying}
+              aria-busy={applying}
             >
-              {resolvedApplyLabel}
+              {applying ? (
+                <FiLoader
+                  className="mx-auto animate-spin text-lg"
+                  aria-hidden="true"
+                />
+              ) : (
+                resolvedApplyLabel
+              )}
             </button>
           </div>
         )}

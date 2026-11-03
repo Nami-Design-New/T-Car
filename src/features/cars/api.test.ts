@@ -83,6 +83,7 @@ describe("company car groups", () => {
           brand: "BMW",
           image: "https://t-car.app/storage/cars/car-3.png",
           pricePerDay: 434,
+          originalPrice: 444,
           rating: 0,
           year: 2026,
           showroom: "Kiayada Company",
@@ -106,6 +107,7 @@ describe("company car groups", () => {
           brand: "BMW",
           image: "/images/placeholders/image-fallback.svg",
           pricePerDay: 144,
+          originalPrice: 444,
           rating: 0,
           year: 2026,
           showroom: "Kiayada Company",
@@ -134,6 +136,15 @@ describe("company car groups", () => {
     };
     const { cars } = mapCompanyCarsGroup({ ...group, cars: [discount] });
     expect(cars[0].offer).toBeUndefined();
+  });
+
+  it("uses one non-zero price without a strike-through price", () => {
+    const { cars } = mapCompanyCarsGroup({
+      ...group,
+      cars: [{ ...plainCar, lower_price: 0, max_price: 200 }],
+    });
+    expect(cars[0]).toMatchObject({ pricePerDay: 200 });
+    expect(cars[0].originalPrice).toBeUndefined();
   });
 
   it("rejects a group with a malformed car", () => {

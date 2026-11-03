@@ -35,6 +35,11 @@ export const ICONS = {
     width: 12,
     height: 12,
   },
+  chevronLeftPrimary: {
+    src: "/icons/chevron-left-primary.svg",
+    width: 12,
+    height: 12,
+  },
 } as const;
 
 export const POINTS_ICONS = {

@@ -1,5 +1,5 @@
 "use client";
-import { FiShield, FiTruck, FiX } from "react-icons/fi";
+import { FiShield, FiTruck } from "react-icons/fi";
 import {
   TbCar,
   TbCar4Wd,
@@ -15,6 +15,7 @@ import { useSearchParams } from "next/navigation";
 import FilterPanel from "./filters/FilterPanel";
 import PriceRangeSlider from "./filters/PriceRangeSlider";
 import CheckboxGroup from "./filters/CheckboxGroup";
+import ChipGroup from "./filters/ChipGroup";
 import {
   createDefaultCarFilters,
   applyCarFilterDraft,
@@ -22,16 +23,18 @@ import {
   type CarFilterDraft,
   type PriceRange,
 } from "../searchParams";
-import { useEffect } from "react";
+import { useEffect, useTransition } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { useDebouncedCallback } from "use-debounce";
-import type { CarBrand } from "../model";
-import { cn } from "@/shared/lib/cn";
+import type { CarBrand, CityCarFilterOptions } from "../model";
+import { IMAGES } from "@/shared/config/assets";
 
 const COMPANIES = ["elite", "elite", "elite", "elite", "elite"];
 const SERVICES = ["delivery", "delivery", "delivery", "delivery"];
 /** How long typing pauses before the search reaches the URL. */
 const SEARCH_DEBOUNCE_MS = 400;
+/** Brand and type chips shown before the "+N more" chip. */
+const VISIBLE_CHIPS = 3;
 const CAR_TYPES = [
   { id: "family", key: "family", icon: TbCarSuv },
   { id: "convertible", key: "convertible", icon: TbCar },
@@ -42,6 +45,8 @@ const CAR_TYPES = [
 ];
 interface Props {
   brands: CarBrand[];
+  /** Live city-car lookups; other listing surfaces retain their mock options. */
+  cityOptions?: CityCarFilterOptions;
   priceRange: PriceRange;
   onApply?: (filters: CarFilterDraft) => void;
   /** Rendered inside a drawer: show the full panel at every width. */
@@ -50,6 +55,7 @@ interface Props {
 
 export default function CarFilters({
   brands: brandOptions,
+  cityOptions,
   priceRange,
   onApply,
   embedded,
@@ -58,6 +64,7 @@ export default function CarFilters({
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const [isApplying, startApplying] = useTransition();
   const defaultFilters = createDefaultCarFilters(priceRange);
   const { control, handleSubmit, reset, setValue } = useForm<CarFilterDraft>({
     defaultValues: defaultFilters,
@@ -75,6 +82,31 @@ export default function CarFilters({
     companyIds: watchedFilters.companyIds ?? [],
     serviceIds: watchedFilters.serviceIds ?? [],
   };
+  const brands =
+    cityOptions?.brands ??
+    brandOptions.map(({ id, slug, logo }) => ({
+      id,
+      title: t(`brands.${slug}`),
+      logo,
+    }));
+  const types =
+    cityOptions?.types ??
+    CAR_TYPES.map(({ id, key }) => ({
+      id,
+      title: t(`types.${key}`),
+    }));
+  const companies =
+    cityOptions?.companies ??
+    COMPANIES.map((title, index) => ({
+      id: `${title}-${index}`,
+      title: t("companies.elite"),
+    }));
+  const services =
+    cityOptions?.services ??
+    SERVICES.map((title, index) => ({
+      id: `${title}-${index}`,
+      title: t("services.delivery.title"),
+    }));
   // Keep fields the user is editing: a live search changes the URL, and that
   // must not drop brands or types picked but not applied yet.
   useEffect(() => {
@@ -100,7 +132,7 @@ export default function CarFilters({
 
   const submit = (values: CarFilterDraft) => {
     if (onApply) {
-      onApply(values);
+      startApplying(() => onApply(values));
       return;
     }
     const params = applyCarFilterDraft(
@@ -108,8 +140,10 @@ export default function CarFilters({
       values,
       priceRange,
     );
-    router.replace(`${pathname}${params.toString() ? `?${params}` : ""}`, {
-      scroll: false,
+    startApplying(() => {
+      router.replace(`${pathname}${params.toString() ? `?${params}` : ""}`, {
+        scroll: false,
+      });
     });
   };
 
@@ -153,122 +187,39 @@ export default function CarFilters({
       searchValue={filters.query}
       onSearchChange={(value) => {
         setValue("query", value, { shouldDirty: true });
-        // The hero drawer (onApply) searches only when applied.
         if (!onApply) searchInUrl(value);
       }}
       hasActiveFilters={active}
       onClearAll={clearAll}
       onApply={apply}
+      applying={isApplying}
       embedded={embedded}
     >
-      <section className="border-stroke-light mb-7 border-b pb-7 last:mb-0 last:border-0 last:pb-0">
-        <div className="mb-3 flex items-center justify-between">
-          <h4 className="text-text-primary m-0 text-[15px] font-extrabold">
-            {t("filters.brand")}
-          </h4>
-          <button
-            type="button"
-            className="text-text-primary disabled:text-text-placeholder border-0 bg-transparent text-xs font-medium underline underline-offset-2 disabled:no-underline"
-            onClick={() => clear("brandIds")}
-            disabled={!filters.brandIds.length}
-          >
-            {t("filters.clear")}
-          </button>
-        </div>
-        <div className="flex flex-wrap gap-x-2 gap-y-2.5">
-          {brandOptions.map(({ id, slug, logo }) => {
-            const selected = filters.brandIds.includes(id);
-            return (
-              <button
-                type="button"
-                key={id}
-                className={cn(
-                  "filter_chip brand_filter_chip bg-surface-on-background text-text-primary hover:border-action-primary/25 hover:bg-surface-card-primary inline-flex min-h-[42px] max-w-full flex-[1_1_calc(50%_-_4px)] items-center justify-center gap-1.5 rounded-md border border-transparent px-2.5 py-1.5 transition duration-200 hover:-translate-y-px",
-                  selected &&
-                    "is-selected !border-action-primary !bg-action-primary !text-text-on-action shadow-[0_7px_16px_rgba(31,127,250,0.18)]",
-                )}
-                aria-pressed={selected}
-                onClick={() => toggle("brandIds", id)}
-              >
-                <span className="filter_chip_visual brand_chip_logo bg-surface-elevated grid size-[26px] shrink-0 place-items-center rounded-full">
-                  <Image
-                    src={logo}
-                    alt=""
-                    width={24}
-                    height={24}
-                    className="size-[22px] object-contain"
-                  />
-                </span>
-                <span className="filter_chip_label min-w-0 overflow-hidden text-[13px] leading-[1.35] font-medium text-ellipsis whitespace-nowrap">
-                  {t(`brands.${slug}`)}
-                </span>
-                {selected && (
-                  <span
-                    className="filter_chip_remove bg-surface-elevated text-text-primary grid size-[21px] shrink-0 place-items-center rounded-full"
-                    aria-hidden="true"
-                  >
-                    <FiX className="text-[15px]" />
-                  </span>
-                )}
-              </button>
-            );
-          })}
-        </div>
-      </section>
-      <section className="border-stroke-light mb-7 border-b pb-7 last:mb-0 last:border-0 last:pb-0">
-        <div className="mb-3 flex items-center justify-between">
-          <h4 className="text-text-primary m-0 text-[15px] font-extrabold">
-            {t("filters.type")}
-          </h4>
-          <button
-            type="button"
-            className="text-text-primary disabled:text-text-placeholder border-0 bg-transparent text-xs font-medium underline underline-offset-2 disabled:no-underline"
-            onClick={() => clear("types")}
-            disabled={!filters.types.length}
-          >
-            {t("filters.clear")}
-          </button>
-        </div>
-        <div className="flex flex-wrap gap-x-2 gap-y-2.5">
-          {CAR_TYPES.map(({ id, key, icon: Icon }) => {
-            const selected = filters.types.includes(id);
-            return (
-              <button
-                type="button"
-                key={id}
-                className={cn(
-                  "bg-surface-on-background text-text-primary hover:border-action-primary/25 hover:bg-surface-card-primary inline-flex min-h-[42px] flex-[0_1_auto] items-center justify-center gap-1.5 rounded-md border border-transparent px-2.5 py-1.5 transition duration-200 hover:-translate-y-px",
-                  selected &&
-                    "is-selected !border-action-primary !bg-action-primary !text-text-on-action [&_.car_type_icon]:!text-text-on-action shadow-[0_7px_16px_rgba(31,127,250,0.18)]",
-                )}
-                aria-pressed={selected}
-                onClick={() => toggle("types", id)}
-              >
-                <span
-                  className={cn(
-                    "text-text-subtle grid shrink-0 place-items-center text-[27px] leading-none",
-                    selected && "!text-text-on-action",
-                  )}
-                  aria-hidden="true"
-                >
-                  <Icon />
-                </span>
-                <span className="min-w-0 overflow-hidden text-[13px] leading-[1.35] font-medium text-ellipsis whitespace-nowrap">
-                  {t(`types.${key}`)}
-                </span>
-                {selected && (
-                  <span
-                    className="bg-surface-elevated text-text-primary grid size-5 shrink-0 place-items-center rounded-full"
-                    aria-hidden="true"
-                  >
-                    <FiX className="text-[15px]" />
-                  </span>
-                )}
-              </button>
-            );
-          })}
-        </div>
-      </section>
+      <ChipGroup
+        title={t("filters.brand")}
+        items={brands}
+        selected={filters.brandIds}
+        onToggle={(id) => toggle("brandIds", id)}
+        onClear={() => clear("brandIds")}
+        visibleCount={VISIBLE_CHIPS}
+        renderVisual={({ logo }) => (
+          <Image
+            src={logo ?? IMAGES.imageFallback.src}
+            alt=""
+            width={24}
+            height={24}
+            className="size-5.5 object-contain"
+          />
+        )}
+      />
+      <ChipGroup
+        title={t("filters.type")}
+        items={types}
+        selected={filters.types}
+        onToggle={(id) => toggle("types", id)}
+        onClear={() => clear("types")}
+        visibleCount={VISIBLE_CHIPS}
+      />
       <PriceRangeSlider
         min={priceRange.min}
         max={priceRange.max}
@@ -296,8 +247,7 @@ export default function CarFilters({
       <CheckboxGroup
         icon={<FiTruck />}
         title={t("filters.companies")}
-        items={COMPANIES}
-        getLabel={() => t("companies.elite")}
+        items={companies}
         selected={filters.companyIds}
         onToggle={(value) => toggle("companyIds", value)}
         onClear={() => clear("companyIds")}
@@ -306,16 +256,16 @@ export default function CarFilters({
       <CheckboxGroup
         icon={<FiShield />}
         title={t("filters.services")}
-        items={SERVICES}
+        items={services}
         selected={filters.serviceIds}
         onToggle={(value) => toggle("serviceIds", value)}
         onClear={() => clear("serviceIds")}
         visibleCount={2}
         itemClassName="check_item service_item"
-        renderExtra={() => (
+        renderExtra={(item) => (
           <div className="flex flex-col gap-0.5">
             <span className="service_title text-text-primary block text-sm leading-[1.3] font-semibold">
-              {t("services.delivery.title")}
+              {item.title}
             </span>
             <span className="service_desc text-text-placeholder block text-xs leading-[1.35] font-normal">
               {t("services.delivery.description")}

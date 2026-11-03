@@ -5,7 +5,7 @@ import {
   parseCarSearchParams,
   toCityCarsQuery,
 } from "@/features/cars";
-import { getCarBrands } from "@/features/cars/queries";
+import { getCarBrands, getCityCarFilterOptions } from "@/features/cars/queries";
 import { CityHero } from "@/features/cities";
 import { getCity } from "@/features/cities/queries";
 import { getBookingTypeAvailability } from "@/features/settings/queries";
@@ -43,8 +43,9 @@ export default async function CityDetailsPage({ params, searchParams }: Props) {
   // The guest location is intentionally read in CityCarRows after hydration:
   // localStorage is unavailable here on the server.
   const query = toCityCarsQuery(filters);
-  const [brands, rentalOptions] = await Promise.all([
+  const [brands, cityFilterOptions, rentalOptions] = await Promise.all([
     getCarBrands(),
+    getCityCarFilterOptions(),
     getRentalSearchOptions(),
   ]);
 
@@ -54,8 +55,12 @@ export default async function CityDetailsPage({ params, searchParams }: Props) {
 
       <section className="py-20 pt-0 max-md:py-12 max-md:pt-0">
         <div className="mx-auto w-full max-w-7xl px-2">
-          <div className="city-listings-grid grid grid-cols-[280px_1fr] items-start gap-8 max-lg:grid-cols-1">
-            <CarFilters brands={brands} priceRange={priceRange} />
+          <div className="city-listings-grid grid grid-cols-[320px_1fr] items-start gap-8 max-lg:grid-cols-1">
+            <CarFilters
+              brands={brands}
+              cityOptions={cityFilterOptions}
+              priceRange={priceRange}
+            />
 
             <div className="office-rows flex min-w-0 flex-col gap-3">
               <CityCarsSection

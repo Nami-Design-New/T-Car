@@ -194,6 +194,10 @@ export interface CityCarsQuery {
   /** `Y-m-d`; sent only together with `toDay`, which is after it. */
   fromDay?: string;
   toDay?: string;
+  brandIds?: string[];
+  typeIds?: string[];
+  serviceIds?: string[];
+  companyIds?: string[];
 }
 
 const ISO_DAY = /^\d{4}-\d{2}-\d{2}$/;
@@ -252,6 +256,12 @@ export function toCityCarsSearchParams(
     search.set("from_day", query.fromDay);
     search.set("to_day", query.toDay);
   }
+  const appendIds = (key: string, ids: string[] | undefined) =>
+    ids?.forEach((id, index) => search.append(`${key}[${index}]`, id));
+  appendIds("brand_id", query.brandIds);
+  appendIds("type_id", query.typeIds);
+  appendIds("service_id", query.serviceIds);
+  appendIds("company_id", query.companyIds);
   if (companyId) search.set("company_id", companyId);
   return search;
 }
@@ -272,6 +282,10 @@ export function toCityCarsQuery(params: CarSearchParams): CityCarsQuery {
       : {}),
     ...(Number.isFinite(params.maxPrice) ? { maxPrice: params.maxPrice } : {}),
     ...(datesValid ? { fromDay: pickupDate, toDay: dropoffDate } : {}),
+    ...(params.brandIds.length ? { brandIds: params.brandIds } : {}),
+    ...(params.types.length ? { typeIds: params.types } : {}),
+    ...(params.serviceIds.length ? { serviceIds: params.serviceIds } : {}),
+    ...(params.companyIds.length ? { companyIds: params.companyIds } : {}),
   };
 }
 
