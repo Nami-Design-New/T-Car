@@ -81,6 +81,12 @@ export const IMAGES = {
     width: 24,
     height: 18,
   },
+  /** Any API image that is null (city, car, company), docs/api/cities-api.md R7. */
+  imageFallback: {
+    src: "/images/placeholders/image-fallback.svg",
+    width: 400,
+    height: 300,
+  },
   /** Until the cars API returns the office logo with each car. */
   officePlaceholder: {
     src: "/images/placeholders/office.svg",

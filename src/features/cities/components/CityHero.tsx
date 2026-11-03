@@ -6,10 +6,10 @@ import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { FiCalendar, FiSearch } from "react-icons/fi";
 import { DateTimePicker } from "@/shared/ui/DateTimePicker";
-import type { CityDetails } from "../model";
+import type { City } from "../model";
 
 interface Props {
-  city: CityDetails;
+  city: City;
 }
 
 export default function CityHero({ city }: Props) {
@@ -39,7 +39,7 @@ export default function CityHero({ city }: Props) {
     <>
       <div className="relative h-[450px] overflow-hidden rounded-b-[32px]">
         <Image
-          src={city.heroImage}
+          src={city.image}
           alt={city.name}
           fill
           priority
