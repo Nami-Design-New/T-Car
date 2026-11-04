@@ -1,6 +1,6 @@
 import { Hero } from "@/features/rental-search";
 import { getRentalSearchOptions } from "@/features/rental-search/queries";
-import { getCarBrands } from "@/features/cars/queries";
+import { getCityCarFilterOptions } from "@/features/cars/queries";
 import { PopularCities } from "@/features/cities";
 import { getCities } from "@/features/cities/queries";
 import {
@@ -31,7 +31,7 @@ export default async function HomePage() {
     t,
     homeContent,
     searchOptions,
-    brands,
+    filterOptions,
     cities,
     faqs,
     partners,
@@ -43,7 +43,7 @@ export default async function HomePage() {
     getTranslations("carSections"),
     getHomeContent(),
     getRentalSearchOptions(),
-    getCarBrands(),
+    getCityCarFilterOptions(),
     getCities(),
     getFaqs(),
     getPartners(),
@@ -58,7 +58,7 @@ export default async function HomePage() {
       <Hero
         content={homeContent.hero}
         options={searchOptions}
-        brands={brands}
+        filterOptions={filterOptions}
         bookingTypes={bookingTypes}
         priceRange={site.priceFilterRange}
         slides={sliders}

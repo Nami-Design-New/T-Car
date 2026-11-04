@@ -4,7 +4,10 @@ import {
   SortBar,
   parseCarSearchParams,
 } from "@/features/cars";
-import { getCarBrands, getOfficeCarGroups } from "@/features/cars/queries";
+import {
+  getCityCarFilterOptions,
+  getOfficeCarGroups,
+} from "@/features/cars/queries";
 import { Link } from "@/i18n/navigation";
 import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
@@ -26,10 +29,14 @@ export default async function CarsPage({ searchParams }: Props) {
   ]);
   const priceRange = site.priceFilterRange;
   const params = parseCarSearchParams(rawParams, priceRange);
+  const source = Array.isArray(rawParams.source)
+    ? rawParams.source[0]
+    : rawParams.source;
+  const title = t(source === "offers" ? "carSections.offers" : "carsPage.title");
   if (!isBookingTypeEnabled(params.context.type, bookingTypes)) notFound();
-  const [officeGroups, brands] = await Promise.all([
+  const [officeGroups, filterOptions] = await Promise.all([
     getOfficeCarGroups(params),
-    getCarBrands(),
+    getCityCarFilterOptions(),
   ]);
 
   return (
@@ -44,12 +51,16 @@ export default async function CarsPage({ searchParams }: Props) {
             <FiArrowLeft className="rtl:scale-x-[-1]" aria-hidden="true" />
           </Link>
           <h1 className="text-text-primary m-0 text-[clamp(1.5rem,2vw,3rem)] leading-[1.18] font-extrabold tracking-[-0.035em] max-md:text-[clamp(1.85rem,9vw,2.4rem)]">
-            {t("carsPage.title")}
+            {title}
           </h1>
         </header>
 
         <div className="city-listings-grid grid grid-cols-[320px_1fr] items-start gap-8 max-lg:grid-cols-1">
-          <CarFilters brands={brands} priceRange={priceRange} />
+          <CarFilters
+            brands={[]}
+            cityOptions={filterOptions}
+            priceRange={priceRange}
+          />
           <div className="office-rows flex min-w-0 flex-col gap-3">
             {/* <SortBar
               resultsCount={officeGroups.reduce((count, group) => count + group.cars.length, 0)}

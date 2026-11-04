@@ -7,8 +7,8 @@ import { useState } from "react";
 import type { HomeHeroContent, HomeSlider } from "@/features/home";
 import {
   applyCarFilterDraft,
-  type CarBrand,
   type CarFilterDraft,
+  type CityCarFilterOptions,
   type PriceRange,
 } from "@/features/cars";
 import { useRentalFlow } from "../hooks/useRentalFlow";
@@ -23,7 +23,7 @@ import RentalTabs from "./RentalTabs";
 interface Props {
   content: HomeHeroContent;
   options: RentalSearchOptions;
-  brands: CarBrand[];
+  filterOptions: CityCarFilterOptions;
   bookingTypes: Record<RentalType, boolean>;
   priceRange: PriceRange;
   slides: HomeSlider[];
@@ -32,7 +32,7 @@ interface Props {
 export default function Hero({
   content,
   options,
-  brands,
+  filterOptions,
   bookingTypes,
   priceRange,
   slides,
@@ -79,7 +79,7 @@ export default function Hero({
       <HeroFilterDrawer
         open={showFilters}
         onClose={() => setShowFilters(false)}
-        brands={brands}
+        filterOptions={filterOptions}
         priceRange={priceRange}
         onApply={handleFiltersApply}
       />

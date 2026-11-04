@@ -58,6 +58,7 @@ function HomeOffersList({ title, subtitle, location, onSelectCar }: ListProps) {
       title={title}
       subtitle={subtitle}
       cars={offers.items}
+      seeAllHref="/cars?source=offers"
       paginated
       hasMore={offers.hasMore}
       loadingMore={offers.loading}

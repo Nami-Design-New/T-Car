@@ -240,6 +240,12 @@ validated car mapper. It sends `page`, `per_page`, and the complete saved
 location tuple when available, never a delivery type; its cards use the shared
 availability-constrained booking flow and show only the airport pickup badge.
 
+Filter lookup follow-up (2026-11-04): the home hero drawer and `/cars` filter
+read their localized brands, car types, additional services, and companies from
+the cars feature's public lookup endpoints rather than mock values.
+The offers rail's “Show all” link carries an `offers` source, so the cars page
+uses the localized offers heading instead of its default available-cars title.
+
 **Tailwind replacement status (2026-10-25):** The SCSS architecture described
 above is the historical baseline. The Tailwind 4.3 migration has completed
 fractions 1–9 and migrated `layout`, `home`, `rental-search`, `cars`, `cities`,
