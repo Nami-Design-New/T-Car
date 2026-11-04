@@ -10,6 +10,7 @@ import type {
   ContactMessage,
   HomeContent,
   HomePartner,
+  HomeSlider,
   HomeWhyUsCard,
   FAQItem,
   JoinUsRequest,
@@ -49,6 +50,10 @@ export interface PartnersApi {
 
 export interface WhyUsApi {
   listCards(locale: string): Promise<HomeWhyUsCard[]>;
+}
+
+export interface SlidersApi {
+  listSliders(): Promise<HomeSlider[]>;
 }
 
 export interface ContactApi {
@@ -259,6 +264,44 @@ async function listCards(locale: string): Promise<HomeWhyUsCard[]> {
 }
 
 export const whyUsApi: WhyUsApi = { listCards };
+
+function isSlider(value: unknown): value is {
+  id: number;
+  image_url: string;
+  order: number;
+} {
+  if (!isRecord(value)) return false;
+  return (
+    typeof value.id === "number" &&
+    Number.isFinite(value.id) &&
+    typeof value.image_url === "string" &&
+    value.image_url.length > 0 &&
+    typeof value.order === "number" &&
+    Number.isFinite(value.order)
+  );
+}
+
+/**
+ * GET /sliders is a public user-API endpoint. Its paginated envelope is
+ * intentionally consumed as a whole: the hero displays every returned slide
+ * in the backend's `order` sequence.
+ */
+async function listSliders(): Promise<HomeSlider[]> {
+  const response = await publicServerHttp.get<ApiEnvelope<unknown>>("/sliders");
+  if (
+    !isApiEnvelope(response) ||
+    response.code !== 200 ||
+    !Array.isArray(response.data) ||
+    !response.data.every(isSlider)
+  ) {
+    throw new AppError("server");
+  }
+  return [...response.data]
+    .sort((left, right) => left.order - right.order)
+    .map(({ id, image_url }) => ({ id: String(id), imageUrl: image_url }));
+}
+
+export const slidersApi: SlidersApi = { listSliders };
 
 /**
  * POST /contact-us as JSON. The endpoint is public, so no token is sent

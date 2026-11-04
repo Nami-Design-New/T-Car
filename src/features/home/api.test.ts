@@ -1,7 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { AppError } from "@/shared/lib/errors";
 
-const { post, authPost, siteGet } = vi.hoisted(() => ({
+const { get, post, authPost, siteGet } = vi.hoisted(() => ({
+  get: vi.fn(),
   post: vi.fn(),
   authPost: vi.fn(),
   siteGet: vi.fn(),
@@ -9,12 +10,18 @@ const { post, authPost, siteGet } = vi.hoisted(() => ({
 
 vi.mock("server-only", () => ({}));
 vi.mock("@/services/http/server", () => ({
-  publicServerHttp: { post },
+  publicServerHttp: { get, post },
   publicSiteServerHttp: { get: siteGet },
   serverHttp: { post: authPost },
 }));
 
-import { contactApi, joinUsApi, partnersApi, whyUsApi } from "./api";
+import {
+  contactApi,
+  joinUsApi,
+  partnersApi,
+  slidersApi,
+  whyUsApi,
+} from "./api";
 
 // Observed POST /contact-us success (docs/api/contact-join-us-api.md §3.1).
 const created = {
@@ -229,6 +236,46 @@ describe("whyUsApi.listCards", () => {
       code: 200,
     });
     await expect(whyUsApi.listCards("ar")).rejects.toMatchObject({
+      kind: "server",
+    });
+  });
+});
+
+describe("slidersApi.listSliders", () => {
+  it("maps the public user endpoint and orders its slides", async () => {
+    get.mockResolvedValue({
+      data: [
+        {
+          id: 3,
+          image_url: "https://t-car.app/storage/sliders/third.webp",
+          order: 3,
+        },
+        {
+          id: 1,
+          image_url: "https://t-car.app/storage/sliders/first.png",
+          order: 1,
+        },
+      ],
+      pagination: { current_page: 1, last_page: 1, per_page: 10, total: 2 },
+      message: "Fetched successfully.",
+      code: 200,
+    });
+
+    await expect(slidersApi.listSliders()).resolves.toEqual([
+      { id: "1", imageUrl: "https://t-car.app/storage/sliders/first.png" },
+      { id: "3", imageUrl: "https://t-car.app/storage/sliders/third.webp" },
+    ]);
+    expect(get).toHaveBeenCalledWith("/sliders");
+  });
+
+  it("rejects a malformed slider record", async () => {
+    get.mockResolvedValue({
+      data: [{ id: 1, image_url: "", order: 1 }],
+      message: "Fetched successfully.",
+      code: 200,
+    });
+
+    await expect(slidersApi.listSliders()).rejects.toMatchObject({
       kind: "server",
     });
   });

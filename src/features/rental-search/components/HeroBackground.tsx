@@ -8,10 +8,22 @@ import { IMAGES } from "@/shared/config/assets";
 import "swiper/css";
 import "swiper/css/effect-fade";
 
-const slides = [IMAGES.heroOne, IMAGES.heroTwo, IMAGES.heroThree];
+import type { HomeSlider } from "@/features/home";
+
+interface Props {
+  slides: HomeSlider[];
+}
+
+const fallbackSlides = [
+  { id: "fallback-1", imageUrl: IMAGES.heroOne },
+  { id: "fallback-2", imageUrl: IMAGES.heroTwo },
+  { id: "fallback-3", imageUrl: IMAGES.heroThree },
+];
 
 /** Fading image slider with the gradient overlay; purely decorative. */
-export default function HeroBackground() {
+export default function HeroBackground({ slides }: Props) {
+  const displayedSlides = slides.length > 0 ? slides : fallbackSlides;
+
   return (
     <>
       {/* Swiper's own CSS sets `.swiper { position: relative }` outside any
@@ -28,11 +40,11 @@ export default function HeroBackground() {
           }}
           className="hero_swiper h-full w-full [&_.swiper-slide]:h-full [&_.swiper-slide]:w-full [&_.swiper-wrapper]:h-full [&_.swiper-wrapper]:w-full"
         >
-          {slides.map((image, index) => (
-            <SwiperSlide key={image.src}>
+          {displayedSlides.map((slide, index) => (
+            <SwiperSlide key={slide.id}>
               <div className="hero_slide relative h-full w-full bg-cover bg-center bg-no-repeat before:absolute before:inset-0 before:bg-[linear-gradient(180deg,rgba(30,30,30,0.62)_0%,rgba(30,30,30,0.16)_42%,rgba(30,30,30,0.58)_100%),linear-gradient(90deg,rgba(10,37,64,0.28),transparent_58%)] before:content-[''] after:absolute after:inset-0 after:bg-[linear-gradient(120deg,rgba(255,255,255,0.08),transparent_35%)] after:mix-blend-screen after:content-['']">
                 <Image
-                  src={image}
+                  src={slide.imageUrl}
                   alt=""
                   fill
                   priority={index === 0}

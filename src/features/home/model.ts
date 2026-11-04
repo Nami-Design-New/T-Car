@@ -27,6 +27,12 @@ export interface HomeHeroContent {
   description: string;
 }
 
+/** A decorative slide returned by `GET /sliders`. */
+export interface HomeSlider {
+  id: string;
+  imageUrl: string;
+}
+
 export interface HomeSectionContent {
   eyebrow: string;
   title: string;

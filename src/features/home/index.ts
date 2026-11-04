@@ -13,6 +13,7 @@ export type {
   HomeJoinUsContent,
   HomePartner,
   HomeSectionContent,
+  HomeSlider,
   HomeWhyUsCard,
   HomeWhyUsContent,
 } from "./model";

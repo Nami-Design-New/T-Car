@@ -5,12 +5,12 @@ import { getCarBrands, getHandpickedCars, getOfferCars } from '@/features/cars/q
 import { PopularCities } from '@/features/cities';
 import { getCities } from '@/features/cities/queries';
 import { CTA, Contact, DownloadApp, FAQ, Partners, WhyChooseUs } from '@/features/home';
-import { getFaqs, getHomeContent, getPartners, getWhyUsCards } from '@/features/home/queries';
+import { getFaqs, getHomeContent, getPartners, getSliders, getWhyUsCards } from '@/features/home/queries';
 import { getBookingTypeAvailability, getSiteSettings } from '@/features/settings/queries';
 import { getTranslations } from 'next-intl/server';
 
 export default async function HomePage() {
-  const [t, homeContent, searchOptions, brands, cities, offerCars, handpickedCars, faqs, partners, whyUsCards, site, bookingTypes] = await Promise.all([
+  const [t, homeContent, searchOptions, brands, cities, offerCars, handpickedCars, faqs, partners, whyUsCards, sliders, site, bookingTypes] = await Promise.all([
     getTranslations('carSections'),
     getHomeContent(),
     getRentalSearchOptions(),
@@ -21,6 +21,7 @@ export default async function HomePage() {
     getFaqs(),
     getPartners(),
     getWhyUsCards(),
+    getSliders(),
     getSiteSettings(),
     getBookingTypeAvailability(),
   ]);
@@ -33,6 +34,7 @@ export default async function HomePage() {
         brands={brands}
         bookingTypes={bookingTypes}
         priceRange={site.priceFilterRange}
+        slides={sliders}
       />
       <PopularCities cities={cities} />
       <CarsRail
