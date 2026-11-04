@@ -16,6 +16,8 @@ import type { RentalType } from "../model";
 interface Props {
   onSelect: (type: RentalType) => void;
   availability: Record<RentalType, boolean>;
+  /** The booking dialog uses large equal cards; the hero keeps its compact tabs. */
+  variant?: "hero" | "dialog";
 }
 
 const tabs: {
@@ -56,10 +58,41 @@ const tabs: {
   },
 ];
 
-export default function RentalTabs({ onSelect, availability }: Props) {
+export default function RentalTabs({
+  onSelect,
+  availability,
+  variant = "hero",
+}: Props) {
   const t = useTranslations();
   const availableTabs = tabs.filter((tab) => availability[tab.type]);
   const hasTwoOrFewerChoices = availableTabs.length <= 2;
+
+  if (variant === "dialog") {
+    return (
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-[repeat(auto-fit,minmax(110px,1fr))] sm:gap-5">
+        {availableTabs.map((tab) => (
+          <button
+            key={tab.id}
+            type="button"
+            onClick={() => onSelect(tab.type)}
+            className="group bg-primary-100 hover:bg-primary-200 focus-visible:outline-action-primary flex min-h-35 cursor-pointer flex-col items-center justify-center gap-2 rounded-[20px] border-0 px-3 py-4 text-center transition duration-200 hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-3"
+          >
+            <Image
+              className="size-11 object-contain transition group-hover:scale-105"
+              src={tab.icon}
+              alt=""
+              width={44}
+              height={44}
+              aria-hidden="true"
+            />
+            <span className="text-text-primary text-lg leading-[1.35] font-extrabold">
+              {t(tab.title)}
+            </span>
+          </button>
+        ))}
+      </div>
+    );
+  }
 
   return (
     <div className="py-4">

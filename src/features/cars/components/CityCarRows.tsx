@@ -9,7 +9,7 @@ import {
 import { usePaginatedList } from "@/shared/hooks/usePaginatedList";
 import { EmptyState } from "@/shared/ui/EmptyState";
 import { InfiniteList } from "@/shared/ui/InfiniteList";
-import { getCityCarGroups } from "../cityCars.client";
+import { getCityCarGroups } from "../client/cityCars.client";
 import type { CarListing, OfficeCarGroup } from "../model";
 import {
   withCityCarsLocation,

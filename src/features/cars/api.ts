@@ -12,7 +12,12 @@ import type {
   CarOffer,
   OfficeCarGroup,
 } from "./model";
-import { COMPANY_CARS_PER_PAGE, type CityCarsQuery } from "./searchParams";
+import {
+  COMPANY_CARS_PER_PAGE,
+  HOME_OFFER_CARS_PER_PAGE,
+  type CityCarsLocation,
+  type CityCarsQuery,
+} from "./searchParams";
 
 export interface CityCarsApi {
   /** A page of the region's company rows. */
@@ -29,6 +34,13 @@ export interface CityCarsApi {
     page: number,
   ): Promise<Page<CarListing>>;
   getFilterOptions(locale: string): Promise<CityCarFilterOptions>;
+  /** A page of the home rail's offers, optionally narrowed by saved location. */
+  listHomeOfferCars(
+    locale: string,
+    page: number,
+    perPage: number,
+    location?: CityCarsLocation,
+  ): Promise<Page<CarListing>>;
 }
 
 interface LookupDto {
@@ -358,8 +370,36 @@ async function listCompanyCars(
   return toCheckedPage(response, isCarListing, mapCarListing);
 }
 
+/**
+ * GET /offer-cars is the home-only offers rail. The endpoint returns cars,
+ * unlike GET /cars-listing which returns groups of company rows. Location is
+ * optional: it comes from browser localStorage and is omitted when unavailable.
+ */
+async function listHomeOfferCars(
+  locale: string,
+  page: number,
+  perPage: number,
+  location?: CityCarsLocation,
+): Promise<Page<CarListing>> {
+  const search = new URLSearchParams({
+    per_page: String(perPage),
+    page: String(page),
+  });
+  if (location) {
+    search.set("region", location.region);
+    search.set("latitude", String(location.latitude));
+    search.set("longitude", String(location.longitude));
+  }
+  const response = await publicServerHttp.get<ApiEnvelope<unknown>>(
+    `/offer-cars?${search}`,
+    { headers: { "Accept-Language": locale } },
+  );
+  return toCheckedPage(response, isCarListing, mapCarListing);
+}
+
 export const cityCarsApi: CityCarsApi = {
   listCityCars,
   listCompanyCars,
   getFilterOptions,
+  listHomeOfferCars,
 };

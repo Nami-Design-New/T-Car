@@ -3,7 +3,7 @@
 import { useCallback } from "react";
 import { useLocale } from "next-intl";
 import { usePaginatedList } from "@/shared/hooks/usePaginatedList";
-import { getCompanyCars } from "../cityCars.client";
+import { getCompanyCars } from "../client/cityCars.client";
 import type { CarListing, OfficeCarGroup } from "../model";
 import { COMPANY_CARS_PER_PAGE, type CityCarsQuery } from "../searchParams";
 import CarOfficeRow from "./CarOfficeRow";

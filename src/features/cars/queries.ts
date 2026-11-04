@@ -6,7 +6,6 @@ import { cityCarsApi } from "./api";
 import {
   groupCarsByOffice,
   selectHandpickedCars,
-  selectOfferCars,
   type CarBrand,
   type CityCarFilterOptions,
   type CarListing,
@@ -47,10 +46,6 @@ export async function getCityCarGroups(
   query: CityCarsQuery,
 ): Promise<Page<OfficeCarGroup>> {
   return cityCarsApi.listCityCars(await getLocale(), query, 1);
-}
-
-export async function getOfferCars(): Promise<CarListing[]> {
-  return selectOfferCars(await carsApi.listCars());
 }
 
 export async function getHandpickedCars(): Promise<CarListing[]> {

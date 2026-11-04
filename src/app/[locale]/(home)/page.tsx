@@ -1,22 +1,51 @@
-import { Hero } from '@/features/rental-search';
-import { getRentalSearchOptions } from '@/features/rental-search/queries';
-import { CarsRail } from '@/features/cars';
-import { getCarBrands, getHandpickedCars, getOfferCars } from '@/features/cars/queries';
-import { PopularCities } from '@/features/cities';
-import { getCities } from '@/features/cities/queries';
-import { CTA, Contact, DownloadApp, FAQ, Partners, WhyChooseUs } from '@/features/home';
-import { getFaqs, getHomeContent, getPartners, getSliders, getWhyUsCards } from '@/features/home/queries';
-import { getBookingTypeAvailability, getSiteSettings } from '@/features/settings/queries';
-import { getTranslations } from 'next-intl/server';
+import { Hero } from "@/features/rental-search";
+import { getRentalSearchOptions } from "@/features/rental-search/queries";
+import { CarsRail } from "@/features/cars";
+import { getCarBrands, getHandpickedCars } from "@/features/cars/queries";
+import { PopularCities } from "@/features/cities";
+import { getCities } from "@/features/cities/queries";
+import {
+  CTA,
+  Contact,
+  DownloadApp,
+  FAQ,
+  HomeOffersSection,
+  Partners,
+  WhyChooseUs,
+} from "@/features/home";
+import {
+  getFaqs,
+  getHomeContent,
+  getPartners,
+  getSliders,
+  getWhyUsCards,
+} from "@/features/home/queries";
+import {
+  getBookingTypeAvailability,
+  getSiteSettings,
+} from "@/features/settings/queries";
+import { getTranslations } from "next-intl/server";
 
 export default async function HomePage() {
-  const [t, homeContent, searchOptions, brands, cities, offerCars, handpickedCars, faqs, partners, whyUsCards, sliders, site, bookingTypes] = await Promise.all([
-    getTranslations('carSections'),
+  const [
+    t,
+    homeContent,
+    searchOptions,
+    brands,
+    cities,
+    handpickedCars,
+    faqs,
+    partners,
+    whyUsCards,
+    sliders,
+    site,
+    bookingTypes,
+  ] = await Promise.all([
+    getTranslations("carSections"),
     getHomeContent(),
     getRentalSearchOptions(),
     getCarBrands(),
     getCities(),
-    getOfferCars(),
     getHandpickedCars(),
     getFaqs(),
     getPartners(),
@@ -37,16 +66,15 @@ export default async function HomePage() {
         slides={sliders}
       />
       <PopularCities cities={cities} />
-      <CarsRail
-        id="offers"
-        title={t('offers')}
-        subtitle={t('offersSubtitle')}
-        cars={offerCars}
+      <HomeOffersSection
+        title={t("offers")}
+        subtitle={t("offersSubtitle")}
+        options={searchOptions}
       />
       <CarsRail
         id="selected-for-you"
-        title={t('selectedForYou')}
-        subtitle={t('selectedForYouSubtitle')}
+        title={t("selectedForYou")}
+        subtitle={t("selectedForYouSubtitle")}
         cars={handpickedCars}
       />
       <Partners partners={partners} content={homeContent.partners} />

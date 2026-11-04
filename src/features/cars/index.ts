@@ -4,6 +4,7 @@ export { default as CarFilters } from "./components/CarFilters";
 export { default as SortBar } from "./components/SortBar";
 export { default as CarsRail } from "./components/CarsRail";
 export { default as CityCarRows } from "./components/CityCarRows";
+export { getHomeOfferCars } from "./client/offerCars.client";
 export { groupCarsByOffice } from "./model";
 export type {
   Car,
@@ -27,6 +28,7 @@ export type {
   CarFilterDraft,
   CarSearchParams,
   CityCarsQuery,
+  CityCarsLocation,
   CarSort,
   PriceRange,
 } from "./searchParams";

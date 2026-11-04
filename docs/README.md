@@ -226,6 +226,14 @@ Home data integration follow-up (2026-11-04): the hero background now reads the
 ordered, public `GET /sliders` response through `features/home`; the existing
 static artwork remains only as an empty-response fallback.
 
+Home offers integration follow-up (2026-11-04): the home offers rail reads
+`GET /offer-cars` through the validated cars mapper rather than the cars mock.
+It sends `page`, `per_page`, and the saved browser location only when the whole
+region/latitude/longitude tuple is available, and starts the same
+availability-constrained booking flow as city-company cars.
+Browser-side car list requests are grouped in `features/cars/client/`.
+Offer pagination is user-driven; car rails do not autoplay into later pages.
+
 **Tailwind replacement status (2026-10-25):** The SCSS architecture described
 above is the historical baseline. The Tailwind 4.3 migration has completed
 fractions 1–9 and migrated `layout`, `home`, `rental-search`, `cars`, `cities`,

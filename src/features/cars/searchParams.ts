@@ -182,6 +182,9 @@ export function parseCarSearchParams(
  */
 export const COMPANY_CARS_PER_PAGE = 10;
 
+/** Number of offer cards requested for each page in the home rail. */
+export const HOME_OFFER_CARS_PER_PAGE = 10;
+
 /** The filters GET /city-cars accepts (docs/api/cities-api.md §2). */
 export interface CityCarsQuery {
   /** The guest's saved region. Coordinates and region travel as one tuple. */

@@ -286,3 +286,54 @@ describe("cityCarsApi.listCompanyCars", () => {
     ).rejects.toMatchObject({ kind: "server" });
   });
 });
+
+describe("cityCarsApi.listHomeOfferCars", () => {
+  it("sends the saved location and maps the offer cars", async () => {
+    get.mockResolvedValue(pageOf([offerCar]));
+
+    await expect(
+      cityCarsApi.listHomeOfferCars("ar", 2, 1, {
+        region: "منطقة عسير",
+        latitude: 24.4673,
+        longitude: 40.135,
+      }),
+    ).resolves.toEqual({
+      items: [mapCompanyCarsGroup({ ...group, cars: [offerCar] }).cars[0]],
+      page: 1,
+      lastPage: 1,
+      total: 1,
+    });
+
+    const [path, init] = get.mock.calls[0];
+    expect(new URL(path, "https://t-car.app/api/user/").pathname).toBe(
+      "/offer-cars",
+    );
+    expect(searchOf(path)).toEqual({
+      region: "منطقة عسير",
+      latitude: "24.4673",
+      longitude: "40.135",
+      per_page: "1",
+      page: "2",
+    });
+    expect(init).toEqual({ headers: { "Accept-Language": "ar" } });
+  });
+
+  it("omits location parameters when none was saved", async () => {
+    get.mockResolvedValue(pageOf([]));
+
+    await cityCarsApi.listHomeOfferCars("en", 1, 1);
+
+    expect(searchOf(get.mock.calls[0][0])).toEqual({
+      per_page: "1",
+      page: "1",
+    });
+  });
+
+  it("rejects an offer-cars response with a malformed car", async () => {
+    get.mockResolvedValue(pageOf([{ id: 3 }]));
+
+    await expect(
+      cityCarsApi.listHomeOfferCars("en", 1, 1),
+    ).rejects.toMatchObject({ kind: "server" });
+  });
+});

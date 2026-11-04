@@ -3,12 +3,12 @@
 import { AppError } from "@/shared/lib/errors";
 import type { Page } from "@/shared/lib/pagination";
 import { fail, ok, type Result } from "@/shared/lib/result";
-import type { CarListing, OfficeCarGroup } from "./model";
+import type { CarListing, OfficeCarGroup } from "../model";
 import {
   COMPANY_CARS_PER_PAGE,
   toCityCarsSearchParams,
   type CityCarsQuery,
-} from "./searchParams";
+} from "../searchParams";
 
 const CITY_CARS_PER_PAGE = 1;
 
@@ -25,7 +25,9 @@ async function getPage<T>(
       { headers: { "Accept-Language": locale } },
     );
     if (!response.ok) {
-      return fail(new AppError(response.status === 400 ? "validation" : "server"));
+      return fail(
+        new AppError(response.status === 400 ? "validation" : "server"),
+      );
     }
     return ok((await response.json()) as Page<T>);
   } catch {
