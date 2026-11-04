@@ -2,7 +2,11 @@
 
 import { useState } from "react";
 import { useRouter } from "@/i18n/navigation";
-import { CityCarRows, type CarListing, type CityCarsQuery } from "@/features/cars";
+import {
+  CityCarRows,
+  type CarListing,
+  type CityCarsQuery,
+} from "@/features/cars";
 import {
   CityCarBookingFlow,
   type RentalSearchOptions,
