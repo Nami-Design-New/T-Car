@@ -5,7 +5,6 @@ import type { Page } from "@/shared/lib/pagination";
 import { cityCarsApi } from "./api";
 import {
   groupCarsByOffice,
-  selectHandpickedCars,
   type CarBrand,
   type CityCarFilterOptions,
   type CarListing,
@@ -46,10 +45,6 @@ export async function getCityCarGroups(
   query: CityCarsQuery,
 ): Promise<Page<OfficeCarGroup>> {
   return cityCarsApi.listCityCars(await getLocale(), query, 1);
-}
-
-export async function getHandpickedCars(): Promise<CarListing[]> {
-  return selectHandpickedCars(await carsApi.listCars());
 }
 
 export async function getOffices() {

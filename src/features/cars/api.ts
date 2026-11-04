@@ -41,6 +41,13 @@ export interface CityCarsApi {
     perPage: number,
     location?: CityCarsLocation,
   ): Promise<Page<CarListing>>;
+  /** A page of the home rail's curated cars, narrowed by saved location. */
+  listHomeCarefullyChosenCars(
+    locale: string,
+    page: number,
+    perPage: number,
+    location?: CityCarsLocation,
+  ): Promise<Page<CarListing>>;
 }
 
 interface LookupDto {
@@ -397,9 +404,33 @@ async function listHomeOfferCars(
   return toCheckedPage(response, isCarListing, mapCarListing);
 }
 
+/** GET /carfully-choises-cars: curated home cars, with no delivery filter. */
+async function listHomeCarefullyChosenCars(
+  locale: string,
+  page: number,
+  perPage: number,
+  location?: CityCarsLocation,
+): Promise<Page<CarListing>> {
+  const search = new URLSearchParams({
+    per_page: String(perPage),
+    page: String(page),
+  });
+  if (location) {
+    search.set("region", location.region);
+    search.set("latitude", String(location.latitude));
+    search.set("longitude", String(location.longitude));
+  }
+  const response = await publicServerHttp.get<ApiEnvelope<unknown>>(
+    `/carfully-choises-cars?${search}`,
+    { headers: { "Accept-Language": locale } },
+  );
+  return toCheckedPage(response, isCarListing, mapCarListing);
+}
+
 export const cityCarsApi: CityCarsApi = {
   listCityCars,
   listCompanyCars,
   getFilterOptions,
   listHomeOfferCars,
+  listHomeCarefullyChosenCars,
 };

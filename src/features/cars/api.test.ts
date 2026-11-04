@@ -337,3 +337,46 @@ describe("cityCarsApi.listHomeOfferCars", () => {
     ).rejects.toMatchObject({ kind: "server" });
   });
 });
+
+describe("cityCarsApi.listHomeCarefullyChosenCars", () => {
+  it("sends pagination and the saved location without a delivery type", async () => {
+    get.mockResolvedValue(pageOf([offerCar]));
+
+    await expect(
+      cityCarsApi.listHomeCarefullyChosenCars("ar", 2, 10, {
+        region: "منطقة المدينة",
+        latitude: 18.2782333,
+        longitude: 42.5035714,
+      }),
+    ).resolves.toEqual({
+      items: [mapCompanyCarsGroup({ ...group, cars: [offerCar] }).cars[0]],
+      page: 1,
+      lastPage: 1,
+      total: 1,
+    });
+
+    const [path, init] = get.mock.calls[0];
+    expect(new URL(path, "https://t-car.app/api/user/").pathname).toBe(
+      "/carfully-choises-cars",
+    );
+    expect(searchOf(path)).toEqual({
+      region: "منطقة المدينة",
+      latitude: "18.2782333",
+      longitude: "42.5035714",
+      per_page: "10",
+      page: "2",
+    });
+    expect(init).toEqual({ headers: { "Accept-Language": "ar" } });
+  });
+
+  it("omits location parameters when none was saved", async () => {
+    get.mockResolvedValue(pageOf([]));
+
+    await cityCarsApi.listHomeCarefullyChosenCars("en", 1, 10);
+
+    expect(searchOf(get.mock.calls[0][0])).toEqual({
+      per_page: "10",
+      page: "1",
+    });
+  });
+});

@@ -1,7 +1,6 @@
 import { Hero } from "@/features/rental-search";
 import { getRentalSearchOptions } from "@/features/rental-search/queries";
-import { CarsRail } from "@/features/cars";
-import { getCarBrands, getHandpickedCars } from "@/features/cars/queries";
+import { getCarBrands } from "@/features/cars/queries";
 import { PopularCities } from "@/features/cities";
 import { getCities } from "@/features/cities/queries";
 import {
@@ -10,6 +9,7 @@ import {
   DownloadApp,
   FAQ,
   HomeOffersSection,
+  HomeCarefullyChosenCarsSection,
   Partners,
   WhyChooseUs,
 } from "@/features/home";
@@ -33,7 +33,6 @@ export default async function HomePage() {
     searchOptions,
     brands,
     cities,
-    handpickedCars,
     faqs,
     partners,
     whyUsCards,
@@ -46,7 +45,6 @@ export default async function HomePage() {
     getRentalSearchOptions(),
     getCarBrands(),
     getCities(),
-    getHandpickedCars(),
     getFaqs(),
     getPartners(),
     getWhyUsCards(),
@@ -71,11 +69,10 @@ export default async function HomePage() {
         subtitle={t("offersSubtitle")}
         options={searchOptions}
       />
-      <CarsRail
-        id="selected-for-you"
+      <HomeCarefullyChosenCarsSection
         title={t("selectedForYou")}
         subtitle={t("selectedForYouSubtitle")}
-        cars={handpickedCars}
+        options={searchOptions}
       />
       <Partners partners={partners} content={homeContent.partners} />
       <WhyChooseUs content={homeContent.whyUs} cards={whyUsCards} />

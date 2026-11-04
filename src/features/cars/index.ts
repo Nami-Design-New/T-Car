@@ -5,6 +5,7 @@ export { default as SortBar } from "./components/SortBar";
 export { default as CarsRail } from "./components/CarsRail";
 export { default as CityCarRows } from "./components/CityCarRows";
 export { getHomeOfferCars } from "./client/offerCars.client";
+export { getHomeCarefullyChosenCars } from "./client/carefullyChosenCars.client";
 export { groupCarsByOffice } from "./model";
 export type {
   Car,

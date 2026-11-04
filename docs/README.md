@@ -234,6 +234,12 @@ availability-constrained booking flow as city-company cars.
 Browser-side car list requests are grouped in `features/cars/client/`.
 Offer pagination is user-driven; car rails do not autoplay into later pages.
 
+Home curated-cars integration follow-up (2026-11-04): the “Selected just for
+you” rail reads paginated `GET /carfully-choises-cars` through the same
+validated car mapper. It sends `page`, `per_page`, and the complete saved
+location tuple when available, never a delivery type; its cards use the shared
+availability-constrained booking flow and show only the airport pickup badge.
+
 **Tailwind replacement status (2026-10-25):** The SCSS architecture described
 above is the historical baseline. The Tailwind 4.3 migration has completed
 fractions 1–9 and migrated `layout`, `home`, `rental-search`, `cars`, `cities`,
