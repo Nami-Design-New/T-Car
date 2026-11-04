@@ -246,6 +246,14 @@ the cars feature's public lookup endpoints rather than mock values.
 The offers rail's “Show all” link carries an `offers` source, so the cars page
 uses the localized offers heading instead of its default available-cars title.
 
+Rental-search lookup integration follow-up (2026-11-04): airport, train-station,
+and country dialogs read the public `/airports`, `/train-stations`, and
+`/countries` endpoints through `features/rental-search/api.ts`. Their differing
+DTOs are mapped to the shared modal models; the old server mock is removed.
+The browser lookup proxy now sends debounced `search`, `page`, and `per_page`
+parameters, uses the shared infinite-list skeleton, empty, and retry states,
+and clears a dialog's transient search and selected choice when it closes.
+
 **Tailwind replacement status (2026-10-25):** The SCSS architecture described
 above is the historical baseline. The Tailwind 4.3 migration has completed
 fractions 1–9 and migrated `layout`, `home`, `rental-search`, `cars`, `cities`,

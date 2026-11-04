@@ -1,7 +1,8 @@
-import 'server-only';
-import { rentalSearchApi } from '@/services/rentalSearch.api';
-import type { RentalSearchOptions } from './model';
+import "server-only";
+import { getLocale } from "next-intl/server";
+import { rentalSearchApi } from "./api";
+import type { RentalSearchOptions } from "./model";
 
 export function getRentalSearchOptions(): Promise<RentalSearchOptions> {
-  return rentalSearchApi.getOptions();
+  return getLocale().then((locale) => rentalSearchApi.getOptions(locale));
 }

@@ -170,6 +170,7 @@
       "title": "Choose an airport",
       "description": "Choose the airport where you would like to pick up the car.",
       "searchPlaceholder": "Search airports...",
+      "empty": "No airports found.",
       "confirm": "Confirm"
     },
     "branch": {
@@ -182,12 +183,14 @@
       "title": "Choose a country",
       "description": "Choose the country where you would like to pick up the car.",
       "searchPlaceholder": "Search countries...",
+      "empty": "No countries found.",
       "confirm": "Confirm"
     },
     "station": {
       "title": "Choose a train station",
       "description": "Choose the train station where you would like to pick up the car.",
       "searchPlaceholder": "Search stations...",
+      "empty": "No stations found.",
       "confirm": "Confirm"
     },
     "pickup": {
