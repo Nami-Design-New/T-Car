@@ -380,3 +380,61 @@ describe("cityCarsApi.listHomeCarefullyChosenCars", () => {
     });
   });
 });
+
+describe("cityCarsApi cars-listing reads", () => {
+  it("maps an offer company row and sends its source and saved location", async () => {
+    get.mockResolvedValue(pageOf([group], 1, 2));
+
+    await expect(
+      cityCarsApi.listCarsListing(
+        "ar",
+        {
+          source: "offer",
+          region: "Madinah",
+          latitude: 24.4673,
+          longitude: 40.135,
+          query: "kia",
+        },
+        1,
+      ),
+    ).resolves.toMatchObject({ items: [mapCompanyCarsGroup(group)], page: 1 });
+
+    const [path] = get.mock.calls[0];
+    expect(new URL(path, "https://t-car.app/api/user/").pathname).toBe(
+      "/cars-listing",
+    );
+    expect(searchOf(path)).toEqual({
+      per_page: "1",
+      page: "1",
+      region: "Madinah",
+      latitude: "24.4673",
+      longitude: "40.135",
+      search: "kia",
+      type: "offer",
+    });
+  });
+
+  it("loads a company row from page two with its listing context", async () => {
+    get.mockResolvedValue(pageOf([offerCar], 2, 3));
+
+    await cityCarsApi.listListingCompanyCars(
+      "en",
+      "12",
+      { source: "general", airportId: "2", brandIds: ["7"] },
+      2,
+    );
+
+    const [path] = get.mock.calls[0];
+    expect(new URL(path, "https://t-car.app/api/user/").pathname).toBe(
+      "/company-cars",
+    );
+    expect(searchOf(path)).toEqual({
+      per_page: "10",
+      page: "2",
+      "brand_id[0]": "7",
+      company_id: "12",
+      come_from: "general",
+      airport_id: "2",
+    });
+  });
+});

@@ -17,6 +17,8 @@ import {
   HOME_OFFER_CARS_PER_PAGE,
   type CityCarsLocation,
   type CityCarsQuery,
+  type CarsListingQuery,
+  toCarsListingSearchParams,
 } from "./searchParams";
 
 export interface CityCarsApi {
@@ -47,6 +49,17 @@ export interface CityCarsApi {
     page: number,
     perPage: number,
     location?: CityCarsLocation,
+  ): Promise<Page<CarListing>>;
+  listCarsListing(
+    locale: string,
+    query: CarsListingQuery,
+    page: number,
+  ): Promise<Page<OfficeCarGroup>>;
+  listListingCompanyCars(
+    locale: string,
+    companyId: string,
+    query: CarsListingQuery,
+    page: number,
   ): Promise<Page<CarListing>>;
 }
 
@@ -427,10 +440,46 @@ async function listHomeCarefullyChosenCars(
   return toCheckedPage(response, isCarListing, mapCarListing);
 }
 
+/** GET /cars-listing: company rows for offers, curated, or general searches. */
+async function listCarsListing(
+  locale: string,
+  query: CarsListingQuery,
+  page: number,
+): Promise<Page<OfficeCarGroup>> {
+  const search = toCarsListingSearchParams(query, page, CITY_CARS_PER_PAGE);
+  const response = await publicServerHttp.get<ApiEnvelope<unknown>>(
+    `/cars-listing?${search}`,
+    { headers: { "Accept-Language": locale } },
+  );
+  return toCheckedPage(response, isCompanyCarsGroup, mapCompanyCarsGroup);
+}
+
+/** GET /company-cars: later cards in one cars-listing company row. */
+async function listListingCompanyCars(
+  locale: string,
+  companyId: string,
+  query: CarsListingQuery,
+  page: number,
+): Promise<Page<CarListing>> {
+  const search = toCarsListingSearchParams(
+    query,
+    page,
+    COMPANY_CARS_PER_PAGE,
+    companyId,
+  );
+  const response = await publicServerHttp.get<ApiEnvelope<unknown>>(
+    `/company-cars?${search}`,
+    { headers: { "Accept-Language": locale } },
+  );
+  return toCheckedPage(response, isCarListing, mapCarListing);
+}
+
 export const cityCarsApi: CityCarsApi = {
   listCityCars,
   listCompanyCars,
   getFilterOptions,
   listHomeOfferCars,
   listHomeCarefullyChosenCars,
+  listCarsListing,
+  listListingCompanyCars,
 };

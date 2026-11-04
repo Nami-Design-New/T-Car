@@ -45,7 +45,9 @@ export default function CarCard({
       <Link
         href={detailsHref}
         onClickCapture={(event) => {
-          if (!onSelect) return;
+          // A listing without availability cannot start the rental flow, so it
+          // keeps its normal details-page navigation.
+          if (!onSelect || !car.availability) return;
           event.preventDefault();
           event.stopPropagation();
           onSelect(car);

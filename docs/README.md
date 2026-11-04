@@ -254,6 +254,15 @@ The browser lookup proxy now sends debounced `search`, `page`, and `per_page`
 parameters, uses the shared infinite-list skeleton, empty, and retry states,
 and clears a dialog's transient search and selected choice when it closes.
 
+Cars-listing integration follow-up (2026-11-04): `/cars` reads grouped public
+`/cars-listing` results after browser-only guest location hydration, then each
+company row appends its own `/company-cars` page 2 onward horizontally. Offers
+and carefully chosen Show All links select `offer` and `careful_chooses`; all
+other entries select `general`. The endpoint integration deliberately omits
+`booking_type` and `delivery_type` when absent, pending the confirmed backend
+change that removes their current validation requirement and returns car
+availability for general company-row results.
+
 **Tailwind replacement status (2026-10-25):** The SCSS architecture described
 above is the historical baseline. The Tailwind 4.3 migration has completed
 fractions 1–9 and migrated `layout`, `home`, `rental-search`, `cars`, `cities`,

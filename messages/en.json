@@ -255,7 +255,8 @@
   "carsPage": {
     "eyebrow": "Find your next drive",
     "title": "Available cars",
-    "subtitle": "Browse every rental office and compare the best available cars in one place."
+    "subtitle": "Browse every rental office and compare the best available cars in one place.",
+    "empty": "No cars match your search."
   },
   "carSections": {
     "offers": "Offers",

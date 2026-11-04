@@ -151,6 +151,8 @@ export function parseCarSearchParams(
     "airportId",
     "stationId",
     "countryId",
+    "deliveryType",
+    "address",
     "pickupDate",
     "dropoffDate",
   ]) {
@@ -204,6 +206,18 @@ export interface CityCarsQuery {
   typeIds?: string[];
   serviceIds?: string[];
   companyIds?: string[];
+}
+
+/** The source used by the grouped `/cars-listing` and `/company-cars` reads. */
+export type CarsListingSource = "offer" | "careful_chooses" | "general";
+
+/** Filters and booking context accepted by the public cars-listing endpoints. */
+export interface CarsListingQuery extends CityCarsQuery {
+  source: CarsListingSource;
+  deliveryType?: "to_location" | "from_branch";
+  airportId?: string;
+  stationId?: string;
+  countryId?: string;
 }
 
 const ISO_DAY = /^\d{4}-\d{2}-\d{2}$/;
@@ -272,6 +286,28 @@ export function toCityCarsSearchParams(
   return search;
 }
 
+/** Serializes a grouped listing or a company row's next page for the browser proxy. */
+export function toCarsListingSearchParams(
+  query: CarsListingQuery,
+  page: number,
+  perPage: number,
+  companyId?: string,
+): URLSearchParams {
+  const search = toCityCarsSearchParams(query, page, perPage);
+  if (companyId) {
+    search.delete("company_id");
+    search.set("company_id", companyId);
+    search.set("come_from", query.source);
+  } else {
+    search.set("type", query.source);
+  }
+  if (query.deliveryType) search.set("delivery_type", query.deliveryType);
+  if (query.airportId) search.set("airport_id", query.airportId);
+  if (query.stationId) search.set("train_station_id", query.stationId);
+  if (query.countryId) search.set("country_id", query.countryId);
+  return search;
+}
+
 export function toCityCarsQuery(params: CarSearchParams): CityCarsQuery {
   const { pickupDate, dropoffDate } = params.context;
   const datesValid =
@@ -292,6 +328,24 @@ export function toCityCarsQuery(params: CarSearchParams): CityCarsQuery {
     ...(params.types.length ? { typeIds: params.types } : {}),
     ...(params.serviceIds.length ? { serviceIds: params.serviceIds } : {}),
     ...(params.companyIds.length ? { companyIds: params.companyIds } : {}),
+  };
+}
+
+/** Turns the `/cars` URL state into the backend's listing request. */
+export function toCarsListingQuery(
+  params: CarSearchParams,
+  source: CarsListingSource,
+): CarsListingQuery {
+  const { airportId, stationId, countryId, deliveryType } = params.context;
+  return {
+    ...toCityCarsQuery(params),
+    source,
+    ...(deliveryType === "to_location" || deliveryType === "from_branch"
+      ? { deliveryType }
+      : {}),
+    ...(airportId ? { airportId } : {}),
+    ...(stationId ? { stationId } : {}),
+    ...(countryId ? { countryId } : {}),
   };
 }
 
