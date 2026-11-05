@@ -1,6 +1,7 @@
 "use client";
 
 import { ReactNode, useEffect, useState } from "react";
+import Image from "next/image";
 import { FiLoader, FiSearch, FiX } from "react-icons/fi";
 import { useTranslations } from "next-intl";
 import { cn } from "@/shared/lib/cn";
@@ -25,7 +26,15 @@ interface FilterPanelProps {
 }
 
 function FilterFunnelIcon() {
-  return <span aria-hidden="true">≡</span>;
+  return (
+    <Image
+      src="/icons/filter.svg"
+      alt=""
+      width={20}
+      height={20}
+      aria-hidden="true"
+    />
+  );
 }
 
 export default function FilterPanel({
@@ -67,9 +76,9 @@ export default function FilterPanel({
   return (
     <>
       {!embedded && (
-        <div className="filters_mobile_bar hidden items-center gap-3 max-lg:flex">
+        <div className="hidden items-center gap-3 max-lg:flex">
           <div className="relative mb-0 flex-1 lg:mb-5.5">
-            <FiSearch className="text-text-subtle start-sm pointer-events-none absolute top-1/2 z-1 -translate-y-1/2 text-[19px]" />
+            <FiSearch className="text-text-subtle pointer-events-none absolute inset-s-3.75 top-1/2 z-1 -translate-y-1/2 text-[19px]" />
             <input
               type="text"
               value={searchValue}
@@ -80,35 +89,36 @@ export default function FilterPanel({
           </div>
           <button
             type="button"
-            className="filters_toggle_btn bg-action-primary text-text-on-action hover:bg-action-primary/90 relative flex size-12 shrink-0 items-center justify-center rounded-md border-0 text-xl transition"
+            className="bg-action-primary text-text-on-action hover:bg-action-primary/90 relative flex size-12 shrink-0 items-center justify-center rounded-md border-0 text-xl transition"
             onClick={() => setIsOpen(true)}
             aria-label={t("open")}
           >
             <FilterFunnelIcon />
             {hasActiveFilters && (
-              <span className="filters_toggle_dot border-surface-elevated bg-status-error absolute end-1.5 top-1.5 size-2.5 rounded-full border-2" />
+              <span className="border-surface-elevated bg-status-error absolute end-1.5 top-1.5 size-2.5 rounded-full border-2" />
             )}
           </button>
         </div>
       )}
       {isOpen && (
         <div
-          className="filters_overlay fixed inset-0 z-1099 bg-black/42 backdrop-blur-xs"
+          className="fixed inset-0 z-1099 bg-black/42 backdrop-blur-xs"
           onClick={() => setIsOpen(false)}
         />
       )}
       <aside
         className={
           embedded
-            ? "filters_panel filters_panel--embedded"
+            ? undefined
             : cn(
-                "bg-surface-elevated hidden h-fit self-start rounded-2xl border border-black/6 p-6 shadow-[0_4px_20px_rgba(30,30,30,0.05)] lg:block",
-                isOpen &&
-                  "is-open fixed inset-y-0 inset-e-0 z-1100 block w-[min(440px,100vw)] overflow-y-auto max-lg:inset-y-auto max-lg:bottom-0 max-lg:h-[85vh] max-lg:max-h-[85vh] max-lg:w-full max-lg:animate-[popup_0.35s_ease] max-lg:rounded-t-2xl max-lg:rounded-b-none",
+                "bg-surface-elevated h-fit self-start rounded-2xl border border-black/6 p-6 shadow-[0_4px_20px_rgba(30,30,30,0.05)]",
+                isOpen
+                  ? "fixed inset-y-0 inset-e-0 z-1100 block w-[min(440px,100vw)] scrollbar-none overflow-y-auto max-lg:inset-y-auto max-lg:bottom-0 max-lg:flex max-lg:h-screen max-lg:max-h-screen max-lg:w-full max-lg:animate-[popup_0.35s_ease] max-lg:flex-col max-lg:overflow-y-hidden max-lg:rounded-t-2xl max-lg:rounded-b-none [&::-webkit-scrollbar]:hidden"
+                  : "hidden lg:block",
               )
         }
       >
-        <div className="border-stroke-light mb-6 flex items-center justify-between border-b pb-4.5">
+        <div className="border-stroke-light mb-6 flex items-center justify-between border-b pb-4.5 max-lg:shrink-0">
           <h3 className="text-text-primary m-0 text-lg font-bold">
             {resolvedTitle}
           </h3>
@@ -125,26 +135,34 @@ export default function FilterPanel({
         </div>
         <div
           className={cn(
-            "relative mb-0 md:mb-5.5",
-            !embedded && "max-lg:hidden",
+            !embedded &&
+              "max-lg:min-h-0 max-lg:flex-1 max-lg:overflow-y-auto max-lg:scrollbar-none max-lg:[&::-webkit-scrollbar]:hidden",
           )}
         >
-          <FiSearch className="text-text-subtle pointer-events-none absolute inset-s-3.75 top-1/2 z-1 -translate-y-1/2 text-[19px]" />
-          <input
-            type="text"
-            value={searchValue}
-            onChange={(event) => onSearchChange?.(event.target.value)}
-            placeholder={resolvedSearchPlaceholder}
-            className="border-stroke-light bg-surface-on-background text-text-primary focus:border-action-primary focus:bg-surface-elevated focus:ring-action-primary/10 h-[52px] w-full rounded-md border px-11 text-sm transition outline-none focus:ring-4"
-          />
+          <div
+            className={cn(
+              "relative mb-0 md:mb-5.5",
+              !embedded && "max-lg:hidden",
+              embedded && "max-md:mb-5.5",
+            )}
+          >
+            <FiSearch className="text-text-subtle pointer-events-none absolute inset-s-3.75 top-1/2 z-1 -translate-y-1/2 text-[19px]" />
+            <input
+              type="text"
+              value={searchValue}
+              onChange={(event) => onSearchChange?.(event.target.value)}
+              placeholder={resolvedSearchPlaceholder}
+              className="border-stroke-light bg-surface-on-background text-text-primary focus:border-action-primary focus:bg-surface-elevated focus:ring-action-primary/10 h-[52px] w-full rounded-md border px-11 text-sm transition outline-none focus:ring-4"
+            />
+          </div>
+          {children}
         </div>
-        {children}
         {(onApply || onClearAll) && (
           <div
             className={
               embedded
                 ? "border-stroke-light bg-surface-elevated sticky bottom-0 z-[4] mt-1 flex gap-2.5 border-t pt-[18px] pb-5"
-                : "max-lg:bg-surface-elevated/98 mt-1 flex gap-2.5 pt-4.5 max-lg:sticky max-lg:bottom-[-24px] max-lg:z-[4] max-lg:-mx-6 max-lg:mt-0 max-lg:mb-[-24px] max-lg:px-6 max-lg:pb-[max(16px,env(safe-area-inset-bottom))] max-lg:shadow-[0_-10px_26px_rgba(30,30,30,0.07)]"
+                : "max-lg:bg-surface-elevated/98 mt-1 flex gap-2.5 pt-4.5 max-lg:shrink-0 max-lg:-mx-6 max-lg:mt-0 max-lg:mb-[-24px] max-lg:px-6 max-lg:pb-[max(16px,env(safe-area-inset-bottom))] max-lg:shadow-[0_-10px_26px_rgba(30,30,30,0.07)]"
             }
           >
             <button

@@ -261,7 +261,14 @@ and carefully chosen Show All links select `offer` and `careful_chooses`; all
 other entries select `general`. The endpoint integration deliberately omits
 `booking_type` and `delivery_type` when absent, pending the confirmed backend
 change that removes their current validation requirement and returns car
-availability for general company-row results.
+availability for general company-row results. Its client-side booking-flow
+coordinator lives in `features/cars/components/CarsListingSection.tsx`; the
+route page remains server composition only.
+
+Cars-listing empty-state follow-up (2026-11-05): the listing's no-results
+state uses the static `public/images/illustrations/not-fount.svg` artwork;
+the existing animated empty illustration remains the default for other shared
+empty states.
 
 **Tailwind replacement status (2026-10-25):** The SCSS architecture described
 above is the historical baseline. The Tailwind 4.3 migration has completed

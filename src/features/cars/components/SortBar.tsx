@@ -1,7 +1,8 @@
 'use client';
 import { useRouter, usePathname } from '@/i18n/navigation';
 import { useSearchParams } from 'next/navigation';
-import { FiSliders, FiChevronDown } from 'react-icons/fi';
+import Image from 'next/image';
+import { FiChevronDown } from 'react-icons/fi';
 import { useTranslations } from 'next-intl';
 interface Props {
   resultsCount: number;
@@ -26,8 +27,8 @@ export default function SortBar({ resultsCount, value = 'recommended' }: Props) 
   };
   return (
     <div className="sort-bar mb-6 flex items-center gap-4">
-      <button type="button" className="sort-bar-filter-toggle hidden items-center gap-1.5 rounded-md border border-stroke-light bg-surface-elevated px-3.5 py-2 text-sm font-semibold text-text-primary lg:hidden">
-        <FiSliders />
+      <button type="button" className="sort-bar-filter-toggle hidden items-center gap-1.5 rounded-md border-0 bg-action-primary px-3.5 py-2 text-sm font-semibold text-text-on-action lg:hidden">
+        <Image src="/icons/filter.svg" alt="" width={20} height={20} aria-hidden="true" />
         {t('filter')}
       </button>
       <span className="sort-bar-count me-auto text-sm text-text-subtle">{t('results', { count: resultsCount })}</span>

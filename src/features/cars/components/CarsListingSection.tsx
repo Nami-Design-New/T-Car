@@ -2,15 +2,11 @@
 
 import { useState } from "react";
 import { useRouter } from "@/i18n/navigation";
-import {
-  CarsListingRows,
-  type CarListing,
-  type CarsListingQuery,
-} from "@/features/cars";
-import {
-  CityCarBookingFlow,
-  type RentalSearchOptions,
-} from "@/features/rental-search";
+import type { RentalSearchOptions } from "@/features/rental-search";
+import { CityCarBookingFlow } from "@/features/rental-search";
+import type { CarListing } from "../model";
+import type { CarsListingQuery } from "../searchParams";
+import CarsListingRows from "./CarsListingRows";
 
 interface Props {
   query: CarsListingQuery;

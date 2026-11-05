@@ -2,7 +2,8 @@
 
 import { useTranslations } from "next-intl";
 import { useState, type FormEvent } from "react";
-import { FiSearch, FiSliders } from "react-icons/fi";
+import Image from "next/image";
+import { FiSearch } from "react-icons/fi";
 
 interface Props {
   /** Called with the trimmed query; empty when the field is blank. */
@@ -47,12 +48,18 @@ export default function HeroSearchBar({ onSearch, onOpenFilters }: Props) {
       </button>
       <button
         type="button"
-        className="hero_filter_toggle inline-flex size-[52px] items-center justify-center rounded-xl border-0 bg-surface-card-primary text-[21px] text-action-primary transition duration-200 hover:-translate-y-0.5"
+        className="hero_filter_toggle inline-flex size-[52px] items-center justify-center rounded-xl border-0 bg-action-primary transition duration-200 hover:-translate-y-0.5"
         onClick={onOpenFilters}
         aria-label={t("cars.filters.open")}
         title={t("cars.filters.open")}
       >
-        <FiSliders aria-hidden="true" />
+        <Image
+          src="/icons/filter.svg"
+          alt=""
+          width={20}
+          height={20}
+          aria-hidden="true"
+        />
       </button>
     </form>
   );

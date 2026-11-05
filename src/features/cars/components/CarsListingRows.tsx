@@ -74,7 +74,7 @@ function Rows({ query, onSelectCar }: ListProps) {
       </InfiniteList.Loading>
       <InfiniteList.Error />
       <InfiniteList.Empty>
-        <EmptyState title={t("empty")} />
+        <EmptyState title={t("empty")} illustration="notFound" />
       </InfiniteList.Empty>
     </InfiniteList>
   );

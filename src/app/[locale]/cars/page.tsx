@@ -1,5 +1,6 @@
 import {
   CarFilters,
+  CarsListingSection,
   parseCarSearchParams,
   toCarsListingQuery,
   type CarsListingSource,
@@ -10,7 +11,6 @@ import { Link } from "@/i18n/navigation";
 import { getTranslations } from "next-intl/server";
 import { getSiteSettings } from "@/features/settings/queries";
 import { FiArrowLeft } from "react-icons/fi";
-import CarsListingSection from "./CarsListingSection";
 
 interface Props {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
