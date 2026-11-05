@@ -33,7 +33,7 @@ export default function AddonsGrid({ addons, onChange }: Props) {
 
   return (
     <section className="details-section border-stroke-light mt-8 border-t pt-6">
-      <h3 className="text-text-primary mb-[18px] text-[1.15rem] font-bold">
+      <h3 className="text-text-primary mb-4.5 text-[1.15rem] font-bold">
         {t("addons")}
       </h3>
 

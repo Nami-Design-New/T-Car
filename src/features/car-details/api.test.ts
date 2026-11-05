@@ -53,6 +53,13 @@ const details = {
     requires_percentage: true,
     percentage: 15,
   },
+  warranties: [
+    {
+      title: "On-time arrival",
+      content:
+        "<p>Arrives on time &amp; ready to drive.</p><script>alert(1)</script>",
+    },
+  ],
 };
 
 const envelope = (data: unknown) => ({
@@ -124,7 +131,7 @@ describe("carDetailsApi.getCarDetails", () => {
     });
   });
 
-  it("maps technical quick facts, services, and insurance without inventing policy terms", () => {
+  it("maps technical quick facts, warranties, services, and insurance safely", () => {
     expect(mapCarDetails(details)).toMatchObject({
       quickFacts: [
         { kind: "power", value: "160 HP" },
@@ -135,6 +142,13 @@ describe("carDetailsApi.getCarDetails", () => {
         { kind: "camera" },
         { kind: "sensors" },
         { kind: "applePlay" },
+      ],
+      warranties: [
+        {
+          id: "warranty-0",
+          title: "On-time arrival",
+          description: "Arrives on time & ready to drive.",
+        },
       ],
       addons: [
         { id: "1", icon: "driver" },

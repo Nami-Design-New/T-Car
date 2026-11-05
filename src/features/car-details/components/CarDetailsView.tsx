@@ -32,9 +32,7 @@ export default function CarDetailsView({ car }: Props) {
                   type={car.pickupPoint}
                 />
               )}
-              {car.warranties.length > 0 && (
-                <WarrantiesList warranties={car.warranties} />
-              )}
+              <WarrantiesList warranties={car.warranties} />
               {car.addons.length > 0 && <AddonsGrid addons={car.addons} />}
               {car.insuranceOptions[0] && (
                 <InsuranceOptions option={car.insuranceOptions[0]} />

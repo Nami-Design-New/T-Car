@@ -881,6 +881,7 @@
     "modelYear": "موديل {year}",
     "airportPickup": "استلام من المطار",
     "stationPickup": "استلام من محطة",
+    "noWarranties": "لا توجد ضمانات متاحة",
     "quickFacts": {
       "power": "{value}",
       "doors": "{value} أبواب",

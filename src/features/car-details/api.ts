@@ -4,7 +4,12 @@ import { publicServerHttp } from "@/services/http/server";
 import { IMAGES } from "@/shared/config/assets";
 import { AppError } from "@/shared/lib/errors";
 import type { CarOffer } from "@/features/cars";
-import type { CarDetails, CarDetailsQuery, CarQuickFact } from "./model";
+import {
+  warrantyHtmlToText,
+  type CarDetails,
+  type CarDetailsQuery,
+  type CarQuickFact,
+} from "./model";
 
 export interface CarDetailsApi {
   /** Throws an AppError for an unknown id, malformed payload, or backend error. */
@@ -66,10 +71,16 @@ interface InsuranceDto {
   percentage: number | null;
 }
 
+interface WarrantyDto {
+  title: string;
+  content: string;
+}
+
 interface DetailsDto {
   car: CarDto;
   serevices: ServiceDto[];
   insurance: InsuranceDto | null;
+  warranties: WarrantyDto[];
 }
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
@@ -89,7 +100,6 @@ function logDetailData(label: string, value: unknown): void {
 function isLookup(value: unknown): value is LookupDto {
   return (
     isRecord(value) &&
-    isNumber(value.id) &&
     typeof value.title === "string" &&
     (value.logo === null || typeof value.logo === "string")
   );
@@ -142,6 +152,14 @@ function isInsurance(value: unknown): value is InsuranceDto {
   );
 }
 
+function isWarranty(value: unknown): value is WarrantyDto {
+  return (
+    isRecord(value) &&
+    typeof value.title === "string" &&
+    typeof value.content === "string"
+  );
+}
+
 export function isCarDetailsDto(value: unknown): value is CarDto {
   return (
     isRecord(value) &&
@@ -167,6 +185,8 @@ function isDetailsDto(value: unknown): value is DetailsDto {
     isCarDetailsDto(value.car) &&
     Array.isArray(value.serevices) &&
     value.serevices.every(isService) &&
+    Array.isArray(value.warranties) &&
+    value.warranties.every(isWarranty) &&
     (value.insurance === null || isInsurance(value.insurance))
   );
 }
@@ -233,7 +253,11 @@ export function mapCarDetails(details: DetailsDto): CarDetails {
     offer: toOffer(car),
     reviewsCount: 0,
     quickFacts: toQuickFacts(car.details),
-    warranties: [],
+    warranties: details.warranties.map((warranty, index) => ({
+      id: `warranty-${index}`,
+      title: warranty.title,
+      description: warrantyHtmlToText(warranty.content),
+    })),
     addons: details.serevices.map((service) => ({
       id: String(service.id),
       title: service.title,

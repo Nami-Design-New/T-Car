@@ -883,6 +883,7 @@
     "modelYear": "Model {year}",
     "airportPickup": "Airport pickup",
     "stationPickup": "Station pickup",
+    "noWarranties": "No warranties available",
     "quickFacts": {
       "power": "{value}",
       "doors": "{value} doors",
