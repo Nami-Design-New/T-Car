@@ -30,7 +30,7 @@ export default function PoliciesList({ policies }: Props) {
   return (
     <section className="border-stroke-light mt-8 border-t pt-6">
       <Tabs.Root defaultValue="instructions" className="w-full">
-        <Tabs.List className="mb-6 flex justify-end gap-2 border-0">
+        <Tabs.List className="mb-6 flex gap-2 border-0">
           <Tabs.Trigger
             value="instructions"
             className="text-text-primary data-[state=active]:bg-action-primary data-[state=active]:text-text-on-action rounded-full bg-white px-5 py-2 text-center text-sm font-bold"
