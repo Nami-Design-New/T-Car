@@ -1,6 +1,6 @@
 import 'server-only';
 import { cache } from 'react';
-import { carDetailsApi } from '@/services/carDetails.api';
+import { carDetailsApi } from './api';
 import { toAppError } from '@/shared/lib/errors';
 import type { CarDetails } from './model';
 

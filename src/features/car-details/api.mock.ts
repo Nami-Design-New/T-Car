@@ -1,13 +1,23 @@
-import type { CarDetails } from '@/features/car-details/model';
-import type { CarListing } from '@/features/cars/model';
+import type { CarDetails } from "./model";
 import { AppError } from '@/shared/lib/errors';
-import type { CarDetailsApi } from '../carDetails.api';
-import { getCarListingById } from './cars';
-import { MOCK_OFFICES } from './offices';
+import type { CarDetailsApi } from "./api";
+import { getCarListingById } from "@/services/mocks/cars";
+import { MOCK_OFFICES } from "@/services/mocks/offices";
 const car1 = '/mock/cars/creta.jpg';
 
 /** Everything the details page shows beyond the listing; the same for every mock car. */
-const MOCK_DETAILS_EXTRAS: Omit<CarDetails, keyof CarListing> = {
+type DetailExtras = Pick<
+  CarDetails,
+  | "images"
+  | "quickFacts"
+  | "warranties"
+  | "addons"
+  | "insuranceOptions"
+  | "reviews"
+  | "pickupInfo"
+>;
+
+const MOCK_DETAILS_EXTRAS: DetailExtras = {
   images: [car1],
   quickFacts: [
     { icon: 'shield', label: 'تأمين قابل للخصم' },
