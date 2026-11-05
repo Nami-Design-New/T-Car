@@ -40,12 +40,12 @@ describe("CarCard offer badge", () => {
     expect(screen.getByText("extra day")).toBeInTheDocument();
   });
 
-  it("shows a discount percent for a car with an original price", () => {
+  it("does not infer an offer badge from an original price alone", () => {
     renderWithIntl(
       <CarCard car={{ ...car, pricePerDay: 75, originalPrice: 100 }} />,
     );
-    expect(screen.getByText("25%")).toBeInTheDocument();
-    expect(screen.getByText("off")).toBeInTheDocument();
+    expect(screen.queryByText("25%")).not.toBeInTheDocument();
+    expect(screen.queryByText("off")).not.toBeInTheDocument();
   });
 
   it("shows no badge for a car without an offer or discount", () => {

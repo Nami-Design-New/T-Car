@@ -27,7 +27,7 @@ describe('UserMenu', () => {
     expect(trigger.querySelector('.user-menu-chevron')).toHaveClass('open');
     expect(screen.getByRole('menuitem', { name: 'Account' })).toHaveAttribute('href', '/en/account/profile');
 
-    await user.click(screen.getByRole('menuitem', { name: 'Sign out' }));
+    await user.click(screen.getByRole('menuitem', { name: /Sign out$/ }));
     expect(onLogout).toHaveBeenCalledTimes(1);
   });
 });

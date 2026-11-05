@@ -5,6 +5,10 @@ import { AppError } from '@/shared/lib/errors';
 import { renderWithIntl } from '@/shared/test/render';
 import VerifyPhoneModal from './VerifyPhoneModal';
 
+vi.mock('@/i18n/navigation', () => ({
+  useRouter: () => ({ back: vi.fn() }),
+}));
+
 function renderModal(overrides: Partial<React.ComponentProps<typeof VerifyPhoneModal>> = {}) {
   const onVerifyCode = vi.fn<(code: string) => Promise<AppError | undefined>>(
     async () => undefined
