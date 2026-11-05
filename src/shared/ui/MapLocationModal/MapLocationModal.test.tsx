@@ -30,4 +30,32 @@ describe('MapLocationModal', () => {
       address: '',
     });
   });
+
+  it('uses a supplied saved location, including its region', async () => {
+    const onConfirm = vi.fn();
+    const user = userEvent.setup();
+
+    renderWithIntl(
+      <MapLocationModal
+        open
+        onClose={vi.fn()}
+        onConfirm={onConfirm}
+        initialLocation={{
+          lat: 21.4858,
+          lng: 39.1925,
+          address: 'Makkah',
+          region: 'Makkah Region',
+        }}
+      />,
+    );
+
+    await user.click(screen.getByRole('button', { name: 'Confirm location' }));
+
+    expect(onConfirm).toHaveBeenCalledWith({
+      lat: 21.4858,
+      lng: 39.1925,
+      address: 'Makkah',
+      region: 'Makkah Region',
+    });
+  });
 });

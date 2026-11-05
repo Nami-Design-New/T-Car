@@ -31,9 +31,13 @@ export default function CarDetailsView({ car }: Props) {
                   type={car.pickupPoint}
                 />
               )}
-              <WarrantiesList warranties={car.warranties} />
-              <AddonsGrid addons={car.addons} />
-              <InsuranceOptions option={car.insuranceOptions[0]} />
+              {car.warranties.length > 0 && (
+                <WarrantiesList warranties={car.warranties} />
+              )}
+              {car.addons.length > 0 && <AddonsGrid addons={car.addons} />}
+              {car.insuranceOptions[0] && (
+                <InsuranceOptions option={car.insuranceOptions[0]} />
+              )}
             </div>
 
             <div className="sticky top-25 max-lg:static max-lg:top-auto">
@@ -50,11 +54,13 @@ export default function CarDetailsView({ car }: Props) {
                 originalPrice={car.originalPrice}
               />
 
-              <ReviewsSummaryCard
-                rating={car.rating}
-                reviewsCount={car.reviewsCount}
-                reviews={car.reviews}
-              />
+              {car.reviewsCount > 0 && (
+                <ReviewsSummaryCard
+                  rating={car.rating}
+                  reviewsCount={car.reviewsCount}
+                  reviews={car.reviews}
+                />
+              )}
             </div>
           </div>
         </div>

@@ -1,13 +1,166 @@
-import type { CarDetails } from "./model";
-import { carDetailsMock } from "./api.mock";
+import "server-only";
+import { isApiEnvelope, type ApiEnvelope } from "@/services/http/envelope";
+import { publicServerHttp } from "@/services/http/server";
+import { IMAGES } from "@/shared/config/assets";
+import { AppError } from "@/shared/lib/errors";
+import type { CarOffer } from "@/features/cars";
+import type { CarDetails, CarDetailsQuery } from "./model";
 
 export interface CarDetailsApi {
-  /** Throws a `not_found` AppError for an unknown id. */
-  getCarDetails(id: string): Promise<CarDetails>;
+  /** Throws an AppError for an unknown id, malformed payload, or backend error. */
+  getCarDetails(id: string, query: CarDetailsQuery): Promise<CarDetails>;
 }
 
-/**
- * The mock remains the active implementation until the detail endpoint is
- * integrated in the next fraction.
- */
-export const carDetailsApi: CarDetailsApi = carDetailsMock;
+interface LookupDto {
+  id: number;
+  title: string;
+  logo: string | null;
+}
+
+interface OfferDto {
+  type: string;
+  require_booking_days: number;
+  free_days: number;
+}
+
+interface CarDto {
+  id: number;
+  image_url: string | null;
+  year: number;
+  company_name: string;
+  company_logo: string | null;
+  lower_price: number;
+  max_price: number;
+  rate: number;
+  brand: LookupDto;
+  car_model: LookupDto;
+  has_offer: boolean;
+  offer: OfferDto | null;
+}
+
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === "object" && value !== null;
+
+const isNumber = (value: unknown): value is number =>
+  typeof value === "number" && Number.isFinite(value);
+
+/** Debug output for local API integration work; never emitted by production builds. */
+function logDetailData(label: string, value: unknown): void {
+  if (process.env.NODE_ENV === "development") {
+    // eslint-disable-next-line no-console -- intentional local API integration inspection.
+    console.info(`[car-details] ${label}`, value);
+  }
+}
+
+function isLookup(value: unknown): value is LookupDto {
+  return (
+    isRecord(value) &&
+    isNumber(value.id) &&
+    typeof value.title === "string" &&
+    (value.logo === null || typeof value.logo === "string")
+  );
+}
+
+function isOffer(value: unknown): value is OfferDto {
+  return (
+    isRecord(value) &&
+    typeof value.type === "string" &&
+    isNumber(value.require_booking_days) &&
+    isNumber(value.free_days)
+  );
+}
+
+export function isCarDetailsDto(value: unknown): value is CarDto {
+  return (
+    isRecord(value) &&
+    isNumber(value.id) &&
+    (value.image_url === null || typeof value.image_url === "string") &&
+    isNumber(value.year) &&
+    typeof value.company_name === "string" &&
+    (value.company_logo === null || typeof value.company_logo === "string") &&
+    isNumber(value.lower_price) &&
+    isNumber(value.max_price) &&
+    isNumber(value.rate) &&
+    typeof value.has_offer === "boolean" &&
+    isLookup(value.brand) &&
+    isLookup(value.car_model) &&
+    (value.offer === null || isOffer(value.offer))
+  );
+}
+
+function toOffer(car: CarDto): CarOffer | undefined {
+  const { offer } = car;
+  if (!car.has_offer || offer?.type !== "free_days" || offer.free_days < 1) {
+    return undefined;
+  }
+  return {
+    requiredDays: offer.require_booking_days,
+    freeDays: offer.free_days,
+  };
+}
+
+/** Maps the confirmed core response; later fractions add its detail sections. */
+export function mapCarDetails(car: CarDto): CarDetails {
+  const pricePerDay = car.lower_price > 0 ? car.lower_price : car.max_price;
+  return {
+    id: String(car.id),
+    name: car.car_model.title,
+    brand: car.brand.title,
+    image: car.image_url || IMAGES.imageFallback.src,
+    images: [car.image_url || IMAGES.imageFallback.src],
+    pricePerDay,
+    rating: car.rate,
+    year: car.year,
+    showroom: car.company_name,
+    showroomLogo: car.company_logo || undefined,
+    offer: toOffer(car),
+    reviewsCount: 0,
+    quickFacts: [],
+    warranties: [],
+    addons: [],
+    insuranceOptions: [],
+    reviews: [],
+    pickupInfo: { address: "", distanceKm: 0, branches: [] },
+  };
+}
+
+function toSearch(query: CarDetailsQuery): URLSearchParams {
+  const search = new URLSearchParams();
+  if (query.location) {
+    search.set("region", query.location.region);
+    search.set("latitude", String(query.location.latitude));
+    search.set("longitude", String(query.location.longitude));
+  }
+  if (query.deliveryType) search.set("delivery_type", query.deliveryType);
+  if (query.bookingType) search.set("booking_type", query.bookingType);
+  if (query.airportId) search.set("airport_id", query.airportId);
+  if (query.stationId) search.set("train_station_id", query.stationId);
+  if (query.countryId) search.set("country_id", query.countryId);
+  return search;
+}
+
+async function getCarDetails(
+  id: string,
+  query: CarDetailsQuery,
+): Promise<CarDetails> {
+  const search = toSearch(query);
+  logDetailData("request params", Object.fromEntries(search));
+  const response = await publicServerHttp.get<ApiEnvelope<unknown>>(
+    `/cars/${id}${search.size ? `?${search}` : ""}`,
+  );
+  logDetailData("retrieved API data", response);
+  const data = isApiEnvelope(response) ? response.data : undefined;
+  const car = isRecord(data) ? data.car : undefined;
+  if (
+    !isApiEnvelope(response) ||
+    response.code !== 200 ||
+    !isCarDetailsDto(car)
+  ) {
+    throw new AppError("server");
+  }
+  const mappedCar = mapCarDetails(car);
+  logDetailData("mapped detail model", mappedCar);
+  return mappedCar;
+}
+
+export const carDetailsApi: CarDetailsApi = { getCarDetails };

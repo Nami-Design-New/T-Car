@@ -3,7 +3,7 @@ import { carDetailsMock } from "./api.mock";
 
 describe("carDetailsMock", () => {
   it("returns the listing together with its detail-only fields", async () => {
-    const car = await carDetailsMock.getCarDetails("1");
+    const car = await carDetailsMock.getCarDetails("1", {});
 
     expect(car).toMatchObject({ id: "1" });
     expect(car.images).toHaveLength(1);
@@ -11,8 +11,8 @@ describe("carDetailsMock", () => {
   });
 
   it("reports an unknown car as not found", async () => {
-    await expect(carDetailsMock.getCarDetails("missing")).rejects.toMatchObject(
-      { kind: "not_found" },
-    );
+    await expect(
+      carDetailsMock.getCarDetails("missing", {}),
+    ).rejects.toMatchObject({ kind: "not_found" });
   });
 });
