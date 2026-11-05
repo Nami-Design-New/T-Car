@@ -41,6 +41,21 @@ const car = {
 
 const details = {
   car,
+  branch_data: {
+    branch: {
+      id: 3,
+      title: "Cairo branch",
+      address: "Mit Khaqan, Shebin El Kom",
+      latitude: "30.5687368",
+      longitude: "31.0294824",
+      place_id: "ChIJT430qt_W9xQR0DqT7YZxX3o",
+      region: "Monufia Governorate",
+      logo: "https://t-car.app/storage/companies/logos/company.png",
+      distance_km: 0.99,
+    },
+    has_airport: false,
+    has_station: false,
+  },
   serevices: [
     { id: 1, price: 50, title: "Additional driver", key: "adding_driver" },
     { id: 2, price: 75, title: "Travel abroad", key: "travel_abroad" },
@@ -93,6 +108,21 @@ const policies = {
     { id: 2, content: "<p>Cancellation is subject to the booking terms.</p>" },
   ],
 };
+
+const branches = [
+  {
+    branch_id: 3,
+    title: "Cairo branch",
+    stock: 4,
+    address: "Mit Khaqan, Shebin El Kom",
+    latitude: 30.5687368,
+    longitude: 31.0294824,
+    place_id: "ChIJT430qt_W9xQR0DqT7YZxX3o",
+    region: "Monufia Governorate",
+    logo: "https://t-car.app/storage/companies/logos/company.png",
+    distance_km: 0.99,
+  },
+];
 
 describe("parseCarDetailsQuery", () => {
   it("sends the complete saved location and selected booking context", () => {
@@ -189,7 +219,56 @@ describe("carDetailsApi.getCarDetails", () => {
           percentage: 15,
         },
       ],
+      pickupInfo: {
+        nearestBranch: {
+          id: "3",
+          name: "Cairo branch",
+          address: "Mit Khaqan, Shebin El Kom",
+          distanceKm: 0.99,
+          latitude: 30.5687368,
+          longitude: 31.0294824,
+          region: "Monufia Governorate",
+          placeId: "ChIJT430qt_W9xQR0DqT7YZxX3o",
+          logo: "https://t-car.app/storage/companies/logos/company.png",
+        },
+      },
     });
+  });
+
+  it("maps the available branch dialog list with the complete delivery context", async () => {
+    get.mockResolvedValue(envelope(branches));
+
+    await expect(
+      carDetailsApi.getCarBranches("3", {
+        location: {
+          region: "Monufia Governorate",
+          latitude: 30.564209193608303,
+          longitude: 31.020535958169493,
+        },
+        deliveryType: "to_location",
+      }),
+    ).resolves.toEqual([
+      {
+        id: "3",
+        name: "Cairo branch",
+        address: "Mit Khaqan, Shebin El Kom",
+        distanceKm: 0.99,
+        latitude: 30.5687368,
+        longitude: 31.0294824,
+        region: "Monufia Governorate",
+        placeId: "ChIJT430qt_W9xQR0DqT7YZxX3o",
+        logo: "https://t-car.app/storage/companies/logos/company.png",
+      },
+    ]);
+
+    expect(get).toHaveBeenCalledWith(
+      "/cars/3/branches?region=Monufia+Governorate&latitude=30.564209193608303&longitude=31.020535958169493&delivery_type=to_location",
+    );
+  });
+
+  it("does not request branches without the complete required context", async () => {
+    await expect(carDetailsApi.getCarBranches("3", {})).resolves.toEqual([]);
+    expect(get).not.toHaveBeenCalled();
   });
 
   it("keeps backend validation errors intact", async () => {

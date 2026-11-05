@@ -11,6 +11,7 @@ import {
   type CarDetailsQuery,
   type CarQuickFact,
   type CompanyRatings,
+  type PickupBranch,
 } from "./model";
 
 export interface CarDetailsApi {
@@ -20,6 +21,7 @@ export interface CarDetailsApi {
     id: string,
     query: CarDetailsQuery,
   ): Promise<CompanyRatings>;
+  getCarBranches(id: string, query: CarDetailsQuery): Promise<PickupBranch[]>;
   getPolicies(): Promise<CarPolicies>;
 }
 
@@ -85,9 +87,40 @@ interface WarrantyDto {
 
 interface DetailsDto {
   car: CarDto;
+  branch_data: BranchAvailabilityDto;
   serevices: ServiceDto[];
   insurance: InsuranceDto | null;
   warranties: WarrantyDto[];
+}
+
+interface DetailBranchDto {
+  id: number;
+  title: string;
+  address: string;
+  latitude: string | number;
+  longitude: string | number;
+  place_id: string;
+  region: string;
+  logo: string | null;
+  distance_km: number;
+}
+
+interface BranchAvailabilityDto {
+  branch: DetailBranchDto | null;
+  has_airport: boolean;
+  has_station: boolean;
+}
+
+interface CarBranchDto {
+  branch_id: number;
+  title: string;
+  address: string;
+  latitude: number;
+  longitude: number;
+  place_id: string;
+  region: string;
+  logo: string | null;
+  distance_km: number;
 }
 
 interface CompanyRateDto {
@@ -119,6 +152,10 @@ const isRecord = (value: unknown): value is Record<string, unknown> =>
 
 const isNumber = (value: unknown): value is number =>
   typeof value === "number" && Number.isFinite(value);
+
+const isCoordinate = (value: unknown): value is string | number =>
+  (typeof value === "string" && Number.isFinite(Number(value))) ||
+  isNumber(value);
 
 /** Debug output for local API integration work; never emitted by production builds. */
 function logDetailData(label: string, value: unknown): void {
@@ -191,6 +228,45 @@ function isWarranty(value: unknown): value is WarrantyDto {
   );
 }
 
+function isDetailBranch(value: unknown): value is DetailBranchDto {
+  return (
+    isRecord(value) &&
+    isNumber(value.id) &&
+    typeof value.title === "string" &&
+    typeof value.address === "string" &&
+    isCoordinate(value.latitude) &&
+    isCoordinate(value.longitude) &&
+    typeof value.place_id === "string" &&
+    typeof value.region === "string" &&
+    (value.logo === null || typeof value.logo === "string") &&
+    isNumber(value.distance_km)
+  );
+}
+
+function isBranchAvailability(value: unknown): value is BranchAvailabilityDto {
+  return (
+    isRecord(value) &&
+    (value.branch === null || isDetailBranch(value.branch)) &&
+    typeof value.has_airport === "boolean" &&
+    typeof value.has_station === "boolean"
+  );
+}
+
+function isCarBranch(value: unknown): value is CarBranchDto {
+  return (
+    isRecord(value) &&
+    isNumber(value.branch_id) &&
+    typeof value.title === "string" &&
+    typeof value.address === "string" &&
+    isNumber(value.latitude) &&
+    isNumber(value.longitude) &&
+    typeof value.place_id === "string" &&
+    typeof value.region === "string" &&
+    (value.logo === null || typeof value.logo === "string") &&
+    isNumber(value.distance_km)
+  );
+}
+
 function isCompanyRate(value: unknown): value is CompanyRateDto {
   return (
     isRecord(value) &&
@@ -249,6 +325,7 @@ function isDetailsDto(value: unknown): value is DetailsDto {
   return (
     isRecord(value) &&
     isCarDetailsDto(value.car) &&
+    isBranchAvailability(value.branch_data) &&
     Array.isArray(value.serevices) &&
     value.serevices.every(isService) &&
     Array.isArray(value.warranties) &&
@@ -301,9 +378,23 @@ function toQuickFacts(details: CarTechnicalDetailsDto): CarQuickFact[] {
   return facts;
 }
 
+function toPickupBranch(branch: DetailBranchDto | CarBranchDto): PickupBranch {
+  return {
+    id: String("branch_id" in branch ? branch.branch_id : branch.id),
+    name: branch.title,
+    address: branch.address,
+    distanceKm: branch.distance_km,
+    latitude: Number(branch.latitude),
+    longitude: Number(branch.longitude),
+    region: branch.region,
+    placeId: branch.place_id,
+    ...(branch.logo ? { logo: branch.logo } : {}),
+  };
+}
+
 /** Maps the confirmed core response; later fractions add its detail sections. */
 export function mapCarDetails(details: DetailsDto): CarDetails {
-  const { car } = details;
+  const { car, branch_data: branchData } = details;
   const pricePerDay = car.lower_price > 0 ? car.lower_price : car.max_price;
   return {
     id: String(car.id),
@@ -316,6 +407,11 @@ export function mapCarDetails(details: DetailsDto): CarDetails {
     year: car.year,
     showroom: car.company_name,
     showroomLogo: car.company_logo || undefined,
+    pickupPoint: branchData.has_airport
+      ? "airport"
+      : branchData.has_station
+        ? "station"
+        : undefined,
     offer: toOffer(car),
     reviewsCount: 0,
     quickFacts: toQuickFacts(car.details),
@@ -344,7 +440,9 @@ export function mapCarDetails(details: DetailsDto): CarDetails {
         ]
       : [],
     reviews: [],
-    pickupInfo: { address: "", distanceKm: 0, branches: [] },
+    pickupInfo: branchData.branch
+      ? { nearestBranch: toPickupBranch(branchData.branch) }
+      : {},
   };
 }
 
@@ -370,6 +468,18 @@ function toCompanyRatesSearch(query: CarDetailsQuery): URLSearchParams {
     search.set("longitude", String(query.location.longitude));
   }
   if (query.deliveryType) search.set("delivery_type", query.deliveryType);
+  return search;
+}
+
+/** The branch dialog endpoint rejects a partial delivery context. */
+function toBranchesSearch(query: CarDetailsQuery): URLSearchParams | null {
+  if (!query.location || !query.deliveryType) return null;
+
+  const search = new URLSearchParams();
+  search.set("region", query.location.region);
+  search.set("latitude", String(query.location.latitude));
+  search.set("longitude", String(query.location.longitude));
+  search.set("delivery_type", query.deliveryType);
   return search;
 }
 
@@ -425,6 +535,29 @@ async function getCompanyRatings(
   };
 }
 
+async function getCarBranches(
+  id: string,
+  query: CarDetailsQuery,
+): Promise<PickupBranch[]> {
+  const search = toBranchesSearch(query);
+  if (!search) return [];
+
+  const response = await publicServerHttp.get<ApiEnvelope<unknown>>(
+    `/cars/${id}/branches?${search}`,
+  );
+  const data = isApiEnvelope(response) ? response.data : undefined;
+  if (
+    !isApiEnvelope(response) ||
+    response.code !== 200 ||
+    !Array.isArray(data) ||
+    !data.every(isCarBranch)
+  ) {
+    throw new AppError("server");
+  }
+
+  return data.map(toPickupBranch);
+}
+
 async function getPolicies(): Promise<CarPolicies> {
   const response =
     await publicServerHttp.get<ApiEnvelope<unknown>>("/policies");
@@ -446,5 +579,6 @@ async function getPolicies(): Promise<CarPolicies> {
 export const carDetailsApi: CarDetailsApi = {
   getCarDetails,
   getCompanyRatings,
+  getCarBranches,
   getPolicies,
 };

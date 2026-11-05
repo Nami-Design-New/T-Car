@@ -1,5 +1,10 @@
 import { CarBookingCard } from "@/features/booking";
-import type { CarDetails, CarPolicies, CompanyRatings } from "../model";
+import type {
+  CarDetails,
+  CarPolicies,
+  CompanyRatings,
+  PickupBranch,
+} from "../model";
 import CarGallery from "./CarGallery";
 import CarQuickInfo from "./CarQuickInfo";
 import WarrantiesList from "./WarrantiesList";
@@ -13,9 +18,15 @@ interface Props {
   car: CarDetails;
   ratings: CompanyRatings;
   policies: CarPolicies;
+  branches: PickupBranch[];
 }
 
-export default function CarDetailsView({ car, ratings, policies }: Props) {
+export default function CarDetailsView({
+  car,
+  ratings,
+  policies,
+  branches,
+}: Props) {
   return (
     <>
       <section className="py-20 max-md:py-12">
@@ -28,10 +39,11 @@ export default function CarDetailsView({ car, ratings, policies }: Props) {
                 offer={car.offer}
               />
               <CarQuickInfo car={car} />
-              {car.pickupPoint && (
+              {car.pickupInfo.nearestBranch && (
                 <StationAndAirportInfo
                   showroom={car.showroom}
                   pickup={car.pickupInfo}
+                  branches={branches}
                   type={car.pickupPoint}
                 />
               )}

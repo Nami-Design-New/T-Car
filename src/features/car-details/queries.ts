@@ -7,6 +7,7 @@ import {
   type CarDetails,
   type CarPolicies,
   type CompanyRatings,
+  type PickupBranch,
 } from "./model";
 
 /**
@@ -32,6 +33,12 @@ export const getCarDetails = cache(
 export const getCompanyRatings = cache(
   async (id: string, queryKey: string): Promise<CompanyRatings> =>
     carDetailsApi.getCompanyRatings(id, deserializeCarDetailsQuery(queryKey)),
+);
+
+/** Empty when the selected context cannot satisfy the branch endpoint contract. */
+export const getCarBranches = cache(
+  async (id: string, queryKey: string): Promise<PickupBranch[]> =>
+    carDetailsApi.getCarBranches(id, deserializeCarDetailsQuery(queryKey)),
 );
 
 export const getCarPolicies = cache(async (): Promise<CarPolicies> =>

@@ -7,6 +7,7 @@ import {
 } from "@/features/car-details";
 import {
   getCarDetails,
+  getCarBranches,
   getCompanyRatings,
   getCarPolicies,
 } from "@/features/car-details/queries";
@@ -46,10 +47,18 @@ export default async function CarDetailsPage({ params, searchParams }: Props) {
   if (!car) notFound();
 
   // Resolve the car first so an unknown ID remains a proper not-found route.
-  const [ratings, policies] = await Promise.all([
+  const [ratings, policies, branches] = await Promise.all([
     getCompanyRatings(carId, queryKey),
     getCarPolicies(),
+    getCarBranches(carId, queryKey),
   ]);
 
-  return <CarDetailsView car={car} ratings={ratings} policies={policies} />;
+  return (
+    <CarDetailsView
+      car={car}
+      ratings={ratings}
+      policies={policies}
+      branches={branches}
+    />
+  );
 }

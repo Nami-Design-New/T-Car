@@ -172,6 +172,10 @@ export const carDetailsMock: CarDetailsApi = {
       ),
     };
   },
+  async getCarBranches() {
+    await delay();
+    return MOCK_DETAILS_EXTRAS.pickupInfo.branches ?? [];
+  },
   async getPolicies(): Promise<CarPolicies> {
     await delay();
     return {

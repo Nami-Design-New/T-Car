@@ -181,13 +181,20 @@ export interface PickupBranch {
   name: string;
   address: string;
   distanceKm: number;
+  latitude?: number;
+  longitude?: number;
+  region?: string;
+  placeId?: string;
+  logo?: string;
 }
 
 /** Where the customer collects the car and the other branches nearby. */
 export interface CarPickupInfo {
-  address: string;
-  distanceKm: number;
-  branches: PickupBranch[];
+  nearestBranch?: PickupBranch;
+  /** Legacy mock fields retained until the mock is retired. */
+  address?: string;
+  distanceKm?: number;
+  branches?: PickupBranch[];
 }
 
 export interface CarDetails extends CarListing {
