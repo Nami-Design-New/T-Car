@@ -68,6 +68,32 @@ const envelope = (data: unknown) => ({
   code: 200,
 });
 
+const companyRatings = {
+  summary: { average: 3.4, count: 2, label: "Good" },
+  rates: [
+    {
+      id: 10,
+      value: 4,
+      user_name: "Saad Alnajjar",
+      created_at: "2025-12-25 10:30:00",
+      order: { order_number: "ignored" },
+    },
+  ],
+};
+
+const policies = {
+  client_instructions: [
+    {
+      id: 1,
+      content:
+        "<ol><li>Report incidents immediately.</li><li>Return on time.</li></ol>",
+    },
+  ],
+  cancellation_policies: [
+    { id: 2, content: "<p>Cancellation is subject to the booking terms.</p>" },
+  ],
+};
+
 describe("parseCarDetailsQuery", () => {
   it("sends the complete saved location and selected booking context", () => {
     expect(
@@ -173,5 +199,45 @@ describe("carDetailsApi.getCarDetails", () => {
     get.mockRejectedValue(validation);
 
     await expect(carDetailsApi.getCarDetails("3", {})).rejects.toBe(validation);
+  });
+
+  it("maps company ratings without exposing order metadata", async () => {
+    get.mockResolvedValue(envelope(companyRatings));
+
+    await expect(
+      carDetailsApi.getCompanyRatings("3", {
+        location: {
+          region: "Riyadh Region",
+          latitude: 24.7136,
+          longitude: 46.6753,
+        },
+        deliveryType: "to_location",
+      }),
+    ).resolves.toEqual({
+      average: 3.4,
+      count: 2,
+      reviews: [
+        {
+          id: "10",
+          name: "Saad Alnajjar",
+          rating: 4,
+          date: "2025-12-25 10:30:00",
+        },
+      ],
+    });
+
+    expect(get).toHaveBeenCalledWith(
+      "/cars/3/company-rates?latitude=24.7136&longitude=46.6753&delivery_type=to_location",
+    );
+  });
+
+  it("maps policy HTML to safe tab content", async () => {
+    get.mockResolvedValue(envelope(policies));
+
+    await expect(carDetailsApi.getPolicies()).resolves.toEqual({
+      clientInstructions: ["Report incidents immediately.", "Return on time."],
+      cancellationPolicies: ["Cancellation is subject to the booking terms."],
+    });
+    expect(get).toHaveBeenCalledWith("/policies");
   });
 });

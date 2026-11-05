@@ -2,7 +2,12 @@ import "server-only";
 import { cache } from "react";
 import { carDetailsApi } from "./api";
 import { toAppError } from "@/shared/lib/errors";
-import { deserializeCarDetailsQuery, type CarDetails } from "./model";
+import {
+  deserializeCarDetailsQuery,
+  type CarDetails,
+  type CarPolicies,
+  type CompanyRatings,
+} from "./model";
 
 /**
  * Null for an unknown id, so the page can call notFound(). Other failures throw
@@ -21,4 +26,14 @@ export const getCarDetails = cache(
       throw appError;
     }
   },
+);
+
+/** Ratings are company-level and share the selected delivery context. */
+export const getCompanyRatings = cache(
+  async (id: string, queryKey: string): Promise<CompanyRatings> =>
+    carDetailsApi.getCompanyRatings(id, deserializeCarDetailsQuery(queryKey)),
+);
+
+export const getCarPolicies = cache(async (): Promise<CarPolicies> =>
+  carDetailsApi.getPolicies(),
 );

@@ -896,6 +896,10 @@
       "applePlay": "Apple CarPlay"
     },
     "warranties": "T-Car warranties",
+    "policies": {
+      "instructions": "Renter instructions",
+      "cancellation": "Cancellation policy"
+    },
     "insurance": {
       "title": "Insurance type",
       "details": "Insurance details",

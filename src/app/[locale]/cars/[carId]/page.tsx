@@ -5,7 +5,11 @@ import {
   parseCarDetailsQuery,
   serializeCarDetailsQuery,
 } from "@/features/car-details";
-import { getCarDetails } from "@/features/car-details/queries";
+import {
+  getCarDetails,
+  getCompanyRatings,
+  getCarPolicies,
+} from "@/features/car-details/queries";
 
 interface Props {
   params: Promise<{ carId: string }>;
@@ -35,11 +39,17 @@ export default async function CarDetailsPage({ params, searchParams }: Props) {
     params,
     searchParams,
   ]);
-  const car = await getCarDetails(
-    carId,
-    serializeCarDetailsQuery(parseCarDetailsQuery(rawSearchParams)),
+  const queryKey = serializeCarDetailsQuery(
+    parseCarDetailsQuery(rawSearchParams),
   );
+  const car = await getCarDetails(carId, queryKey);
   if (!car) notFound();
 
-  return <CarDetailsView car={car} />;
+  // Resolve the car first so an unknown ID remains a proper not-found route.
+  const [ratings, policies] = await Promise.all([
+    getCompanyRatings(carId, queryKey),
+    getCarPolicies(),
+  ]);
+
+  return <CarDetailsView car={car} ratings={ratings} policies={policies} />;
 }

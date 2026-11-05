@@ -1,4 +1,4 @@
-import type { CarDetails } from "./model";
+import type { CarDetails, CarPolicies, CompanyRatings } from "./model";
 import { AppError } from "@/shared/lib/errors";
 import type { CarDetailsApi } from "./api";
 import { getCarListingById } from "@/services/mocks/cars";
@@ -155,6 +155,33 @@ export const carDetailsMock: CarDetailsApi = {
       showroomLogo: MOCK_OFFICES.find(
         (office) => office.showroom === listing.showroom,
       )?.logo,
+    };
+  },
+  async getCompanyRatings(): Promise<CompanyRatings> {
+    await delay();
+    return {
+      average: 4.8,
+      count: MOCK_DETAILS_EXTRAS.reviews.length,
+      reviews: MOCK_DETAILS_EXTRAS.reviews.map(
+        ({ id, name, rating, date }) => ({
+          id,
+          name,
+          rating,
+          date,
+        }),
+      ),
+    };
+  },
+  async getPolicies(): Promise<CarPolicies> {
+    await delay();
+    return {
+      clientInstructions: [
+        "Report any accident immediately to the company and the relevant security authorities.",
+        "Return the car at the agreed time to avoid additional charges.",
+      ],
+      cancellationPolicies: [
+        "Cancellation fees may apply according to the booking terms.",
+      ],
     };
   },
 };

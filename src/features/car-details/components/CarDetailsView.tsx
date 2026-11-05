@@ -1,5 +1,5 @@
 import { CarBookingCard } from "@/features/booking";
-import type { CarDetails } from "../model";
+import type { CarDetails, CarPolicies, CompanyRatings } from "../model";
 import CarGallery from "./CarGallery";
 import CarQuickInfo from "./CarQuickInfo";
 import WarrantiesList from "./WarrantiesList";
@@ -7,12 +7,15 @@ import AddonsGrid from "./AddonsGrid";
 import InsuranceOptions from "./InsuranceOptions";
 import ReviewsSummaryCard from "./ReviewsSummaryCard";
 import StationAndAirportInfo from "./StationAndAirportInfo";
+import PoliciesList from "./PoliciesList";
 
 interface Props {
   car: CarDetails;
+  ratings: CompanyRatings;
+  policies: CarPolicies;
 }
 
-export default function CarDetailsView({ car }: Props) {
+export default function CarDetailsView({ car, ratings, policies }: Props) {
   return (
     <>
       <section className="py-20 max-md:py-12">
@@ -37,6 +40,7 @@ export default function CarDetailsView({ car }: Props) {
               {car.insuranceOptions[0] && (
                 <InsuranceOptions option={car.insuranceOptions[0]} />
               )}
+              <PoliciesList policies={policies} />
             </div>
 
             <div className="sticky top-25 max-lg:static max-lg:top-auto">
@@ -53,11 +57,11 @@ export default function CarDetailsView({ car }: Props) {
                 originalPrice={car.originalPrice}
               />
 
-              {car.rating && (
+              {ratings.count > 0 && (
                 <ReviewsSummaryCard
-                  rating={car.rating}
-                  reviewsCount={car.reviewsCount}
-                  reviews={car.reviews}
+                  rating={ratings.average}
+                  reviewsCount={ratings.count}
+                  reviews={ratings.reviews}
                 />
               )}
             </div>

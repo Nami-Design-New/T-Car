@@ -90,7 +90,19 @@ export interface Review {
   name: string;
   rating: number;
   date: string;
-  comment: string;
+  /** Legacy mock-only field; live company rates do not provide review text. */
+  comment?: string;
+}
+
+export interface CompanyRatings {
+  average: number;
+  count: number;
+  reviews: Review[];
+}
+
+export interface CarPolicies {
+  clientInstructions: string[];
+  cancellationPolicies: string[];
 }
 
 export interface CarWarranty {
@@ -99,8 +111,8 @@ export interface CarWarranty {
   description: string;
 }
 
-/** Converts backend-authored warranty HTML into safe display text. */
-export function warrantyHtmlToText(value: string): string {
+/** Converts backend-authored HTML into safe display text. */
+export function htmlToPlainText(value: string): string {
   const withoutUnsafeBlocks = value.replace(
     /<(script|style)\b[^>]*>[\s\S]*?<\/\1>/gi,
     "",

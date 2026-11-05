@@ -1,6 +1,6 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { FiStar } from "react-icons/fi";
 import { Dialog } from "@/shared/ui/Dialog";
 import type { Review } from "../model";
@@ -21,6 +21,17 @@ export default function ReviewsModal({
   reviews,
 }: Props) {
   const t = useTranslations("carDetails.reviews");
+  const locale = useLocale();
+  const formatDate = (value: string) => {
+    const match = /^(\d{4})-(\d{2})-(\d{2})/.exec(value);
+    if (!match) return value;
+    const [, year, month, day] = match;
+    return new Intl.DateTimeFormat(locale, {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    }).format(new Date(Number(year), Number(month) - 1, Number(day)));
+  };
   return (
     <Dialog open={open} onClose={onClose} size="lg">
       <Dialog.Header>
@@ -28,10 +39,10 @@ export default function ReviewsModal({
         <Dialog.Close />
       </Dialog.Header>
 
-      <Dialog.Body className="min-h-0 overflow-y-auto p-6 scrollbar-none [&::-webkit-scrollbar]:hidden">
-        <div className=" mb-4.5 flex items-center justify-between border-b border-stroke-light pb-4.5">
-          <div className=" flex flex-wrap items-center gap-2">
-            <span className="label-text font-bold text-text-primary">
+      <Dialog.Body className="min-h-0 scrollbar-none overflow-y-auto p-6 [&::-webkit-scrollbar]:hidden">
+        <div className="border-stroke-light mb-4.5 flex items-center justify-between border-b pb-4.5">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="label-text text-text-primary font-bold">
               {t(
                 rating >= 4.5
                   ? "excellent"
@@ -54,12 +65,12 @@ export default function ReviewsModal({
                 />
               ))}
             </div>
-            <span className="count text-[0.82rem] text-text-subtle">
+            <span className="count text-text-subtle text-[0.82rem]">
               ({reviewsCount})
             </span>
           </div>
 
-          <span className="reviews-summary-score text-[1.6rem] font-extrabold text-text-primary">
+          <span className="reviews-summary-score text-text-primary text-[1.6rem] font-extrabold">
             {rating}
           </span>
         </div>
@@ -68,14 +79,14 @@ export default function ReviewsModal({
           {reviews.map((review) => (
             <div
               key={review.id}
-              className="review-item border-b border-stroke-light pb-4.5 last:border-0 last:pb-0"
+              className="review-item border-stroke-light border-b pb-4.5 last:border-0 last:pb-0"
             >
               <div className="review-item-head mb-1.5 flex items-center justify-between">
-                <span className="review-item-name text-[0.9rem] font-bold text-text-primary">
+                <span className="review-item-name text-text-primary text-[0.9rem] font-bold">
                   {review.name}
                 </span>
-                <span className="review-item-date text-[0.78rem] text-text-subtle">
-                  {review.date}
+                <span className="review-item-date text-text-subtle text-[0.78rem]">
+                  {formatDate(review.date)}
                 </span>
               </div>
 
@@ -92,9 +103,11 @@ export default function ReviewsModal({
                 ))}
               </div>
 
-              <p className="review-item-comment m-0 text-[0.85rem] leading-[1.8] text-text-subtle">
-                {review.comment}
-              </p>
+              {review.comment && (
+                <p className="review-item-comment text-text-subtle m-0 text-[0.85rem] leading-[1.8]">
+                  {review.comment}
+                </p>
+              )}
             </div>
           ))}
         </div>

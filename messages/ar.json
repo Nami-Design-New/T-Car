@@ -894,6 +894,10 @@
       "applePlay": "Apple CarPlay"
     },
     "warranties": "ضمانات تي كار",
+    "policies": {
+      "instructions": "تعليمات المستأجر",
+      "cancellation": "سياسة الإلغاء"
+    },
     "insurance": {
       "title": "نوع التأمين",
       "details": "تفاصيل التأمين",

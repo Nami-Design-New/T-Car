@@ -5,15 +5,22 @@ import { IMAGES } from "@/shared/config/assets";
 import { AppError } from "@/shared/lib/errors";
 import type { CarOffer } from "@/features/cars";
 import {
-  warrantyHtmlToText,
+  htmlToPlainText,
+  type CarPolicies,
   type CarDetails,
   type CarDetailsQuery,
   type CarQuickFact,
+  type CompanyRatings,
 } from "./model";
 
 export interface CarDetailsApi {
   /** Throws an AppError for an unknown id, malformed payload, or backend error. */
   getCarDetails(id: string, query: CarDetailsQuery): Promise<CarDetails>;
+  getCompanyRatings(
+    id: string,
+    query: CarDetailsQuery,
+  ): Promise<CompanyRatings>;
+  getPolicies(): Promise<CarPolicies>;
 }
 
 interface LookupDto {
@@ -81,6 +88,30 @@ interface DetailsDto {
   serevices: ServiceDto[];
   insurance: InsuranceDto | null;
   warranties: WarrantyDto[];
+}
+
+interface CompanyRateDto {
+  id: number;
+  value: number;
+  user_name: string;
+  created_at: string;
+}
+
+interface CompanyRatingsDto {
+  summary: {
+    average: number;
+    count: number;
+  };
+  rates: CompanyRateDto[];
+}
+
+interface PolicyContentDto {
+  content: string;
+}
+
+interface PoliciesDto {
+  client_instructions: PolicyContentDto[];
+  cancellation_policies: PolicyContentDto[];
 }
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
@@ -157,6 +188,41 @@ function isWarranty(value: unknown): value is WarrantyDto {
     isRecord(value) &&
     typeof value.title === "string" &&
     typeof value.content === "string"
+  );
+}
+
+function isCompanyRate(value: unknown): value is CompanyRateDto {
+  return (
+    isRecord(value) &&
+    isNumber(value.id) &&
+    isNumber(value.value) &&
+    typeof value.user_name === "string" &&
+    typeof value.created_at === "string"
+  );
+}
+
+function isCompanyRatings(value: unknown): value is CompanyRatingsDto {
+  return (
+    isRecord(value) &&
+    isRecord(value.summary) &&
+    isNumber(value.summary.average) &&
+    isNumber(value.summary.count) &&
+    Array.isArray(value.rates) &&
+    value.rates.every(isCompanyRate)
+  );
+}
+
+function isPolicyContent(value: unknown): value is PolicyContentDto {
+  return isRecord(value) && typeof value.content === "string";
+}
+
+function isPolicies(value: unknown): value is PoliciesDto {
+  return (
+    isRecord(value) &&
+    Array.isArray(value.client_instructions) &&
+    value.client_instructions.every(isPolicyContent) &&
+    Array.isArray(value.cancellation_policies) &&
+    value.cancellation_policies.every(isPolicyContent)
   );
 }
 
@@ -256,7 +322,7 @@ export function mapCarDetails(details: DetailsDto): CarDetails {
     warranties: details.warranties.map((warranty, index) => ({
       id: `warranty-${index}`,
       title: warranty.title,
-      description: warrantyHtmlToText(warranty.content),
+      description: htmlToPlainText(warranty.content),
     })),
     addons: details.serevices.map((service) => ({
       id: String(service.id),
@@ -297,6 +363,16 @@ function toSearch(query: CarDetailsQuery): URLSearchParams {
   return search;
 }
 
+function toCompanyRatesSearch(query: CarDetailsQuery): URLSearchParams {
+  const search = new URLSearchParams();
+  if (query.location) {
+    search.set("latitude", String(query.location.latitude));
+    search.set("longitude", String(query.location.longitude));
+  }
+  if (query.deliveryType) search.set("delivery_type", query.deliveryType);
+  return search;
+}
+
 async function getCarDetails(
   id: string,
   query: CarDetailsQuery,
@@ -320,4 +396,55 @@ async function getCarDetails(
   return mappedCar;
 }
 
-export const carDetailsApi: CarDetailsApi = { getCarDetails };
+async function getCompanyRatings(
+  id: string,
+  query: CarDetailsQuery,
+): Promise<CompanyRatings> {
+  const search = toCompanyRatesSearch(query);
+  const response = await publicServerHttp.get<ApiEnvelope<unknown>>(
+    `/cars/${id}/company-rates${search.size ? `?${search}` : ""}`,
+  );
+  const data = isApiEnvelope(response) ? response.data : undefined;
+  if (
+    !isApiEnvelope(response) ||
+    response.code !== 200 ||
+    !isCompanyRatings(data)
+  ) {
+    throw new AppError("server");
+  }
+
+  return {
+    average: data.summary.average,
+    count: data.summary.count,
+    reviews: data.rates.map((rate) => ({
+      id: String(rate.id),
+      name: rate.user_name,
+      rating: rate.value,
+      date: rate.created_at,
+    })),
+  };
+}
+
+async function getPolicies(): Promise<CarPolicies> {
+  const response =
+    await publicServerHttp.get<ApiEnvelope<unknown>>("/policies");
+  const data = isApiEnvelope(response) ? response.data : undefined;
+  if (!isApiEnvelope(response) || response.code !== 200 || !isPolicies(data)) {
+    throw new AppError("server");
+  }
+
+  return {
+    clientInstructions: data.client_instructions
+      .flatMap((policy) => htmlToPlainText(policy.content).split("\n"))
+      .filter(Boolean),
+    cancellationPolicies: data.cancellation_policies
+      .flatMap((policy) => htmlToPlainText(policy.content).split("\n"))
+      .filter(Boolean),
+  };
+}
+
+export const carDetailsApi: CarDetailsApi = {
+  getCarDetails,
+  getCompanyRatings,
+  getPolicies,
+};
