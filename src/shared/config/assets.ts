@@ -51,7 +51,7 @@ export const ICONS = {
     height: 24,
   },
   store: {
-    src: "/icons/store.svg",
+    src: "/icons/store-icon.svg",
     width: 24,
     height: 24,
   },
