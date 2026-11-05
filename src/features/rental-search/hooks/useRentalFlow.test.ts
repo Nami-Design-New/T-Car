@@ -57,6 +57,17 @@ describe("useRentalFlow", () => {
     expect(completedWith()).toMatchObject({ type: "airport", airportId: "7" });
   });
 
+  it("carries the selected region into the search params", () => {
+    const { result, completedWith } = setup();
+    act(() => result.current.start("daily"));
+    act(() => result.current.confirmPickup());
+    act(() =>
+      result.current.confirmLocation({ ...location, region: "Riyadh Region" }),
+    );
+
+    expect(completedWith()).toMatchObject({ region: "Riyadh Region" });
+  });
+
   it("carries the station into the search params", () => {
     const { result, completedWith } = setup();
     act(() => result.current.start("station"));

@@ -87,6 +87,7 @@ export function useRentalFlow({ onComplete }: Options) {
     params.set("lat", String(location.lat));
     params.set("lng", String(location.lng));
     params.set("address", location.address);
+    if (location.region?.trim()) params.set("region", location.region);
     onComplete(params);
   };
 

@@ -7,7 +7,7 @@ describe("ModelYearBadge", () => {
     render(<ModelYearBadge year={2026} />);
 
     expect(screen.getByText("2026")).toHaveClass(
-      "bg-surface-card-primary",
+      "bg-primary-100",
       "text-action-primary",
     );
   });
