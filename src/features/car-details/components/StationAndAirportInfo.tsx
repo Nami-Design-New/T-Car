@@ -32,11 +32,11 @@ export default function StationAndAirportInfo({
   return (
     <>
       <section
-        className="station-airport-info mt-7 grid gap-[22px] max-sm:gap-3.5"
+        className="station-airport-info mt-7 grid gap-5.5 max-sm:gap-3.5"
         aria-label={t("sectionLabel")}
       >
-        <div className="station-airport-info-banner rounded-xl bg-surface-card-primary px-[22px] py-[18px] max-sm:rounded-md max-sm:p-4">
-          <div className="station-airport-info-heading flex items-center gap-1.5 text-[15px] text-action-primary">
+        <div className="station-airport-info-banner bg-surface-card-primary rounded-xl px-5.5 py-4.5 max-sm:rounded-md max-sm:p-4">
+          <div className="station-airport-info-heading text-action-primary flex items-center gap-1.5 text-[15px]">
             {isAirport ? (
               <LuPlane className="shrink-0 text-[21px]" aria-hidden="true" />
             ) : (
@@ -44,21 +44,21 @@ export default function StationAndAirportInfo({
             )}
             <strong>{isAirport ? t("airportTitle") : t("stationTitle")}</strong>
           </div>
-          <p className="m-0 mt-2 text-[13px] leading-[1.7] text-text-primary">
+          <p className="text-text-primary m-0 mt-2 text-[13px] leading-[1.7]">
             {isAirport ? t("airportDescription") : t("stationDescription")}
           </p>
         </div>
 
-        <div className="station-airport-info-branch flex min-h-32 justify-between gap-6 rounded-xl border border-stroke-light bg-surface-elevated px-[22px] py-[18px] shadow-[0_2px_8px_rgba(30,30,30,0.06)] max-sm:gap-3 max-sm:rounded-md max-sm:p-4">
+        <div className="station-airport-info-branch border-stroke-light bg-surface-elevated flex min-h-32 justify-between gap-6 rounded-xl border px-5.5 py-4.5 shadow-[0_2px_8px_rgba(30,30,30,0.06)] max-sm:gap-3 max-sm:rounded-md max-sm:p-4">
           <div className="station-airport-info-branch-main min-w-0">
-            <span className="station-airport-info-eyebrow flex items-center gap-1.5 text-[13px] font-bold text-action-primary">
+            <span className="station-airport-info-eyebrow text-action-primary flex items-center gap-1.5 text-[13px] font-bold">
               <FiHome aria-hidden="true" />
               {t("nearestBranch")}
             </span>
-            <h3 className="mb-1 mt-2 text-base font-bold text-text-primary">
+            <h3 className="text-text-primary mt-2 mb-1 text-base font-bold">
               {showroom}
             </h3>
-            <p className="m-0 text-[13px] leading-[1.7] text-text-primary">
+            <p className="text-text-primary m-0 text-[13px] leading-[1.7]">
               {address}
             </p>
           </div>
@@ -66,14 +66,14 @@ export default function StationAndAirportInfo({
           <div className="station-airport-info-branch-meta flex shrink-0 flex-col items-end justify-between">
             <button
               type="button"
-              className="station-airport-info-branches-trigger inline-flex items-center gap-1.5 border-0 bg-transparent p-0 text-[13px] font-bold text-text-primary underline underline-offset-3 hover:text-action-primary"
+              className="station-airport-info-branches-trigger text-text-primary hover:text-action-primary inline-flex items-center gap-1.5 border-0 bg-transparent p-0 text-[13px] font-bold underline underline-offset-3"
               aria-label={t("viewBranch", { showroom })}
               onClick={() => setShowBranches(true)}
             >
               <FiExternalLink aria-hidden="true" />
               {t("branches")}
             </button>
-            <span className="text-xs text-text-subtle">
+            <span className="text-text-subtle text-xs">
               {distanceKm.toLocaleString()} {t("km")}
             </span>
           </div>
@@ -90,29 +90,29 @@ export default function StationAndAirportInfo({
           <Dialog.Close />
         </Dialog.Header>
 
-        <Dialog.Body className="grid gap-2 min-h-0 overflow-y-auto mt-4 scrollbar-none [&::-webkit-scrollbar]:hidden">
+        <Dialog.Body className="mt-4 grid min-h-0 scrollbar-none gap-2 overflow-y-auto [&::-webkit-scrollbar]:hidden">
           {branches.map((branch, index) => (
             <article
               key={index}
-              className="branches-info-item grid min-h-17 grid-cols-[38px_minmax(0,1fr)_auto] items-center gap-2.5 rounded-md bg-surface-card-primary px-3 py-2"
+              className="branches-info-item bg-surface-card-primary grid min-h-17 grid-cols-[38px_minmax(0,1fr)_auto] items-center gap-2.5 rounded-md px-3 py-2"
             >
               <span
-                className="branches-info-icon grid size-9.5 place-items-center rounded-sm bg-surface-elevated"
+                className="branches-info-icon bg-surface-elevated grid size-9.5 place-items-center rounded-sm"
                 aria-hidden="true"
               >
                 <Image src={branchIcon} alt="" width={24} height={24} />
               </span>
 
               <div className="branches-info-content min-w-0">
-                <h3 className="mb-1 text-[13px] font-semibold text-text-primary">
+                <h3 className="text-text-primary mb-1 text-[13px] font-semibold">
                   {branch.name}
                 </h3>
-                <p className="overflow-hidden text-ellipsis whitespace-nowrap text-[10px] leading-normal text-text-primary">
+                <p className="text-text-primary overflow-hidden text-[10px] leading-normal text-ellipsis whitespace-nowrap">
                   {branch.address}
                 </p>
               </div>
 
-              <span className="whitespace-nowrap text-[10px] text-text-subtle">
+              <span className="text-text-subtle text-[10px] whitespace-nowrap">
                 {branch.distanceKm.toLocaleString()} {t("km")}
               </span>
             </article>

@@ -1,7 +1,7 @@
-import type { Metadata } from 'next';
-import { notFound } from 'next/navigation';
-import { CarDetailsView } from '@/features/car-details';
-import { getCarDetails } from '@/features/car-details/queries';
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+import { CarDetailsView } from "@/features/car-details";
+import { getCarDetails } from "@/features/car-details/queries";
 
 interface Props {
   params: Promise<{ carId: string }>;

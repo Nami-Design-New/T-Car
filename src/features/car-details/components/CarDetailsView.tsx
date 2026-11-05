@@ -36,7 +36,7 @@ export default function CarDetailsView({ car }: Props) {
               <InsuranceOptions option={car.insuranceOptions[0]} />
             </div>
 
-            <div className="car-details-side sticky top-[100px] max-lg:static max-lg:top-auto">
+            <div className="sticky top-25 max-lg:static max-lg:top-auto">
               <CarBookingCard
                 carId={car.id}
                 carName={car.name}

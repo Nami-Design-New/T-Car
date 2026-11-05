@@ -84,7 +84,7 @@ export default function FilterPanel({
               value={searchValue}
               onChange={(event) => onSearchChange?.(event.target.value)}
               placeholder={resolvedSearchPlaceholder}
-              className="border-stroke-light bg-surface-on-background text-text-primary focus:border-action-primary focus:bg-surface-elevated focus:ring-action-primary/10 h-[52px] w-full rounded-md border px-11 text-sm transition outline-none focus:ring-4"
+              className="border-stroke-light bg-surface-on-background text-text-primary focus:border-action-primary focus:bg-surface-elevated focus:ring-action-primary/10 h-13 w-full rounded-md border px-11 text-sm transition outline-none focus:ring-4"
             />
           </div>
           <button
@@ -95,7 +95,7 @@ export default function FilterPanel({
           >
             <FilterFunnelIcon />
             {hasActiveFilters && (
-              <span className="border-surface-elevated bg-status-error absolute end-1.5 top-1.5 size-2.5 rounded-full border-2" />
+              <span className="border-surface-elevated bg-status-error absolute inset-e-1.5 top-1.5 size-2.5 rounded-full border-2" />
             )}
           </button>
         </div>
@@ -136,7 +136,7 @@ export default function FilterPanel({
         <div
           className={cn(
             !embedded &&
-              "max-lg:min-h-0 max-lg:flex-1 max-lg:overflow-y-auto max-lg:scrollbar-none max-lg:[&::-webkit-scrollbar]:hidden",
+              "max-lg:min-h-0 max-lg:flex-1 max-lg:scrollbar-none max-lg:overflow-y-auto max-lg:[&::-webkit-scrollbar]:hidden",
           )}
         >
           <div
@@ -152,7 +152,7 @@ export default function FilterPanel({
               value={searchValue}
               onChange={(event) => onSearchChange?.(event.target.value)}
               placeholder={resolvedSearchPlaceholder}
-              className="border-stroke-light bg-surface-on-background text-text-primary focus:border-action-primary focus:bg-surface-elevated focus:ring-action-primary/10 h-[52px] w-full rounded-md border px-11 text-sm transition outline-none focus:ring-4"
+              className="border-stroke-light bg-surface-on-background text-text-primary focus:border-action-primary focus:bg-surface-elevated focus:ring-action-primary/10 h-13 w-full rounded-md border px-11 text-sm transition outline-none focus:ring-4"
             />
           </div>
           {children}
@@ -161,13 +161,13 @@ export default function FilterPanel({
           <div
             className={
               embedded
-                ? "border-stroke-light bg-surface-elevated sticky bottom-0 z-[4] mt-1 flex gap-2.5 border-t pt-[18px] pb-5"
-                : "max-lg:bg-surface-elevated/98 mt-1 flex gap-2.5 pt-4.5 max-lg:shrink-0 max-lg:-mx-6 max-lg:mt-0 max-lg:mb-[-24px] max-lg:px-6 max-lg:pb-[max(16px,env(safe-area-inset-bottom))] max-lg:shadow-[0_-10px_26px_rgba(30,30,30,0.07)]"
+                ? "border-stroke-light bg-surface-elevated sticky bottom-0 z-4 mt-1 flex gap-2.5 border-t pt-4.5 pb-5"
+                : "max-lg:bg-surface-elevated/98 mt-1 flex gap-2.5 pt-4.5 max-lg:-mx-6 max-lg:mt-0 max-lg:mb-[-24px] max-lg:shrink-0 max-lg:px-6 max-lg:pb-[max(16px,env(safe-area-inset-bottom))] max-lg:shadow-[0_-10px_26px_rgba(30,30,30,0.07)]"
             }
           >
             <button
               type="button"
-              className="border-stroke-heavy bg-surface-elevated text-text-subtle hover:border-action-primary hover:text-action-primary disabled:border-stroke-light disabled:text-text-placeholder h-[50px] min-w-0 flex-1 rounded-md border px-3.5 text-sm font-semibold transition disabled:cursor-not-allowed"
+              className="border-stroke-heavy bg-surface-elevated text-text-subtle hover:border-action-primary hover:text-action-primary disabled:border-stroke-light disabled:text-text-placeholder h-12.5 min-w-0 flex-1 rounded-md border px-3.5 text-sm font-semibold transition disabled:cursor-not-allowed"
               onClick={onClearAll}
               disabled={!hasActiveFilters}
             >
@@ -175,7 +175,7 @@ export default function FilterPanel({
             </button>
             <button
               type="button"
-              className="border-action-primary bg-action-primary text-text-on-action hover:bg-action-primary/90 h-[50px] min-w-0 flex-1 rounded-md border px-3.5 text-sm font-semibold transition hover:shadow-[0_9px_20px_rgba(31,127,250,0.22)]"
+              className="border-action-primary bg-action-primary text-text-on-action hover:bg-action-primary/90 h-12.5 min-w-0 flex-1 rounded-md border px-3.5 text-sm font-semibold transition hover:shadow-[0_9px_20px_rgba(31,127,250,0.22)]"
               onClick={() => {
                 onApply?.();
                 setIsOpen(false);

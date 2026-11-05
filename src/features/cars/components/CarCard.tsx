@@ -7,6 +7,7 @@ import type { CarListing } from "../model";
 import CarOfferBadge from "./CarOfferBadge";
 
 import { cn } from "@/shared/lib/cn";
+import { ModelYearBadge } from "@/shared/ui/ModelYearBadge";
 import { Price } from "@/shared/ui/Price";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
@@ -92,9 +93,7 @@ export default function CarCard({
             <h3 className="text-text-primary m-0 mb-2 text-base leading-[1.45] font-bold">
               {car.brand} {car.name}
             </h3>
-            <span className="bg-surface-card-primary text-action-primary shrink-0 rounded-sm px-3 py-2 text-xs leading-none font-semibold">
-              {car.year}
-            </span>
+            <ModelYearBadge year={car.year} />
           </div>
           <div className="mb-2 flex min-w-0 items-center gap-3">
             <span className="text-text-subtle flex min-w-0 flex-1 items-center gap-2 text-xs font-medium">
