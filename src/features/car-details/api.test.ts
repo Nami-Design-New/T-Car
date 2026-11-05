@@ -24,8 +24,35 @@ const car = {
   rate: 4.5,
   brand: { id: 9, title: "BMW", logo: null },
   car_model: { id: 8, title: "Avalon", logo: null },
+  details: {
+    power: "160 HP",
+    door_count: 4,
+    has_navigation: true,
+    has_bluetooth: true,
+    has_panorama: false,
+    has_usp: true,
+    has_background_camera: true,
+    has_sensors: true,
+    has_apple_play: true,
+  },
   has_offer: true,
   offer: { type: "free_days", require_booking_days: 5, free_days: 1 },
+};
+
+const details = {
+  car,
+  serevices: [
+    { id: 1, price: 50, title: "Additional driver", key: "adding_driver" },
+    { id: 2, price: 75, title: "Travel abroad", key: "travel_abroad" },
+    { id: 3, price: 0, title: "Insurance cover", key: null },
+  ],
+  insurance: {
+    id: 1,
+    title: "Full insurance",
+    description: "Covers accidental damage.",
+    requires_percentage: true,
+    percentage: 15,
+  },
 };
 
 const envelope = (data: unknown) => ({
@@ -69,7 +96,7 @@ describe("parseCarDetailsQuery", () => {
 
 describe("carDetailsApi.getCarDetails", () => {
   it("maps core fields and sends selected context under backend names", async () => {
-    get.mockResolvedValue(envelope({ car }));
+    get.mockResolvedValue(envelope(details));
 
     await expect(
       carDetailsApi.getCarDetails("3", {
@@ -82,7 +109,7 @@ describe("carDetailsApi.getCarDetails", () => {
         bookingType: "airport",
         airportId: "12",
       }),
-    ).resolves.toEqual(mapCarDetails(car));
+    ).resolves.toEqual(mapCarDetails(details));
 
     expect(get).toHaveBeenCalledWith(
       "/cars/3?region=Riyadh+Region&latitude=24.7136&longitude=46.6753&delivery_type=to_location&booking_type=airport&airport_id=12",
@@ -90,10 +117,38 @@ describe("carDetailsApi.getCarDetails", () => {
   });
 
   it("rejects malformed success data as a server error", async () => {
-    get.mockResolvedValue(envelope({ car: { id: 3 } }));
+    get.mockResolvedValue(envelope({ ...details, car: { id: 3 } }));
 
     await expect(carDetailsApi.getCarDetails("3", {})).rejects.toMatchObject({
       kind: "server",
+    });
+  });
+
+  it("maps technical quick facts, services, and insurance without inventing policy terms", () => {
+    expect(mapCarDetails(details)).toMatchObject({
+      quickFacts: [
+        { kind: "power", value: "160 HP" },
+        { kind: "doors", value: "4" },
+        { kind: "navigation" },
+        { kind: "bluetooth" },
+        { kind: "usb" },
+        { kind: "camera" },
+        { kind: "sensors" },
+        { kind: "applePlay" },
+      ],
+      addons: [
+        { id: "1", icon: "driver" },
+        { id: "2", icon: "travel" },
+        { id: "3", icon: "shield" },
+      ],
+      insuranceOptions: [
+        {
+          id: "1",
+          title: "Full insurance",
+          description: "Covers accidental damage.",
+          percentage: 15,
+        },
+      ],
     });
   });
 

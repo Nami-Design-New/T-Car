@@ -881,6 +881,17 @@
     "modelYear": "موديل {year}",
     "airportPickup": "استلام من المطار",
     "stationPickup": "استلام من محطة",
+    "quickFacts": {
+      "power": "{value}",
+      "doors": "{value} أبواب",
+      "navigation": "نظام ملاحة",
+      "bluetooth": "بلوتوث",
+      "panorama": "سقف بانورامي",
+      "usb": "منفذ USB",
+      "camera": "كاميرا خلفية",
+      "sensors": "حساسات ركن",
+      "applePlay": "Apple CarPlay"
+    },
     "warranties": "ضمانات تي كار",
     "insurance": {
       "title": "نوع التأمين",

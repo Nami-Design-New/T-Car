@@ -22,6 +22,7 @@ export default function CarDetailsView({ car }: Props) {
               <CarGallery
                 image={car.images[0]}
                 alt={`${car.brand} ${car.name}`}
+                offer={car.offer}
               />
               <CarQuickInfo car={car} />
               {car.pickupPoint && (
@@ -54,7 +55,7 @@ export default function CarDetailsView({ car }: Props) {
                 originalPrice={car.originalPrice}
               />
 
-              {car.reviewsCount > 0 && (
+              {car.rating && (
                 <ReviewsSummaryCard
                   rating={car.rating}
                   reviewsCount={car.reviewsCount}

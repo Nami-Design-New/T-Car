@@ -88,16 +88,16 @@ export default function CarBookingCard({
     window.location.assign("/account/bookings");
 
   return (
-    <aside className=" rounded-xl border border-stroke-light bg-surface-elevated p-6 shadow-[0_2px_8px_rgba(30,30,30,0.06)]">
-      <div className=" mb-4.5">
+    <aside className="border-stroke-light bg-surface-elevated rounded-xl border p-6 shadow-[0_2px_8px_rgba(30,30,30,0.06)]">
+      <div className="mb-4.5">
         {originalPrice && (
-          <span className=" mb-1 block ">
+          <span className="mb-1 block">
             <Price amount={originalPrice} strike={true} />
           </span>
         )}
 
-        <div className=" flex items-end gap-2">
-          <h2 className="m-0 flex items-center gap-1.5 text-3xl font-extrabold leading-none text-text-primary">
+        <div className="flex items-end gap-2">
+          <h2 className="text-text-primary m-0 flex items-center gap-1.5 text-3xl leading-none font-extrabold">
             <Price amount={pricePerDay} />
           </h2>
           <small className="text-4 text-text-subtle">{t("perDay")}</small>
@@ -112,10 +112,6 @@ export default function CarBookingCard({
       >
         {t("bookNow")}
       </Button>
-
-      <p className="mt-2 text-center text-sm text-text-subtle">
-        {t("paymentNote")}
-      </p>
 
       {step === "dates" && (
         <BookingDailyModal

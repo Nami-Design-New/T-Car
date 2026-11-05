@@ -103,16 +103,30 @@ export interface AddonService {
   id: string;
   title: string;
   price: number;
-  icon: "external" | "driver";
+  icon: "driver" | "travel" | "shield" | "default";
 }
 
 export interface InsuranceOption {
   id: string;
   title: string;
-  subtitle: string;
-  pricePerDay: number;
-  terms: string[];
-  cancellationPolicy: string[];
+  description: string;
+  percentage?: number;
+}
+
+export type CarQuickFactKind =
+  | "power"
+  | "doors"
+  | "navigation"
+  | "bluetooth"
+  | "panorama"
+  | "usb"
+  | "camera"
+  | "sensors"
+  | "applePlay";
+
+export interface CarQuickFact {
+  kind: CarQuickFactKind;
+  value?: string;
 }
 
 export interface PickupBranch {
@@ -134,7 +148,7 @@ export interface CarDetails extends CarListing {
   images: string[];
   showroom: string;
   showroomLogo?: string;
-  quickFacts: { icon: "shield" | "delivery" | "distance"; label: string }[];
+  quickFacts: CarQuickFact[];
   warranties: CarWarranty[];
   addons: AddonService[];
   insuranceOptions: InsuranceOption[];

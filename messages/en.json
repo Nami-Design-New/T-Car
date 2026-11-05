@@ -883,6 +883,17 @@
     "modelYear": "Model {year}",
     "airportPickup": "Airport pickup",
     "stationPickup": "Station pickup",
+    "quickFacts": {
+      "power": "{value}",
+      "doors": "{value} doors",
+      "navigation": "Navigation",
+      "bluetooth": "Bluetooth",
+      "panorama": "Panoramic roof",
+      "usb": "USB port",
+      "camera": "Rear camera",
+      "sensors": "Parking sensors",
+      "applePlay": "Apple CarPlay"
+    },
     "warranties": "T-Car warranties",
     "insurance": {
       "title": "Insurance type",

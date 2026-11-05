@@ -40,6 +40,21 @@ export const ICONS = {
     width: 12,
     height: 12,
   },
+  link: {
+    src: "/icons/link.svg",
+    width: 24,
+    height: 24,
+  },
+  filledShiled: {
+    src: "/icons/fill-checked-shield.svg",
+    width: 24,
+    height: 24,
+  },
+  store: {
+    src: "/icons/store.svg",
+    width: 24,
+    height: 24,
+  },
 } as const;
 
 export const POINTS_ICONS = {
