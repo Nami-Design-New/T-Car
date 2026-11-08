@@ -4,7 +4,7 @@ import { protectedRead } from "@/services/http/session";
 import { toAppError } from "@/shared/lib/errors";
 import { bookingsApi, ORDERS_PER_PAGE } from "./api";
 import type { Page } from "@/shared/lib/pagination";
-import type { BookingDetailsView, OrderListItem, OrderListTab } from "./model";
+import type { Order, OrderListItem, OrderListTab } from "./model";
 
 export function getMyBookings(
   tab: OrderListTab,
@@ -36,15 +36,20 @@ export async function getMyBookingsTotal(tab: OrderListTab): Promise<number> {
  * in again; other failures throw to error.tsx. Cached per request:
  * generateMetadata and the page share one read.
  */
-export const getBookingDetails = cache(
-  (id: string): Promise<BookingDetailsView | null> =>
-    protectedRead(async () => {
-      try {
-        return await bookingsApi.getBookingDetails(id);
-      } catch (error) {
-        const appError = toAppError(error);
-        if (appError.kind === "not_found") return null;
-        throw appError;
-      }
-    }),
-);
+export async function readBookingDetails(id: string): Promise<Order | null> {
+  if (!/^\d+$/.test(id)) return null;
+  // The catch stays inside the read: protectedRead turns a 401 into a sign-in
+  // redirect, which must propagate untouched.
+  return protectedRead(async () => {
+    try {
+      return await bookingsApi.getOrder(id);
+    } catch (error) {
+      const appError = toAppError(error);
+      // 422 on this input-free read can only be ownership (R4).
+      if (appError.kind === "not_found" || appError.status === 422) return null;
+      throw appError;
+    }
+  });
+}
+
+export const getBookingDetails = cache(readBookingDetails);

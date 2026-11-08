@@ -26,25 +26,6 @@ export interface CreateBookingRequest {
   termsAccepted: boolean;
 }
 
-/** Legacy detail status, kept until the booking details screen moves in O3. */
-export type BookingStatus =
-  "current" | "upcoming" | "late" | "completed" | "cancelled";
-
-/** Legacy booking shape used by the mock details read until O3. */
-export interface UserBooking {
-  id: string;
-  carName: string;
-  carBrand: string;
-  carImage: string;
-  showroom: string;
-  showroomLogo?: string;
-  year: number;
-  rating: number;
-  status: BookingStatus;
-  statusLabel: string;
-  dateLabel: string;
-}
-
 export type OrderStatus =
   | "start"
   | "new"
@@ -76,6 +57,92 @@ export interface OrderListItem {
   };
 }
 
+export type BookingType =
+  | "daily"
+  | "monthly"
+  | "station"
+  | "airport"
+  | "international";
+
+export type OrderDeliveryType =
+  | "to_location"
+  | "from_branch"
+  | "from_airport"
+  | "from_station"
+  | "from_location";
+
+export interface OrderLocation {
+  latitude: number | null;
+  longitude: number | null;
+  address: string | null;
+}
+
+export interface Order {
+  id: string;
+  orderNumber: string;
+  userId: string;
+  car: {
+    id: string;
+    imageUrl: string | null;
+    year: number;
+    companyName: string;
+    companyLogo: string | null;
+    lowerPrice: number;
+    maxPrice: number;
+    rate: number;
+    note: string | null;
+    brand: { id: string; title: string; logo: string | null };
+    type: { id: string; title: string; logo: string | null };
+    hasOffer: boolean;
+    offer: unknown | null;
+  };
+  status: OrderStatus;
+  lateHours: number | null;
+  bookingType: BookingType;
+  deliveryType: OrderDeliveryType;
+  pickupAt: string;
+  returnAt: string;
+  pickupLocation: OrderLocation;
+  deliveryLocation: OrderLocation;
+  branch: {
+    id: string;
+    title: string;
+    distanceKm: number | null;
+    latitude: number;
+    longitude: number;
+    placeId: string;
+    region: string;
+    address: string;
+    logo: string | null;
+  };
+  note: string | null;
+  carPrice: number;
+  price: number;
+  count: number;
+  deliveryFee: number;
+  serviceFee: number;
+  completionFee: number;
+  discount: number;
+  totalPrice: number;
+  taxValue: number;
+  finalPrice: number;
+  cancellationFee: number;
+  refundAmount: number;
+  taxRate: number;
+  taxRateType: string;
+  serviceFeeRate: number;
+  serviceFeeRateType: string;
+  payExtension: boolean;
+  pendingExtensionId: string | null;
+  hasModifyRequest: boolean;
+  hasDriver?: boolean;
+  isRated: boolean;
+  myRating: { companyRate: number | null; driverRate: number | null };
+  createdAt: string | null;
+  /** Backend HTML, sanitized by the server mapper. */
+  terms: string;
+}
+
 export type OrderStatusTone = "primary" | "warning" | "success" | "error";
 export type OrderListTab = "active" | "past";
 
@@ -99,33 +166,6 @@ export function orderStatusTone(status: OrderStatus): OrderStatusTone {
   return "primary";
 }
 
-export interface BookingDetailsView {
-  id: string;
-  reference: string;
-  carName: string;
-  carBrand: string;
-  carImage: string;
-  showroom: string;
-  status: BookingStatus;
-  statusLabel: string;
-  pricePerDay: number;
-  originalPrice?: number;
-  pickupDateTime: string;
-  dropoffDateTime: string;
-  pickupLocation: string;
-  dropoffLocation: string;
-  warrantyNote: string;
-  pointsUsed: number;
-  days: number;
-  subtotal: number;
-  vatRate: number;
-  vat: number;
-  total: number;
-  /** Share of the total kept as a fee when the customer cancels. */
-  cancellationPercent: number;
-  bannerTimestamp?: string;
-}
-
 /** What the edit request form submits; the same shape the booking form uses. */
 export type BookingEditRequest = BookingDetails;
 
@@ -135,16 +175,76 @@ export interface BookingReviewInput {
   driverRating: number;
 }
 
-const ACTIVE_STATUSES: readonly BookingStatus[] = [
-  "current",
-  "upcoming",
-  "late",
-];
+/**
+ * Booking times come without an offset and are Saudi wall-clock time
+ * (Asia/Riyadh, UTC+3, no DST). Reading them with that offset gives the same
+ * instant on the server (UTC) and in the browser, so the action rules agree
+ * during hydration.
+ */
+export const BOOKING_TIME_OFFSET = "+03:00";
 
-/** Not finished yet: the customer can still edit, extend, or cancel it. */
-export const isActiveBooking = (status: BookingStatus) =>
-  ACTIVE_STATUSES.includes(status);
+export const bookingInstant = (value: string): Date =>
+  new Date(
+    /(?:[zZ]|[+-]\d{2}:\d{2})$/.test(value)
+      ? value
+      : value + BOOKING_TIME_OFFSET,
+  );
 
-/** The car is out with the customer, so the return countdown applies. */
-export const isRentalRunning = (status: BookingStatus) =>
-  status === "current" || status === "late";
+const dateAfter = (value: string, now: Date) => bookingInstant(value) > now;
+const dateReached = (value: string, now: Date) =>
+  bookingInstant(value) <= now;
+
+export const isDraft = (order: Pick<Order, "createdAt">) =>
+  order.createdAt === null;
+
+export function canCancel(
+  order: Pick<Order, "status" | "pickupAt">,
+  now = new Date(),
+): boolean {
+  return (
+    (["new", "accepted", "coming"] as const).some(
+      (status) => status === order.status,
+    ) && dateAfter(order.pickupAt, now)
+  );
+}
+
+export function canExtend(
+  order: Pick<
+    Order,
+    | "status"
+    | "deliveryType"
+    | "pickupAt"
+    | "payExtension"
+    | "pendingExtensionId"
+  >,
+  now = new Date(),
+): boolean {
+  if (order.payExtension || order.pendingExtensionId !== null) return false;
+  if (order.status === "current" || order.status === "late") return true;
+  return (
+    (order.status === "accepted" || order.status === "open") &&
+    order.deliveryType === "from_branch" &&
+    dateReached(order.pickupAt, now)
+  );
+}
+
+export function canModify(
+  order: Pick<Order, "status" | "pickupAt" | "hasModifyRequest">,
+  now = new Date(),
+): boolean {
+  const blocked: readonly OrderStatus[] = [
+    "start",
+    "current",
+    "late",
+    "complete",
+    "cancelled",
+  ];
+  return (
+    !blocked.includes(order.status) &&
+    dateAfter(order.pickupAt, now) &&
+    !order.hasModifyRequest
+  );
+}
+
+export const canRate = (order: Pick<Order, "status">) =>
+  order.status === "complete";

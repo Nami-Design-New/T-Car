@@ -45,6 +45,12 @@ export const ICONS = {
     width: 24,
     height: 24,
   },
+  /** Warning notice icon (booking details); the file is supplied by design. */
+  info: {
+    src: "/icons/info.svg",
+    width: 24,
+    height: 24,
+  },
   filledShiled: {
     src: "/icons/fill-checked-shield.svg",
     width: 24,

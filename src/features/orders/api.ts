@@ -4,12 +4,15 @@ import { isApiEnvelope } from "@/services/http/envelope";
 import { serverHttp } from "@/services/http/server";
 import { AppError } from "@/shared/lib/errors";
 import { toPage, type Page } from "@/shared/lib/pagination";
+import { sanitizeBackendHtml } from "@/shared/lib/sanitizeHtml";
 import { bookingsMock } from "./api.mock";
 import type {
-  BookingDetailsView,
+  BookingType,
   BookingEditRequest,
   BookingReviewInput,
   CreateBookingRequest,
+  Order,
+  OrderDeliveryType,
   OrderListItem,
   OrderStatus,
 } from "./model";
@@ -26,7 +29,7 @@ export interface ListOrdersParams {
 export interface BookingsApi {
   listOrders(params: ListOrdersParams): Promise<Page<OrderListItem>>;
   /** Throws a `not_found` AppError for an unknown id. */
-  getBookingDetails(id: string): Promise<BookingDetailsView>;
+  getOrder(id: string): Promise<Order>;
   /** `days` is the new total rental length. */
   extendBooking(id: string, days: number): Promise<void>;
   requestBookingEdit(id: string, request: BookingEditRequest): Promise<void>;
@@ -53,6 +56,94 @@ export interface OrderListItemDto {
   };
 }
 
+interface LookupDto {
+  id: number;
+  title: string;
+  logo: string | null;
+}
+
+interface OrderCarDto {
+  id: number;
+  image_url: string | null;
+  year: number;
+  company_name: string;
+  company_logo: string | null;
+  lower_price: number;
+  max_price: number;
+  rate: number;
+  note: string | null;
+  brand: LookupDto;
+  type: LookupDto;
+  has_offer: boolean;
+  offer: unknown | null;
+}
+
+interface OrderBranchDto {
+  id: number;
+  title: string;
+  distance_km: number | null;
+  latitude: string;
+  longitude: string;
+  place_id: string;
+  region: string;
+  address: string;
+  logo: string | null;
+}
+
+export interface OrderDto {
+  id: number;
+  order_number: string;
+  user_id: number;
+  car: OrderCarDto;
+  status: OrderStatus;
+  late_hours: number | null;
+  booking_type: BookingType;
+  delivery_type: OrderDeliveryType;
+  pickup_day: string;
+  delivery_day: string;
+  pickup_time: string;
+  delivery_time: string;
+  pickup_location: {
+    pickup_lat: string | null;
+    pickup_long: string | null;
+    address: string | null;
+  };
+  delivery_location: {
+    delivery_lat: string | null;
+    delivery_long: string | null;
+    address: string | null;
+  };
+  branch: OrderBranchDto;
+  note: string | null;
+  car_price: number;
+  price: number;
+  count: number;
+  delivery_fee: number;
+  service_fee: number;
+  completion_fee: number;
+  discount: number;
+  coupon_code: string | null;
+  coupon_discount: number;
+  additional_services_cost: number;
+  total_price: number;
+  tax_value: number;
+  final_price: number;
+  cancellation_fee: number;
+  refund_amount: number;
+  tax_rate: number;
+  tax_rate_type: string;
+  service_fee_rate: number;
+  service_fee_rate_type: string;
+  pay_extension: boolean;
+  pending_extension_id: number | null;
+  has_modify_request: boolean;
+  has_driver?: boolean;
+  is_rated: boolean;
+  my_rating: { company_rate: number | null; driver_rate: number | null };
+  created_at: string | null;
+  terms: string;
+}
+
 const ORDER_STATUSES = [
   "start",
   "new",
@@ -67,17 +158,47 @@ const ORDER_STATUSES = [
   "suspended",
 ] as const satisfies readonly OrderStatus[];
 
+const BOOKING_TYPES = [
+  "daily",
+  "monthly",
+  "station",
+  "airport",
+  "international",
+] as const satisfies readonly BookingType[];
+
+const DELIVERY_TYPES = [
+  "to_location",
+  "from_branch",
+  "from_airport",
+  "from_station",
+  "from_location",
+] as const satisfies readonly OrderDeliveryType[];
+
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === "object" && value !== null;
 
 const isFiniteNumber = (value: unknown): value is number =>
   typeof value === "number" && Number.isFinite(value);
 
+const isNonnegativeInteger = (value: unknown): value is number =>
+  typeof value === "number" && Number.isInteger(value) && value >= 0;
+
 const isNullableNumber = (value: unknown): value is number | null =>
   value === null || isFiniteNumber(value);
 
 const isNullableString = (value: unknown): value is string | null =>
   value === null || typeof value === "string";
+
+const isId = (value: unknown): value is number =>
+  typeof value === "number" && Number.isSafeInteger(value) && value >= 1;
+
+/** A plain decimal such as "24.7136" (no hex, exponent, or spaces). */
+const isNumericString = (value: unknown): value is string =>
+  typeof value === "string" && /^-?\d+(?:\.\d+)?$/.test(value);
+
+const isNullableNumericString = (
+  value: unknown,
+): value is string | null => value === null || isNumericString(value);
 
 /**
  * E6 sends 'YYYY-MM-DD HH:mm' (§4.2); a 'T' separator and seconds are also
@@ -89,6 +210,146 @@ const isListDate = (value: string) =>
 
 const isOrderStatus = (value: unknown): value is OrderStatus =>
   ORDER_STATUSES.some((status) => status === value);
+
+const isBookingType = (value: unknown): value is BookingType =>
+  BOOKING_TYPES.some((type) => type === value);
+
+const isDeliveryType = (value: unknown): value is OrderDeliveryType =>
+  DELIVERY_TYPES.some((type) => type === value);
+
+const isDatePart = (value: unknown): value is string =>
+  typeof value === "string" &&
+  /^\d{4}-\d{2}-\d{2}$/.test(value) &&
+  !Number.isNaN(new Date(`${value}T00:00:00`).getTime());
+
+const isTimePart = (value: unknown): value is string =>
+  typeof value === "string" &&
+  /^(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d$/.test(value);
+
+const isDateTime = (value: unknown): value is string =>
+  typeof value === "string" &&
+  /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(value) &&
+  !Number.isNaN(new Date(value.replace(" ", "T")).getTime());
+
+function isLookup(value: unknown): value is LookupDto {
+  return (
+    isRecord(value) &&
+    isId(value.id) &&
+    typeof value.title === "string" &&
+    isNullableString(value.logo)
+  );
+}
+
+function isOrderCar(value: unknown): value is OrderCarDto {
+  return (
+    isRecord(value) &&
+    isId(value.id) &&
+    isNullableString(value.image_url) &&
+    typeof value.year === "number" &&
+    Number.isInteger(value.year) &&
+    typeof value.company_name === "string" &&
+    isNullableString(value.company_logo) &&
+    isFiniteNumber(value.lower_price) &&
+    isFiniteNumber(value.max_price) &&
+    isFiniteNumber(value.rate) &&
+    isNullableString(value.note) &&
+    isLookup(value.brand) &&
+    isLookup(value.type) &&
+    typeof value.has_offer === "boolean" &&
+    "offer" in value
+  );
+}
+
+function isOrderBranch(value: unknown): value is OrderBranchDto {
+  return (
+    isRecord(value) &&
+    isId(value.id) &&
+    typeof value.title === "string" &&
+    isNullableNumber(value.distance_km) &&
+    isNumericString(value.latitude) &&
+    isNumericString(value.longitude) &&
+    typeof value.place_id === "string" &&
+    typeof value.region === "string" &&
+    typeof value.address === "string" &&
+    isNullableString(value.logo)
+  );
+}
+
+function isPickupLocation(
+  value: unknown,
+): value is OrderDto["pickup_location"] {
+  return (
+    isRecord(value) &&
+    isNullableNumericString(value.pickup_lat) &&
+    isNullableNumericString(value.pickup_long) &&
+    isNullableString(value.address)
+  );
+}
+
+function isDeliveryLocation(
+  value: unknown,
+): value is OrderDto["delivery_location"] {
+  return (
+    isRecord(value) &&
+    isNullableNumericString(value.delivery_lat) &&
+    isNullableNumericString(value.delivery_long) &&
+    isNullableString(value.address)
+  );
+}
+
+function isOrderDto(value: unknown): value is OrderDto {
+  if (!isRecord(value) || !isRecord(value.my_rating)) return false;
+  const numbers = [
+    value.car_price,
+    value.price,
+    value.count,
+    value.delivery_fee,
+    value.service_fee,
+    value.completion_fee,
+    value.discount,
+    value.coupon_discount,
+    value.additional_services_cost,
+    value.total_price,
+    value.tax_value,
+    value.final_price,
+    value.cancellation_fee,
+    value.refund_amount,
+    value.tax_rate,
+    value.service_fee_rate,
+  ];
+  return (
+    isId(value.id) &&
+    typeof value.order_number === "string" &&
+    isId(value.user_id) &&
+    isOrderCar(value.car) &&
+    isOrderStatus(value.status) &&
+    isNullableNumber(value.late_hours) &&
+    isBookingType(value.booking_type) &&
+    isDeliveryType(value.delivery_type) &&
+    isDatePart(value.pickup_day) &&
+    isDatePart(value.delivery_day) &&
+    isTimePart(value.pickup_time) &&
+    isTimePart(value.delivery_time) &&
+    isPickupLocation(value.pickup_location) &&
+    isDeliveryLocation(value.delivery_location) &&
+    isOrderBranch(value.branch) &&
+    isNullableString(value.note) &&
+    numbers.every(isFiniteNumber) &&
+    isNonnegativeInteger(value.count) &&
+    isNullableString(value.coupon_code) &&
+    typeof value.tax_rate_type === "string" &&
+    typeof value.service_fee_rate_type === "string" &&
+    typeof value.pay_extension === "boolean" &&
+    (value.pending_extension_id === null || isId(value.pending_extension_id)) &&
+    typeof value.has_modify_request === "boolean" &&
+    (value.has_driver === undefined || typeof value.has_driver === "boolean") &&
+    typeof value.is_rated === "boolean" &&
+    isNullableNumber(value.my_rating.company_rate) &&
+    isNullableNumber(value.my_rating.driver_rate) &&
+    (value.created_at === null || isDateTime(value.created_at)) &&
+    typeof value.terms === "string"
+  );
+}
 
 function isOrderListItemDto(value: unknown): value is OrderListItemDto {
   if (!isRecord(value) || !isRecord(value.my_rating)) return false;
@@ -167,6 +428,103 @@ function toOrderListItem(order: OrderListItemDto): OrderListItem {
   };
 }
 
+const toCoordinate = (value: string | null): number | null =>
+  value === null ? null : Number(value);
+
+export function mapOrderResponse(value: unknown): Order {
+  const data = isRecord(value) ? value.data : undefined;
+  if (!isApiEnvelope(value) || value.code !== 200 || !isOrderDto(data)) {
+    throw new AppError("server");
+  }
+
+  return {
+    id: String(data.id),
+    orderNumber: data.order_number,
+    userId: String(data.user_id),
+    car: {
+      id: String(data.car.id),
+      imageUrl: data.car.image_url,
+      year: data.car.year,
+      companyName: data.car.company_name,
+      companyLogo: data.car.company_logo,
+      lowerPrice: data.car.lower_price,
+      maxPrice: data.car.max_price,
+      rate: data.car.rate,
+      note: data.car.note,
+      brand: {
+        id: String(data.car.brand.id),
+        title: data.car.brand.title,
+        logo: data.car.brand.logo,
+      },
+      type: {
+        id: String(data.car.type.id),
+        title: data.car.type.title,
+        logo: data.car.type.logo,
+      },
+      hasOffer: data.car.has_offer,
+      offer: data.car.offer,
+    },
+    status: data.status,
+    lateHours: data.late_hours,
+    bookingType: data.booking_type,
+    deliveryType: data.delivery_type,
+    pickupAt: `${data.pickup_day}T${data.pickup_time}`,
+    returnAt: `${data.delivery_day}T${data.delivery_time}`,
+    pickupLocation: {
+      latitude: toCoordinate(data.pickup_location.pickup_lat),
+      longitude: toCoordinate(data.pickup_location.pickup_long),
+      address: data.pickup_location.address,
+    },
+    deliveryLocation: {
+      latitude: toCoordinate(data.delivery_location.delivery_lat),
+      longitude: toCoordinate(data.delivery_location.delivery_long),
+      address: data.delivery_location.address,
+    },
+    branch: {
+      id: String(data.branch.id),
+      title: data.branch.title,
+      distanceKm: data.branch.distance_km,
+      latitude: Number(data.branch.latitude),
+      longitude: Number(data.branch.longitude),
+      placeId: data.branch.place_id,
+      region: data.branch.region,
+      address: data.branch.address,
+      logo: data.branch.logo,
+    },
+    note: data.note,
+    carPrice: data.car_price,
+    price: data.price,
+    count: data.count,
+    deliveryFee: data.delivery_fee,
+    serviceFee: data.service_fee,
+    completionFee: data.completion_fee,
+    discount: data.discount,
+    totalPrice: data.total_price,
+    taxValue: data.tax_value,
+    finalPrice: data.final_price,
+    cancellationFee: data.cancellation_fee,
+    refundAmount: data.refund_amount,
+    taxRate: data.tax_rate,
+    taxRateType: data.tax_rate_type,
+    serviceFeeRate: data.service_fee_rate,
+    serviceFeeRateType: data.service_fee_rate_type,
+    payExtension: data.pay_extension,
+    pendingExtensionId:
+      data.pending_extension_id === null
+        ? null
+        : String(data.pending_extension_id),
+    hasModifyRequest: data.has_modify_request,
+    ...(data.has_driver === undefined ? {} : { hasDriver: data.has_driver }),
+    isRated: data.is_rated,
+    myRating: {
+      companyRate: data.my_rating.company_rate,
+      driverRate: data.my_rating.driver_rate,
+    },
+    createdAt: data.created_at,
+    terms: sanitizeBackendHtml(data.terms),
+  };
+}
+
 async function listOrders({
   status,
   page,
@@ -178,14 +536,18 @@ async function listOrders({
   return mapOrdersResponse(response);
 }
 
+async function getOrder(id: string): Promise<Order> {
+  const response = await serverHttp.get(`/booking/${id}`);
+  return mapOrderResponse(response);
+}
+
 /**
- * O2 makes only the list live. The remaining methods deliberately forward to
+ * O3 makes the list and details live. The remaining methods forward to
  * the stateless mock until their named booking API fractions replace them.
  */
 export const bookingsApi: BookingsApi = {
   listOrders,
-  // O3 replaces booking details.
-  getBookingDetails: (...args) => bookingsMock.getBookingDetails(...args),
+  getOrder,
   // O8 replaces extension.
   extendBooking: (...args) => bookingsMock.extendBooking(...args),
   // O10 replaces modification requests.

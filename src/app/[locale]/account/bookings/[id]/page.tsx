@@ -13,7 +13,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const booking = await getBookingDetails(id);
   if (!booking) notFound();
 
-  return { title: `#${booking.reference}` };
+  return { title: `#${booking.orderNumber}` };
 }
 
 export default async function BookingDetailsPage({ params }: Props) {

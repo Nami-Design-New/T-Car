@@ -1,8 +1,8 @@
 import {
-  isActiveBooking,
-  type BookingDetailsView,
+  orderTabForStatus,
   type BookingEditRequest,
-  type BookingStatus,
+  type Order,
+  type OrderStatus,
 } from "@/features/orders";
 
 export type BookingTab = "active" | "past";
@@ -16,33 +16,35 @@ export const bookingsListPath = (status: BookingTab) =>
   status === "active" ? "/account/bookings" : "/account/bookings?status=past";
 
 /** Which list a booking belongs to, e.g. for the details page's back link. */
-export const bookingTabFor = (status: BookingStatus): BookingTab =>
-  isActiveBooking(status) ? "active" : "past";
-
-export function cancellationFee(amount: number, percent: number): number {
-  return Math.round((amount * percent) / 100);
-}
+export const bookingTabFor = (status: OrderStatus): BookingTab =>
+  orderTabForStatus(status);
 
 /** Pre-fills the edit request form from the booking. */
-export function toEditRequest(booking: BookingDetailsView): BookingEditRequest {
-  const startDate = new Date(booking.pickupDateTime);
-  const endDate = new Date(booking.dropoffDateTime);
+export function toEditRequest(booking: Order): BookingEditRequest {
+  const startDate = new Date(booking.pickupAt);
+  const endDate = new Date(booking.returnAt);
+  const branchAddress = `${booking.branch.title} — ${booking.branch.address}`;
+  const fromBranch = booking.deliveryType === "from_branch";
 
   return {
     startDate,
     endDate,
-    time: booking.pickupDateTime.slice(11, 16),
-    notes: "",
+    time: booking.pickupAt.slice(11, 16),
+    notes: booking.note ?? "",
     days: Math.max(
       1,
       Math.round((endDate.getTime() - startDate.getTime()) / 86400000),
     ),
-    pricePerDay: booking.pricePerDay,
-    subtotal: booking.subtotal,
-    vat: booking.vat,
-    total: booking.total,
-    pickupAddress: booking.pickupLocation,
-    dropoffAddress: booking.dropoffLocation,
+    pricePerDay: booking.carPrice,
+    subtotal: booking.price,
+    vat: booking.taxValue,
+    total: booking.finalPrice,
+    pickupAddress: fromBranch
+      ? branchAddress
+      : (booking.pickupLocation.address ?? undefined),
+    dropoffAddress: fromBranch
+      ? branchAddress
+      : (booking.deliveryLocation.address ?? undefined),
     pickupLocation: null,
     dropoffLocation: null,
   };

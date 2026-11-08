@@ -3,13 +3,13 @@
 import { cn } from "@/shared/lib/cn";
 import { Accordion } from "@/shared/ui/Accordion";
 import { EmptyState } from "@/shared/ui/EmptyState";
+import { HtmlContent } from "@/shared/ui/HtmlContent";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { useState } from "react";
 import { FiChevronDown } from "react-icons/fi";
 import type { CarWarranty } from "../model";
 import { ICONS } from "@/shared/config/assets";
-import HtmlContent from "./HtmlContent";
 
 const filledShiled = ICONS.filledShiled;
 

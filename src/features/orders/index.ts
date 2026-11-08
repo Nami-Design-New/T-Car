@@ -7,24 +7,29 @@ export {
   submitBookingReviewAction,
 } from "./actions";
 export {
-  isActiveBooking,
-  isRentalRunning,
+  bookingInstant,
+  canCancel,
+  canExtend,
+  canModify,
+  canRate,
+  isDraft,
   orderStatusTone,
   orderTabForStatus,
 } from "./model";
 export type {
+  BookingType,
   BookingDetails,
-  BookingDetailsView,
   BookingEditRequest,
   BookingReviewInput,
-  BookingStatus,
   CreateBookingRequest,
   PaymentMethod,
+  Order,
+  OrderDeliveryType,
   OrderListItem,
+  OrderLocation,
   OrderListTab,
   OrderStatus,
   OrderStatusTone,
-  UserBooking,
 } from "./model";
 export {
   bookingEditSchema,

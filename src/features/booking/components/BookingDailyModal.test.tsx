@@ -1,6 +1,7 @@
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
+import type { BookingDetails } from "@/features/orders";
 import { renderWithIntl } from "@/shared/test/render";
 import BookingDailyModal from "./BookingDailyModal";
 
@@ -46,5 +47,45 @@ describe("BookingDailyModal", () => {
       pricePerDay: 500,
       total: 575,
     });
+  });
+
+  it("keeps live order amounts and hides a speculative total in edit mode", async () => {
+    const user = userEvent.setup();
+    const onConfirm = vi.fn();
+    const initialDetails: BookingDetails = {
+      startDate: new Date("2099-01-10T09:00:00"),
+      endDate: new Date("2099-01-12T09:00:00"),
+      time: "9:00 AM",
+      days: 2,
+      pricePerDay: 45,
+      subtotal: 90,
+      vat: 11.2,
+      total: 123.2,
+      notes: "",
+      pickupAddress: "Branch",
+      dropoffAddress: "Branch",
+      pickupLocation: null,
+      dropoffLocation: null,
+    };
+
+    renderWithIntl(
+      <BookingDailyModal
+        open
+        mode="edit"
+        onClose={vi.fn()}
+        pricePerDay={45}
+        initialDetails={initialDetails}
+        onConfirm={onConfirm}
+      />,
+    );
+
+    expect(screen.queryByText("Total")).not.toBeInTheDocument();
+    await user.click(
+      screen.getByRole("button", { name: "Send change request" }),
+    );
+
+    expect(onConfirm).toHaveBeenCalledWith(
+      expect.objectContaining({ subtotal: 90, vat: 11.2, total: 123.2 }),
+    );
   });
 });

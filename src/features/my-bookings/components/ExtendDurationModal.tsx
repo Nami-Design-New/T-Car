@@ -17,7 +17,7 @@ interface Props {
   onClose: () => void;
   onConfirm: (newDays: number) => void;
   currentDays?: number;
-  pricePerDay?: number;
+  pricePerDay: number;
   loading?: boolean;
   /** Already translated; the dialog stays open and shows it after a failed submit. */
   error?: string;
@@ -28,7 +28,7 @@ export default function ExtendDurationModal({
   onClose,
   onConfirm,
   currentDays = 1,
-  pricePerDay = 500,
+  pricePerDay,
   loading = false,
   error,
 }: Props) {
@@ -63,9 +63,6 @@ export default function ExtendDurationModal({
     });
   };
 
-  const subtotal = days * pricePerDay;
-  const vat = Math.round(subtotal * 0.05);
-  const total = subtotal + vat;
   const submit = handleSubmit(({ days: nextDays }) => onConfirm(nextDays));
 
   return (
@@ -120,7 +117,7 @@ export default function ExtendDurationModal({
           </div>
 
           <p className="mt-2 mb-0 text-[11px] leading-normal text-text-primary">
-            {t("note")}
+            {t("quotePending")}
           </p>
           {errors.days && (
             <p className="form_error" role="alert">
@@ -148,61 +145,7 @@ export default function ExtendDurationModal({
             </strong>
           </div>
 
-          {/* المجموع الفرعي */}
-          <div className="grid min-h-[34px] grid-cols-[1fr_auto_auto] items-center gap-3 border-b border-dashed border-stroke-light px-2.5 last:border-0">
-            <span className="text-end text-sm text-text-subtle">
-              {t("subtotal")}
-            </span>
-
-            <span className="whitespace-nowrap text-center text-sm text-text-subtle">
-              {days} × {pricePerDay}
-            </span>
-
-            <strong className="whitespace-nowrap text-left text-sm font-medium text-text-primary">
-              {subtotal} {t("currency")}
-            </strong>
-          </div>
-
-          {/* غرامة التأخير */}
-          <div className="grid min-h-[34px] grid-cols-[1fr_auto_auto] items-center gap-3 border-b border-dashed border-stroke-light px-2.5 text-status-error last:border-0">
-            <span className="text-end text-sm">{t("lateFee")}</span>
-
-            <span className="whitespace-nowrap text-center text-sm">
-              {t("oneDay")}
-            </span>
-
-            <strong className="whitespace-nowrap text-left text-sm font-medium">
-              0 {t("currency")}
-            </strong>
-          </div>
-
-          {/* الضريبة */}
-          <div className="grid min-h-[34px] grid-cols-[1fr_auto_auto] items-center gap-3 border-b border-dashed border-stroke-light px-2.5 last:border-0">
-            <span className="text-end text-sm text-text-subtle">
-              {t("vat")}
-            </span>
-
-            <span className="whitespace-nowrap text-center text-sm text-text-subtle">
-              5%
-            </span>
-
-            <strong className="whitespace-nowrap text-left text-sm font-medium text-text-primary">
-              {vat} {t("currency")}
-            </strong>
-          </div>
-
-          {/* الإجمالي */}
-          <div className="mt-1 grid grid-cols-[1fr_auto_auto] items-center gap-3 border-0 border-t border-dashed border-stroke-light px-2.5 pt-2">
-            <span className="text-end text-sm text-text-subtle">
-              {t("total")}
-            </span>
-
-            <span className="text-center text-sm"></span>
-
-            <strong className="whitespace-nowrap text-left text-lg font-bold text-action-primary">
-              {total} {t("currency")}
-            </strong>
-          </div>
+          {/* TODO(O8): replace this with the E9 extension quote rows. */}
         </div>
 
         {error && (

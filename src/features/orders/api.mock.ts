@@ -1,14 +1,9 @@
-import {
-  isActiveBooking,
-  orderTabForStatus,
-  type BookingDetailsView,
-  type OrderListItem,
-  type UserBooking,
-} from "./model";
+import { orderTabForStatus, type Order, type OrderListItem } from "./model";
 import { AppError } from "@/shared/lib/errors";
 import { toPage, type Page } from "@/shared/lib/pagination";
 import { MOCK_OFFICES } from "@/services/mocks/offices";
 import type { BookingsApi } from "./api";
+
 const car1 = "/mock/cars/creta.jpg";
 
 function getShowroomLogo(showroom: string): string | undefined {
@@ -17,74 +12,6 @@ function getShowroomLogo(showroom: string): string | undefined {
     MOCK_OFFICES[0]?.logo
   );
 }
-
-export const MOCK_BOOKINGS: UserBooking[] = [
-  {
-    id: "1",
-    carName: "ماليبو",
-    carBrand: "شيفروليه",
-    carImage: car1,
-    year: 2022,
-    rating: 4.4,
-    showroom: "معرض القدس",
-    showroomLogo: getShowroomLogo("معرض القدس"),
-    status: "current",
-    statusLabel: "حالي",
-    dateLabel: "30 يونيو 2026، 11:46 م",
-  },
-  {
-    id: "2",
-    carName: "ألتيما",
-    carBrand: "نيسان",
-    carImage: car1,
-    year: 2022,
-    rating: 4.5,
-    showroom: "معرض الخليج",
-    showroomLogo: getShowroomLogo("معرض الخليج"),
-    status: "upcoming",
-    statusLabel: "قادم",
-    dateLabel: "18 يوليو 2026، 01:15 م",
-  },
-  {
-    id: "3",
-    carName: "أكورد",
-    carBrand: "هوندا",
-    carImage: car1,
-    year: 2023,
-    rating: 4.6,
-    showroom: "معرض العروبة",
-    showroomLogo: getShowroomLogo("معرض العروبة"),
-    status: "late",
-    statusLabel: "متأخر عن التسليم",
-    dateLabel: "30 يونيو 2026، 11:46 م",
-  },
-  {
-    id: "4",
-    carName: "مازدا 6",
-    carBrand: "مازدا",
-    carImage: car1,
-    year: 2024,
-    rating: 4.8,
-    showroom: "معرض النخبة",
-    showroomLogo: getShowroomLogo("معرض النخبة"),
-    status: "completed",
-    statusLabel: "مكتمل",
-    dateLabel: "8 أبريل 2026، 12:00 م",
-  },
-  {
-    id: "5",
-    carName: "إمبالا",
-    carBrand: "شيفروليه",
-    carImage: car1,
-    year: 2021,
-    rating: 4.2,
-    showroom: "معرض القدس",
-    showroomLogo: getShowroomLogo("معرض القدس"),
-    status: "cancelled",
-    statusLabel: "ملغي",
-    dateLabel: "22 مارس 2026، 07:45 م",
-  },
-];
 
 export const MOCK_ORDER_LIST: OrderListItem[] = [
   {
@@ -159,57 +86,99 @@ export const MOCK_ORDER_LIST: OrderListItem[] = [
   },
 ];
 
-/** Dates, prices, and places shared by every mock booking; the car and status come from the list. */
-const MOCK_DETAILS_BASE: Omit<
-  BookingDetailsView,
-  | "id"
-  | "carName"
-  | "carBrand"
-  | "carImage"
-  | "showroom"
-  | "status"
-  | "statusLabel"
-> = {
-  reference: "2383",
-  pricePerDay: 500,
-  originalPrice: 600,
-  pickupDateTime: "2026-08-13T16:30:00",
-  dropoffDateTime: "2026-08-24T16:30:00",
-  pickupLocation: "الرياض، شارع الملك عبدالله الدولي المحدودة",
-  dropoffLocation: "الرياض، أبي بكر الرازي",
-  warrantyNote: "الضِّمن السيارة تكون جاهزة قبل الموعد",
-  pointsUsed: 100,
-  days: 5,
-  subtotal: 2500,
-  vatRate: 5,
-  vat: 600,
-  total: 2400,
-  cancellationPercent: 25,
-};
+export const MOCK_ORDERS: Order[] = MOCK_ORDER_LIST.map((item) => ({
+  id: item.id,
+  orderNumber: `ORD-MOCK-${item.id}`,
+  userId: "1",
+  car: {
+    id: item.id,
+    imageUrl: item.carImage,
+    year: item.carYear,
+    companyName: item.companyName,
+    companyLogo: item.companyLogo,
+    lowerPrice: 500,
+    maxPrice: 600,
+    rate: item.companyRate,
+    note: null,
+    brand: { id: "1", title: item.carName.split(" ")[0], logo: null },
+    type: {
+      id: "1",
+      title: item.carName.split(" ").slice(1).join(" ") || item.carName,
+      logo: null,
+    },
+    hasOffer: false,
+    offer: null,
+  },
+  status: item.status,
+  lateHours: item.lateHours,
+  bookingType: "daily",
+  deliveryType: "from_branch",
+  pickupAt: "2026-08-13T16:30:00",
+  returnAt: "2026-08-24T16:30:00",
+  pickupLocation: { latitude: null, longitude: null, address: null },
+  deliveryLocation: { latitude: null, longitude: null, address: null },
+  branch: {
+    id: "1",
+    title: "Riyadh branch",
+    distanceKm: null,
+    latitude: 24.7136,
+    longitude: 46.6753,
+    placeId: "mock-place",
+    region: "Riyadh",
+    address: "King Abdullah Road, Riyadh",
+    logo: item.companyLogo,
+  },
+  note: null,
+  carPrice: 500,
+  price: 2500,
+  count: 5,
+  deliveryFee: 0,
+  serviceFee: 100,
+  completionFee: 25,
+  discount: 0,
+  totalPrice: 2625,
+  taxValue: 262.5,
+  finalPrice: 2887.5,
+  cancellationFee: item.status === "cancelled" ? 100 : 0,
+  refundAmount: item.status === "cancelled" ? 2787.5 : 0,
+  taxRate: 10,
+  taxRateType: "percent",
+  serviceFeeRate: 0,
+  serviceFeeRateType: "percent",
+  payExtension: false,
+  pendingExtensionId: null,
+  hasModifyRequest: false,
+  hasDriver: false,
+  isRated: item.isRated,
+  myRating: item.myRating,
+  createdAt: "2026-06-01 12:00:00",
+  terms: "<p>Return the car on time.</p>",
+}));
 
-/** Mock only: extensions past this many days fail, so the failure state can be exercised. */
+/** Mock only: extensions past this many total days fail reproducibly. */
 const MOCK_MAX_RENTAL_DAYS = 30;
-
 /** Mock only: page 99 fails reproducibly so the paginated error state can be exercised. */
 const MOCK_LIST_FAILURE_PAGE = 99;
+/** Mock only: this id fails reproducibly so the details error boundary can be exercised. */
+const MOCK_DETAILS_FAILURE_ID = "server-error";
 
 const delay = (ms = 300) => new Promise((resolve) => setTimeout(resolve, ms));
 
-function findBooking(id: string): UserBooking {
-  const booking = MOCK_BOOKINGS.find((item) => item.id === id);
-  if (!booking) throw new AppError("not_found", "bookings.notFound");
-  return booking;
+function findOrder(id: string): Order {
+  if (id === MOCK_DETAILS_FAILURE_ID) throw new AppError("server");
+  const order = MOCK_ORDERS.find((item) => item.id === id);
+  if (!order) throw new AppError("not_found", "bookings.notFound");
+  return order;
 }
 
-function findActiveBooking(id: string): UserBooking {
-  const booking = findBooking(id);
-  if (!isActiveBooking(booking.status))
+function findActiveOrder(id: string): Order {
+  const order = findOrder(id);
+  if (orderTabForStatus(order.status) !== "active")
     throw new AppError("conflict", "bookings.notActive");
-  return booking;
+  return order;
 }
 
-// Read-only (writes validate and resolve without changing anything), so it is
-// safe to run on the server.
+// Stateless/read-only: safe on the server. Writes validate but do not mutate.
 export const bookingsMock: BookingsApi = {
   async listOrders({ status, page, perPage }): Promise<Page<OrderListItem>> {
     await delay();
@@ -226,34 +195,21 @@ export const bookingsMock: BookingsApi = {
     });
   },
 
-  async getBookingDetails(id) {
+  async getOrder(id) {
     await delay();
-    const booking = findBooking(id);
-
-    const { carName, carBrand, carImage, showroom, status, statusLabel } =
-      booking;
-    return {
-      ...MOCK_DETAILS_BASE,
-      id,
-      carName,
-      carBrand,
-      carImage,
-      showroom,
-      status,
-      statusLabel,
-    };
+    return findOrder(id);
   },
 
   async extendBooking(id, days) {
     await delay(600);
-    findActiveBooking(id);
+    findActiveOrder(id);
     if (days > MOCK_MAX_RENTAL_DAYS)
       throw new AppError("conflict", "bookings.extendLimit");
   },
 
   async requestBookingEdit(id, request) {
     await delay(600);
-    findActiveBooking(id);
+    findActiveOrder(id);
     if (request.endDate <= request.startDate) {
       throw new AppError("validation", "bookings.invalidDates", undefined, {
         endDate: "bookings.invalidDates",
@@ -263,15 +219,14 @@ export const bookingsMock: BookingsApi = {
 
   async cancelBooking(id) {
     await delay(600);
-    const booking = findActiveBooking(id);
-    // The car is already overdue with the customer, so it has to be returned first.
-    if (booking.status === "late")
+    const order = findActiveOrder(id);
+    if (order.status === "late")
       throw new AppError("conflict", "bookings.cancelNotAllowed");
   },
 
   async submitReview(id, { showroomRating, driverRating }) {
     await delay(600);
-    findBooking(id);
+    findOrder(id);
     if (
       !Number.isInteger(showroomRating) ||
       showroomRating < 1 ||
@@ -301,8 +256,6 @@ export const bookingsMock: BookingsApi = {
         startDate: "booking.startInPast",
       });
     }
-    // Mock only: the car is booked again after this many days, so the
-    // "no longer available" failure can be exercised.
     if (details.days > MOCK_MAX_RENTAL_DAYS)
       throw new AppError("conflict", "booking.carUnavailable");
   },

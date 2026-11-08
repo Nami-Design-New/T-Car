@@ -658,12 +658,18 @@
   "myBookings": {
     "modelYear": "Model {year}",
     "perDay": "/ day",
+    "perMonth": "/ month",
+    "notices": {
+      "paymentSafety": "Stay safe: don't share outside links or bank transfer requests. Your payments are safe and guaranteed inside the app. Please extend through the app only.",
+      "directExtension": "T-Car is not responsible for any problems you may face if the booking is extended directly with the car rental company."
+    },
     "countdown": {
-      "expired": "The booking period has ended",
-      "remaining": "Time remaining on booking",
-      "days": "days",
-      "hours": "hours",
-      "minutes": "minutes"
+      "title": "Late for return",
+      "lateBy": "Late for return by:",
+      "lateFeeHint": "The late fee keeps accruing until the booking is extended or the car is returned.",
+      "days": "Days",
+      "hours": "Hours",
+      "minutes": "Minutes"
     },
     "dates": {
       "location": "Location",
@@ -672,7 +678,9 @@
       "date": "Date",
       "pickupTime": "Pickup time",
       "dropoffTime": "Drop-off time",
-      "additionalDetails": "Additional details"
+      "note": "Note",
+      "orderTime": "Order time",
+      "notProvided": "Not provided"
     },
     "tabs": {
       "title": "My bookings",
@@ -696,10 +704,17 @@
     "sidebar": {
       "priceDetails": "Price details",
       "price": "Price",
-      "subtotal": "Subtotal",
-      "vat": "VAT",
-      "points": "Points used",
+      "deliveryFee": "Delivery fee",
+      "serviceFee": "Service fee",
+      "tammFee": "Tamm fee",
+      "discount": "Discount",
+      "totalBeforeTax": "Total before tax",
+      "tax": "Tax",
       "total": "Total",
+      "cancellationFee": "Cancellation fee",
+      "refundAmount": "Refund amount",
+      "terms": "Terms and conditions",
+      "currency": "SAR",
       "review": "We value your review"
     },
     "review": {
@@ -717,7 +732,7 @@
       "close": "Close",
       "title": "Cancel booking",
       "question": "Are you sure you want to cancel the booking?",
-      "warning": "{percent}% of the booking value will be deducted as a cancellation fee, and the remaining amount will be refunded.",
+      "quotePending": "The cancellation fee and the amount refunded to your wallet are calculated when you confirm.",
       "amountDetails": "Amount details",
       "paid": "Amount paid",
       "discountPercent": "Discount percentage",
@@ -735,12 +750,11 @@
       "selectDays": "Select number of days",
       "increase": "Increase days",
       "decrease": "Decrease days",
-      "note": "The booking will end on January 1, 2025",
+      "quotePending": "The final extension price, including tax and any late fee, is calculated when you confirm.",
       "priceDetails": "Price details",
       "price": "Price",
       "subtotal": "Subtotal",
       "lateFee": "Late fee",
-      "oneDay": "1 day",
       "vat": "VAT",
       "total": "Total",
       "extending": "Extending...",

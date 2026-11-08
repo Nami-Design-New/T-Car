@@ -1,12 +1,14 @@
-import { isRentalRunning, type BookingDetailsView } from "@/features/orders";
+import { isDraft, type Order } from "@/features/orders";
 import BookingDetailsHeader from "./BookingDetailsHeader";
 import BookingHero from "./BookingHero";
 import BookingDatesInfo from "./BookingDatesInfo";
 import BookingCountdown from "./BookingCountdown";
+import BookingNotices from "./BookingNotices";
+import BookingOrderTime from "./BookingOrderTime";
 import BookingSidebar from "./BookingSidebar";
 
 interface Props {
-  booking: BookingDetailsView;
+  booking: Order;
 }
 
 export default function BookingDetailsScreen({ booking }: Props) {
@@ -16,44 +18,25 @@ export default function BookingDetailsScreen({ booking }: Props) {
         <div className="mx-auto flex max-w-270 flex-col gap-6">
           <BookingDetailsHeader booking={booking} />
 
-          <BookingHero
-            carName={booking.carName}
-            carBrand={booking.carBrand}
-            carImage={booking.carImage}
-            showroom={booking.showroom}
-            pricePerDay={booking.pricePerDay}
-            originalPrice={booking.originalPrice}
-            status={booking.status}
-            statusLabel={booking.statusLabel}
-            pickupDateTime={booking.pickupDateTime}
-            dropoffDateTime={booking.dropoffDateTime}
-          />
+          <BookingHero booking={booking} />
 
           <div className="grid grid-cols-[1fr_340px] items-start gap-6 max-[860px]:grid-cols-1">
             <div className="flex min-w-0 flex-col gap-6">
-              <BookingDatesInfo
-                pickupLocation={booking.pickupLocation}
-                dropoffLocation={booking.dropoffLocation}
-                pickupDateTime={booking.pickupDateTime}
-                dropoffDateTime={booking.dropoffDateTime}
-                warrantyNote={booking.warrantyNote}
-              />
+              {/* Upcoming or running (not an unpaid draft): payment-safety and
+                  direct-extension notices. */}
+              {!isDraft(booking) &&
+                (booking.status === "coming" ||
+                  booking.status === "current") && <BookingNotices />}
+              <BookingDatesInfo booking={booking} />
 
-              {isRentalRunning(booking.status) && (
-                <BookingCountdown targetDateTime={booking.dropoffDateTime} />
+              {/* Only a late booking: the card counts the time overdue since
+                  the return time. */}
+              {!isDraft(booking) && booking.status === "late" && (
+                <BookingCountdown targetDateTime={booking.returnAt} />
               )}
             </div>
 
-            <BookingSidebar
-              bookingId={booking.id}
-              pricePerDay={booking.pricePerDay}
-              days={booking.days}
-              subtotal={booking.subtotal}
-              vatRate={booking.vatRate}
-              vat={booking.vat}
-              pointsUsed={booking.pointsUsed}
-              total={booking.total}
-            />
+            <BookingSidebar booking={booking} />
           </div>
         </div>
       </div>

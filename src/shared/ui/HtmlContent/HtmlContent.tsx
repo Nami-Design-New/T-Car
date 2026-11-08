@@ -1,13 +1,13 @@
 import { cn } from "@/shared/lib/cn";
 
-interface Props {
-  /** HTML already sanitized on the server (see `toSafeHtml` in `api.ts`). */
+export interface HtmlContentProps {
+  /** HTML already sanitized on the server with `sanitizeBackendHtml`. */
   html: string;
   className?: string;
 }
 
-/** Renders backend-authored HTML as is, with readable list and text spacing. */
-export default function HtmlContent({ html, className }: Props) {
+/** Renders sanitized backend-authored HTML with readable list and text spacing. */
+export function HtmlContent({ html, className }: HtmlContentProps) {
   return (
     <div
       className={cn(

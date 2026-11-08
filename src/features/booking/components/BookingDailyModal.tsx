@@ -224,9 +224,13 @@ export default function BookingDailyModal({
           Math.round((range.end.getTime() - range.start.getTime()) / 86400000),
         )
       : 1;
-  const subtotal = pricePerDay * totalDays;
-  const vat = Math.round(subtotal * VAT_RATE);
-  const total = subtotal + vat;
+  const calculatedSubtotal = pricePerDay * totalDays;
+  const calculatedVat = Math.round(calculatedSubtotal * VAT_RATE);
+  const subtotal =
+    mode === "edit" ? (initialDetails?.subtotal ?? 0) : calculatedSubtotal;
+  const vat = mode === "edit" ? (initialDetails?.vat ?? 0) : calculatedVat;
+  const total =
+    mode === "edit" ? (initialDetails?.total ?? 0) : subtotal + vat;
 
   const handleLocationConfirm = (location: LocationData) => {
     const address =
@@ -617,15 +621,17 @@ export default function BookingDailyModal({
               {mode === "edit" ? t("submitEdit") : t("continue")}
             </Button>
 
-            <div className="booking_total shrink-0 text-center">
-              <span className="block text-md text-text-subtle">
-                {t("total")}
-              </span>
-              <Price
-                amount={total}
-                amountClassName="text-2xl font-extrabold text-text-primary"
-              />
-            </div>
+            {mode !== "edit" ? (
+              <div className="booking_total shrink-0 text-center">
+                <span className="block text-md text-text-subtle">
+                  {t("total")}
+                </span>
+                <Price
+                  amount={total}
+                  amountClassName="text-2xl font-extrabold text-text-primary"
+                />
+              </div>
+            ) : null}
           </div>
         </form>
         {mapField !== null && (

@@ -1,9 +1,9 @@
 import "server-only";
-import sanitizeHtml from "sanitize-html";
 import { isApiEnvelope, type ApiEnvelope } from "@/services/http/envelope";
 import { publicServerHttp } from "@/services/http/server";
 import { IMAGES } from "@/shared/config/assets";
 import { AppError } from "@/shared/lib/errors";
+import { sanitizeBackendHtml } from "@/shared/lib/sanitizeHtml";
 import type { CarOffer } from "@/features/cars";
 import {
   type CarPolicies,
@@ -163,25 +163,6 @@ function logDetailData(label: string, value: unknown): void {
     // eslint-disable-next-line no-console -- intentional local API integration inspection.
     console.info(`[car-details] ${label}`, value);
   }
-}
-
-/**
- * Backend-authored HTML is rendered as is, so it is sanitized here on the
- * server: scripts, styles, event handlers and unsafe URLs are dropped.
- */
-function toSafeHtml(value: string): string {
-  return sanitizeHtml(value, {
-    allowedTags: [
-      ...sanitizeHtml.defaults.allowedTags,
-      "h1",
-      "h2",
-      "span",
-      "u",
-    ],
-    transformTags: {
-      a: sanitizeHtml.simpleTransform("a", { rel: "noopener noreferrer" }),
-    },
-  }).trim();
 }
 
 function isLookup(value: unknown): value is LookupDto {
@@ -437,7 +418,7 @@ export function mapCarDetails(details: DetailsDto): CarDetails {
     warranties: details.warranties.map((warranty, index) => ({
       id: `warranty-${index}`,
       title: warranty.title,
-      content: toSafeHtml(warranty.content),
+      content: sanitizeBackendHtml(warranty.content),
     })),
     addons: details.serevices.map((service) => ({
       id: String(service.id),
@@ -587,10 +568,10 @@ async function getPolicies(): Promise<CarPolicies> {
 
   return {
     clientInstructions: data.client_instructions
-      .map((policy) => toSafeHtml(policy.content))
+      .map((policy) => sanitizeBackendHtml(policy.content))
       .filter(Boolean),
     cancellationPolicies: data.cancellation_policies
-      .map((policy) => toSafeHtml(policy.content))
+      .map((policy) => sanitizeBackendHtml(policy.content))
       .filter(Boolean),
   };
 }

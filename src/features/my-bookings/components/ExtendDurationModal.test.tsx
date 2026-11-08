@@ -23,5 +23,9 @@ describe("ExtendDurationModal", () => {
     await user.click(screen.getByRole("button", { name: "Confirm" }));
 
     expect(onConfirm).toHaveBeenCalledWith(6);
+    expect(screen.getByText("500 SAR")).toBeInTheDocument();
+    expect(screen.queryByText("VAT")).not.toBeInTheDocument();
+    expect(screen.queryByText("Late fee")).not.toBeInTheDocument();
+    expect(screen.queryByText("Total")).not.toBeInTheDocument();
   });
 });

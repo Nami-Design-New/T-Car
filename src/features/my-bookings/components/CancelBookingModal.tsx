@@ -13,8 +13,6 @@ interface Props {
   onConfirm: () => void;
 
   bookingAmount: number;
-  cancellationPercent: number;
-  cancellationFee: number;
   loading?: boolean;
   /** Already translated; the dialog stays open and shows it after a failed submit. */
   error?: string;
@@ -25,12 +23,9 @@ export default function CancelBookingModal({
   onClose,
   onConfirm,
   bookingAmount,
-  cancellationPercent,
-  cancellationFee,
   loading = false,
   error,
 }: Props) {
-  const refundedAmount = bookingAmount - cancellationFee;
   const t = useTranslations("myBookings.cancel");
 
   return (
@@ -66,7 +61,7 @@ export default function CancelBookingModal({
 
         <div className="mb-[18px] w-full rounded-sm bg-status-error-background px-4 py-3 text-center">
           <p className="m-0 text-[11.5px] leading-relaxed text-text-subtle">
-            {t("warning", { percent: cancellationPercent })}
+            {t("quotePending")}
           </p>
         </div>
 
@@ -84,38 +79,9 @@ export default function CancelBookingModal({
             </strong>
           </div>
 
-          <div className="flex min-h-9 w-full flex-nowrap items-center justify-between gap-2 border-b border-dashed border-stroke-light px-1 text-status-error">
-            <span className="min-w-0 text-[13px]">{t("discountPercent")}</span>
-            <strong className="min-w-0 whitespace-nowrap text-[13px] font-medium">
-              {cancellationPercent}%
-            </strong>
-          </div>
-
-          <div className="flex min-h-9 w-full flex-nowrap items-center justify-between gap-2 border-b border-dashed border-stroke-light px-1 text-status-error">
-            <span className="min-w-0 text-[13px]">{t("cancellationFee")}</span>
-            <strong className="min-w-0 whitespace-nowrap text-[13px] font-medium">
-              -{cancellationFee} {t("currency")}
-            </strong>
-          </div>
-
-          <div className="flex min-h-9 w-full flex-nowrap items-center justify-between gap-2 border-b border-dashed border-stroke-light px-1 last:border-0">
-            <span className="min-w-0 text-[13px] text-text-subtle">
-              {t("refunded")}
-            </span>
-            <strong className="min-w-0 whitespace-nowrap text-[13px] font-semibold text-text-primary">
-              {refundedAmount} {t("currency")}
-            </strong>
-          </div>
         </div>
 
-        <div className="mb-4 flex w-full flex-col items-center justify-center rounded-sm bg-surface-card-primary p-3 text-center">
-          <span className="mb-1 text-[11px] text-text-subtle">
-            {t("refundedToYou")}
-          </span>
-          <strong className="text-xl font-bold text-text-primary">
-            {refundedAmount} {t("currency")}
-          </strong>
-        </div>
+        {/* TODO(O7): show cancellation fee and refund only after E8 returns its quote. */}
 
         {error && (
           <p className="text-status-error text-sm mb-2" role="alert">

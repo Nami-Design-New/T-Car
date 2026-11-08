@@ -3,30 +3,24 @@
 import { useCallback, useState } from "react";
 import { useTranslations } from "next-intl";
 import dynamic from "next/dynamic";
-import { Link } from "@/i18n/navigation";
-import {
-  FiArrowRight,
-  FiMoreVertical,
-  FiEdit2,
-  FiCalendar,
-  FiX,
-} from "react-icons/fi";
+import { useRouter } from "@/i18n/navigation";
+import { FiMoreHorizontal, FiEdit2, FiCalendar, FiX } from "react-icons/fi";
 
 import { useErrorMessage } from "@/shared/hooks/useErrorMessage";
 import type { AppError } from "@/shared/lib/errors";
 import { ResultDialog } from "@/shared/ui/ResultDialog";
 import {
-  isActiveBooking,
-  type BookingDetailsView,
+  canCancel,
+  canExtend,
+  canModify,
+  isDraft,
   type BookingEditRequest,
+  type Order,
 } from "@/features/orders";
-import {
-  bookingTabFor,
-  bookingsListPath,
-  cancellationFee,
-  toEditRequest,
-} from "../model";
+import { bookingTabFor, bookingsListPath, toEditRequest } from "../model";
 import { useBookingActions } from "../hooks/useBookingActions";
+import { BackButton } from "@/shared/ui/BackButton";
+import { Menu } from "@/shared/ui/Menu";
 const ExtendDurationModal = dynamic(() => import("./ExtendDurationModal"), {
   ssr: false,
 });
@@ -38,7 +32,7 @@ const CancelBookingModal = dynamic(() => import("./CancelBookingModal"), {
 });
 
 interface Props {
-  booking: BookingDetailsView;
+  booking: Order;
 }
 
 type ResultKind = "extended" | "editRequested" | "cancelled";
@@ -65,7 +59,7 @@ const RESULT_KEYS: Record<
 
 export default function BookingDetailsHeader({ booking }: Props) {
   const t = useTranslations("myBookings.details");
-  const [showActions, setShowActions] = useState(false);
+  const router = useRouter();
   const [flow, setFlow] = useState<HeaderFlow>({ step: "idle" });
   const { submitting, extend, requestEdit, cancel } = useBookingActions(
     booking.id,
@@ -73,13 +67,13 @@ export default function BookingDetailsHeader({ booking }: Props) {
   const errorMessage = useErrorMessage();
 
   const close = useCallback(() => setFlow({ step: "idle" }), []);
-  const open = (step: "extend" | "edit" | "cancel") => {
-    setShowActions(false);
-    setFlow({ step });
-  };
+  const open = (step: "extend" | "edit" | "cancel") => setFlow({ step });
 
-  const isActive = isActiveBooking(booking.status);
-  const fee = cancellationFee(booking.total, booking.cancellationPercent);
+  const draft = isDraft(booking);
+  const allowEdit = !draft && canModify(booking);
+  const allowExtend = !draft && canExtend(booking);
+  const allowCancel = !draft && canCancel(booking);
+  const hasActions = allowEdit || allowExtend || allowCancel;
 
   const handleExtend = async (days: number) => {
     const result = await extend(days);
@@ -108,73 +102,62 @@ export default function BookingDetailsHeader({ booking }: Props) {
 
   return (
     <div className="flex items-center gap-3.5">
-      {/* Back */}
-      <Link
-        href={bookingsListPath(bookingTabFor(booking.status))}
-        className="grid size-9 shrink-0 place-items-center rounded-sm border border-stroke-light text-text-primary transition hover:border-action-primary hover:bg-action-primary hover:text-white focus-visible:outline-2 focus-visible:outline-action-primary"
+      {/* Back to the list this booking belongs to */}
+      <BackButton
         aria-label={t("back")}
-      >
-        <FiArrowRight />
-      </Link>
+        onClick={() =>
+          router.push(bookingsListPath(bookingTabFor(booking.status)))
+        }
+      />
 
       {/* Title */}
       <div className="flex min-w-0 flex-1 items-baseline gap-2.5">
-        <h1 className="m-0 text-base font-bold text-text-primary">
+        <h1 className="text-text-primary m-0 text-base font-bold">
           {t("title")}
         </h1>
-
-        <span className="text-[0.82rem] text-text-subtle">
-          #{booking.reference}
-        </span>
       </div>
 
-      {/* Actions */}
-      {isActive && (
-        <div className="relative shrink-0">
-          {/* Trigger */}
-          <button
-            type="button"
-            className="grid size-9 place-items-center rounded-sm border border-stroke-light bg-surface-elevated text-text-primary transition hover:border-action-primary hover:bg-action-primary hover:text-white focus-visible:outline-2 focus-visible:outline-action-primary"
-            onClick={() => setShowActions((prev) => !prev)}
-            aria-label={t("actions")}
-            aria-expanded={showActions}
-          >
-            <FiMoreVertical />
-          </button>
+      <div className="flex items-center gap-2.5">
+        <span className="text-text-subtle text-[0.82rem]">
+          #{booking.orderNumber}
+        </span>
 
-          {/* Menu */}
-          {showActions && (
-            <div className="absolute top-[calc(100%+8px)] start-0 z-20 min-w-[150px] rounded-sm border border-stroke-light bg-surface-elevated p-1.5 shadow-lg">
+        {/* Actions */}
+        {hasActions && (
+          <Menu.Root>
+            <Menu.Trigger asChild>
               <button
                 type="button"
-                className="flex w-full items-center gap-2 rounded-sm border-0 bg-transparent px-2.5 py-2 text-end text-xs text-text-primary transition hover:bg-surface-on-background"
-                onClick={() => open("edit")}
+                className="border-stroke-light bg-surface-elevated text-text-primary hover:border-action-primary hover:bg-action-primary focus-visible:outline-action-primary data-[state=open]:border-action-primary data-[state=open]:bg-action-primary grid size-9 shrink-0 cursor-pointer place-items-center rounded-full border transition hover:text-white focus-visible:outline-2 data-[state=open]:text-white"
+                aria-label={t("actions")}
               >
-                <FiEdit2 />
-                <span>{t("requestEdit")}</span>
+                <FiMoreHorizontal aria-hidden="true" />
               </button>
+            </Menu.Trigger>
 
-              <button
-                type="button"
-                className="flex w-full items-center gap-2 rounded-sm border-0 bg-transparent px-2.5 py-2 text-end text-xs text-text-primary transition hover:bg-surface-on-background"
-                onClick={() => open("extend")}
-              >
-                <FiCalendar />
-                <span>{t("extend")}</span>
-              </button>
-
-              <button
-                type="button"
-                className="flex w-full items-center gap-2 rounded-sm border-0 bg-transparent px-2.5 py-2 text-end text-xs text-status-error transition hover:bg-status-error-background"
-                onClick={() => open("cancel")}
-              >
-                <FiX />
-                <span>{t("cancel")}</span>
-              </button>
-            </div>
-          )}
-        </div>
-      )}
+            <Menu.Content className="min-w-[150px]">
+              {allowEdit && (
+                <Menu.Item onSelect={() => open("edit")}>
+                  <FiEdit2 aria-hidden="true" />
+                  {t("requestEdit")}
+                </Menu.Item>
+              )}
+              {allowExtend && (
+                <Menu.Item onSelect={() => open("extend")}>
+                  <FiCalendar aria-hidden="true" />
+                  {t("extend")}
+                </Menu.Item>
+              )}
+              {allowCancel && (
+                <Menu.Item tone="danger" onSelect={() => open("cancel")}>
+                  <FiX aria-hidden="true" />
+                  {t("cancel")}
+                </Menu.Item>
+              )}
+            </Menu.Content>
+          </Menu.Root>
+        )}
+      </div>
 
       <ExtendDurationModal
         open={flow.step === "extend"}
@@ -182,8 +165,8 @@ export default function BookingDetailsHeader({ booking }: Props) {
           if (!submitting) close();
         }}
         onConfirm={handleExtend}
-        currentDays={booking.days}
-        pricePerDay={booking.pricePerDay}
+        currentDays={booking.count}
+        pricePerDay={booking.carPrice}
         loading={submitting}
         error={
           flow.step === "extend" && flow.error
@@ -195,7 +178,7 @@ export default function BookingDetailsHeader({ booking }: Props) {
       <EditDailyBookingModal
         open={flow.step === "edit"}
         onClose={close}
-        pricePerDay={booking.pricePerDay}
+        pricePerDay={booking.carPrice}
         initialDetails={toEditRequest(booking)}
         onSubmit={handleEdit}
         loading={submitting}
@@ -207,9 +190,7 @@ export default function BookingDetailsHeader({ booking }: Props) {
           if (!submitting) close();
         }}
         onConfirm={handleCancel}
-        bookingAmount={booking.total}
-        cancellationPercent={booking.cancellationPercent}
-        cancellationFee={fee}
+        bookingAmount={booking.finalPrice}
         loading={submitting}
         error={
           flow.step === "cancel" && flow.error

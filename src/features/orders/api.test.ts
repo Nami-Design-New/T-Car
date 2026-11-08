@@ -6,7 +6,7 @@ const { get } = vi.hoisted(() => ({ get: vi.fn() }));
 vi.mock("server-only", () => ({}));
 vi.mock("@/services/http/server", () => ({ serverHttp: { get } }));
 
-import { bookingsApi, mapOrdersResponse } from "./api";
+import { bookingsApi, mapOrderResponse, mapOrdersResponse } from "./api";
 
 const response = {
   data: [
@@ -35,6 +35,89 @@ const response = {
     from: 11,
     to: 20,
   },
+};
+
+const orderResponse = {
+  data: {
+    id: 153,
+    order_number: "ORD-6984BC6E",
+    user_id: 42,
+    car: {
+      id: 7,
+      image_url: "https://example.com/car.jpg",
+      year: 2025,
+      company_name: "Example company",
+      company_logo: null,
+      lower_price: 90,
+      max_price: 120,
+      rate: 4.5,
+      note: null,
+      brand: { id: 1, title: "Toyota", logo: null },
+      type: { id: 2, title: "Avalon", logo: null },
+      has_offer: false,
+      offer: null,
+    },
+    status: "late",
+    late_hours: 5,
+    booking_type: "daily",
+    delivery_type: "from_location",
+    pickup_day: "2026-11-10",
+    delivery_day: "2026-11-12",
+    pickup_time: "09:30:00",
+    delivery_time: "10:45:00",
+    pickup_location: {
+      pickup_lat: "24.7136",
+      pickup_long: "46.6753",
+      address: "Pickup address",
+    },
+    delivery_location: {
+      delivery_lat: "24.7000",
+      delivery_long: "46.6000",
+      address: "Return address",
+    },
+    branch: {
+      id: 3,
+      title: "Riyadh branch",
+      distance_km: null,
+      latitude: "24.7136",
+      longitude: "46.6753",
+      place_id: "place-1",
+      region: "Riyadh",
+      address: "Branch address",
+      logo: null,
+    },
+    note: "Please call first",
+    car_price: 45,
+    price: 90,
+    count: 2,
+    delivery_fee: 10,
+    service_fee: 9,
+    completion_fee: 3,
+    discount: 5,
+    coupon_code: null,
+    coupon_discount: 0,
+    additional_services_cost: 10,
+    total_price: 112,
+    tax_value: 11.2,
+    final_price: 123.2,
+    cancellation_fee: 0,
+    refund_amount: 0,
+    tax_rate: 10,
+    tax_rate_type: "percent",
+    service_fee_rate: 10,
+    service_fee_rate_type: "percent",
+    pay_extension: false,
+    pending_extension_id: null,
+    has_modify_request: false,
+    has_driver: false,
+    is_rated: false,
+    my_rating: { company_rate: null, driver_rate: null },
+    created_at: "2026-11-08 12:00:00",
+    terms:
+      '<p onclick="steal()">Return on time.</p><script>alert(1)</script>',
+  },
+  message: "Fetched successfully.",
+  code: 200,
 };
 
 describe("orders list API", () => {
@@ -98,6 +181,122 @@ describe("orders list API", () => {
     expect(get).toHaveBeenCalledWith("/booking", {
       query: { status: "past", page: 2, per_page: 10 },
     });
+  });
+});
+
+describe("order details API", () => {
+  beforeEach(() => get.mockReset());
+
+  it("maps a valid OrderDto, numeric-string coordinates, and date-times", () => {
+    expect(mapOrderResponse(orderResponse)).toMatchObject({
+      id: "153",
+      orderNumber: "ORD-6984BC6E",
+      userId: "42",
+      status: "late",
+      deliveryType: "from_location",
+      pickupAt: "2026-11-10T09:30:00",
+      returnAt: "2026-11-12T10:45:00",
+      pickupLocation: {
+        latitude: 24.7136,
+        longitude: 46.6753,
+        address: "Pickup address",
+      },
+      branch: { id: "3", latitude: 24.7136, longitude: 46.6753 },
+      price: 90,
+      finalPrice: 123.2,
+      pendingExtensionId: null,
+    });
+  });
+
+  it("rejects an OrderDto with a missing field", () => {
+    const { order_number: _missing, ...data } = orderResponse.data;
+    expectServerError(() => mapOrderResponse({ ...orderResponse, data }));
+  });
+
+  it("rejects an unknown details status", () => {
+    expectServerError(() =>
+      mapOrderResponse({
+        ...orderResponse,
+        data: { ...orderResponse.data, status: "mystery" },
+      }),
+    );
+  });
+
+  it("rejects a non-numeric coordinate and an unknown delivery type", () => {
+    expectServerError(() =>
+      mapOrderResponse({
+        ...orderResponse,
+        data: {
+          ...orderResponse.data,
+          branch: { ...orderResponse.data.branch, latitude: "0x1A" },
+        },
+      }),
+    );
+    expectServerError(() =>
+      mapOrderResponse({
+        ...orderResponse,
+        data: { ...orderResponse.data, delivery_type: "by_drone" },
+      }),
+    );
+  });
+
+  it("accepts null location fields", () => {
+    const order = mapOrderResponse({
+      ...orderResponse,
+      data: {
+        ...orderResponse.data,
+        delivery_type: "from_branch",
+        pickup_location: {
+          pickup_lat: null,
+          pickup_long: null,
+          address: null,
+        },
+        delivery_location: {
+          delivery_lat: null,
+          delivery_long: null,
+          address: null,
+        },
+      },
+    });
+
+    expect(order.pickupLocation).toEqual({
+      latitude: null,
+      longitude: null,
+      address: null,
+    });
+  });
+
+  it("accepts an unpaid draft without the optional has_driver field", () => {
+    const { has_driver: _missing, ...data } = orderResponse.data;
+    const order = mapOrderResponse({
+      ...orderResponse,
+      data: { ...data, created_at: null },
+    });
+
+    expect(order.createdAt).toBeNull();
+    expect(order).not.toHaveProperty("hasDriver");
+  });
+
+  it("sanitizes terms on the server", () => {
+    const order = mapOrderResponse(orderResponse);
+    expect(order.terms).toBe("<p>Return on time.</p>");
+  });
+
+  it("requests E7 by id", async () => {
+    get.mockResolvedValue(orderResponse);
+    await expect(bookingsApi.getOrder("153")).resolves.toMatchObject({
+      id: "153",
+    });
+    expect(get).toHaveBeenCalledWith("/booking/153");
+  });
+
+  it("preserves E7 not-found errors from the HTTP client", async () => {
+    const notFound = new AppError("not_found");
+    get.mockImplementationOnce(async () => {
+      throw notFound;
+    });
+
+    await expect(bookingsApi.getOrder("99999999")).rejects.toBe(notFound);
   });
 });
 

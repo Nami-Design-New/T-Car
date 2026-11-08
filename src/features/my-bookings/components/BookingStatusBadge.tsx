@@ -5,15 +5,12 @@ import { useTranslations } from "next-intl";
 import { FiCalendar, FiClock } from "react-icons/fi";
 import {
   orderStatusTone,
-  type BookingStatus,
   type OrderStatus,
   type OrderStatusTone,
 } from "@/features/orders";
 
 interface Props {
-  /** BookingStatus/label remain for the not-yet-migrated O3 details hero. */
-  status: OrderStatus | BookingStatus;
-  label?: string;
+  status: OrderStatus;
   dateTime: string;
   lateHours?: number | null;
   className?: string;
@@ -28,45 +25,32 @@ const TONE_CLASSES: Record<OrderStatusTone, string> = {
 
 export default function BookingStatusBadge({
   status,
-  label,
   dateTime,
   lateHours,
   className,
 }: Props) {
   const t = useTranslations("myBookings.status");
-  // TODO(O3): drop the legacy upcoming/completed bridge with BookingStatus.
-  const tone =
-    status === "upcoming"
-      ? "warning"
-      : status === "completed"
-        ? "success"
-        : orderStatusTone(status);
-  const statusLabel =
-    label ??
-    (status === "upcoming"
-      ? t("coming")
-      : status === "completed"
-        ? t("complete")
-        : t(status));
+  const tone = orderStatusTone(status);
+  const statusLabel = t(status);
 
   return (
     <div
       className={clsx(
-        "flex min-w-0 flex-wrap items-center justify-between gap-2 rounded-md px-2 py-1",
+        "flex w-full min-w-0 flex-wrap items-center justify-between gap-2 rounded-md px-2 py-1 md:px-4 md:py-2",
         TONE_CLASSES[tone],
         className,
       )}
     >
       <span className="shrink-0 font-bold">{statusLabel}</span>
-      <span className="flex min-w-0 items-center gap-1 text-xs font-normal">
+      <div className="flex min-w-0 items-center gap-1 text-xs leading-3 font-normal">
         <FiCalendar aria-hidden="true" />
-        {dateTime}
-      </span>
+        <p className="block">{dateTime}</p>
+      </div>
       {status === "late" && lateHours != null ? (
-        <span className="flex w-full items-center gap-1 text-xs font-semibold">
-          <FiClock aria-hidden="true" />
-          {t("lateHours", { hours: lateHours })}
-        </span>
+        <div className="flex w-full items-center gap-1 text-xs leading-3 font-semibold">
+          <FiClock aria-hidden="true" className="size-3" />
+          <p className="block">{t("lateHours", { hours: lateHours })}</p>
+        </div>
       ) : null}
     </div>
   );
