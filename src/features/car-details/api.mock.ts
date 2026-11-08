@@ -15,9 +15,13 @@ type DetailExtras = Pick<
   | "insuranceOptions"
   | "reviews"
   | "pickupInfo"
+  | "lowerPrice"
+  | "maxPrice"
 >;
 
 const MOCK_DETAILS_EXTRAS: DetailExtras = {
+  lowerPrice: 500,
+  maxPrice: 550,
   images: [car1],
   quickFacts: [
     { kind: "power", value: "160 HP" },
@@ -28,14 +32,14 @@ const MOCK_DETAILS_EXTRAS: DetailExtras = {
     {
       id: "1",
       title: "ضمان الوصول في الوقت المحدد",
-      description:
-        "خصم %20 في اليوم الأول إذا وصلت السيارة متأخرة، تطبق الشروط والأحكام.",
+      content:
+        "<p>خصم %20 في اليوم الأول إذا وصلت السيارة متأخرة، تطبق الشروط والأحكام.</p>",
     },
     {
       id: "2",
       title: "ضمان نظافة السيارة",
-      description:
-        "خصم %20 في اليوم الأول إذا وصلت السيارة غير نظيفة، تطبق الشروط والأحكام.",
+      content:
+        "<p>خصم %20 في اليوم الأول إذا وصلت السيارة غير نظيفة، تطبق الشروط والأحكام.</p>",
     },
   ],
   addons: [
@@ -180,11 +184,10 @@ export const carDetailsMock: CarDetailsApi = {
     await delay();
     return {
       clientInstructions: [
-        "Report any accident immediately to the company and the relevant security authorities.",
-        "Return the car at the agreed time to avoid additional charges.",
+        "<ol><li>Report any accident immediately to the company and the relevant security authorities.</li><li>Return the car at the agreed time to avoid additional charges.</li></ol>",
       ],
       cancellationPolicies: [
-        "Cancellation fees may apply according to the booking terms.",
+        "<p>Cancellation fees may apply according to the booking terms.</p>",
       ],
     };
   },

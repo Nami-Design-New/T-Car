@@ -203,7 +203,8 @@ describe("carDetailsApi.getCarDetails", () => {
         {
           id: "warranty-0",
           title: "On-time arrival",
-          description: "Arrives on time & ready to drive.",
+          // The HTML is kept; the <script> is removed by the sanitizer.
+          content: "<p>Arrives on time &amp; ready to drive.</p>",
         },
       ],
       addons: [
@@ -219,6 +220,8 @@ describe("carDetailsApi.getCarDetails", () => {
           percentage: 15,
         },
       ],
+      lowerPrice: 434,
+      maxPrice: 444,
       pickupInfo: {
         nearestBranch: {
           id: "3",
@@ -310,13 +313,35 @@ describe("carDetailsApi.getCarDetails", () => {
     );
   });
 
-  it("maps policy HTML to safe tab content", async () => {
+  it("keeps policy HTML as is, one entry per API content item", async () => {
     get.mockResolvedValue(envelope(policies));
 
     await expect(carDetailsApi.getPolicies()).resolves.toEqual({
-      clientInstructions: ["Report incidents immediately.", "Return on time."],
-      cancellationPolicies: ["Cancellation is subject to the booking terms."],
+      clientInstructions: [
+        "<ol><li>Report incidents immediately.</li><li>Return on time.</li></ol>",
+      ],
+      cancellationPolicies: [
+        "<p>Cancellation is subject to the booking terms.</p>",
+      ],
     });
     expect(get).toHaveBeenCalledWith("/policies");
+  });
+
+  it("strips unsafe markup from policy HTML", async () => {
+    get.mockResolvedValue(
+      envelope({
+        client_instructions: [
+          {
+            content:
+              '<p onclick="steal()">Drive safe</p><img src=x onerror="steal()"><a href="javascript:steal()">x</a><style>p{}</style>',
+          },
+        ],
+        cancellation_policies: [],
+      }),
+    );
+
+    const { clientInstructions } = await carDetailsApi.getPolicies();
+    expect(clientInstructions[0]).toContain("<p>Drive safe</p>");
+    expect(clientInstructions[0]).not.toMatch(/onclick|onerror|javascript:|<style/);
   });
 });

@@ -38,7 +38,7 @@ export default function CarDetailsView({
                 alt={`${car.brand} ${car.name}`}
                 offer={car.offer}
               />
-              <CarQuickInfo car={car} />
+              <CarQuickInfo car={car} ratings={ratings} />
               {car.pickupInfo.nearestBranch && (
                 <StationAndAirportInfo
                   showroom={car.showroom}
@@ -65,8 +65,8 @@ export default function CarDetailsView({
                 carImage={car.image}
                 showroom={car.showroom}
                 rating={car.rating}
-                pricePerDay={car.pricePerDay}
-                originalPrice={car.originalPrice}
+                lowerPrice={car.lowerPrice}
+                maxPrice={car.maxPrice}
               />
 
               {ratings.count > 0 && (

@@ -4,16 +4,16 @@ import { describe, expect, it } from "vitest";
 import PoliciesList from "./PoliciesList";
 import { renderWithIntl } from "@/shared/test/render";
 
+const POLICIES = {
+  clientInstructions: [
+    "<ol><li>Report incidents immediately.</li><li>Return on time.</li></ol>",
+  ],
+  cancellationPolicies: ["<p>Cancellation fees may apply.</p>"],
+};
+
 describe("PoliciesList", () => {
   it("shows renter instructions first and switches to cancellation policy", async () => {
-    renderWithIntl(
-      <PoliciesList
-        policies={{
-          clientInstructions: ["Report incidents immediately."],
-          cancellationPolicies: ["Cancellation fees may apply."],
-        }}
-      />,
-    );
+    renderWithIntl(<PoliciesList policies={POLICIES} />);
 
     expect(
       screen.getByText("Report incidents immediately."),
@@ -30,18 +30,17 @@ describe("PoliciesList", () => {
     ).toBeInTheDocument();
   });
 
-  it("uses logical layout classes and white tab surfaces", () => {
-    renderWithIntl(
-      <PoliciesList
-        policies={{
-          clientInstructions: ["Report incidents immediately."],
-          cancellationPolicies: ["Cancellation fees may apply."],
-        }}
-      />,
-    );
+  it("renders the policy HTML as markup", () => {
+    renderWithIntl(<PoliciesList policies={POLICIES} />);
 
-    expect(screen.getByRole("tablist")).toHaveClass("justify-end");
-    expect(screen.getByRole("list")).toHaveClass("ps-5", "text-start");
+    const list = screen.getByRole("list");
+    expect(list.tagName).toBe("OL");
+    expect(screen.getAllByRole("listitem")).toHaveLength(2);
+  });
+
+  it("uses white tab surfaces", () => {
+    renderWithIntl(<PoliciesList policies={POLICIES} />);
+
     expect(
       screen.getByRole("tab", { name: "Renter instructions" }),
     ).toHaveClass("bg-white");

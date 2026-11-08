@@ -100,6 +100,7 @@ export interface CompanyRatings {
   reviews: Review[];
 }
 
+/** Each entry is one API `content` item: sanitized HTML, rendered as is. */
 export interface CarPolicies {
   clientInstructions: string[];
   cancellationPolicies: string[];
@@ -108,42 +109,8 @@ export interface CarPolicies {
 export interface CarWarranty {
   id: string;
   title: string;
-  description: string;
-}
-
-/** Converts backend-authored HTML into safe display text. */
-export function htmlToPlainText(value: string): string {
-  const withoutUnsafeBlocks = value.replace(
-    /<(script|style)\b[^>]*>[\s\S]*?<\/\1>/gi,
-    "",
-  );
-  const withBreaks = withoutUnsafeBlocks.replace(
-    /<\/?(?:br|p|li|h[1-6])\b[^>]*>/gi,
-    "\n",
-  );
-  const withoutTags = withBreaks.replace(/<[^>]*>/g, "");
-  const decoded = withoutTags.replace(
-    /&#x([\da-f]+);|&#(\d+);|&(nbsp|amp|lt|gt|quot|#39);/gi,
-    (entity, hex: string | undefined, decimal: string | undefined, named) => {
-      if (hex) return String.fromCodePoint(Number.parseInt(hex, 16));
-      if (decimal) return String.fromCodePoint(Number.parseInt(decimal, 10));
-      const namedEntities: Record<string, string> = {
-        nbsp: " ",
-        amp: "&",
-        lt: "<",
-        gt: ">",
-        quot: '"',
-        "#39": "'",
-      };
-      return namedEntities[named.toLowerCase()] ?? entity;
-    },
-  );
-
-  return decoded
-    .split(/\n+/)
-    .map((line) => line.replace(/\s+/g, " ").trim())
-    .filter(Boolean)
-    .join("\n");
+  /** Sanitized HTML from the API `content` field, rendered as is. */
+  content: string;
 }
 
 export interface AddonService {
@@ -197,7 +164,11 @@ export interface CarPickupInfo {
   branches?: PickupBranch[];
 }
 
-export interface CarDetails extends CarListing {
+/** Prices keep the API names (`lower_price`, `max_price`). */
+export interface CarDetails
+  extends Omit<CarListing, "pricePerDay" | "originalPrice"> {
+  lowerPrice: number;
+  maxPrice: number;
   reviewsCount: number;
   images: string[];
   showroom: string;

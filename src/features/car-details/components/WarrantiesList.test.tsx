@@ -8,12 +8,12 @@ const WARRANTIES = [
   {
     id: "1",
     title: "On-time arrival",
-    description: "20% off the first day if late.",
+    content: "<p>20% off the first day if <strong>late</strong>.</p>",
   },
   {
     id: "2",
     title: "Clean car",
-    description: "20% off the first day if not clean.",
+    content: "<p>20% off the first day if not clean.</p>",
   },
 ];
 
@@ -29,15 +29,12 @@ describe("WarrantiesList", () => {
     const onTime = screen.getByRole("button", { name: "On-time arrival" });
     const clean = screen.getByRole("button", { name: "Clean car" });
     expect(onTime).toHaveAttribute("aria-expanded", "false");
-    expect(
-      screen.queryByText("20% off the first day if late."),
-    ).not.toBeInTheDocument();
+    expect(screen.queryByText("late")).not.toBeInTheDocument();
 
     await userEvent.click(onTime);
     expect(onTime).toHaveAttribute("aria-expanded", "true");
-    expect(
-      screen.getByText("20% off the first day if late."),
-    ).toBeInTheDocument();
+    // The warranty HTML is rendered as markup, not as escaped text.
+    expect(screen.getByText("late").tagName).toBe("STRONG");
 
     await userEvent.click(clean);
     expect(clean).toHaveAttribute("aria-expanded", "true");

@@ -14,9 +14,10 @@ import { useTranslations } from "next-intl";
 import { LuPlane } from "react-icons/lu";
 import { MdTrain } from "react-icons/md";
 import { ModelYearBadge } from "@/shared/ui/ModelYearBadge";
-import type { CarDetails } from "../model";
+import type { CarDetails, CompanyRatings } from "../model";
 import Image from "next/image";
 import { IMAGES } from "@/shared/config/assets";
+import ReviewsRatingButton from "./ReviewsRatingButton";
 
 const FACT_ICONS = {
   power: FiZap,
@@ -32,9 +33,10 @@ const FACT_ICONS = {
 
 interface Props {
   car: CarDetails;
+  ratings?: CompanyRatings;
 }
 
-export default function CarQuickInfo({ car }: Props) {
+export default function CarQuickInfo({ car, ratings }: Props) {
   const t = useTranslations("carDetails");
   const quickFactLabel = (fact: CarDetails["quickFacts"][number]) =>
     fact.value
@@ -52,16 +54,27 @@ export default function CarQuickInfo({ car }: Props) {
             <ModelYearBadge year={car.year} />
           </div>
 
-          <p className="text-text-primary mt-2 inline-flex items-center gap-2 text-base font-normal">
-            <Image
-              src={car.showroomLogo ?? IMAGES.officePlaceholder.src}
-              width={IMAGES.officePlaceholder.width}
-              height={IMAGES.officePlaceholder.height}
-              alt=""
-              className="size-6 rounded object-cover"
-            />
-            {car.showroom}
-          </p>
+          <div className="mt-2 flex items-center justify-between gap-3">
+            <p className="text-text-primary m-0 inline-flex min-w-0 items-center gap-2 text-base font-normal">
+              <Image
+                src={car.showroomLogo ?? IMAGES.officePlaceholder.src}
+                width={IMAGES.officePlaceholder.width}
+                height={IMAGES.officePlaceholder.height}
+                alt=""
+                className="size-6 rounded object-cover"
+              />
+              {car.showroom}
+            </p>
+            {/* Mobile only; desktop shows ReviewsSummaryCard in the sidebar. */}
+            {ratings && ratings.count > 0 && (
+              <ReviewsRatingButton
+                rating={ratings.average}
+                reviewsCount={ratings.count}
+                reviews={ratings.reviews}
+                className="lg:hidden"
+              />
+            )}
+          </div>
         </div>
       </div>
 

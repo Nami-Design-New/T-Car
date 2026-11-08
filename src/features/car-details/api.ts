@@ -1,11 +1,11 @@
 import "server-only";
+import sanitizeHtml from "sanitize-html";
 import { isApiEnvelope, type ApiEnvelope } from "@/services/http/envelope";
 import { publicServerHttp } from "@/services/http/server";
 import { IMAGES } from "@/shared/config/assets";
 import { AppError } from "@/shared/lib/errors";
 import type { CarOffer } from "@/features/cars";
 import {
-  htmlToPlainText,
   type CarPolicies,
   type CarDetails,
   type CarDetailsQuery,
@@ -163,6 +163,25 @@ function logDetailData(label: string, value: unknown): void {
     // eslint-disable-next-line no-console -- intentional local API integration inspection.
     console.info(`[car-details] ${label}`, value);
   }
+}
+
+/**
+ * Backend-authored HTML is rendered as is, so it is sanitized here on the
+ * server: scripts, styles, event handlers and unsafe URLs are dropped.
+ */
+function toSafeHtml(value: string): string {
+  return sanitizeHtml(value, {
+    allowedTags: [
+      ...sanitizeHtml.defaults.allowedTags,
+      "h1",
+      "h2",
+      "span",
+      "u",
+    ],
+    transformTags: {
+      a: sanitizeHtml.simpleTransform("a", { rel: "noopener noreferrer" }),
+    },
+  }).trim();
 }
 
 function isLookup(value: unknown): value is LookupDto {
@@ -395,14 +414,14 @@ function toPickupBranch(branch: DetailBranchDto | CarBranchDto): PickupBranch {
 /** Maps the confirmed core response; later fractions add its detail sections. */
 export function mapCarDetails(details: DetailsDto): CarDetails {
   const { car, branch_data: branchData } = details;
-  const pricePerDay = car.lower_price > 0 ? car.lower_price : car.max_price;
   return {
     id: String(car.id),
     name: car.car_model.title,
     brand: car.brand.title,
     image: car.image_url || IMAGES.imageFallback.src,
     images: [car.image_url || IMAGES.imageFallback.src],
-    pricePerDay,
+    lowerPrice: car.lower_price,
+    maxPrice: car.max_price,
     rating: car.rate,
     year: car.year,
     showroom: car.company_name,
@@ -418,7 +437,7 @@ export function mapCarDetails(details: DetailsDto): CarDetails {
     warranties: details.warranties.map((warranty, index) => ({
       id: `warranty-${index}`,
       title: warranty.title,
-      description: htmlToPlainText(warranty.content),
+      content: toSafeHtml(warranty.content),
     })),
     addons: details.serevices.map((service) => ({
       id: String(service.id),
@@ -568,10 +587,10 @@ async function getPolicies(): Promise<CarPolicies> {
 
   return {
     clientInstructions: data.client_instructions
-      .flatMap((policy) => htmlToPlainText(policy.content).split("\n"))
+      .map((policy) => toSafeHtml(policy.content))
       .filter(Boolean),
     cancellationPolicies: data.cancellation_policies
-      .flatMap((policy) => htmlToPlainText(policy.content).split("\n"))
+      .map((policy) => toSafeHtml(policy.content))
       .filter(Boolean),
   };
 }

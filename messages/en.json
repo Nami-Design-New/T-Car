@@ -240,6 +240,7 @@
     "saveNow": "Save when you book now",
     "discount": "off",
     "offerBook": "Book {days} days and get",
+    "specialOffer": "Special offer",
     "offerFree": "{free, plural, one {a free day} other {# free days}}",
     "extraDays": "{count, plural, one {extra day} other {extra days}}",
     "rating": "Rated {rating} out of 5",
@@ -871,6 +872,7 @@
     "card": {
       "currency": "SAR",
       "perDay": "/ day",
+      "insteadOf": "instead of",
       "bookNow": "Book now",
       "paymentNote": "No amount will be charged now; pay on pickup",
       "successTitle": "Booking confirmed successfully!",

@@ -9,6 +9,7 @@ import { useState } from "react";
 import { FiChevronDown } from "react-icons/fi";
 import type { CarWarranty } from "../model";
 import { ICONS } from "@/shared/config/assets";
+import HtmlContent from "./HtmlContent";
 
 const filledShiled = ICONS.filledShiled;
 
@@ -76,9 +77,10 @@ export default function WarrantiesList({ warranties }: Props) {
             </Accordion.Trigger>
 
             <Accordion.Content>
-              <p className="text-text-subtle m-0 px-4 py-4 ps-13 text-sm leading-[1.7]">
-                {w.description}
-              </p>
+              <HtmlContent
+                html={w.content}
+                className="text-text-subtle px-4 py-4 ps-13 text-sm leading-[1.7]"
+              />
             </Accordion.Content>
           </Accordion.Item>
         ))}

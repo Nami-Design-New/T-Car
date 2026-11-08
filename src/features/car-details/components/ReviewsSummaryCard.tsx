@@ -27,7 +27,7 @@ export default function ReviewsSummaryCard({
     <>
       <section
         id="reviews-summary"
-        className="reviews-summary-card border-stroke-light bg-surface-elevated mt-5 rounded-xl border p-5 shadow-[0_2px_8px_rgba(30,30,30,0.06)]"
+        className="reviews-summary-card max-lg:hidden border-stroke-light bg-surface-elevated mt-5 rounded-xl border p-5 shadow-[0_2px_8px_rgba(30,30,30,0.06)]"
       >
         <div className="reviews-summary-header mb-3.5">
           <h3 className="text-text-primary m-0 text-[1.05rem] font-bold">

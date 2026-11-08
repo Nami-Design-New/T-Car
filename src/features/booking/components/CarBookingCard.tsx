@@ -42,8 +42,10 @@ interface Props {
   carImage: string;
   showroom: string;
   rating: number;
-  pricePerDay: number;
-  originalPrice?: number;
+  /** API `lower_price`: the sale price, or 0 when there is no discount. */
+  lowerPrice: number;
+  /** API `max_price`: the regular price, struck through when discounted. */
+  maxPrice: number;
 }
 
 export default function CarBookingCard({
@@ -55,17 +57,20 @@ export default function CarBookingCard({
   carImage,
   showroom,
   rating,
-  pricePerDay,
-  originalPrice,
+  lowerPrice,
+  maxPrice,
 }: Props) {
   const t = useTranslations("booking.card");
+  // Same rule as the cars list: charge lower_price when set, else max_price.
+  const pricePerDay = lowerPrice > 0 ? lowerPrice : maxPrice;
+  const strikePrice =
+    lowerPrice > 0 && maxPrice > lowerPrice ? maxPrice : undefined;
   const [flow, setFlow] = useState<Flow>({ step: "closed" });
   const { step } = flow;
   const setStep = (next: "closed" | "dates" | "confirm" | "payment") =>
     setFlow({ step: next });
   const { submitting, createBooking } = useCreateBooking(carId);
   const errorMessage = useErrorMessage();
-
   const [booking, setBooking] = useState<BookingDetails | null>(null);
 
   const handleDatesConfirmed = (details: BookingDetails) => {
@@ -88,25 +93,27 @@ export default function CarBookingCard({
     window.location.assign("/account/bookings");
 
   return (
-    <aside className="border-stroke-light bg-surface-elevated rounded-xl border p-6 shadow-[0_2px_8px_rgba(30,30,30,0.06)]">
-      <div className="mb-4.5">
-        {originalPrice && (
-          <span className="mb-1 block">
-            <Price amount={originalPrice} strike={true} />
-          </span>
-        )}
-
+    <aside className="border-stroke-light bg-surface-elevated rounded-xl border p-6 shadow-[0_2px_8px_rgba(30,30,30,0.06)] max-lg:flex max-lg:items-end max-lg:gap-4 max-lg:p-4">
+      <div className="mb-4.5 flex flex-col items-center gap-2 max-lg:mb-0 max-lg:shrink-0 md:flex-row">
         <div className="flex items-end gap-2">
-          <h2 className="text-text-primary m-0 flex items-center gap-1.5 text-3xl leading-none font-extrabold">
-            <Price amount={pricePerDay} />
+          <h2 className="m-0 flex items-center gap-1.5 leading-none">
+            <Price amountClassName="text-action-primary" amount={pricePerDay} />
           </h2>
-          <small className="text-4 text-text-subtle">{t("perDay")}</small>
+          <small className="text-text-subtle text-base">{t("perDay")}</small>
+        </div>
+        <div className="flex items-center gap-2">
+          <p className="m-0">{t("insteadOf")}</p>
+          {strikePrice !== undefined && (
+            <span className="block">
+              <Price amount={strikePrice} strike={true} />
+            </span>
+          )}
         </div>
       </div>
 
       <Button
         type="button"
-        className="w-full"
+        className="w-full max-lg:flex-1"
         size="lg"
         onClick={() => setStep("dates")}
       >

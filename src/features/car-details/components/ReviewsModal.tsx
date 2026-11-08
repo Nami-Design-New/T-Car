@@ -39,7 +39,7 @@ export default function ReviewsModal({
         <Dialog.Close />
       </Dialog.Header>
 
-      <Dialog.Body className="min-h-0 scrollbar-none overflow-y-auto p-6 [&::-webkit-scrollbar]:hidden">
+      <Dialog.Body className="min-h-0 scrollbar-none overflow-y-auto [&::-webkit-scrollbar]:hidden">
         <div className="border-stroke-light mb-4.5 flex items-center justify-between border-b pb-4.5">
           <div className="flex flex-wrap items-center gap-2">
             <span className="label-text text-text-primary font-bold">

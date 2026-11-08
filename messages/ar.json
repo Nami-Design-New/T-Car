@@ -238,6 +238,7 @@
     "saveNow": "وفّر عند الحجز الآن",
     "discount": "خصم",
     "offerBook": "احجز {days} أيام واحصل على",
+    "specialOffer": "عرض خاص",
     "offerFree": "{free, plural, one {يوم مجاناً} two {يومين مجاناً} few {# أيام مجاناً} many {# يومًا مجاناً} other {# يوم مجاناً}}",
     "extraDays": "{count, plural, one {يوم إضافي} two {يومان إضافيان} few {أيام إضافية} many {يومًا إضافيًا} other {يوم إضافي}}",
     "rating": "التقييم {rating} من 5",
@@ -868,6 +869,7 @@
     },
     "card": {
       "currency": "ريال",
+      "insteadOf": " بدلاً من",
       "perDay": "/ يوم",
       "bookNow": "احجز الآن",
       "paymentNote": "لن يتم خصم أي مبلغ الآن، الدفع عند الاستلام",

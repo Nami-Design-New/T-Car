@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
-import { FiExternalLink, FiHome } from "react-icons/fi";
+import { FiExternalLink } from "react-icons/fi";
 import { LuPlane } from "react-icons/lu";
 import { MdTrain } from "react-icons/md";
 import { ICONS } from "@/shared/config/assets";
@@ -57,35 +57,42 @@ export default function StationAndAirportInfo({
           </div>
         )}
 
-        <div className="station-airport-info-branch border-stroke-light bg-surface-elevated flex min-h-32 justify-between gap-6 rounded-xl border px-5.5 py-4.5 shadow-[0_2px_8px_rgba(30,30,30,0.06)] max-sm:gap-3 max-sm:rounded-md max-sm:p-4">
-          <div className="station-airport-info-branch-main min-w-0">
-            <span className="station-airport-info-eyebrow text-action-primary flex items-center gap-1.5 text-[13px] font-bold">
-              <FiHome aria-hidden="true" />
-              {t("nearestBranch")}
-            </span>
-            <h3 className="text-text-primary mt-2 mb-1 text-base font-bold">
+        <div className="border-stroke-light bg-surface-elevated min-h-32 rounded-xl border px-5.5 py-4.5 shadow-[0_2px_8px_rgba(30,30,30,0.06)] max-sm:rounded-md max-sm:p-4">
+          <div className="min-w-0">
+            <div className="flex items-center justify-between gap-3">
+              <span className="text-action-primary inline-flex min-w-0 items-center gap-1.5 text-sm font-bold">
+                <Image
+                  src={ICONS.store.src}
+                  height={ICONS.store.height}
+                  width={ICONS.store.width}
+                  alt=""
+                  className="size-4 shrink-0"
+                />
+                {t("nearestBranch")}
+              </span>
+              {branches.length > 0 && (
+                <button
+                  type="button"
+                  className="text-text-primary hover:text-action-primary inline-flex shrink-0 items-center gap-1.5 border-0 bg-transparent p-0 text-sm font-bold underline"
+                  aria-label={t("viewBranch", { showroom })}
+                  onClick={() => setShowBranches(true)}
+                >
+                  {t("branches")}
+                  <FiExternalLink aria-hidden="true" />
+                </button>
+              )}
+            </div>
+            <h3 className="text-text-primary mt-2 mb-1 text-start text-xl font-bold">
               {nearestBranch.name || showroom}
             </h3>
-            <p className="text-text-primary m-0 text-[13px] leading-[1.7]">
-              {nearestBranch.address}
-            </p>
-          </div>
-
-          <div className="station-airport-info-branch-meta flex shrink-0 flex-col items-end justify-between">
-            {branches.length > 0 && (
-              <button
-                type="button"
-                className="station-airport-info-branches-trigger text-text-primary hover:text-action-primary inline-flex items-center gap-1.5 border-0 bg-transparent p-0 text-[13px] font-bold underline underline-offset-3"
-                aria-label={t("viewBranch", { showroom })}
-                onClick={() => setShowBranches(true)}
-              >
-                <FiExternalLink aria-hidden="true" />
-                {t("branches")}
-              </button>
-            )}
-            <span className="text-text-subtle text-xs">
-              {nearestBranch.distanceKm.toLocaleString()} {t("km")}
-            </span>
+            <div className="flex items-end justify-between gap-4">
+              <p className="text-text-primary m-0 min-w-0 text-start text-lg leading-[1.7]">
+                {nearestBranch.address}
+              </p>
+              <span className="text-text-subtle shrink-0 text-base whitespace-nowrap">
+                {nearestBranch.distanceKm.toLocaleString()} {t("km")}
+              </span>
+            </div>
           </div>
         </div>
       </section>
