@@ -4,6 +4,7 @@ import {
   CarDetailsView,
   parseCarDetailsQuery,
   serializeCarDetailsQuery,
+  withDefaultRentalContext,
 } from "@/features/car-details";
 import {
   getCarDetails,
@@ -28,7 +29,9 @@ export async function generateMetadata({
   ]);
   const car = await getCarDetails(
     carId,
-    serializeCarDetailsQuery(parseCarDetailsQuery(rawSearchParams)),
+    serializeCarDetailsQuery(
+      withDefaultRentalContext(parseCarDetailsQuery(rawSearchParams)),
+    ),
   );
   if (!car) notFound();
 
@@ -41,7 +44,7 @@ export default async function CarDetailsPage({ params, searchParams }: Props) {
     searchParams,
   ]);
   const queryKey = serializeCarDetailsQuery(
-    parseCarDetailsQuery(rawSearchParams),
+    withDefaultRentalContext(parseCarDetailsQuery(rawSearchParams)),
   );
   const car = await getCarDetails(carId, queryKey);
   if (!car) notFound();

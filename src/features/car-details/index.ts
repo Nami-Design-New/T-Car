@@ -1,5 +1,9 @@
 export { default as CarDetailsView } from "./components/CarDetailsView";
-export { parseCarDetailsQuery, serializeCarDetailsQuery } from "./model";
+export {
+  parseCarDetailsQuery,
+  serializeCarDetailsQuery,
+  withDefaultRentalContext,
+} from "./model";
 export type {
   AddonService,
   CarDetailsQuery,

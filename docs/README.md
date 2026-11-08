@@ -698,9 +698,12 @@ passes it to the Server Action. The Maps key must allow the Geocoding API.
 | `account` (profile, notifications) |         Yes          |              Yes (scoped to the session user)               | Yes (Server Actions: save, phone change send and verify, license upload, delete) | Profile reads, edits, and phone OTP requests use the live API; phone verification is unavailable until P5, and license and delete writes remain mocked. The profile tab composes separate profile, phone, license, and deletion flows with shared pending-action coordination. Routes per section with a shared layout and `AccountNav`; the loyalty points summary is shown in the account layout and `/account/points` owns the points history view. Common success/failure results now use `shared/ui/Dialog`. Profile save and change/verify phone use RHF + Zod (`validation.ts`) with the schemas re-parsed in the actions (doc 9 fraction 2). License upload uses RHF + Zod (doc 9 fraction 3); left: notification mark-all-read is still static, opening the license details is still a TODO, and remaining dialogs |
 | `layout`                           |         Yes          |                             n/a                             |                                       n/a                                        | The header shell and footer render on the server; mobile navigation uses a fixed bottom bar for account, bookings, and More; More opens an accessible modal side drawer with header links and language control; NAV_LINKS marks the current home-page hash with aria-current. The user menu uses `Menu`. Left: trimming the client messages (doc 2 step 7), the language switcher on `Menu`                                                                                                                                                                                                                                                                                                                    |
 
-Car-details API fractions D1-D6 are complete. Fraction D7 will record the
-final status and live-smoke coverage; the remaining fractions are tracked in
-`docs/api/car-details-api.md`.
+Car-details API fractions D1-D7 are complete (`docs/api/car-details-api.md`).
+The backend now requires `booking_type` and `delivery_type`, so `/cars/{id}`
+without them (sitemap, shared links) requests `daily` / `from_branch`
+(`withDefaultRentalContext`, an interim exception to rule R3). Open backend
+requests: make both optional (then remove the default), and confirm the
+station-ID validation (G3).
 
 Other feature `*.api.ts` files remain backed by mocks; auth and phone countries
 use the live API, and their mocks (`features/<x>/api.mock.ts`) are for tests

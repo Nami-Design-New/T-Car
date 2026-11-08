@@ -9,7 +9,7 @@ vi.mock("@/services/http/server", () => ({
 }));
 
 import { carDetailsApi, mapCarDetails } from "./api";
-import { parseCarDetailsQuery } from "./model";
+import { parseCarDetailsQuery, withDefaultRentalContext } from "./model";
 
 beforeEach(() => vi.clearAllMocks());
 
@@ -154,6 +154,36 @@ describe("parseCarDetailsQuery", () => {
     expect(
       parseCarDetailsQuery({ region: "Riyadh", lat: "", lng: "46" }),
     ).toEqual({});
+  });
+});
+
+describe("withDefaultRentalContext", () => {
+  it("fills a missing booking and delivery type with daily from-branch", () => {
+    expect(withDefaultRentalContext({})).toEqual({
+      bookingType: "daily",
+      deliveryType: "from_branch",
+    });
+  });
+
+  it("keeps the selected flow values and location", () => {
+    const location = { region: "Riyadh", latitude: 24.7, longitude: 46.6 };
+    expect(
+      withDefaultRentalContext({
+        location,
+        bookingType: "airport",
+        deliveryType: "to_location",
+        airportId: "12",
+      }),
+    ).toEqual({
+      location,
+      bookingType: "airport",
+      deliveryType: "to_location",
+      airportId: "12",
+    });
+    expect(withDefaultRentalContext({ bookingType: "monthly" })).toEqual({
+      bookingType: "monthly",
+      deliveryType: "from_branch",
+    });
   });
 });
 

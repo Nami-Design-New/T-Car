@@ -73,6 +73,28 @@ export function parseCarDetailsQuery(
   };
 }
 
+/**
+ * The backend rejects a detail read without booking_type or delivery_type
+ * (docs/api/car-details-api.md §6.1, G1/G2), so links without a selected
+ * rental context (sitemap, shared links, listings without availability) use
+ * daily from-branch. A selected value from the booking flow always wins.
+ * Interim until the backend makes both optional for this public read.
+ */
+export const DEFAULT_BOOKING_TYPE: CarBookingType = "daily";
+export const DEFAULT_DELIVERY_TYPE: NonNullable<
+  CarDetailsQuery["deliveryType"]
+> = "from_branch";
+
+export function withDefaultRentalContext(
+  query: CarDetailsQuery,
+): CarDetailsQuery {
+  return {
+    ...query,
+    bookingType: query.bookingType ?? DEFAULT_BOOKING_TYPE,
+    deliveryType: query.deliveryType ?? DEFAULT_DELIVERY_TYPE,
+  };
+}
+
 /** Stable cache key for the server read shared by metadata and the page. */
 export function serializeCarDetailsQuery(query: CarDetailsQuery): string {
   return JSON.stringify(query);
