@@ -120,7 +120,7 @@ function Body({ children, className }: PartProps) {
   return (
     <div
       className={cn(
-        "drawer__body min-h-0 flex-1 overflow-y-auto px-6 py-5",
+        "drawer__body min-h-0 flex-1 overflow-y-auto px-6 py-5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
         className,
       )}
     >

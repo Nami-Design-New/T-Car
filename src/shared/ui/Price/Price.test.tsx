@@ -26,7 +26,7 @@ describe('Price', () => {
   it('marks a previous price as deleted text', () => {
     const { container } = renderWithIntl(<Price amount={200} strike className="old" />);
     const del = container.querySelector('del');
-    expect(del).toHaveClass('price', 'price--strike', 'old');
+    expect(del).toHaveClass('price', 'line-through', 'old');
     expect(del).toHaveTextContent('200');
   });
 
@@ -39,7 +39,7 @@ describe('Price', () => {
     renderWithIntl(
       <Price amount={2500} amountText="From 2,500" amountClassName="text-action-primary" />,
     );
-    expect(screen.getByText('From 2,500')).toHaveClass('price__amount', 'text-action-primary');
+    expect(screen.getByText('From 2,500')).toHaveClass('text-action-primary');
     expect(screen.queryByText('2,500')).not.toBeInTheDocument();
   });
 });

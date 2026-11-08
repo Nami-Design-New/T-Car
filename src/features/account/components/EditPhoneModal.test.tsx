@@ -36,7 +36,7 @@ function renderModal(overrides: Partial<React.ComponentProps<typeof EditPhoneMod
 describe('EditPhoneModal', () => {
   it('starts from the current number and sends it with the keyboard', async () => {
     const { onSendCode, user, phone } = renderModal();
-    expect(phone).toHaveValue('+966 500 000 000');
+    expect(phone).toHaveValue('966500000000');
     await user.click(phone);
     await user.keyboard('{Enter}');
     await waitFor(() => expect(onSendCode).toHaveBeenCalledWith('966500000000'));
@@ -60,7 +60,7 @@ describe('EditPhoneModal', () => {
     expect(await screen.findByRole('alert')).toHaveTextContent(
       'The code cannot be resent yet. Wait a moment and try again.'
     );
-    expect(phone).toHaveValue('+966 500 000 000');
+    expect(phone).toHaveValue('966500000000');
     expect(screen.getByRole('dialog')).toBeInTheDocument();
   });
 

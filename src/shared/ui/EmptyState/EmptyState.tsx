@@ -1,14 +1,13 @@
-import type { ReactNode } from 'react';
-import { cn } from '@/shared/lib/cn';
-import { Illustration, type IllustrationName } from '@/shared/ui/Illustration';
+import type { ReactNode } from "react";
+import { cn } from "@/shared/lib/cn";
+import { Illustration, type IllustrationName } from "@/shared/ui/Illustration";
 
 export interface Props {
   title: string;
   description?: string;
-  /** e.g. <Button asChild><Link href="/cars">…</Link></Button> */
   action?: ReactNode;
   illustration?: IllustrationName | null;
-  size?: 'page' | 'section' | 'inline';
+  size?: "page" | "section" | "inline";
   className?: string;
 }
 
@@ -20,48 +19,48 @@ export function EmptyState({
   title,
   description,
   action,
-  illustration = 'empty',
-  size = 'section',
+  illustration = "empty",
+  size = "section",
   className,
 }: Props) {
-  const Heading = size === 'inline' ? 'p' : 'h3';
+  const Heading = size === "inline" ? "p" : "h3";
   const sizeClasses = {
-    page: 'empty-state--page min-h-[50vh] justify-center px-4 py-10',
-    section: 'empty-state--section px-4 py-6',
-    inline: 'empty-state--inline p-3',
+    page: "min-h-[50vh] justify-center px-4 py-10",
+    section: " px-4 py-6",
+    inline: "p-3",
   };
 
   return (
     <div
       className={cn(
-        'empty-state flex flex-col items-center gap-2 text-center text-text-primary',
+        "text-text-primary flex flex-col items-center gap-2 text-center",
         sizeClasses[size],
         className,
       )}
     >
-      {illustration && size !== 'inline' && (
+      {illustration && size !== "inline" && (
         <Illustration
           name={illustration}
           className={cn(
-            'empty-state__illustration min-h-[120px] w-40',
-            size === 'page' && 'w-[220px]',
+            "empty-state__illustration min-h-30 w-40",
+            illustration === "notFound" && "w-80",
+            size === "page" && "w-55",
+            illustration === "notFound" && size === "page" && "w-[600px]",
           )}
         />
       )}
       <Heading
         className={cn(
-          'empty-state__title m-0 text-[1.1rem] font-semibold',
-          size === 'inline' && 'text-[0.95rem] font-medium text-text-subtle',
+          "m-0 text-base font-semibold",
+          size === "inline" && "text-text-subtle text-base font-medium",
         )}
       >
         {title}
       </Heading>
       {description && (
-        <p className="empty-state__description m-0 max-w-lg text-[0.9rem] text-text-subtle">
-          {description}
-        </p>
+        <p className="text-text-subtle m-0 max-w-lg text-base">{description}</p>
       )}
-      {action && <div className="empty-state__action mt-2">{action}</div>}
+      {action && <div className="mt-2">{action}</div>}
     </div>
   );
 }

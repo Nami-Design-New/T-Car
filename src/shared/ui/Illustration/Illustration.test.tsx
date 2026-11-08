@@ -42,6 +42,14 @@ describe('Illustration', () => {
     expect(player).toHaveAttribute('data-autoplay', 'true');
   });
 
+  it('renders the not-found SVG as a decorative static illustration', () => {
+    const { container } = render(<Illustration name="notFound" />);
+    expect(container.querySelector('img')).toHaveAttribute(
+      'src',
+      '/images/illustrations/not-fount.svg',
+    );
+  });
+
   it('holds a still frame when the user prefers reduced motion', async () => {
     mockReducedMotion(true);
     render(<Illustration name="empty" />);

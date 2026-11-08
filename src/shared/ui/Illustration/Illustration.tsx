@@ -1,18 +1,19 @@
-'use client';
+"use client";
 
-import dynamic from 'next/dynamic';
-import { useEffect, useState } from 'react';
-import { cn } from '@/shared/lib/cn';
+import dynamic from "next/dynamic";
+import Image from "next/image";
+import { useEffect, useState } from "react";
+import { cn } from "@/shared/lib/cn";
 
 // The player and each animation load on first use, not with the page bundle.
-const Lottie = dynamic(() => import('lottie-react'), { ssr: false });
+const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
 
 const ANIMATIONS = {
-  empty: () => import('@/assets/animations/non_data.json'),
-  success: () => import('@/assets/animations/successful_login.json'),
+  empty: () => import("@/assets/animations/non_data.json"),
+  success: () => import("@/assets/animations/successful_login.json"),
 } as const;
 
-export type IllustrationName = keyof typeof ANIMATIONS;
+export type IllustrationName = keyof typeof ANIMATIONS | "notFound";
 
 export interface Props {
   name: IllustrationName;
@@ -23,12 +24,12 @@ function usePrefersReducedMotion() {
   const [reduced, setReduced] = useState(false);
   useEffect(() => {
     // Missing in some old browsers and in jsdom; treat as "no preference".
-    if (typeof window.matchMedia !== 'function') return;
-    const query = window.matchMedia('(prefers-reduced-motion: reduce)');
+    if (typeof window.matchMedia !== "function") return;
+    const query = window.matchMedia("(prefers-reduced-motion: reduce)");
     setReduced(query.matches);
     const onChange = (event: MediaQueryListEvent) => setReduced(event.matches);
-    query.addEventListener('change', onChange);
-    return () => query.removeEventListener('change', onChange);
+    query.addEventListener("change", onChange);
+    return () => query.removeEventListener("change", onChange);
   }, []);
   return reduced;
 }
@@ -39,6 +40,7 @@ export function Illustration({ name, className }: Props) {
   const reducedMotion = usePrefersReducedMotion();
 
   useEffect(() => {
+    if (name === "notFound") return;
     let active = true;
     ANIMATIONS[name]().then((module) => {
       if (active) setData(module.default);
@@ -48,9 +50,30 @@ export function Illustration({ name, className }: Props) {
     };
   }, [name]);
 
+  if (name === "notFound") {
+    return (
+      <div className={cn("illustration", className)} aria-hidden="true">
+        <Image
+          src="/images/illustrations/not-fount.svg"
+          alt=""
+          width={300}
+          height={300}
+          className="h-full w-full object-contain"
+          unoptimized
+        />
+      </div>
+    );
+  }
+
   return (
-    <div className={cn('illustration', className)} aria-hidden="true">
-      {data !== null && <Lottie animationData={data} loop={!reducedMotion} autoplay={!reducedMotion} />}
+    <div className={cn("illustration", className)} aria-hidden="true">
+      {data !== null && (
+        <Lottie
+          animationData={data}
+          loop={!reducedMotion}
+          autoplay={!reducedMotion}
+        />
+      )}
     </div>
   );
 }

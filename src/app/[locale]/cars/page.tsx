@@ -1,19 +1,15 @@
 import {
   CarFilters,
-  CarOfficeRow,
-  SortBar,
+  CarsListingSection,
   parseCarSearchParams,
+  toCarsListingQuery,
+  type CarsListingSource,
 } from "@/features/cars";
-import {
-  getCityCarFilterOptions,
-  getOfficeCarGroups,
-} from "@/features/cars/queries";
+import { getCityCarFilterOptions } from "@/features/cars/queries";
+import { getRentalSearchOptions } from "@/features/rental-search/queries";
 import { Link } from "@/i18n/navigation";
 import { getTranslations } from "next-intl/server";
-import { notFound } from "next/navigation";
-import { getBookingTypeAvailability } from "@/features/settings/queries";
 import { getSiteSettings } from "@/features/settings/queries";
-import { isBookingTypeEnabled } from "@/features/settings";
 import { FiArrowLeft } from "react-icons/fi";
 
 interface Props {
@@ -21,10 +17,9 @@ interface Props {
 }
 
 export default async function CarsPage({ searchParams }: Props) {
-  const [t, rawParams, bookingTypes, site] = await Promise.all([
+  const [t, rawParams, site] = await Promise.all([
     getTranslations(),
     searchParams,
-    getBookingTypeAvailability(),
     getSiteSettings(),
   ]);
   const priceRange = site.priceFilterRange;
@@ -32,11 +27,18 @@ export default async function CarsPage({ searchParams }: Props) {
   const source = Array.isArray(rawParams.source)
     ? rawParams.source[0]
     : rawParams.source;
-  const title = t(source === "offers" ? "carSections.offers" : "carsPage.title");
-  if (!isBookingTypeEnabled(params.context.type, bookingTypes)) notFound();
-  const [officeGroups, filterOptions] = await Promise.all([
-    getOfficeCarGroups(params),
+  const listingSource: CarsListingSource =
+    source === "offers"
+      ? "offer"
+      : source === "careful_chooses"
+        ? "careful_chooses"
+        : "general";
+  const title = t(
+    source === "offers" ? "carSections.offers" : "carsPage.title",
+  );
+  const [filterOptions, options] = await Promise.all([
     getCityCarFilterOptions(),
+    getRentalSearchOptions(),
   ]);
 
   return (
@@ -66,9 +68,10 @@ export default async function CarsPage({ searchParams }: Props) {
               resultsCount={officeGroups.reduce((count, group) => count + group.cars.length, 0)}
               value={params.sort}
             /> */}
-            {officeGroups.map(({ office, cars: officeCars }) => (
-              <CarOfficeRow key={office.id} office={office} cars={officeCars} />
-            ))}
+            <CarsListingSection
+              query={toCarsListingQuery(params, listingSource)}
+              options={options}
+            />
           </div>
         </div>
       </div>

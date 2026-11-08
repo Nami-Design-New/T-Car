@@ -5,12 +5,21 @@ import type { CarOffer } from "../model";
 
 interface Props {
   offer: CarOffer;
+  variant?: "card" | "ribbon";
 }
 
 /** Free-days offer overlay returned with a car listing. */
-export default function CarOfferBadge({ offer }: Props) {
+export default function CarOfferBadge({ offer, variant = "card" }: Props) {
   const t = useTranslations("carCard");
   const giftImage = IMAGES.gift;
+
+  if (variant === "ribbon") {
+    return (
+      <span className="bg-ds-green absolute top-4.5 -left-9 z-3 flex h-10 w-36 -rotate-45 items-center justify-center text-sm font-bold text-white shadow-[0_2px_6px_rgba(0,0,0,0.18)]">
+        {t("specialOffer")}
+      </span>
+    );
+  }
 
   return (
     <div className="border-status-success bg-surface-background/94 absolute inset-s-1.25 inset-e-1.25 bottom-1 z-2 flex min-h-12 items-stretch justify-between overflow-hidden rounded-md border border-dashed shadow-[0_8px_22px_rgba(30,30,30,0.14)] backdrop-blur-[10px]">

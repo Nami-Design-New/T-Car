@@ -254,6 +254,22 @@ The browser lookup proxy now sends debounced `search`, `page`, and `per_page`
 parameters, uses the shared infinite-list skeleton, empty, and retry states,
 and clears a dialog's transient search and selected choice when it closes.
 
+Cars-listing integration follow-up (2026-11-04): `/cars` reads grouped public
+`/cars-listing` results after browser-only guest location hydration, then each
+company row appends its own `/company-cars` page 2 onward horizontally. Offers
+and carefully chosen Show All links select `offer` and `careful_chooses`; all
+other entries select `general`. The endpoint integration deliberately omits
+`booking_type` and `delivery_type` when absent, pending the confirmed backend
+change that removes their current validation requirement and returns car
+availability for general company-row results. Its client-side booking-flow
+coordinator lives in `features/cars/components/CarsListingSection.tsx`; the
+route page remains server composition only.
+
+Cars-listing empty-state follow-up (2026-11-05): the listing's no-results
+state uses the static `public/images/illustrations/not-fount.svg` artwork;
+the existing animated empty illustration remains the default for other shared
+empty states.
+
 **Tailwind replacement status (2026-10-25):** The SCSS architecture described
 above is the historical baseline. The Tailwind 4.3 migration has completed
 fractions 1–9 and migrated `layout`, `home`, `rental-search`, `cars`, `cities`,
@@ -681,6 +697,13 @@ passes it to the Server Action. The Maps key must allow the Geocoding API.
 | `auth`                             |         Yes          |                 Live API (NextAuth + `authApi`)              |                               Yes (Server Actions)                               | Live API, A0–A8 and A11 ([Auth-API.md](api/Auth-API.md) §5): OTP request and verification, profile completion, location, and logout call the backend; the session starts after the register step; the mock (`features/auth/api.mock.ts`) is for tests only. The forms use RHF + Zod with server re-parse. A rejected token (401) clears the session and reopens sign-in with `next`. Left: verify logout revocation live (the TEST server's TLS handshake failed); the dead-token redirect on account pages is verified with a forced 401 only, because account reads are still mocks; open backend questions Q1, Q3, Q6, Q7, Q9–Q11 (HTTP status for errors, `current_step: null`, field errors, untranslated keys, OTP limits, countries, phone normalization) and the backend record of terms consent (Q8) |
 | `account` (profile, notifications) |         Yes          |              Yes (scoped to the session user)               | Yes (Server Actions: save, phone change send and verify, license upload, delete) | Profile reads, edits, and phone OTP requests use the live API; phone verification is unavailable until P5, and license and delete writes remain mocked. The profile tab composes separate profile, phone, license, and deletion flows with shared pending-action coordination. Routes per section with a shared layout and `AccountNav`; the loyalty points summary is shown in the account layout and `/account/points` owns the points history view. Common success/failure results now use `shared/ui/Dialog`. Profile save and change/verify phone use RHF + Zod (`validation.ts`) with the schemas re-parsed in the actions (doc 9 fraction 2). License upload uses RHF + Zod (doc 9 fraction 3); left: notification mark-all-read is still static, opening the license details is still a TODO, and remaining dialogs |
 | `layout`                           |         Yes          |                             n/a                             |                                       n/a                                        | The header shell and footer render on the server; mobile navigation uses a fixed bottom bar for account, bookings, and More; More opens an accessible modal side drawer with header links and language control; NAV_LINKS marks the current home-page hash with aria-current. The user menu uses `Menu`. Left: trimming the client messages (doc 2 step 7), the language switcher on `Menu`                                                                                                                                                                                                                                                                                                                    |
+
+Car-details API fractions D1-D7 are complete (`docs/api/car-details-api.md`).
+The backend now requires `booking_type` and `delivery_type`, so `/cars/{id}`
+without them (sitemap, shared links) requests `daily` / `from_branch`
+(`withDefaultRentalContext`, an interim exception to rule R3). Open backend
+requests: make both optional (then remove the default), and confirm the
+station-ID validation (G3).
 
 Other feature `*.api.ts` files remain backed by mocks; auth and phone countries
 use the live API, and their mocks (`features/<x>/api.mock.ts`) are for tests

@@ -36,7 +36,7 @@ describe('Menu', () => {
       'Profile',
       'Log out',
     ]);
-    expect(screen.getByRole('menuitem', { name: 'Log out' })).toHaveClass('menu__item--danger');
+    expect(screen.getByRole('menuitem', { name: 'Log out' })).toHaveClass('text-status-error');
   });
 
   it('runs an item and closes', async () => {

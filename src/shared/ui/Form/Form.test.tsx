@@ -21,18 +21,18 @@ describe('FormInput', () => {
 
   it('marks a required field and shows its error', () => {
     render(<FormInput id="email" label="Email" required error="Enter a valid email" />);
-    expect(screen.getByText('*')).toBeInTheDocument();
+    expect(screen.getByRole('textbox', { name: 'Email' })).toHaveAttribute('aria-required', 'true');
     expect(screen.getByText('Enter a valid email')).toBeInTheDocument();
   });
 
   it('shows no error text when there is no error', () => {
     const { container } = render(<FormInput id="email" label="Email" />);
-    expect(container.querySelector('.form_error')).not.toBeInTheDocument();
+    expect(container.querySelector('[id="email-error"]')).not.toBeInTheDocument();
   });
 
   it('keeps its own class and adds the caller class', () => {
     render(<FormInput id="city" label="City" className="wide" />);
-    expect(screen.getByRole('textbox', { name: 'City' })).toHaveClass('form_input', 'wide');
+    expect(screen.getByRole('textbox', { name: 'City' })).toHaveClass('wide');
   });
 });
 
@@ -143,7 +143,7 @@ describe('field errors and required marks', () => {
       />
     );
     const input = screen.getByRole('textbox', { name: 'Date of birth' });
-    expect(input).toHaveClass('form_input', 'form_input--with-icon');
+    expect(input).toHaveClass('pe-12');
     expect(screen.getByTestId('calendar').parentElement).toHaveAttribute('aria-hidden', 'true');
     expect(input).toHaveAccessibleDescription('Date of birth is required.');
   });

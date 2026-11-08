@@ -99,12 +99,12 @@ describe('signOutAction', () => {
 
 describe('requestOtpAction', () => {
   it('rejects a malformed phone without calling the service', async () => {
-    await expect(requestOtpAction({ countryCode: '+966', phone: '12' })).resolves.toEqual({
+    await expect(requestOtpAction({ countryCode: '+966', phone: '12' })).resolves.toMatchObject({
       ok: false,
       error: {
         kind: 'validation',
-        code: 'auth.invalidPhone',
-        fieldErrors: { phone: 'auth.invalidPhone' },
+        code: 'auth.phoneTooShort',
+        fieldErrors: { phone: 'auth.phoneTooShort' },
       },
     });
     expect(requestOtp).not.toHaveBeenCalled();

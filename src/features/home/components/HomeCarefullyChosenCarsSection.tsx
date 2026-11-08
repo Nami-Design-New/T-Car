@@ -63,6 +63,7 @@ function CarefullyChosenCarsList({
       title={title}
       subtitle={subtitle}
       cars={cars.items}
+      seeAllHref="/cars?source=careful_chooses"
       paginated
       hasMore={cars.hasMore}
       loadingMore={cars.loading}
