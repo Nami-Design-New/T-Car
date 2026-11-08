@@ -240,6 +240,7 @@
     "saveNow": "Save when you book now",
     "discount": "off",
     "offerBook": "Book {days} days and get",
+    "specialOffer": "Special offer",
     "offerFree": "{free, plural, one {a free day} other {# free days}}",
     "extraDays": "{count, plural, one {extra day} other {extra days}}",
     "rating": "Rated {rating} out of 5",
@@ -871,6 +872,7 @@
     "card": {
       "currency": "SAR",
       "perDay": "/ day",
+      "insteadOf": "instead of",
       "bookNow": "Book now",
       "paymentNote": "No amount will be charged now; pay on pickup",
       "successTitle": "Booking confirmed successfully!",
@@ -883,7 +885,23 @@
     "modelYear": "Model {year}",
     "airportPickup": "Airport pickup",
     "stationPickup": "Station pickup",
+    "noWarranties": "No warranties available",
+    "quickFacts": {
+      "power": "{value}",
+      "doors": "{value} doors",
+      "navigation": "Navigation",
+      "bluetooth": "Bluetooth",
+      "panorama": "Panoramic roof",
+      "usb": "USB port",
+      "camera": "Rear camera",
+      "sensors": "Parking sensors",
+      "applePlay": "Apple CarPlay"
+    },
     "warranties": "T-Car warranties",
+    "policies": {
+      "instructions": "Renter instructions",
+      "cancellation": "Cancellation policy"
+    },
     "insurance": {
       "title": "Insurance type",
       "details": "Insurance details",

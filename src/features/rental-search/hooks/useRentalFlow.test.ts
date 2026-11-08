@@ -3,7 +3,12 @@ import { describe, expect, it, vi } from "vitest";
 import type { Airport, Country, Station } from "../model";
 import { useRentalFlow } from "./useRentalFlow";
 
-const location = { lat: 24.7, lng: 46.6, address: "Riyadh" };
+const location = {
+  lat: 24.7,
+  lng: 46.6,
+  address: "Riyadh",
+  region: "Riyadh Region",
+};
 
 function setup() {
   const onComplete = vi.fn<(params: URLSearchParams) => void>();
@@ -44,7 +49,7 @@ describe("useRentalFlow", () => {
       type: "daily",
       lat: "24.7",
       lng: "46.6",
-      address: "Riyadh",
+      region: "Riyadh Region",
     });
   });
 
@@ -55,6 +60,16 @@ describe("useRentalFlow", () => {
     expect(result.current.step).toBe("map");
     act(() => result.current.confirmLocation(location));
     expect(completedWith()).toMatchObject({ type: "airport", airportId: "7" });
+  });
+
+  it("does not complete without a region", () => {
+    const { result, onComplete } = setup();
+    act(() => result.current.start("daily"));
+    act(() => result.current.confirmPickup());
+    act(() => result.current.confirmLocation({ ...location, region: undefined }));
+
+    expect(result.current.step).toBe("map");
+    expect(onComplete).not.toHaveBeenCalled();
   });
 
   it("carries the station into the search params", () => {

@@ -1,27 +1,47 @@
 "use client";
 
-import { FiStar, FiHome, FiShield, FiTruck, FiMapPin } from "react-icons/fi";
+import {
+  FiBluetooth,
+  FiCamera,
+  FiGrid,
+  FiNavigation,
+  FiSmartphone,
+  FiSun,
+  FiWifi,
+  FiZap,
+} from "react-icons/fi";
 import { useTranslations } from "next-intl";
 import { LuPlane } from "react-icons/lu";
 import { MdTrain } from "react-icons/md";
 import { ModelYearBadge } from "@/shared/ui/ModelYearBadge";
-import type { CarDetails } from "../model";
+import type { CarDetails, CompanyRatings } from "../model";
 import Image from "next/image";
 import { IMAGES } from "@/shared/config/assets";
+import ReviewsRatingButton from "./ReviewsRatingButton";
 
-const FACT_ICONS = { shield: FiShield, delivery: FiTruck, distance: FiMapPin };
+const FACT_ICONS = {
+  power: FiZap,
+  doors: FiGrid,
+  navigation: FiNavigation,
+  bluetooth: FiBluetooth,
+  panorama: FiSun,
+  usb: FiWifi,
+  camera: FiCamera,
+  sensors: FiNavigation,
+  applePlay: FiSmartphone,
+};
 
 interface Props {
   car: CarDetails;
+  ratings?: CompanyRatings;
 }
 
-export default function CarQuickInfo({ car }: Props) {
+export default function CarQuickInfo({ car, ratings }: Props) {
   const t = useTranslations("carDetails");
-  const scrollToReviews = () => {
-    document
-      .getElementById("reviews-summary")
-      ?.scrollIntoView({ behavior: "smooth", block: "start" });
-  };
+  const quickFactLabel = (fact: CarDetails["quickFacts"][number]) =>
+    fact.value
+      ? t(`quickFacts.${fact.kind}`, { value: fact.value })
+      : t(`quickFacts.${fact.kind}`);
 
   return (
     <div className="mt-6">
@@ -34,16 +54,27 @@ export default function CarQuickInfo({ car }: Props) {
             <ModelYearBadge year={car.year} />
           </div>
 
-          <p className="text-text-primary mt-2 inline-flex items-center gap-2 text-base font-normal">
-            <Image
-              src={car.showroomLogo ?? IMAGES.officePlaceholder.src}
-              width={IMAGES.officePlaceholder.width}
-              height={IMAGES.officePlaceholder.height}
-              alt=""
-              className="size-6 rounded object-cover"
-            />
-            {car.showroom}
-          </p>
+          <div className="mt-2 flex items-center justify-between gap-3">
+            <p className="text-text-primary m-0 inline-flex min-w-0 items-center gap-2 text-base font-normal">
+              <Image
+                src={car.showroomLogo ?? IMAGES.officePlaceholder.src}
+                width={IMAGES.officePlaceholder.width}
+                height={IMAGES.officePlaceholder.height}
+                alt=""
+                className="size-6 rounded object-cover"
+              />
+              {car.showroom}
+            </p>
+            {/* Mobile only; desktop shows ReviewsSummaryCard in the sidebar. */}
+            {ratings && ratings.count > 0 && (
+              <ReviewsRatingButton
+                rating={ratings.average}
+                reviewsCount={ratings.count}
+                reviews={ratings.reviews}
+                className="lg:hidden"
+              />
+            )}
+          </div>
         </div>
       </div>
 
@@ -61,14 +92,15 @@ export default function CarQuickInfo({ car }: Props) {
           </span>
         )}
 
-        {car.quickFacts.map((fact, i) => {
-          const Icon = FACT_ICONS[fact.icon];
+        {car.quickFacts.map((fact) => {
+          const Icon = FACT_ICONS[fact.kind];
           return (
             <span
-              key={i}
-              className="fact border-stroke-light bg-surface-on-background text-text-subtle inline-flex items-center gap-2 rounded-full border px-4 py-2.5 text-sm"
+              key={fact.kind}
+              className="text-base-dark-900 inline-flex items-center gap-2 rounded-full bg-white px-4 py-2.5 text-sm"
             >
-              <Icon className="text-action-primary text-[17px]" /> {fact.label}
+              <Icon className="text-action-primary text-[17px]" />{" "}
+              {quickFactLabel(fact)}
             </span>
           );
         })}

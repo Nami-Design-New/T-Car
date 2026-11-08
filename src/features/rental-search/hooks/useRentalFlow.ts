@@ -77,8 +77,10 @@ export function useRentalFlow({ onComplete }: Options) {
   };
 
   const confirmLocation = (location: LocationData) => {
+    const region = location.region?.trim();
+    if (!rentalType || !region) return;
+
     setStep(null);
-    if (!rentalType) return;
     const params = new URLSearchParams({ type: rentalType });
     if (airport) params.set("airportId", String(airport.id));
     if (station) params.set("stationId", String(station.id));
@@ -86,7 +88,7 @@ export function useRentalFlow({ onComplete }: Options) {
     if (deliveryType) params.set("deliveryType", deliveryType);
     params.set("lat", String(location.lat));
     params.set("lng", String(location.lng));
-    params.set("address", location.address);
+    params.set("region", region);
     onComplete(params);
   };
 

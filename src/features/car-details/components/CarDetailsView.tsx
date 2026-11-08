@@ -1,5 +1,10 @@
 import { CarBookingCard } from "@/features/booking";
-import type { CarDetails } from "../model";
+import type {
+  CarDetails,
+  CarPolicies,
+  CompanyRatings,
+  PickupBranch,
+} from "../model";
 import CarGallery from "./CarGallery";
 import CarQuickInfo from "./CarQuickInfo";
 import WarrantiesList from "./WarrantiesList";
@@ -7,12 +12,21 @@ import AddonsGrid from "./AddonsGrid";
 import InsuranceOptions from "./InsuranceOptions";
 import ReviewsSummaryCard from "./ReviewsSummaryCard";
 import StationAndAirportInfo from "./StationAndAirportInfo";
+import PoliciesList from "./PoliciesList";
 
 interface Props {
   car: CarDetails;
+  ratings: CompanyRatings;
+  policies: CarPolicies;
+  branches: PickupBranch[];
 }
 
-export default function CarDetailsView({ car }: Props) {
+export default function CarDetailsView({
+  car,
+  ratings,
+  policies,
+  branches,
+}: Props) {
   return (
     <>
       <section className="py-20 max-md:py-12">
@@ -22,18 +36,23 @@ export default function CarDetailsView({ car }: Props) {
               <CarGallery
                 image={car.images[0]}
                 alt={`${car.brand} ${car.name}`}
+                offer={car.offer}
               />
-              <CarQuickInfo car={car} />
-              {car.pickupPoint && (
+              <CarQuickInfo car={car} ratings={ratings} />
+              {car.pickupInfo.nearestBranch && (
                 <StationAndAirportInfo
                   showroom={car.showroom}
                   pickup={car.pickupInfo}
+                  branches={branches}
                   type={car.pickupPoint}
                 />
               )}
               <WarrantiesList warranties={car.warranties} />
-              <AddonsGrid addons={car.addons} />
-              <InsuranceOptions option={car.insuranceOptions[0]} />
+              {car.addons.length > 0 && <AddonsGrid addons={car.addons} />}
+              {car.insuranceOptions[0] && (
+                <InsuranceOptions option={car.insuranceOptions[0]} />
+              )}
+              <PoliciesList policies={policies} />
             </div>
 
             <div className="sticky top-25 max-lg:static max-lg:top-auto">
@@ -46,15 +65,17 @@ export default function CarDetailsView({ car }: Props) {
                 carImage={car.image}
                 showroom={car.showroom}
                 rating={car.rating}
-                pricePerDay={car.pricePerDay}
-                originalPrice={car.originalPrice}
+                lowerPrice={car.lowerPrice}
+                maxPrice={car.maxPrice}
               />
 
-              <ReviewsSummaryCard
-                rating={car.rating}
-                reviewsCount={car.reviewsCount}
-                reviews={car.reviews}
-              />
+              {ratings.count > 0 && (
+                <ReviewsSummaryCard
+                  rating={ratings.average}
+                  reviewsCount={ratings.count}
+                  reviews={ratings.reviews}
+                />
+              )}
             </div>
           </div>
         </div>

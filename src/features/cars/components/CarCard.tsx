@@ -1,8 +1,9 @@
 "use client";
 
-import { Link } from "@/i18n/navigation";
+import { Link, useRouter } from "@/i18n/navigation";
 import { IMAGES } from "@/shared/config/assets";
 import { ICONS } from "@/shared/config/assets";
+import { readGuestLocation } from "@/shared/lib/guest-location";
 import type { CarListing } from "../model";
 import CarOfferBadge from "./CarOfferBadge";
 
@@ -32,6 +33,7 @@ export default function CarCard({
   priority = false,
   onSelect,
 }: CarCardProps) {
+  const router = useRouter();
   const t = useTranslations("carCard");
   const detailsHref = `/cars/${car.id}` as const;
   const { offer } = car;
@@ -47,8 +49,20 @@ export default function CarCard({
         href={detailsHref}
         onClickCapture={(event) => {
           // A listing without availability cannot start the rental flow, so it
-          // keeps its normal details-page navigation.
-          if (!onSelect || !car.availability) return;
+          // navigates with the browser's saved region when it is available.
+          if (!onSelect || !car.availability) {
+            const location = readGuestLocation();
+            const region = location?.region?.trim();
+            if (!region || location === null) return;
+            event.preventDefault();
+            const params = new URLSearchParams({
+              region,
+              lat: String(location.lat),
+              lng: String(location.lng),
+            });
+            router.push(`/cars/${car.id}?${params.toString()}`);
+            return;
+          }
           event.preventDefault();
           event.stopPropagation();
           onSelect(car);

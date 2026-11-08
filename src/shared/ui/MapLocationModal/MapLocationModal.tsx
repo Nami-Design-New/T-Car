@@ -86,6 +86,7 @@ export default function MapLocationModal({
     if (!open || !initialLocation) return;
     setPosition({ lat: initialLocation.lat, lng: initialLocation.lng });
     setAddress(initialLocation.address);
+    setRegion(initialLocation.region);
   }, [initialLocation, open]);
 
   const onMapLoad = useCallback((map: google.maps.Map) => {

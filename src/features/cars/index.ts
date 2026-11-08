@@ -1,4 +1,5 @@
 export { default as CarCard } from "./components/CarCard";
+export { default as CarOfferBadge } from "./components/CarOfferBadge";
 export { default as CarOfficeRow } from "./components/CarOfficeRow";
 export { default as CarFilters } from "./components/CarFilters";
 export { default as SortBar } from "./components/SortBar";

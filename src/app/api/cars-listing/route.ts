@@ -76,6 +76,7 @@ export async function GET(request: NextRequest) {
       { ...query, source } as CarsListingQuery,
       page,
     );
+
     return NextResponse.json(data);
   } catch (error) {
     const status =

@@ -238,6 +238,7 @@
     "saveNow": "وفّر عند الحجز الآن",
     "discount": "خصم",
     "offerBook": "احجز {days} أيام واحصل على",
+    "specialOffer": "عرض خاص",
     "offerFree": "{free, plural, one {يوم مجاناً} two {يومين مجاناً} few {# أيام مجاناً} many {# يومًا مجاناً} other {# يوم مجاناً}}",
     "extraDays": "{count, plural, one {يوم إضافي} two {يومان إضافيان} few {أيام إضافية} many {يومًا إضافيًا} other {يوم إضافي}}",
     "rating": "التقييم {rating} من 5",
@@ -868,6 +869,7 @@
     },
     "card": {
       "currency": "ريال",
+      "insteadOf": " بدلاً من",
       "perDay": "/ يوم",
       "bookNow": "احجز الآن",
       "paymentNote": "لن يتم خصم أي مبلغ الآن، الدفع عند الاستلام",
@@ -881,7 +883,23 @@
     "modelYear": "موديل {year}",
     "airportPickup": "استلام من المطار",
     "stationPickup": "استلام من محطة",
+    "noWarranties": "لا توجد ضمانات متاحة",
+    "quickFacts": {
+      "power": "{value}",
+      "doors": "{value} أبواب",
+      "navigation": "نظام ملاحة",
+      "bluetooth": "بلوتوث",
+      "panorama": "سقف بانورامي",
+      "usb": "منفذ USB",
+      "camera": "كاميرا خلفية",
+      "sensors": "حساسات ركن",
+      "applePlay": "Apple CarPlay"
+    },
     "warranties": "ضمانات تي كار",
+    "policies": {
+      "instructions": "تعليمات المستأجر",
+      "cancellation": "سياسة الإلغاء"
+    },
     "insurance": {
       "title": "نوع التأمين",
       "details": "تفاصيل التأمين",

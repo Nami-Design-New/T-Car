@@ -1,6 +1,9 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import { useEffect, useState } from "react";
+import { readGuestLocation } from "@/shared/lib/guest-location";
+import type { LocationData } from "@/shared/lib/location";
 import type { RentalFlow } from "../hooks/useRentalFlow";
 import type { RentalSearchOptions, RentalType } from "../model";
 
@@ -39,6 +42,20 @@ export default function RentalFlowModals({
   options,
   availability,
 }: Props) {
+  const [initialLocation, setInitialLocation] = useState<LocationData | null>(
+    null,
+  );
+
+  useEffect(() => {
+    if (flow.step !== "map") return;
+    const saved = readGuestLocation();
+    setInitialLocation(
+      saved
+        ? { ...saved, address: saved.address ?? "" }
+        : null,
+    );
+  }, [flow.step]);
+
   return (
     <>
       {availability && (
@@ -83,6 +100,7 @@ export default function RentalFlowModals({
           open
           onClose={flow.close}
           onConfirm={flow.confirmLocation}
+          initialLocation={initialLocation}
         />
       )}
     </>
