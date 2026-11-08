@@ -2,10 +2,16 @@ export {
   cancelBookingAction,
   createBookingAction,
   extendBookingAction,
+  getOrdersPageAction,
   requestBookingEditAction,
   submitBookingReviewAction,
 } from "./actions";
-export { isActiveBooking, isRentalRunning } from "./model";
+export {
+  isActiveBooking,
+  isRentalRunning,
+  orderStatusTone,
+  orderTabForStatus,
+} from "./model";
 export type {
   BookingDetails,
   BookingDetailsView,
@@ -14,6 +20,10 @@ export type {
   BookingStatus,
   CreateBookingRequest,
   PaymentMethod,
+  OrderListItem,
+  OrderListTab,
+  OrderStatus,
+  OrderStatusTone,
   UserBooking,
 } from "./model";
 export {

@@ -2,11 +2,33 @@ import "server-only";
 import { cache } from "react";
 import { protectedRead } from "@/services/http/session";
 import { toAppError } from "@/shared/lib/errors";
-import { bookingsApi } from "./api";
-import type { BookingDetailsView, UserBooking } from "./model";
+import { bookingsApi, ORDERS_PER_PAGE } from "./api";
+import type { Page } from "@/shared/lib/pagination";
+import type { BookingDetailsView, OrderListItem, OrderListTab } from "./model";
 
-export function getMyBookings(): Promise<UserBooking[]> {
-  return protectedRead(() => bookingsApi.getBookings());
+export function getMyBookings(
+  tab: OrderListTab,
+  page = 1,
+): Promise<Page<OrderListItem>> {
+  return protectedRead(() =>
+    bookingsApi.listOrders({
+      status: tab === "active" ? "current" : "past",
+      page,
+      perPage: ORDERS_PER_PAGE,
+    }),
+  );
+}
+
+/** The number of bookings in a tab, for its count badge (one item is read). */
+export async function getMyBookingsTotal(tab: OrderListTab): Promise<number> {
+  const page = await protectedRead(() =>
+    bookingsApi.listOrders({
+      status: tab === "active" ? "current" : "past",
+      page: 1,
+      perPage: 1,
+    }),
+  );
+  return page.total;
 }
 
 /**

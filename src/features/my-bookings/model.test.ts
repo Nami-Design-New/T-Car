@@ -5,7 +5,11 @@ import {
   parseBookingTab,
   toEditRequest,
 } from "./model";
-import type { BookingDetailsView } from "@/features/orders";
+import {
+  orderStatusTone,
+  orderTabForStatus,
+  type BookingDetailsView,
+} from "@/features/orders";
 
 describe("bookings list URL", () => {
   it("reads ?status=, defaulting to the active list", () => {
@@ -27,6 +31,23 @@ describe("bookings list URL", () => {
     expect(bookingTabFor("late")).toBe("active");
     expect(bookingTabFor("completed")).toBe("past");
     expect(bookingTabFor("cancelled")).toBe("past");
+  });
+});
+
+describe("live order status groups", () => {
+  it("matches the E6 current and past groups", () => {
+    expect(orderTabForStatus("coming")).toBe("active");
+    expect(orderTabForStatus("late")).toBe("active");
+    expect(orderTabForStatus("complete")).toBe("past");
+    expect(orderTabForStatus("cancelled")).toBe("past");
+    expect(orderTabForStatus("rejected")).toBe("past");
+  });
+
+  it("groups statuses into badge tones", () => {
+    expect(orderStatusTone("current")).toBe("primary");
+    expect(orderStatusTone("coming")).toBe("warning");
+    expect(orderStatusTone("complete")).toBe("success");
+    expect(orderStatusTone("late")).toBe("error");
   });
 });
 

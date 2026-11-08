@@ -679,6 +679,20 @@
       "active": "Current",
       "past": "Past"
     },
+    "status": {
+      "start": "Draft",
+      "new": "New",
+      "accepted": "Accepted",
+      "rejected": "Rejected",
+      "open": "Open",
+      "coming": "Upcoming",
+      "current": "Current",
+      "late": "Late",
+      "complete": "Completed",
+      "cancelled": "Cancelled",
+      "suspended": "Suspended",
+      "lateHours": "{hours, plural, one {Late by # hour} other {Late by # hours}}"
+    },
     "sidebar": {
       "priceDetails": "Price details",
       "price": "Price",

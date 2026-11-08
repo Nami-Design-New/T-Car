@@ -11,12 +11,15 @@ import {
 } from "@/shared/lib/result";
 import { toValidationError } from "@/shared/lib/validation";
 import type { ZodType } from "zod";
-import { bookingsApi } from "./api";
+import { bookingsApi, ORDERS_PER_PAGE } from "./api";
 import type {
   BookingEditRequest,
   BookingReviewInput,
   CreateBookingRequest,
+  OrderListItem,
+  OrderListTab,
 } from "./model";
+import type { Page } from "@/shared/lib/pagination";
 import {
   bookingEditSchema,
   bookingReviewSchema,
@@ -28,6 +31,32 @@ function parse<T>(schema: ZodType<T>, input: unknown): T {
   const result = schema.safeParse(input);
   if (!result.success) throw toValidationError(result.error);
   return result.data;
+}
+
+/** Loads another E6 page for the client-side InfiniteList. */
+export async function getOrdersPageAction(
+  tab: OrderListTab,
+  page: number,
+): Promise<ActionResult<Page<OrderListItem>>> {
+  try {
+    const session = await auth();
+    if (!session?.user?.id) throw new AppError("unauthorized");
+    if (
+      (tab !== "active" && tab !== "past") ||
+      !Number.isInteger(page) ||
+      page < 1
+    )
+      throw new AppError("validation");
+    const orders = await bookingsApi.listOrders({
+      status: tab === "active" ? "current" : "past",
+      page,
+      perPage: ORDERS_PER_PAGE,
+    });
+    return toActionResult(ok(orders));
+  } catch (error) {
+    reportError(error, { scope: "bookings.list", tab, page });
+    return toActionResult(fail(error));
+  }
 }
 
 /** Creates a booking after checking the session at the Server Action boundary. */

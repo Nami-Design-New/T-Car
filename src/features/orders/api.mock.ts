@@ -1,9 +1,12 @@
 import {
   isActiveBooking,
+  orderTabForStatus,
   type BookingDetailsView,
+  type OrderListItem,
   type UserBooking,
 } from "./model";
 import { AppError } from "@/shared/lib/errors";
+import { toPage, type Page } from "@/shared/lib/pagination";
 import { MOCK_OFFICES } from "@/services/mocks/offices";
 import type { BookingsApi } from "./api";
 const car1 = "/mock/cars/creta.jpg";
@@ -83,6 +86,79 @@ export const MOCK_BOOKINGS: UserBooking[] = [
   },
 ];
 
+export const MOCK_ORDER_LIST: OrderListItem[] = [
+  {
+    id: "1",
+    carName: "Chevrolet Malibu",
+    carYear: 2022,
+    carImage: car1,
+    date: "2026-06-30 23:46",
+    status: "current",
+    lateHours: null,
+    companyName: "Al-Quds showroom",
+    companyLogo: getShowroomLogo("معرض القدس") ?? null,
+    companyRate: 4.4,
+    isRated: false,
+    myRating: { companyRate: null, driverRate: null },
+  },
+  {
+    id: "2",
+    carName: "Nissan Altima",
+    carYear: 2022,
+    carImage: car1,
+    date: "2026-07-18 13:15",
+    status: "coming",
+    lateHours: null,
+    companyName: "Gulf showroom",
+    companyLogo: getShowroomLogo("معرض الخليج") ?? null,
+    companyRate: 4.5,
+    isRated: false,
+    myRating: { companyRate: null, driverRate: null },
+  },
+  {
+    id: "3",
+    carName: "Honda Accord",
+    carYear: 2023,
+    carImage: car1,
+    date: "2026-06-30 23:46",
+    status: "late",
+    lateHours: 6,
+    companyName: "Al-Orouba showroom",
+    companyLogo: getShowroomLogo("معرض العروبة") ?? null,
+    companyRate: 4.6,
+    isRated: false,
+    myRating: { companyRate: null, driverRate: null },
+  },
+  {
+    id: "4",
+    carName: "Mazda 6",
+    carYear: 2024,
+    carImage: car1,
+    date: "2026-04-08 12:00",
+    status: "complete",
+    lateHours: null,
+    companyName: "Elite showroom",
+    companyLogo: getShowroomLogo("معرض النخبة") ?? null,
+    companyRate: 4.8,
+    isRated: true,
+    myRating: { companyRate: 5, driverRate: 4 },
+  },
+  {
+    id: "5",
+    carName: "Chevrolet Impala",
+    carYear: 2021,
+    carImage: car1,
+    date: "2026-03-22 19:45",
+    status: "cancelled",
+    lateHours: null,
+    companyName: "Al-Quds showroom",
+    companyLogo: getShowroomLogo("معرض القدس") ?? null,
+    companyRate: 4.2,
+    isRated: false,
+    myRating: { companyRate: null, driverRate: null },
+  },
+];
+
 /** Dates, prices, and places shared by every mock booking; the car and status come from the list. */
 const MOCK_DETAILS_BASE: Omit<
   BookingDetailsView,
@@ -114,6 +190,9 @@ const MOCK_DETAILS_BASE: Omit<
 /** Mock only: extensions past this many days fail, so the failure state can be exercised. */
 const MOCK_MAX_RENTAL_DAYS = 30;
 
+/** Mock only: page 99 fails reproducibly so the paginated error state can be exercised. */
+const MOCK_LIST_FAILURE_PAGE = 99;
+
 const delay = (ms = 300) => new Promise((resolve) => setTimeout(resolve, ms));
 
 function findBooking(id: string): UserBooking {
@@ -132,9 +211,19 @@ function findActiveBooking(id: string): UserBooking {
 // Read-only (writes validate and resolve without changing anything), so it is
 // safe to run on the server.
 export const bookingsMock: BookingsApi = {
-  async getBookings() {
+  async listOrders({ status, page, perPage }): Promise<Page<OrderListItem>> {
     await delay();
-    return [...MOCK_BOOKINGS];
+    if (page === MOCK_LIST_FAILURE_PAGE) throw new AppError("server");
+    const tab = status === "current" ? "active" : "past";
+    const items = MOCK_ORDER_LIST.filter(
+      (booking) => orderTabForStatus(booking.status) === tab,
+    );
+    const start = (page - 1) * perPage;
+    return toPage(items.slice(start, start + perPage), {
+      current_page: page,
+      last_page: Math.max(1, Math.ceil(items.length / perPage)),
+      total: items.length,
+    });
   },
 
   async getBookingDetails(id) {

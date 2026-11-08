@@ -677,6 +677,20 @@
       "active": "حالية",
       "past": "سابقة"
     },
+    "status": {
+      "start": "مسودة",
+      "new": "جديد",
+      "accepted": "مقبول",
+      "rejected": "مرفوض",
+      "open": "مفتوح",
+      "coming": "قادم",
+      "current": "حالي",
+      "late": "متأخر عن التسليم",
+      "complete": "مكتمل",
+      "cancelled": "ملغي",
+      "suspended": "موقوف",
+      "lateHours": "{hours, plural, zero {متأخر أقل من ساعة} one {متأخر ساعة واحدة} two {متأخر ساعتين} few {متأخر # ساعات} other {متأخر # ساعة}}"
+    },
     "sidebar": {
       "priceDetails": "تفاصيل السعر",
       "price": "السعر",

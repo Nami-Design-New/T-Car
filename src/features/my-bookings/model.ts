@@ -3,7 +3,6 @@ import {
   type BookingDetailsView,
   type BookingEditRequest,
   type BookingStatus,
-  type UserBooking,
 } from "@/features/orders";
 
 export type BookingTab = "active" | "past";
@@ -46,12 +45,5 @@ export function toEditRequest(booking: BookingDetailsView): BookingEditRequest {
     dropoffAddress: booking.dropoffLocation,
     pickupLocation: null,
     dropoffLocation: null,
-  };
-}
-
-export function splitBookings(bookings: UserBooking[]) {
-  return {
-    active: bookings.filter((booking) => isActiveBooking(booking.status)),
-    past: bookings.filter((booking) => !isActiveBooking(booking.status)),
   };
 }

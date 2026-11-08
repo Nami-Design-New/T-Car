@@ -26,9 +26,11 @@ export interface CreateBookingRequest {
   termsAccepted: boolean;
 }
 
+/** Legacy detail status, kept until the booking details screen moves in O3. */
 export type BookingStatus =
   "current" | "upcoming" | "late" | "completed" | "cancelled";
 
+/** Legacy booking shape used by the mock details read until O3. */
 export interface UserBooking {
   id: string;
   carName: string;
@@ -41,6 +43,60 @@ export interface UserBooking {
   status: BookingStatus;
   statusLabel: string;
   dateLabel: string;
+}
+
+export type OrderStatus =
+  | "start"
+  | "new"
+  | "accepted"
+  | "rejected"
+  | "open"
+  | "coming"
+  | "current"
+  | "late"
+  | "complete"
+  | "cancelled"
+  | "suspended";
+
+export interface OrderListItem {
+  id: string;
+  carName: string;
+  carYear: number;
+  carImage: string | null;
+  date: string;
+  status: OrderStatus;
+  lateHours: number | null;
+  companyName: string;
+  companyLogo: string | null;
+  companyRate: number;
+  isRated: boolean;
+  myRating: {
+    companyRate: number | null;
+    driverRate: number | null;
+  };
+}
+
+export type OrderStatusTone = "primary" | "warning" | "success" | "error";
+export type OrderListTab = "active" | "past";
+
+const PAST_ORDER_STATUSES: readonly OrderStatus[] = [
+  "complete",
+  "cancelled",
+  "rejected",
+];
+
+/** Mirrors E6: past is complete/cancelled/rejected; all listed other statuses are current. */
+export const orderTabForStatus = (status: OrderStatus): OrderListTab =>
+  PAST_ORDER_STATUSES.includes(status) ? "past" : "active";
+
+/** UI-only status grouping; the DTO guard rejects values outside OrderStatus. */
+export function orderStatusTone(status: OrderStatus): OrderStatusTone {
+  if (status === "complete") return "success";
+  if (status === "rejected" || status === "cancelled" || status === "late")
+    return "error";
+  if (status === "new" || status === "coming" || status === "suspended")
+    return "warning";
+  return "primary";
 }
 
 export interface BookingDetailsView {
