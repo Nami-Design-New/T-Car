@@ -1,6 +1,7 @@
 'use client';
 
-import { BookingDailyModal, type BookingDetails } from '@/features/booking';
+import { BookingDailyModal } from '@/features/booking';
+import type { BookingDetails } from '@/features/orders';
 import type { Result } from '@/shared/lib/result';
 
 

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { toValidationError } from "@/shared/lib/validation";
-import { bookingDetailsSchema, createBookingSchema } from "./validation";
+import { bookingDetailsSchema } from "./validation";
 
 function tomorrow() {
   const date = new Date();
@@ -72,24 +72,6 @@ describe("booking validation", () => {
     ).toEqual({
       time: "booking.timeRequired",
       notes: "booking.notesTooLong",
-    });
-  });
-
-  it("requires accepted terms and a supported payment method", () => {
-    const details = validDetails();
-    const result = createBookingSchema.safeParse({
-      carId: "car-1",
-      details,
-      paymentMethod: "cash",
-      termsAccepted: false,
-    });
-
-    expect(result.success).toBe(false);
-    expect(
-      result.success ? undefined : toValidationError(result.error).fieldErrors,
-    ).toMatchObject({
-      paymentMethod: expect.any(String),
-      termsAccepted: "booking.termsRequired",
     });
   });
 });

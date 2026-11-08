@@ -8,7 +8,7 @@ import dynamic from "next/dynamic";
 import { useState } from "react";
 
 import { ICONS } from "@/shared/config/assets";
-import type { BookingDetails, PaymentMethod } from "../model";
+import type { BookingDetails, PaymentMethod } from "@/features/orders";
 const RiyalIcon = ICONS.riyal;
 
 import { Button } from "@/shared/ui/Button";

@@ -18,7 +18,7 @@ import { Button } from "@/shared/ui/Button";
 import { Dialog } from "@/shared/ui/Dialog";
 import { FormInput, FormTextarea } from "@/shared/ui/Form";
 import { cn } from "@/shared/lib/cn";
-import type { BookingDetails } from "../model";
+import type { BookingDetails } from "@/features/orders";
 import {
   bookingDetailsSchema,
   TIME_SLOTS,

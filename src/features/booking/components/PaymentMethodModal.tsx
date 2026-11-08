@@ -7,7 +7,7 @@ import { RadioCards } from "@/shared/ui/RadioCards";
 import { Dialog } from "@/shared/ui/Dialog";
 import { Button } from "@/shared/ui/Button";
 import { cn } from "@/shared/lib/cn";
-import type { PaymentMethod } from "../model";
+import type { PaymentMethod } from "@/features/orders";
 import { ICONS, PAYMENT_ICONS } from "@/shared/config/assets";
 const walletIcon = PAYMENT_ICONS.wallet;
 const cardIcon = PAYMENT_ICONS.card;

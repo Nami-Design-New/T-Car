@@ -1,4 +1,4 @@
-import { isRentalRunning, type BookingDetailsView } from "../model";
+import { isRentalRunning, type BookingDetailsView } from "@/features/orders";
 import BookingDetailsHeader from "./BookingDetailsHeader";
 import BookingHero from "./BookingHero";
 import BookingDatesInfo from "./BookingDatesInfo";

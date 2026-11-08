@@ -277,7 +277,8 @@ change. Each item says why.
    (as [doc 3](03-error-handling.md) already had it).
 
 5. **`queries.ts` / `actions.ts` exist where the data allows it.** Read-only
-   mocks are safe on the server, so `my-bookings`, `car-details`, `cars`,
+   mocks are safe on the server, so `orders` (booking data for
+   `booking` and `my-bookings`), `car-details`, `cars`,
    `cities`, `home`, and `rental-search` read through `queries.ts`. The wallet
    and bank-account mocks keep state, which the server would share between
    users, so they stay behind client hooks until the account routes and a

@@ -8,8 +8,9 @@ import {
   extendBookingAction,
   requestBookingEditAction,
   submitBookingReviewAction,
-} from '../actions';
-import type { BookingEditRequest, BookingReviewInput } from '../model';
+  type BookingEditRequest,
+  type BookingReviewInput,
+} from '@/features/orders';
 
 /** Booking writes cross authenticated Server Actions and resolve to a Result. */
 export function useBookingActions(bookingId: string) {

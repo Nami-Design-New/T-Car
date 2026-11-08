@@ -2,7 +2,7 @@ import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import { renderWithIntl } from "@/shared/test/render";
-import type { BookingDetails } from "../model";
+import type { BookingDetails } from "@/features/orders";
 import BookingConfirmModal from "./BookingConfirmModal";
 
 vi.mock("@/i18n/navigation", () => ({

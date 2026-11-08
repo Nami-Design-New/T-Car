@@ -1,7 +1,7 @@
 import { screen, within } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { renderWithIntl } from '@/shared/test/render';
-import type { UserBooking } from '../model';
+import type { UserBooking } from '@/features/orders';
 import BookingsTab from './BookingsTab';
 
 vi.mock('@/i18n/navigation', () => ({

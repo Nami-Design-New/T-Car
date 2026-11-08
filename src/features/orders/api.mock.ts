@@ -2,10 +2,10 @@ import {
   isActiveBooking,
   type BookingDetailsView,
   type UserBooking,
-} from "@/features/my-bookings/model";
+} from "./model";
 import { AppError } from "@/shared/lib/errors";
-import type { BookingsApi } from "../bookings.api";
-import { MOCK_OFFICES } from "./offices";
+import { MOCK_OFFICES } from "@/services/mocks/offices";
+import type { BookingsApi } from "./api";
 const car1 = "/mock/cars/creta.jpg";
 
 function getShowroomLogo(showroom: string): string | undefined {

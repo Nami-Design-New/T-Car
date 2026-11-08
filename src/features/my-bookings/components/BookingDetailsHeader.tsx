@@ -16,13 +16,15 @@ import { useErrorMessage } from "@/shared/hooks/useErrorMessage";
 import type { AppError } from "@/shared/lib/errors";
 import { ResultDialog } from "@/shared/ui/ResultDialog";
 import {
+  isActiveBooking,
+  type BookingDetailsView,
+  type BookingEditRequest,
+} from "@/features/orders";
+import {
   bookingTabFor,
   bookingsListPath,
   cancellationFee,
-  isActiveBooking,
   toEditRequest,
-  type BookingDetailsView,
-  type BookingEditRequest,
 } from "../model";
 import { useBookingActions } from "../hooks/useBookingActions";
 const ExtendDurationModal = dynamic(() => import("./ExtendDurationModal"), {

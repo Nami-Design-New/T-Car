@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { BookingDetailsScreen } from '@/features/my-bookings';
-import { getBookingDetails } from '@/features/my-bookings/queries';
+import { getBookingDetails } from '@/features/orders/queries';
 
 interface Props {
   params: Promise<{ id: string }>;

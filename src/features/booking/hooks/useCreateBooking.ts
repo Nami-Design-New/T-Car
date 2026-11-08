@@ -3,8 +3,11 @@
 import { useCallback, useState } from 'react';
 import { fail, fromActionResult, type Result } from '@/shared/lib/result';
 import { reportError } from '@/shared/lib/report';
-import { createBookingAction } from '../actions';
-import type { BookingDetails, PaymentMethod } from '../model';
+import {
+  createBookingAction,
+  type BookingDetails,
+  type PaymentMethod,
+} from '@/features/orders';
 
 /** Books one car through the authenticated checkout Server Action. */
 export function useCreateBooking(carId: string) {

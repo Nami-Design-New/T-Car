@@ -11,7 +11,7 @@ import {
   useFieldErrorMessage,
 } from "@/shared/hooks/useErrorMessage";
 import type { Result } from "@/shared/lib/result";
-import type { BookingReviewInput } from "../model";
+import type { BookingReviewInput } from "@/features/orders";
 import {
   bookingReviewSchema,
   type BookingReviewFormValues,

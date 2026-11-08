@@ -100,3 +100,7 @@ Ask the user before: any `git commit` (and which branch it goes on); deleting `B
   Seen right after a build or a server stop; the cause is not established. It is
   not a test failure: run `npm run test` again with nothing else running (tests
   first, then build and start the server).
+- `features/orders/index.ts` re-exports Server Actions, so UI tests that import
+  it (directly or through another feature) reach `@/auth` (NextAuth, which
+  Node cannot load under Vitest) and `server-only`. `vitest.setup.ts` mocks
+  both globally; an action test still declares its own `vi.mock('@/auth')`.

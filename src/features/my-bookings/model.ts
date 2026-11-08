@@ -1,7 +1,10 @@
-import type { BookingDetails } from "@/features/booking";
-
-export type BookingStatus =
-  "current" | "upcoming" | "late" | "completed" | "cancelled";
+import {
+  isActiveBooking,
+  type BookingDetailsView,
+  type BookingEditRequest,
+  type BookingStatus,
+  type UserBooking,
+} from "@/features/orders";
 
 export type BookingTab = "active" | "past";
 
@@ -16,70 +19,6 @@ export const bookingsListPath = (status: BookingTab) =>
 /** Which list a booking belongs to, e.g. for the details page's back link. */
 export const bookingTabFor = (status: BookingStatus): BookingTab =>
   isActiveBooking(status) ? "active" : "past";
-
-export interface UserBooking {
-  id: string;
-  carName: string;
-  carBrand: string;
-  carImage: string;
-  showroom: string;
-  showroomLogo?: string;
-  year: number;
-  rating: number;
-  status: BookingStatus;
-  statusLabel: string;
-  dateLabel: string;
-}
-
-export interface BookingDetailsView {
-  id: string;
-  reference: string;
-  carName: string;
-  carBrand: string;
-  carImage: string;
-  showroom: string;
-  status: BookingStatus;
-  statusLabel: string;
-  pricePerDay: number;
-  originalPrice?: number;
-  pickupDateTime: string;
-  dropoffDateTime: string;
-  pickupLocation: string;
-  dropoffLocation: string;
-  warrantyNote: string;
-  pointsUsed: number;
-  days: number;
-  subtotal: number;
-  vatRate: number;
-  vat: number;
-  total: number;
-  /** Share of the total kept as a fee when the customer cancels. */
-  cancellationPercent: number;
-  bannerTimestamp?: string;
-}
-
-/** What the edit request form submits; the same shape the booking form uses. */
-export type BookingEditRequest = BookingDetails;
-
-export interface BookingReviewInput {
-  /** 1 to 5 */
-  showroomRating: number;
-  driverRating: number;
-}
-
-const ACTIVE_STATUSES: readonly BookingStatus[] = [
-  "current",
-  "upcoming",
-  "late",
-];
-
-/** Not finished yet: the customer can still edit, extend, or cancel it. */
-export const isActiveBooking = (status: BookingStatus) =>
-  ACTIVE_STATUSES.includes(status);
-
-/** The car is out with the customer, so the return countdown applies. */
-export const isRentalRunning = (status: BookingStatus) =>
-  status === "current" || status === "late";
 
 export function cancellationFee(amount: number, percent: number): number {
   return Math.round((amount * percent) / 100);

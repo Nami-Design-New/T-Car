@@ -5,7 +5,7 @@ import {
   parseBookingTab,
   toEditRequest,
 } from "./model";
-import type { BookingDetailsView } from "./model";
+import type { BookingDetailsView } from "@/features/orders";
 
 describe("bookings list URL", () => {
   it("reads ?status=, defaulting to the active list", () => {

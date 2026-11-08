@@ -2,7 +2,8 @@ import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { Button } from "@/shared/ui/Button";
 import { EmptyState } from "@/shared/ui/EmptyState";
-import { splitBookings, type BookingTab, type UserBooking } from "../model";
+import type { UserBooking } from "@/features/orders";
+import { splitBookings, type BookingTab } from "../model";
 import BookingsTabs from "./BookingsTabs";
 import BookingCard from "./BookingCard";
 

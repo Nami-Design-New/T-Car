@@ -10,7 +10,7 @@ import { Button } from "@/shared/ui/Button";
 import { FormCheckbox } from "@/shared/ui/Form";
 import { Price } from "@/shared/ui/Price";
 import { useFieldErrorMessage } from "@/shared/hooks/useErrorMessage";
-import type { BookingDetails } from "../model";
+import type { BookingDetails } from "@/features/orders";
 import { bookingTermsSchema, type BookingTermsValues } from "../validation";
 import Image from "next/image";
 import { BackButton } from "@/shared/ui/BackButton";

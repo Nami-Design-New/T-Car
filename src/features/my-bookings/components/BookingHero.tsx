@@ -2,7 +2,7 @@ import { Price } from "@/shared/ui/Price";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { FiMapPin } from "react-icons/fi";
-import type { BookingStatus } from "../model";
+import type { BookingStatus } from "@/features/orders";
 import BookingStatusBadge from "./BookingStatusBadge";
 
 interface Props {

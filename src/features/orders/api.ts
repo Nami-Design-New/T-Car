@@ -1,11 +1,11 @@
-import type { CreateBookingRequest } from '@/features/booking/model';
 import type {
   BookingDetailsView,
   BookingEditRequest,
   BookingReviewInput,
+  CreateBookingRequest,
   UserBooking,
-} from '@/features/my-bookings/model';
-import { bookingsMock } from './mocks/bookings';
+} from "./model";
+import { bookingsMock } from "./api.mock";
 
 export interface BookingsApi {
   getBookings(): Promise<UserBooking[]>;

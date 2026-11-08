@@ -1,5 +1,5 @@
 import { BookingsTab, parseBookingTab } from '@/features/my-bookings';
-import { getMyBookings } from '@/features/my-bookings/queries';
+import { getMyBookings } from '@/features/orders/queries';
 
 interface Props {
   searchParams: Promise<{ status?: string | string[] }>;

@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { Link } from "@/i18n/navigation";
 import { FiStar, FiHome } from "react-icons/fi";
-import type { UserBooking } from "../model";
+import type { UserBooking } from "@/features/orders";
 import BookingStatusBadge from "./BookingStatusBadge";
 import { ICONS } from "@/shared/config/assets";
 

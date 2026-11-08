@@ -1,6 +1,6 @@
 import clsx from "clsx";
 import { FiCalendar } from "react-icons/fi";
-import type { BookingStatus } from "../model";
+import type { BookingStatus } from "@/features/orders";
 
 interface Props {
   status: BookingStatus;
