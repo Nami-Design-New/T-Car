@@ -1,4 +1,5 @@
 import { CarBookingCard } from "@/features/booking";
+import type { BookingContext } from "@/features/orders";
 import type {
   CarDetails,
   CarPolicies,
@@ -19,6 +20,7 @@ interface Props {
   ratings: CompanyRatings;
   policies: CarPolicies;
   branches: PickupBranch[];
+  bookingContext: BookingContext;
 }
 
 export default function CarDetailsView({
@@ -26,6 +28,7 @@ export default function CarDetailsView({
   ratings,
   policies,
   branches,
+  bookingContext,
 }: Props) {
   return (
     <>
@@ -67,6 +70,7 @@ export default function CarDetailsView({
                 rating={car.rating}
                 lowerPrice={car.lowerPrice}
                 maxPrice={car.maxPrice}
+                bookingContext={bookingContext}
               />
 
               {ratings.count > 0 && (

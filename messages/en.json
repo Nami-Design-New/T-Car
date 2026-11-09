@@ -829,6 +829,8 @@
       "selectPickup": "Set pickup location",
       "selectDropoff": "Set drop-off location",
       "pickupTime": "Pickup time",
+      "loadingTimes": "Loading available times...",
+      "noAvailableTimes": "No pickup times are available for these dates.",
       "previousMonth": "Previous month",
       "nextMonth": "Next month"
     },
@@ -904,6 +906,7 @@
       "perDay": "/ day",
       "insteadOf": "instead of",
       "bookNow": "Book now",
+      "chooseLocation": "Choose a location to book this car.",
       "paymentNote": "No amount will be charged now; pay on pickup",
       "successTitle": "Booking confirmed successfully!",
       "successDescription": "Redirecting to your bookings...",

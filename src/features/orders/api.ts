@@ -7,6 +7,8 @@ import { toPage, type Page } from "@/shared/lib/pagination";
 import { sanitizeBackendHtml } from "@/shared/lib/sanitizeHtml";
 import { bookingsMock } from "./api.mock";
 import type {
+  Availability,
+  AvailabilityRequest,
   BookingType,
   BookingEditRequest,
   BookingReviewInput,
@@ -26,6 +28,7 @@ export interface ListOrdersParams {
 }
 
 export interface BookingsApi {
+  checkAvailability(request: AvailabilityRequest): Promise<Availability>;
   listOrders(params: ListOrdersParams): Promise<Page<OrderListItem>>;
   /** Throws a `not_found` AppError for an unknown id. */
   getOrder(id: string): Promise<Order>;
@@ -35,6 +38,10 @@ export interface BookingsApi {
   cancelBooking(id: string): Promise<void>;
   submitReview(id: string, input: BookingReviewInput): Promise<void>;
   createBooking(request: CreateBookingRequest): Promise<void>;
+}
+
+export interface AvailabilityDto {
+  slots: { time: string }[];
 }
 
 export interface OrderListItemDto {
@@ -214,6 +221,19 @@ const isDatePart = (value: unknown): value is string =>
 const isTimePart = (value: unknown): value is string =>
   typeof value === "string" &&
   /^(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d$/.test(value);
+
+const isAvailabilityHour = (value: unknown): value is string =>
+  typeof value === "string" && /^(?:[01]\d|2[0-3])$/.test(value);
+
+function isAvailabilityDto(value: unknown): value is AvailabilityDto {
+  return (
+    isRecord(value) &&
+    Array.isArray(value.slots) &&
+    value.slots.every(
+      (slot) => isRecord(slot) && isAvailabilityHour(slot.time),
+    )
+  );
+}
 
 const isDateTime = (value: unknown): value is string =>
   typeof value === "string" &&
@@ -397,6 +417,17 @@ export function mapOrdersResponse(value: unknown): Page<OrderListItem> {
   return toPage(value.data.map(toOrderListItem), pagination);
 }
 
+export function mapAvailabilityResponse(value: unknown): Availability {
+  const data = isRecord(value) ? value.data : undefined;
+  if (!isApiEnvelope(value) || value.code !== 200 || !isAvailabilityDto(data)) {
+    throw new AppError("server");
+  }
+  return {
+    slots: data.slots.map((slot) => slot.time),
+    message: value.message,
+  };
+}
+
 function toOrderListItem(order: OrderListItemDto): OrderListItem {
   return {
     id: String(order.id),
@@ -525,6 +556,27 @@ async function listOrders({
   return mapOrdersResponse(response);
 }
 
+async function checkAvailability({
+  carId,
+  branchId,
+  type,
+  fromDay,
+  toDay,
+  deliveryType,
+}: AvailabilityRequest): Promise<Availability> {
+  const response = await serverHttp.get("/booking/is-available-days", {
+    query: {
+      car_id: Number(carId),
+      branch_id: Number(branchId),
+      type,
+      from_day: fromDay,
+      to_day: toDay,
+      delivery_type: deliveryType,
+    },
+  });
+  return mapAvailabilityResponse(response);
+}
+
 /** Debug output for local API integration work; never emitted by production builds. Removed in O12. */
 function logDetailData(label: string, value: unknown): void {
   if (process.env.NODE_ENV === "development") {
@@ -546,6 +598,7 @@ async function getOrder(id: string): Promise<Order> {
  * the stateless mock until their named booking API fractions replace them.
  */
 export const bookingsApi: BookingsApi = {
+  checkAvailability,
   listOrders,
   getOrder,
   // O8 replaces extension.

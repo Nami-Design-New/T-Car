@@ -12,6 +12,7 @@ import {
   getCompanyRatings,
   getCarPolicies,
 } from "@/features/car-details/queries";
+import type { BookingContext } from "@/features/orders";
 
 interface Props {
   params: Promise<{ carId: string }>;
@@ -43,9 +44,9 @@ export default async function CarDetailsPage({ params, searchParams }: Props) {
     params,
     searchParams,
   ]);
-  const queryKey = serializeCarDetailsQuery(
-    withDefaultRentalContext(parseCarDetailsQuery(rawSearchParams)),
-  );
+  const parsedQuery = parseCarDetailsQuery(rawSearchParams);
+  const rentalQuery = withDefaultRentalContext(parsedQuery);
+  const queryKey = serializeCarDetailsQuery(rentalQuery);
   const car = await getCarDetails(carId, queryKey);
   if (!car) notFound();
 
@@ -56,12 +57,25 @@ export default async function CarDetailsPage({ params, searchParams }: Props) {
     getCarBranches(carId, queryKey),
   ]);
 
+  const bookingContext: BookingContext = {
+    bookingType: rentalQuery.bookingType!,
+    deliveryType: rentalQuery.deliveryType!,
+    ...(parsedQuery.location ? { location: parsedQuery.location } : {}),
+    ...(car.pickupInfo.nearestBranch
+      ? { branch: car.pickupInfo.nearestBranch }
+      : {}),
+    ...(parsedQuery.airportId ? { airportId: parsedQuery.airportId } : {}),
+    ...(parsedQuery.stationId ? { stationId: parsedQuery.stationId } : {}),
+    ...(parsedQuery.countryId ? { countryId: parsedQuery.countryId } : {}),
+  };
+
   return (
     <CarDetailsView
       car={car}
       ratings={ratings}
       policies={policies}
       branches={branches}
+      bookingContext={bookingContext}
     />
   );
 }

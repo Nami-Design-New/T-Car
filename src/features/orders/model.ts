@@ -64,6 +64,47 @@ export type BookingType =
   | "airport"
   | "international";
 
+export type BookingDeliveryTypeRequest = "to_location" | "from_branch";
+
+export interface BookingContext {
+  bookingType: BookingType;
+  deliveryType: BookingDeliveryTypeRequest;
+  location?: {
+    region: string;
+    latitude: number;
+    longitude: number;
+  };
+  branch?: {
+    id: string;
+    name: string;
+    address: string;
+    distanceKm: number;
+    latitude?: number;
+    longitude?: number;
+    region?: string;
+    placeId?: string;
+    logo?: string;
+  };
+  airportId?: string;
+  stationId?: string;
+  countryId?: string;
+}
+
+export interface AvailabilityRequest {
+  carId: string;
+  branchId: string;
+  type: "daily";
+  fromDay: string;
+  toDay: string;
+  deliveryType: BookingDeliveryTypeRequest;
+}
+
+export interface Availability {
+  slots: string[];
+  /** Localized backend envelope message, used when no slots are returned. */
+  message: string;
+}
+
 export type OrderDeliveryType =
   | "to_location"
   | "from_branch"

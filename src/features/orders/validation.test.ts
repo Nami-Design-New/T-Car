@@ -20,7 +20,7 @@ function validDetails() {
   return {
     startDate,
     endDate,
-    time: "9:00 AM",
+    time: "09",
     days: 2,
     pricePerDay: 500,
     subtotal: 1000,

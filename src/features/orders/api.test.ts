@@ -6,7 +6,66 @@ const { get } = vi.hoisted(() => ({ get: vi.fn() }));
 vi.mock("server-only", () => ({}));
 vi.mock("@/services/http/server", () => ({ serverHttp: { get } }));
 
-import { bookingsApi, mapOrderResponse, mapOrdersResponse } from "./api";
+import {
+  bookingsApi,
+  mapAvailabilityResponse,
+  mapOrderResponse,
+  mapOrdersResponse,
+} from "./api";
+
+const availabilityResponse = {
+  data: { slots: [{ time: "08" }, { time: "21" }] },
+  message: "Fetched successfully.",
+  code: 200,
+};
+
+describe("availability API", () => {
+  beforeEach(() => get.mockReset());
+
+  it("maps the strict E1 DTO to pickup-hour strings", () => {
+    expect(mapAvailabilityResponse(availabilityResponse)).toEqual({
+      slots: ["08", "21"],
+      message: "Fetched successfully.",
+    });
+  });
+
+  it("rejects a malformed E1 slot as a server error", () => {
+    expectServerError(() =>
+      mapAvailabilityResponse({
+        ...availabilityResponse,
+        data: { slots: [{ time: "08:00" }] },
+      }),
+    );
+  });
+
+  it("sends the daily rental context using E1 query names", async () => {
+    get.mockResolvedValue(availabilityResponse);
+
+    await expect(
+      bookingsApi.checkAvailability({
+        carId: "1",
+        branchId: "3",
+        type: "daily",
+        fromDay: "2026-11-10",
+        toDay: "2026-11-12",
+        deliveryType: "to_location",
+      }),
+    ).resolves.toEqual({
+      slots: ["08", "21"],
+      message: "Fetched successfully.",
+    });
+    expect(get).toHaveBeenCalledWith("/booking/is-available-days", {
+      query: {
+        car_id: 1,
+        branch_id: 3,
+        type: "daily",
+        from_day: "2026-11-10",
+        to_day: "2026-11-12",
+        delivery_type: "to_location",
+      },
+    });
+  });
+});
 
 const response = {
   data: [

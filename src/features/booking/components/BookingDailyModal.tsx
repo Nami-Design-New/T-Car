@@ -13,15 +13,19 @@ import {
   useErrorMessage,
   useFieldErrorMessage,
 } from "@/shared/hooks/useErrorMessage";
-import type { Result } from "@/shared/lib/result";
+import { useNotify } from "@/shared/hooks/useNotify";
+import { fromActionResult, type Result } from "@/shared/lib/result";
 import { Button } from "@/shared/ui/Button";
 import { Dialog } from "@/shared/ui/Dialog";
 import { FormInput, FormTextarea } from "@/shared/ui/Form";
 import { cn } from "@/shared/lib/cn";
-import type { BookingDetails } from "@/features/orders";
+import {
+  checkAvailabilityAction,
+  type BookingDeliveryTypeRequest,
+  type BookingDetails,
+} from "@/features/orders";
 import {
   bookingDetailsSchema,
-  TIME_SLOTS,
   type BookingDetailsFormValues,
 } from "../validation";
 import { ICONS } from "@/shared/config/assets";
@@ -40,6 +44,11 @@ interface Props {
   initialDetails?: BookingDetails | null;
   mode?: "create" | "edit";
   loading?: boolean;
+  availability?: {
+    carId: string;
+    branchId: string;
+    deliveryType: BookingDeliveryTypeRequest;
+  };
 }
 
 interface DateRange {
@@ -79,6 +88,14 @@ function getAddressTitle(address: string, fallback: string) {
   return address.split(",")[0]?.trim() || fallback;
 }
 
+function toApiDay(day: Date): string {
+  return [
+    day.getFullYear(),
+    String(day.getMonth() + 1).padStart(2, "0"),
+    String(day.getDate()).padStart(2, "0"),
+  ].join("-");
+}
+
 export default function BookingDailyModal({
   open,
   onClose,
@@ -87,19 +104,24 @@ export default function BookingDailyModal({
   initialDetails = null,
   mode = "create",
   loading = false,
+  availability,
 }: Props) {
   const t = useTranslations("booking.daily");
   const [cursor, setCursor] = useState<Date>(new Date());
   const [range, setRange] = useState<DateRange>({ start: null, end: null });
   const [mapField, setMapField] = useState<MapField | null>(null);
+  const [availableSlots, setAvailableSlots] = useState<string[]>([]);
+  const [loadingSlots, setLoadingSlots] = useState(false);
   const errorMessage = useErrorMessage();
   const fieldError = useFieldErrorMessage();
+  const notify = useNotify();
   const {
     register,
     handleSubmit,
     reset,
     setValue,
     setError,
+    clearErrors,
     watch,
     formState: { errors },
   } = useForm<BookingDetailsFormValues, unknown, BookingDetails>({
@@ -109,7 +131,7 @@ export default function BookingDailyModal({
     defaultValues: {
       startDate: null,
       endDate: null,
-      time: "9:00 AM",
+      time: "",
       days: 1,
       pricePerDay,
       subtotal: 0,
@@ -145,11 +167,7 @@ export default function BookingDailyModal({
         ...initialDetails,
         startDate: start,
         endDate: end,
-        time: TIME_SLOTS.includes(
-          initialDetails.time as (typeof TIME_SLOTS)[number],
-        )
-          ? (initialDetails.time as (typeof TIME_SLOTS)[number])
-          : "9:00 AM",
+        time: initialDetails.time,
         pricePerDay,
       });
       return;
@@ -158,7 +176,7 @@ export default function BookingDailyModal({
     reset({
       startDate: null,
       endDate: null,
-      time: "9:00 AM",
+      time: "",
       days: 1,
       pricePerDay,
       subtotal: 0,
@@ -171,7 +189,59 @@ export default function BookingDailyModal({
       dropoffLocation: null,
     });
     setRange({ start: null, end: null });
+    setAvailableSlots([]);
   }, [open, initialDetails, pricePerDay, reset]);
+
+  useEffect(() => {
+    if (!open || mode === "edit" || !availability || !range.start || !range.end)
+      return;
+
+    let active = true;
+    setLoadingSlots(true);
+    setAvailableSlots([]);
+    setValue("time", "", { shouldValidate: false });
+    clearErrors();
+
+    void checkAvailabilityAction({
+      ...availability,
+      type: "daily",
+      fromDay: toApiDay(range.start),
+      toDay: toApiDay(range.end),
+    }).then((actionResult) => {
+      if (!active) return;
+      const result = fromActionResult(actionResult);
+      setLoadingSlots(false);
+      if (result.ok) {
+        setAvailableSlots(result.data.slots);
+        if (result.data.slots.length === 0) {
+          const message = result.data.message || t("noAvailableTimes");
+          notify.error(message);
+          setError("root.server", { type: "server", message });
+        }
+        return;
+      }
+
+      const message = result.error.serverMessage ?? errorMessage(result.error);
+      if (result.error.serverMessage) notify.error(result.error.serverMessage);
+      setError("root.server", { type: "server", message });
+    });
+
+    return () => {
+      active = false;
+    };
+  }, [
+    availability,
+    clearErrors,
+    errorMessage,
+    mode,
+    notify,
+    open,
+    range.end,
+    range.start,
+    setError,
+    setValue,
+    t,
+  ]);
 
   const year = cursor.getFullYear();
   const month = cursor.getMonth();
@@ -195,6 +265,8 @@ export default function BookingDailyModal({
       setRange({ start: day, end: null });
       setValue("startDate", day, { shouldValidate: true });
       setValue("endDate", null, { shouldValidate: true });
+      setAvailableSlots([]);
+      setValue("time", "", { shouldValidate: false });
       return;
     }
 
@@ -410,14 +482,15 @@ export default function BookingDailyModal({
               watchOverflow
               className="time-swiper p-1.5"
             >
-              {TIME_SLOTS.map((slot) => {
-                const [hour, period] = slot.split(" ");
-
+              {(mode === "edit" && initialDetails
+                ? [initialDetails.time]
+                : availableSlots
+              ).map((slot) => {
                 return (
                   <SwiperSlide key={slot} className="h-auto!">
                     <button
                       type="button"
-                      aria-label={slot}
+                      aria-label={`${slot}:00`}
                       aria-pressed={time === slot}
                       className={cn(
                         "flex min-h-9 cursor-pointer w-full items-center justify-center gap-1 rounded-md border-0 px-2 py-2 text-xs text-text-primary transition",
@@ -425,19 +498,23 @@ export default function BookingDailyModal({
                           "bg-action-primary! font-bold text-text-on-action! shadow-[0_3px_8px_rgba(31,127,250,0.2)]",
                       )}
                       onClick={() =>
-                        setValue("time", slot as (typeof TIME_SLOTS)[number], {
+                        setValue("time", slot, {
                           shouldDirty: true,
                           shouldValidate: true,
                         })
                       }
                     >
-                      <span dir="ltr">{hour}</span>
-                      <small className="text-[10px] opacity-80">{period}</small>
+                      <span dir="ltr">{slot}:00</span>
                     </button>
                   </SwiperSlide>
                 );
               })}
             </Swiper>
+            {loadingSlots && (
+              <p className="text-sm text-text-subtle" role="status">
+                {t("loadingTimes")}
+              </p>
+            )}
             {errors.time && (
               <p className="form_error" role="alert">
                 {fieldError(errors.time.message)}

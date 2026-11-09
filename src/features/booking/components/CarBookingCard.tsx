@@ -8,7 +8,11 @@ import dynamic from "next/dynamic";
 import { useState } from "react";
 
 import { ICONS } from "@/shared/config/assets";
-import type { BookingDetails, PaymentMethod } from "@/features/orders";
+import type {
+  BookingContext,
+  BookingDetails,
+  PaymentMethod,
+} from "@/features/orders";
 const RiyalIcon = ICONS.riyal;
 
 import { Button } from "@/shared/ui/Button";
@@ -46,6 +50,7 @@ interface Props {
   lowerPrice: number;
   /** API `max_price`: the regular price, struck through when discounted. */
   maxPrice: number;
+  bookingContext: BookingContext;
 }
 
 export default function CarBookingCard({
@@ -59,6 +64,7 @@ export default function CarBookingCard({
   rating,
   lowerPrice,
   maxPrice,
+  bookingContext,
 }: Props) {
   const t = useTranslations("booking.card");
   // Same rule as the cars list: charge lower_price when set, else max_price.
@@ -72,6 +78,7 @@ export default function CarBookingCard({
   const { submitting, createBooking } = useCreateBooking(carId);
   const errorMessage = useErrorMessage();
   const [booking, setBooking] = useState<BookingDetails | null>(null);
+  const canBook = Boolean(bookingContext.location && bookingContext.branch);
 
   const handleDatesConfirmed = (details: BookingDetails) => {
     setBooking(details);
@@ -116,9 +123,16 @@ export default function CarBookingCard({
         className="w-full max-lg:flex-1"
         size="lg"
         onClick={() => setStep("dates")}
+        disabled={!canBook}
       >
         {t("bookNow")}
       </Button>
+
+      {!canBook && (
+        <p className="mt-2 text-center text-sm text-status-error">
+          {t("chooseLocation")}
+        </p>
+      )}
 
       {step === "dates" && (
         <BookingDailyModal
@@ -126,6 +140,11 @@ export default function CarBookingCard({
           onClose={() => setStep("closed")}
           pricePerDay={pricePerDay}
           onConfirm={handleDatesConfirmed}
+          availability={{
+            carId,
+            branchId: bookingContext.branch!.id,
+            deliveryType: bookingContext.deliveryType,
+          }}
         />
       )}
 

@@ -1,9 +1,17 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { AppError } from "@/shared/lib/errors";
 
-const { auth, createBooking, extendBooking, requestBookingEdit, submitReview } =
+const {
+  auth,
+  checkAvailability,
+  createBooking,
+  extendBooking,
+  requestBookingEdit,
+  submitReview,
+} =
   vi.hoisted(() => ({
     auth: vi.fn(),
+    checkAvailability: vi.fn(),
     createBooking: vi.fn(),
     extendBooking: vi.fn(),
     requestBookingEdit: vi.fn(),
@@ -13,6 +21,7 @@ const { auth, createBooking, extendBooking, requestBookingEdit, submitReview } =
 vi.mock("@/auth", () => ({ auth }));
 vi.mock("./api", () => ({
   bookingsApi: {
+    checkAvailability,
     createBooking,
     extendBooking,
     requestBookingEdit,
@@ -22,11 +31,53 @@ vi.mock("./api", () => ({
 vi.mock("@/shared/lib/report", () => ({ reportError: vi.fn() }));
 
 import {
+  checkAvailabilityAction,
   createBookingAction,
   extendBookingAction,
   requestBookingEditAction,
   submitBookingReviewAction,
 } from "./actions";
+
+const availabilityRequest = {
+  carId: "1",
+  branchId: "3",
+  type: "daily" as const,
+  fromDay: "2026-11-10",
+  toDay: "2026-11-12",
+  deliveryType: "from_branch" as const,
+};
+
+describe("checkAvailabilityAction", () => {
+  it("returns E1 slots for an authenticated customer", async () => {
+    checkAvailability.mockResolvedValue({
+      slots: ["08", "10"],
+      message: "Fetched successfully.",
+    });
+
+    await expect(checkAvailabilityAction(availabilityRequest)).resolves.toEqual({
+      ok: true,
+      data: { slots: ["08", "10"], message: "Fetched successfully." },
+    });
+    expect(checkAvailability).toHaveBeenCalledWith(availabilityRequest);
+  });
+
+  it("preserves a backend 422 message in the ActionResult", async () => {
+    checkAvailability.mockRejectedValue(
+      new AppError("validation", undefined, 422, undefined, {
+        serverMessage: "The car is not available for the selected days.",
+      }),
+    );
+
+    await expect(checkAvailabilityAction(availabilityRequest)).resolves.toEqual({
+      ok: false,
+      error: {
+        kind: "validation",
+        status: 422,
+        serverMessage: "The car is not available for the selected days.",
+      },
+    });
+  });
+});
 
 function validRequest() {
   const startDate = new Date();
@@ -39,7 +90,7 @@ function validRequest() {
     details: {
       startDate,
       endDate,
-      time: "9:00 AM" as const,
+      time: "09",
       days: 1,
       pricePerDay: 500,
       subtotal: 500,
@@ -121,7 +172,7 @@ function validEdit() {
   return {
     startDate,
     endDate,
-    time: "9:00 AM" as const,
+    time: "09",
     days: 1,
     pricePerDay: 500,
     subtotal: 500,
@@ -138,6 +189,10 @@ function validEdit() {
 beforeEach(() => {
   vi.clearAllMocks();
   auth.mockResolvedValue({ user: { id: "user-1" } });
+  checkAvailability.mockResolvedValue({
+    slots: ["08"],
+    message: "Fetched successfully.",
+  });
   createBooking.mockResolvedValue(undefined);
   extendBooking.mockResolvedValue(undefined);
   requestBookingEdit.mockResolvedValue(undefined);

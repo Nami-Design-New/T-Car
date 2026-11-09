@@ -13,6 +13,8 @@ import { toValidationError } from "@/shared/lib/validation";
 import type { ZodType } from "zod";
 import { bookingsApi, ORDERS_PER_PAGE } from "./api";
 import type {
+  Availability,
+  AvailabilityRequest,
   BookingEditRequest,
   BookingReviewInput,
   CreateBookingRequest,
@@ -21,11 +23,32 @@ import type {
 } from "./model";
 import type { Page } from "@/shared/lib/pagination";
 import {
+  availabilitySchema,
   bookingEditSchema,
   bookingReviewSchema,
   createBookingSchema,
   extendBookingSchema,
 } from "./validation";
+
+export async function checkAvailabilityAction(
+  request: AvailabilityRequest,
+): Promise<ActionResult<Availability>> {
+  try {
+    const session = await auth();
+    if (!session?.user?.id) throw new AppError("unauthorized");
+    const availability = await bookingsApi.checkAvailability(
+      parse(availabilitySchema, request),
+    );
+    return toActionResult(ok(availability));
+  } catch (error) {
+    reportError(error, {
+      scope: "booking.availability",
+      carId: request.carId,
+      branchId: request.branchId,
+    });
+    return toActionResult(fail(error));
+  }
+}
 
 function parse<T>(schema: ZodType<T>, input: unknown): T {
   const result = schema.safeParse(input);

@@ -161,6 +161,8 @@ const MOCK_MAX_RENTAL_DAYS = 30;
 const MOCK_LIST_FAILURE_PAGE = 99;
 /** Mock only: this id fails reproducibly so the details error boundary can be exercised. */
 const MOCK_DETAILS_FAILURE_ID = "server-error";
+/** Mock only: branch 422 reproduces the backend's unavailable-days response. */
+const MOCK_UNAVAILABLE_BRANCH_ID = "422";
 
 const delay = (ms = 300) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -180,6 +182,19 @@ function findActiveOrder(id: string): Order {
 
 // Stateless/read-only: safe on the server. Writes validate but do not mutate.
 export const bookingsMock: BookingsApi = {
+  async checkAvailability({ branchId }) {
+    await delay();
+    if (branchId === MOCK_UNAVAILABLE_BRANCH_ID) {
+      throw new AppError("validation", undefined, 422, undefined, {
+        serverMessage: "The car is not available for the selected days.",
+      });
+    }
+    return {
+      slots: ["08", "09", "10", "11", "12", "13", "14"],
+      message: "Fetched successfully.",
+    };
+  },
+
   async listOrders({ status, page, perPage }): Promise<Page<OrderListItem>> {
     await delay();
     if (page === MOCK_LIST_FAILURE_PAGE) throw new AppError("server");

@@ -17,7 +17,7 @@ function booking(): BookingDetails {
   return {
     startDate,
     endDate,
-    time: "9:00 AM",
+    time: "09",
     days: 1,
     pricePerDay: 500,
     subtotal: 500,

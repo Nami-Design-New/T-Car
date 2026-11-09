@@ -1,4 +1,5 @@
 export {
+  checkAvailabilityAction,
   cancelBookingAction,
   createBookingAction,
   extendBookingAction,
@@ -16,6 +17,10 @@ export {
   orderTabForStatus,
 } from "./model";
 export type {
+  Availability,
+  AvailabilityRequest,
+  BookingContext,
+  BookingDeliveryTypeRequest,
   BookingType,
   BookingDetails,
   BookingEditRequest,
@@ -31,6 +36,7 @@ export type {
   OrderStatusTone,
 } from "./model";
 export {
+  availabilitySchema,
   bookingEditSchema,
   bookingReviewSchema,
   bookingTermsSchema,
@@ -39,6 +45,7 @@ export {
   paymentMethodSchema,
 } from "./validation";
 export type {
+  AvailabilityValues,
   BookingEditFormValues,
   BookingReviewFormValues,
   BookingTermsValues,

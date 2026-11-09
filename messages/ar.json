@@ -827,6 +827,8 @@
       "selectPickup": "حدد موقع الاستلام",
       "selectDropoff": "حدد موقع التسليم",
       "pickupTime": "حدد وقت الاستلام",
+      "loadingTimes": "جارٍ تحميل الأوقات المتاحة...",
+      "noAvailableTimes": "لا توجد أوقات استلام متاحة لهذه التواريخ.",
       "previousMonth": "الشهر السابق",
       "nextMonth": "الشهر التالي"
     },
@@ -902,6 +904,7 @@
       "insteadOf": " بدلاً من",
       "perDay": "/ يوم",
       "bookNow": "احجز الآن",
+      "chooseLocation": "اختر موقعًا لحجز هذه السيارة.",
       "paymentNote": "لن يتم خصم أي مبلغ الآن، الدفع عند الاستلام",
       "successTitle": "تم تأكيد الحجز بنجاح!",
       "successDescription": "جاري تحويلك إلى صفحة حجوزاتي...",
