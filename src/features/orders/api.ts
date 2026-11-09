@@ -12,6 +12,7 @@ import type {
   BookingType,
   BookingEditRequest,
   BookingReviewInput,
+  CreateDraftRequest,
   CreateBookingRequest,
   Order,
   OrderListItem,
@@ -38,6 +39,7 @@ export interface BookingsApi {
   cancelBooking(id: string): Promise<void>;
   submitReview(id: string, input: BookingReviewInput): Promise<void>;
   createBooking(request: CreateBookingRequest): Promise<void>;
+  createDraft(request: CreateDraftRequest): Promise<Order>;
 }
 
 export interface AvailabilityDto {
@@ -195,9 +197,8 @@ const isId = (value: unknown): value is number =>
 const isNumericString = (value: unknown): value is string =>
   typeof value === "string" && /^-?\d+(?:\.\d+)?$/.test(value);
 
-const isNullableNumericString = (
-  value: unknown,
-): value is string | null => value === null || isNumericString(value);
+const isNullableNumericString = (value: unknown): value is string | null =>
+  value === null || isNumericString(value);
 
 /**
  * E6 sends 'YYYY-MM-DD HH:mm' (§4.2); a 'T' separator and seconds are also
@@ -229,9 +230,7 @@ function isAvailabilityDto(value: unknown): value is AvailabilityDto {
   return (
     isRecord(value) &&
     Array.isArray(value.slots) &&
-    value.slots.every(
-      (slot) => isRecord(slot) && isAvailabilityHour(slot.time),
-    )
+    value.slots.every((slot) => isRecord(slot) && isAvailabilityHour(slot.time))
   );
 }
 
@@ -579,6 +578,62 @@ async function checkAvailability({
   return mapAvailabilityResponse(response);
 }
 
+const formatApiDate = (value: Date): string => {
+  const year = value.getFullYear();
+  const month = String(value.getMonth() + 1).padStart(2, "0");
+  const day = String(value.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+};
+
+/** Build E2's multipart body; the backend owns every price in the draft. */
+export function toCreateDraftFormData(request: CreateDraftRequest): FormData {
+  const form = new FormData();
+  const { details } = request;
+  form.set("car_id", request.carId);
+  form.set("branch_id", request.branchId);
+  form.set("type", request.bookingType);
+  form.set("from_day", formatApiDate(details.startDate));
+  form.set("time", details.time);
+  form.set("delivery_type", request.deliveryType);
+
+  if (request.bookingType === "monthly") {
+    form.set("count", String(details.months ?? details.days));
+  } else {
+    form.set("to_day", formatApiDate(details.endDate));
+  }
+
+  if (request.countryId) form.set("country_id", request.countryId);
+  if (details.notes) form.set("note", details.notes);
+
+  const pickup = details.pickupLocation;
+  const dropoff = details.dropoffLocation;
+  if (request.deliveryType === "to_location" && pickup && dropoff) {
+    form.set("pickup_lat", String(pickup.lat));
+    form.set("pickup_long", String(pickup.lng));
+    form.set("pickup_region", pickup.region ?? "");
+    form.set("pickup_address", details.pickupAddress ?? pickup.address);
+    form.set("delivery_lat", String(dropoff.lat));
+    form.set("delivery_long", String(dropoff.lng));
+    form.set("delivery_region", dropoff.region ?? "");
+    form.set("delivery_address", details.dropoffAddress ?? dropoff.address);
+  }
+
+  for (const [index, service] of (request.services ?? []).entries()) {
+    form.set(`service_id[${index}]`, service.id);
+    form.set(`service_type[${index}]`, service.type);
+  }
+
+  return form;
+}
+
+async function createDraft(request: CreateDraftRequest): Promise<Order> {
+  const response = await serverHttp.post(
+    "/booking/create-booking",
+    toCreateDraftFormData(request),
+  );
+  return mapOrderResponse(response);
+}
+
 /** Debug output for local API integration work; never emitted by production builds. Removed in O12. */
 function logDetailData(label: string, value: unknown): void {
   if (process.env.NODE_ENV === "development") {
@@ -613,4 +668,5 @@ export const bookingsApi: BookingsApi = {
   submitReview: (...args) => bookingsMock.submitReview(...args),
   // O5 sends real booking creation (payment follows in O6).
   createBooking: (...args) => bookingsMock.createBooking(...args),
+  createDraft,
 };

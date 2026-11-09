@@ -274,4 +274,18 @@ export const bookingsMock: BookingsApi = {
     if (details.days > MOCK_MAX_RENTAL_DAYS)
       throw new AppError("conflict", "booking.carUnavailable");
   },
+
+  async createDraft({ details }) {
+    await delay(800);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    if (details.startDate < today) {
+      throw new AppError("validation", "booking.startInPast", undefined, {
+        startDate: "booking.startInPast",
+      });
+    }
+    if (details.days > MOCK_MAX_RENTAL_DAYS)
+      throw new AppError("conflict", "booking.carUnavailable");
+    return findOrder("1");
+  },
 };

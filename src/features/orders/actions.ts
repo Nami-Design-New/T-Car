@@ -17,7 +17,9 @@ import type {
   AvailabilityRequest,
   BookingEditRequest,
   BookingReviewInput,
+  CreateDraftRequest,
   CreateBookingRequest,
+  Order,
   OrderListItem,
   OrderListTab,
 } from "./model";
@@ -27,6 +29,7 @@ import {
   bookingEditSchema,
   bookingReviewSchema,
   createBookingSchema,
+  createDraftSchema,
   extendBookingSchema,
 } from "./validation";
 
@@ -93,6 +96,23 @@ export async function createBookingAction(
     return toActionResult(ok(undefined));
   } catch (error) {
     reportError(error, { scope: "booking.create", carId: request.carId });
+    return toActionResult(fail(error));
+  }
+}
+
+/** Creates the server-priced E2 draft; payment is handled by O6. */
+export async function createDraftAction(
+  request: CreateDraftRequest,
+): Promise<ActionResult<Order>> {
+  try {
+    const session = await auth();
+    if (!session?.user?.id) throw new AppError("unauthorized");
+    const draft = await bookingsApi.createDraft(
+      parse(createDraftSchema, request),
+    );
+    return toActionResult(ok(draft));
+  } catch (error) {
+    reportError(error, { scope: "booking.draft", carId: request.carId });
     return toActionResult(fail(error));
   }
 }

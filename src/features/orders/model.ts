@@ -28,6 +28,29 @@ export interface CreateBookingRequest {
   termsAccepted: boolean;
 }
 
+export type BookingServiceType =
+  | "car_service"
+  | "driver_service"
+  | "company_service"
+  | "child_seat_service"
+  | "airport_fast_delivery";
+
+export interface BookingServiceSelection {
+  id: string;
+  type: BookingServiceType;
+}
+
+/** E2 input. Prices are intentionally absent: the API creates the draft. */
+export interface CreateDraftRequest {
+  carId: string;
+  branchId: string;
+  bookingType: BookingType;
+  deliveryType: BookingDeliveryTypeRequest;
+  details: BookingDetails;
+  services?: BookingServiceSelection[];
+  countryId?: string;
+}
+
 export type OrderStatus =
   | "start"
   | "new"

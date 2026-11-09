@@ -5,24 +5,26 @@ const {
   auth,
   checkAvailability,
   createBooking,
+  createDraft,
   extendBooking,
   requestBookingEdit,
   submitReview,
-} =
-  vi.hoisted(() => ({
-    auth: vi.fn(),
-    checkAvailability: vi.fn(),
-    createBooking: vi.fn(),
-    extendBooking: vi.fn(),
-    requestBookingEdit: vi.fn(),
-    submitReview: vi.fn(),
-  }));
+} = vi.hoisted(() => ({
+  auth: vi.fn(),
+  checkAvailability: vi.fn(),
+  createBooking: vi.fn(),
+  createDraft: vi.fn(),
+  extendBooking: vi.fn(),
+  requestBookingEdit: vi.fn(),
+  submitReview: vi.fn(),
+}));
 
 vi.mock("@/auth", () => ({ auth }));
 vi.mock("./api", () => ({
   bookingsApi: {
     checkAvailability,
     createBooking,
+    createDraft,
     extendBooking,
     requestBookingEdit,
     submitReview,
@@ -33,6 +35,7 @@ vi.mock("@/shared/lib/report", () => ({ reportError: vi.fn() }));
 import {
   checkAvailabilityAction,
   createBookingAction,
+  createDraftAction,
   extendBookingAction,
   requestBookingEditAction,
   submitBookingReviewAction,
@@ -163,6 +166,81 @@ describe("createBookingAction", () => {
   });
 });
 
+function validDraftRequest() {
+  const startDate = new Date();
+  startDate.setHours(0, 0, 0, 0);
+  startDate.setDate(startDate.getDate() + 1);
+  const endDate = new Date(startDate);
+  endDate.setDate(endDate.getDate() + 1);
+  return {
+    carId: "1",
+    branchId: "3",
+    bookingType: "daily" as const,
+    deliveryType: "from_branch" as const,
+    details: {
+      startDate,
+      endDate,
+      time: "09",
+      days: 1,
+      pricePerDay: 500,
+      subtotal: 500,
+      vat: 75,
+      total: 575,
+      notes: "Need help",
+      pickupLocation: null,
+      dropoffLocation: null,
+    },
+    services: [],
+  };
+}
+
+describe("createDraftAction", () => {
+  it("requires an authenticated customer", async () => {
+    auth.mockResolvedValue(null);
+
+    await expect(createDraftAction(validDraftRequest())).resolves.toEqual({
+      ok: false,
+      error: { kind: "unauthorized" },
+    });
+    expect(createDraft).not.toHaveBeenCalled();
+  });
+
+  it("validates and forwards the E2 request", async () => {
+    const draft = { id: "226" };
+    createDraft.mockResolvedValue(draft);
+
+    await expect(createDraftAction(validDraftRequest())).resolves.toEqual({
+      ok: true,
+      data: draft,
+    });
+    expect(createDraft).toHaveBeenCalledWith(
+      expect.objectContaining({
+        carId: "1",
+        branchId: "3",
+        bookingType: "daily",
+        deliveryType: "from_branch",
+      }),
+    );
+  });
+
+  it("preserves a backend 422 message", async () => {
+    createDraft.mockRejectedValue(
+      new AppError("validation", undefined, 422, undefined, {
+        serverMessage: "The car is not available for the selected days.",
+      }),
+    );
+
+    await expect(createDraftAction(validDraftRequest())).resolves.toEqual({
+      ok: false,
+      error: {
+        kind: "validation",
+        status: 422,
+        serverMessage: "The car is not available for the selected days.",
+      },
+    });
+  });
+});
+
 function validEdit() {
   const startDate = new Date();
   startDate.setHours(0, 0, 0, 0);
@@ -194,6 +272,7 @@ beforeEach(() => {
     message: "Fetched successfully.",
   });
   createBooking.mockResolvedValue(undefined);
+  createDraft.mockResolvedValue({ id: "226" });
   extendBooking.mockResolvedValue(undefined);
   requestBookingEdit.mockResolvedValue(undefined);
   submitReview.mockResolvedValue(undefined);

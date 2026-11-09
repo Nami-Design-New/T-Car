@@ -1,17 +1,19 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { AppError } from "@/shared/lib/errors";
 
-const { get } = vi.hoisted(() => ({ get: vi.fn() }));
+const { get, post } = vi.hoisted(() => ({ get: vi.fn(), post: vi.fn() }));
 
 vi.mock("server-only", () => ({}));
-vi.mock("@/services/http/server", () => ({ serverHttp: { get } }));
+vi.mock("@/services/http/server", () => ({ serverHttp: { get, post } }));
 
 import {
   bookingsApi,
   mapAvailabilityResponse,
   mapOrderResponse,
   mapOrdersResponse,
+  toCreateDraftFormData,
 } from "./api";
+import type { CreateDraftRequest } from "./model";
 
 const availabilityResponse = {
   data: { slots: [{ time: "08" }, { time: "21" }] },
@@ -64,6 +66,66 @@ describe("availability API", () => {
         delivery_type: "to_location",
       },
     });
+  });
+});
+
+describe("create draft API", () => {
+  it("builds E2 multipart fields without client prices", () => {
+    const request: CreateDraftRequest = {
+      carId: "1",
+      branchId: "3",
+      bookingType: "daily",
+      deliveryType: "to_location",
+      details: {
+        startDate: new Date(2026, 10, 10),
+        endDate: new Date(2026, 10, 12),
+        time: "09",
+        days: 2,
+        pricePerDay: 500,
+        subtotal: 1000,
+        vat: 150,
+        total: 1150,
+        notes: "Need help",
+        pickupLocation: {
+          lat: 24.7,
+          lng: 46.6,
+          address: "Pickup",
+          region: "Riyadh",
+        },
+        dropoffLocation: {
+          lat: 24.8,
+          lng: 46.7,
+          address: "Dropoff",
+          region: "Riyadh",
+        },
+      },
+      services: [{ id: "3", type: "driver_service" }],
+    };
+
+    const form = toCreateDraftFormData(request);
+
+    expect(Object.fromEntries(form.entries())).toEqual({
+      car_id: "1",
+      branch_id: "3",
+      type: "daily",
+      from_day: "2026-11-10",
+      to_day: "2026-11-12",
+      time: "09",
+      delivery_type: "to_location",
+      pickup_lat: "24.7",
+      pickup_long: "46.6",
+      pickup_region: "Riyadh",
+      pickup_address: "Pickup",
+      delivery_lat: "24.8",
+      delivery_long: "46.7",
+      delivery_region: "Riyadh",
+      delivery_address: "Dropoff",
+      note: "Need help",
+      "service_id[0]": "3",
+      "service_type[0]": "driver_service",
+    });
+    expect(form.has("subtotal")).toBe(false);
+    expect(form.has("vat")).toBe(false);
   });
 });
 
@@ -172,8 +234,7 @@ const orderResponse = {
     is_rated: false,
     my_rating: { company_rate: null, driver_rate: null },
     created_at: "2026-11-08 12:00:00",
-    terms:
-      '<p onclick="steal()">Return on time.</p><script>alert(1)</script>',
+    terms: '<p onclick="steal()">Return on time.</p><script>alert(1)</script>',
   },
   message: "Fetched successfully.",
   code: 200,

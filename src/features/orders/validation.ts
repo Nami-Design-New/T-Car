@@ -24,6 +24,48 @@ export const createBookingSchema = z.object({
   termsAccepted: bookingTermsSchema.shape.termsAccepted,
 });
 
+export const createDraftSchema = z.object({
+  carId: z
+    .string()
+    .trim()
+    .regex(/^[1-9]\d*$/, { error: "booking.carRequired" }),
+  branchId: z
+    .string()
+    .trim()
+    .regex(/^[1-9]\d*$/, { error: "booking.invalidLocation" }),
+  bookingType: z.enum([
+    "daily",
+    "monthly",
+    "airport",
+    "station",
+    "international",
+  ]),
+  deliveryType: z.enum(["to_location", "from_branch"]),
+  details: bookingDetailsSchema,
+  services: z
+    .array(
+      z.object({
+        id: z
+          .string()
+          .trim()
+          .regex(/^[1-9]\d*$/, { error: "booking.invalidService" }),
+        type: z.enum([
+          "car_service",
+          "driver_service",
+          "company_service",
+          "child_seat_service",
+          "airport_fast_delivery",
+        ]),
+      }),
+    )
+    .default([]),
+  countryId: z
+    .string()
+    .trim()
+    .regex(/^[1-9]\d*$/, { error: "booking.invalidCountry" })
+    .optional(),
+});
+
 const apiDate = z
   .string({ error: "booking.invalidDates" })
   .regex(/^\d{4}-\d{2}-\d{2}$/, { error: "booking.invalidDates" })
@@ -82,6 +124,7 @@ export const bookingReviewSchema = z.object({
 export const bookingEditSchema = bookingDetailsSchema;
 
 export type CreateBookingValues = z.output<typeof createBookingSchema>;
+export type CreateDraftValues = z.output<typeof createDraftSchema>;
 export type BookingTermsValues = z.infer<typeof bookingTermsSchema>;
 export type ExtendBookingFormValues = z.infer<typeof extendBookingSchema>;
 export type BookingReviewFormValues = z.infer<typeof bookingReviewSchema>;
