@@ -11,4 +11,4 @@ tsconfig.tsbuildinfo
 src/styles/**/*.css
 *.css.map
 
-docs/api/
+# docs/api/
