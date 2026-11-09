@@ -119,6 +119,11 @@ export const IMAGES = {
     width: 44,
     height: 44,
   },
+  companyLogoFallback: {
+    src: "/images/placeholders/company-logo-fallback.svg",
+    width: 48,
+    height: 48,
+  },
   cancelBooking: {
     src: "/images/illustrations/cancel-booking.svg",
     width: 140,

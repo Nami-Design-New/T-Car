@@ -4,6 +4,7 @@ import {
   CarDetailsView,
   parseCarDetailsQuery,
   serializeCarDetailsQuery,
+  toSafeCarDetailsSearchParams,
   withDefaultRentalContext,
 } from "@/features/car-details";
 import {
@@ -14,9 +15,10 @@ import {
 } from "@/features/car-details/queries";
 import type { BookingContext } from "@/features/orders";
 import { auth } from "@/auth";
+import { redirect } from "@/i18n/navigation";
 
 interface Props {
-  params: Promise<{ carId: string }>;
+  params: Promise<{ locale: string; carId: string }>;
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }
 
@@ -41,11 +43,18 @@ export async function generateMetadata({
 }
 
 export default async function CarDetailsPage({ params, searchParams }: Props) {
-  const [{ carId }, rawSearchParams] = await Promise.all([
+  const [{ locale, carId }, rawSearchParams] = await Promise.all([
     params,
     searchParams,
   ]);
   const parsedQuery = parseCarDetailsQuery(rawSearchParams);
+  const safeSearchParams = toSafeCarDetailsSearchParams(rawSearchParams);
+  if (safeSearchParams) {
+    redirect({
+      href: `/cars/${carId}?${safeSearchParams.toString()}`,
+      locale,
+    });
+  }
   const rentalQuery = withDefaultRentalContext(parsedQuery);
   const queryKey = serializeCarDetailsQuery(rentalQuery);
   const car = await getCarDetails(carId, queryKey);

@@ -21,6 +21,7 @@ import {
   checkAvailabilityAction,
   type BookingDeliveryTypeRequest,
   type BookingDetails,
+  type BookingContext,
 } from "@/features/orders";
 import {
   bookingDetailsSchema,
@@ -32,6 +33,7 @@ import { MapLocationModal } from "@/shared/ui/MapLocationModal";
 import type { LocationData } from "@/shared/lib/location";
 import { Price } from "@/shared/ui/Price";
 import BookingTimeSlots from "./BookingTimeSlots";
+import BookingBranchSummary from "./BookingBranchSummary";
 
 interface Props {
   open: boolean;
@@ -47,6 +49,10 @@ interface Props {
     carId: string;
     branchId: string;
     deliveryType: BookingDeliveryTypeRequest;
+    branch?: NonNullable<BookingContext["branch"]>;
+    showroom?: string;
+    showroomLogo?: string;
+    branchAddress?: string;
   };
 }
 
@@ -363,6 +369,8 @@ export default function BookingDailyModal({
 
     if (!result || result.ok) return;
 
+    notify.error(result.error.serverMessage ?? errorMessage(result.error));
+
     for (const [field, message] of Object.entries(
       result.error.fieldErrors ?? {},
     )) {
@@ -541,6 +549,27 @@ export default function BookingDailyModal({
             }
           />
 
+          {availability?.deliveryType === "from_branch" && availability.branch ? (
+            <BookingBranchSummary
+              branch={availability.branch}
+              showroom={availability.showroom ?? ""}
+              showroomLogo={availability.showroomLogo}
+              pickupLabel={t("pickupAddress")}
+              returnLabel={t("dropoffAddress")}
+              returnTitle={t("returnToNearestBranchTitle")}
+              returnMessage={t("returnToNearestBranchMessage")}
+              distanceLabel={t("kilometerShort")}
+            />
+          ) : availability?.deliveryType === "from_branch" ? (
+            <div className="mb-4.5 rounded-md border border-stroke-light bg-surface-card-primary p-3">
+              <p className="mb-1 font-bold text-text-primary">
+                {t("pickupAddress")}
+              </p>
+              <p className="m-0 text-sm text-text-subtle">
+                {availability.branchAddress ?? t("pickupLocation")}
+              </p>
+            </div>
+          ) : (
           <div className="grid gap-6 md:grid-cols-2">
             <div className="mb-4.5 min-w-0">
               <div className="mb-2 flex items-center justify-between">
@@ -680,6 +709,7 @@ export default function BookingDailyModal({
               </p>
             </div>
           </div>
+          )}
 
           <div className="">
             <FormTextarea

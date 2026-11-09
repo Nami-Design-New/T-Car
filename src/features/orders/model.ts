@@ -190,6 +190,7 @@ export interface Order {
   serviceFee: number;
   completionFee: number;
   discount: number;
+  additionalServicesCost: number;
   totalPrice: number;
   taxValue: number;
   finalPrice: number;

@@ -2,7 +2,7 @@
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { cn } from "@/shared/lib/cn";
 import { formatAmount } from "@/shared/lib/format";
 import { Dialog } from "@/shared/ui/Dialog";
@@ -10,11 +10,12 @@ import { Button } from "@/shared/ui/Button";
 import { FormCheckbox } from "@/shared/ui/Form";
 import { Price } from "@/shared/ui/Price";
 import { useFieldErrorMessage } from "@/shared/hooks/useErrorMessage";
-import type { BookingDetails } from "@/features/orders";
+import type { BookingDetails, Order } from "@/features/orders";
 import { bookingTermsSchema, type BookingTermsValues } from "../validation";
 import Image from "next/image";
 import { BackButton } from "@/shared/ui/BackButton";
 import { ICONS } from "@/shared/config/assets";
+import { HtmlContent } from "@/shared/ui/HtmlContent";
 
 const timeline = ICONS.timeline;
 
@@ -31,6 +32,8 @@ interface Props {
   showroom: string;
   rating: number;
   booking: BookingDetails;
+  draft?: Order;
+  selectedAddons?: { id: string; title: string; price: number }[];
 }
 
 export default function BookingConfirmModal({
@@ -46,8 +49,11 @@ export default function BookingConfirmModal({
   showroom,
   rating,
   booking,
+  draft,
+  selectedAddons = [],
 }: Props) {
   const t = useTranslations("booking.confirm");
+  const locale = useLocale();
   const fieldError = useFieldErrorMessage();
   const {
     register,
@@ -58,8 +64,38 @@ export default function BookingConfirmModal({
     mode: "onSubmit",
   });
   const submit = handleSubmit(() => onContinue());
-  const formatFull = (date: Date, time: string) =>
-    `${date.toLocaleDateString()} - ${time}`;
+  const carPrice = draft?.carPrice ?? booking.pricePerDay;
+  const rentalCount = draft?.count ?? booking.days;
+  const rentalPrice = draft?.price ?? booking.subtotal;
+  const deliveryFee = draft?.deliveryFee ?? 0;
+  const serviceFee = draft?.serviceFee ?? 0;
+  const completionFee = draft?.completionFee ?? 0;
+  const discount = draft?.discount ?? 0;
+  const additionalServicesCost = draft?.additionalServicesCost ?? 0;
+  const totalBeforeTax = draft?.totalPrice ?? booking.subtotal;
+  const taxValue = draft?.taxValue ?? booking.vat;
+  const finalPrice = draft?.finalPrice ?? booking.total;
+  const pickupAddress =
+    draft?.pickupLocation.address ??
+    draft?.branch.address ??
+    booking.pickupAddress ??
+    showroom;
+  const dropoffAddress =
+    draft?.deliveryLocation.address ??
+    draft?.branch.address ??
+    booking.dropoffAddress ??
+    showroom;
+  const formatDateTime = (date: Date) =>
+    new Intl.DateTimeFormat(locale, {
+      dateStyle: "long",
+      timeStyle: "short",
+    }).format(date);
+  const pickupTime = draft
+    ? formatDateTime(new Date(draft.pickupAt))
+    : formatDateTime(booking.startDate);
+  const dropoffTime = draft
+    ? formatDateTime(new Date(draft.returnAt))
+    : formatDateTime(booking.endDate);
   return (
     <Dialog open={open} onClose={onClose} size="lg" label={t("dialogLabel")}>
       <Dialog.Header>
@@ -102,16 +138,10 @@ export default function BookingConfirmModal({
 
                   <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
                     <Price
-                      amount={booking.pricePerDay}
+                      amount={carPrice}
                       size="sm"
                       suffix={t("perDay")}
                       amountClassName="text-base font-bold text-action-primary"
-                    />
-                    <Price
-                      amount={booking.pricePerDay + 100}
-                      size="sm"
-                      strike
-                      amountClassName="text-xs"
                     />
                   </div>
                 </div>
@@ -134,24 +164,8 @@ export default function BookingConfirmModal({
                   />
                 </span>
                 {[
-                  [t("pickupAddress"), booking.pickupAddress || showroom],
-                  [t("dropoffAddress"), booking.dropoffAddress || showroom],
-                  [
-                    t("pickupTime"),
-                    formatFull(booking.startDate, booking.time),
-                  ],
-                  [t("dropoffTime"), formatFull(booking.endDate, booking.time)],
-                  [t("insurance"), t("insuranceValue")],
-                  [
-                    t("orderTime"),
-                    new Date().toLocaleString("ar-SA", {
-                      day: "numeric",
-                      month: "long",
-                      year: "numeric",
-                      hour: "numeric",
-                      minute: "2-digit",
-                    }),
-                  ],
+                  [t("pickupAddress"), pickupAddress],
+                  [t("dropoffAddress"), dropoffAddress],
                 ].map(([label, value], index, rows) => (
                   <div
                     className={cn(
@@ -170,46 +184,63 @@ export default function BookingConfirmModal({
                 ))}
               </div>
 
+              <div className="mb-4 flex flex-col gap-3 rounded-lg bg-surface-elevated px-4 py-4">
+                <DateValue label={t("pickupTime")} value={pickupTime} />
+                <DateValue label={t("dropoffTime")} value={dropoffTime} />
+                <DateValue
+                  label={t("additionalDetails")}
+                  value={booking.notes || t("notProvided")}
+                />
+              </div>
+
               <div className="mb-4 rounded-lg bg-surface-elevated px-4 py-4 shadow-[0_4px_14px_rgba(30,30,30,0.03)]">
                 <h3 className="mb-2.5 border-b border-stroke-light pb-2 text-base font-bold text-text-primary">
                   {t("priceDetails")}
                 </h3>
 
                 <div className="flex flex-col gap-0">
-                  <div className="flex min-h-14.5 items-center justify-between gap-3 border-b-2 border-t-0 border-x-0 border-dotted border-stroke-light py-2 text-start">
-                    <span className="text-text-subtle">{t("dailyPrice")}</span>
-                    <strong className="text-sm text-text-primary">
-                      {booking.days} × {formatAmount(booking.pricePerDay)} ﷼
-                    </strong>
-                  </div>
-
-                  <div className="flex min-h-14.5 items-center justify-between gap-3 border-b-2 border-t-0 border-x-0 border-dotted border-stroke-light py-2 text-start">
-                    <span className="text-text-subtle">{t("days")}</span>
-                    <strong className="text-sm text-text-primary">
-                      {booking.days} {t("day")}
-                    </strong>
-                  </div>
-
-                  <div className="flex min-h-14.5 items-center justify-between gap-3 border-b-2 border-t-0 border-x-0 border-dotted border-stroke-light py-2 text-start">
-                    <span className="text-text-subtle">{t("subtotal")}</span>
-                    <strong className="text-sm text-text-primary">
-                      {formatAmount(booking.subtotal)} ﷼
-                    </strong>
-                  </div>
-
-                  <div className="flex min-h-14.5 items-center justify-between gap-3 border-b-2 border-t-0 border-x-0 border-dotted border-stroke-light py-2 text-start">
-                    <span className="text-text-subtle">{t("tax")}</span>
-                    <strong className="text-sm text-text-primary">
-                      {formatAmount(booking.vat)} ﷼
-                    </strong>
-                  </div>
-
-                  <div className="flex min-h-10.5 items-center justify-between gap-3 py-1 text-sm">
-                    <span className="text-text-subtle">{t("total")}</span>
-                    <h3 className="m-0 text-lg font-extrabold text-action-primary">
-                      <Price amount={booking.total} />
-                    </h3>
-                  </div>
+                  <PriceRow
+                    label={t("dailyPrice")}
+                    amount={rentalPrice}
+                    hint={`${rentalCount} × ${formatAmount(carPrice)}`}
+                  />
+                  {deliveryFee > 0 && (
+                    <PriceRow label={t("deliveryFee")} amount={deliveryFee} />
+                  )}
+                  {serviceFee > 0 && (
+                    <PriceRow label={t("serviceFee")} amount={serviceFee} />
+                  )}
+                  {completionFee > 0 && (
+                    <PriceRow
+                      label={t("completionFee")}
+                      amount={completionFee}
+                    />
+                  )}
+                  {discount > 0 && (
+                    <PriceRow label={t("discount")} amount={discount} />
+                  )}
+                  {additionalServicesCost > 0 && (
+                    <PriceRow
+                      label={t("additionalServices")}
+                      amount={additionalServicesCost}
+                    />
+                  )}
+                  <PriceRow
+                    label={t("totalBeforeTax")}
+                    amount={totalBeforeTax}
+                  />
+                  {taxValue > 0 && (
+                    <PriceRow
+                      label={t("tax")}
+                      amount={taxValue}
+                      hint={
+                        draft?.taxRateType === "percent"
+                          ? `${formatAmount(draft.taxRate)}%`
+                          : undefined
+                      }
+                    />
+                  )}
+                  <PriceRow label={t("total")} amount={finalPrice} total />
                 </div>
               </div>
 
@@ -218,12 +249,32 @@ export default function BookingConfirmModal({
                   {t("termsTitle")}
                 </h3>
 
-                <ul className="mb-3 list-disc ps-4.5 flex flex-col gap-3  text-md leading-[1.7] text-text-primary">
-                  <li>{t("terms.license")}</li>
-                  <li>{t("terms.identity")}</li>
-                  <li>{t("terms.refundable")}</li>
-                  <li>{t("terms.agree")}</li>
-                </ul>
+                {selectedAddons.length > 0 && (
+                  <div className="mb-4 rounded-md bg-surface-card-primary p-3">
+                    <h4 className="mb-2 text-sm font-bold text-text-primary">
+                      {t("selectedAddons")}
+                    </h4>
+                    <ul className="m-0 list-disc ps-4 text-sm text-text-primary">
+                      {selectedAddons.map((addon) => (
+                        <li key={addon.id}>{addon.title}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {draft?.terms ? (
+                  <HtmlContent
+                    html={draft.terms}
+                    className="mb-3 text-md leading-[1.7] text-text-primary"
+                  />
+                ) : (
+                  <ul className="mb-3 list-disc ps-4.5 flex flex-col gap-3 text-md leading-[1.7] text-text-primary">
+                    <li>{t("terms.license")}</li>
+                    <li>{t("terms.identity")}</li>
+                    <li>{t("terms.refundable")}</li>
+                    <li>{t("terms.agree")}</li>
+                  </ul>
+                )}
 
                 <FormCheckbox
                   id="booking-terms"
@@ -248,5 +299,59 @@ export default function BookingConfirmModal({
         </div>
       </Dialog.Body>
     </Dialog>
+  );
+}
+
+function DateValue({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="text-text-primary border-stroke-light flex items-start gap-3 border-x-0 border-t-0 border-b-2 border-dashed pb-2 text-sm leading-relaxed last:border-b-0">
+      <div className="flex min-w-0 flex-col gap-3">
+        <span className="text-text-subtle text-sm font-normal">{label}</span>
+        <span className="text-text-primary text-base font-medium">{value}</span>
+      </div>
+    </div>
+  );
+}
+
+function PriceRow({
+  label,
+  amount,
+  hint,
+  total = false,
+}: {
+  label: string;
+  amount: number;
+  hint?: string;
+  total?: boolean;
+}) {
+  return (
+    <div
+      className={cn(
+        "border-stroke-light flex items-center justify-between gap-3 border-x-0 border-t-0 border-dashed py-2 last:border-0",
+        total ? "border-b-0" : "border-b",
+      )}
+    >
+      <span className="text-text-subtle text-sm">{label}</span>
+      {hint ? <span className="text-text-subtle mx-auto">{hint}</span> : null}
+      <span
+        className={cn(
+          "flex items-center justify-between tabular-nums",
+          total
+            ? "text-action-primary text-2xl font-bold"
+            : "text-text-primary text-lg font-semibold",
+        )}
+      >
+        <span className="ms-1 flex items-center gap-1">
+          {formatAmount(amount)}
+          <Image
+            src={ICONS.riyal.src}
+            width={ICONS.riyal.width}
+            height={ICONS.riyal.height}
+            alt=""
+            aria-hidden="true"
+          />
+        </span>
+      </span>
+    </div>
   );
 }

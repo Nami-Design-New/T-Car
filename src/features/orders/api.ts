@@ -518,6 +518,7 @@ export function mapOrderResponse(value: unknown): Order {
     serviceFee: data.service_fee,
     completionFee: data.completion_fee,
     discount: data.discount,
+    additionalServicesCost: data.additional_services_cost,
     totalPrice: data.total_price,
     taxValue: data.tax_value,
     finalPrice: data.final_price,
@@ -549,10 +550,13 @@ async function listOrders({
   page,
   perPage,
 }: ListOrdersParams): Promise<Page<OrderListItem>> {
-  const response = await serverHttp.get<ApiPage<unknown>>("/booking", {
-    query: { status, page, per_page: perPage },
-  });
-  return mapOrdersResponse(response);
+  const query = { status, page, per_page: perPage };
+  logBookingData("request", { method: "GET", path: "/booking", query });
+  const response = await serverHttp.get<ApiPage<unknown>>("/booking", { query });
+  logBookingData("response", { method: "GET", path: "/booking", data: response });
+  const orders = mapOrdersResponse(response);
+  logBookingData("mapped response", { method: "GET", path: "/booking", data: orders });
+  return orders;
 }
 
 async function checkAvailability({
@@ -564,18 +568,33 @@ async function checkAvailability({
   count,
   deliveryType,
 }: AvailabilityRequest): Promise<Availability> {
-  const response = await serverHttp.get("/booking/is-available-days", {
-    query: {
-      car_id: Number(carId),
-      branch_id: Number(branchId),
-      type,
-      from_day: fromDay,
-      ...(toDay ? { to_day: toDay } : {}),
-      ...(count ? { count } : {}),
-      delivery_type: deliveryType,
-    },
+  const query = {
+    car_id: Number(carId),
+    branch_id: Number(branchId),
+    type,
+    from_day: fromDay,
+    ...(toDay ? { to_day: toDay } : {}),
+    ...(count ? { count } : {}),
+    delivery_type: deliveryType,
+  };
+  logBookingData("request", {
+    method: "GET",
+    path: "/booking/is-available-days",
+    query,
   });
-  return mapAvailabilityResponse(response);
+  const response = await serverHttp.get("/booking/is-available-days", { query });
+  logBookingData("response", {
+    method: "GET",
+    path: "/booking/is-available-days",
+    data: response,
+  });
+  const availability = mapAvailabilityResponse(response);
+  logBookingData("mapped response", {
+    method: "GET",
+    path: "/booking/is-available-days",
+    data: availability,
+  });
+  return availability;
 }
 
 const formatApiDate = (value: Date): string => {
@@ -627,15 +646,32 @@ export function toCreateDraftFormData(request: CreateDraftRequest): FormData {
 }
 
 async function createDraft(request: CreateDraftRequest): Promise<Order> {
+  const form = toCreateDraftFormData(request);
+  logBookingData("request", {
+    method: "POST",
+    path: "/booking/create-booking",
+    body: Object.fromEntries(form.entries()),
+  });
   const response = await serverHttp.post(
     "/booking/create-booking",
-    toCreateDraftFormData(request),
+    form,
   );
-  return mapOrderResponse(response);
+  logBookingData("response", {
+    method: "POST",
+    path: "/booking/create-booking",
+    data: response,
+  });
+  const order = mapOrderResponse(response);
+  logBookingData("mapped response", {
+    method: "POST",
+    path: "/booking/create-booking",
+    data: order,
+  });
+  return order;
 }
 
 /** Debug output for local API integration work; never emitted by production builds. Removed in O12. */
-function logDetailData(label: string, value: unknown): void {
+function logBookingData(label: string, value: unknown): void {
   if (process.env.NODE_ENV === "development") {
     // eslint-disable-next-line no-console -- intentional local API integration inspection.
     console.info(`[orders] ${label}`, value);
@@ -643,10 +679,15 @@ function logDetailData(label: string, value: unknown): void {
 }
 
 async function getOrder(id: string): Promise<Order> {
+  logBookingData("request", { method: "GET", path: `/booking/${id}` });
   const response = await serverHttp.get(`/booking/${id}`);
-  logDetailData("retrieved API data", response);
+  logBookingData("response", {
+    method: "GET",
+    path: `/booking/${id}`,
+    data: response,
+  });
   const order = mapOrderResponse(response);
-  logDetailData("mapped detail model", order);
+  logBookingData("mapped detail model", order);
   return order;
 }
 

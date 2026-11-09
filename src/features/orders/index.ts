@@ -24,6 +24,8 @@ export type {
   BookingDeliveryTypeRequest,
   BookingType,
   BookingDetails,
+  BookingServiceSelection,
+  BookingServiceType,
   BookingEditRequest,
   BookingReviewInput,
   CreateBookingRequest,

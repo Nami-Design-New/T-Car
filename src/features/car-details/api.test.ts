@@ -9,7 +9,11 @@ vi.mock("@/services/http/server", () => ({
 }));
 
 import { carDetailsApi, mapCarDetails } from "./api";
-import { parseCarDetailsQuery, withDefaultRentalContext } from "./model";
+import {
+  parseCarDetailsQuery,
+  toSafeCarDetailsSearchParams,
+  withDefaultRentalContext,
+} from "./model";
 
 beforeEach(() => vi.clearAllMocks());
 
@@ -147,6 +151,20 @@ describe("parseCarDetailsQuery", () => {
     });
   });
 
+  it("accepts backend-style query names", () => {
+    expect(
+      parseCarDetailsQuery({
+        booking_type: "international",
+        delivery_type: "to_location",
+        country_id: "12",
+      }),
+    ).toMatchObject({
+      bookingType: "international",
+      deliveryType: "to_location",
+      countryId: "12",
+    });
+  });
+
   it("omits an incomplete or invalid location tuple", () => {
     expect(
       parseCarDetailsQuery({ region: "Riyadh", lat: "999", lng: "46" }),
@@ -184,6 +202,25 @@ describe("withDefaultRentalContext", () => {
       bookingType: "monthly",
       deliveryType: "from_branch",
     });
+  });
+
+  it("falls back to daily from-branch when country is removed from international context", () => {
+    expect(withDefaultRentalContext({ bookingType: "international" })).toEqual({
+      bookingType: "daily",
+      deliveryType: "from_branch",
+    });
+  });
+
+  it("rewrites an incomplete international URL to the daily context", () => {
+    const search = toSafeCarDetailsSearchParams({
+      region: "Riyadh",
+      booking_type: "international",
+      delivery_type: "to_location",
+    });
+
+    expect(search?.get("booking_type")).toBe("daily");
+    expect(search?.get("delivery_type")).toBe("from_branch");
+    expect(search?.has("country_id")).toBe(false);
   });
 });
 
@@ -372,6 +409,8 @@ describe("carDetailsApi.getCarDetails", () => {
 
     const { clientInstructions } = await carDetailsApi.getPolicies();
     expect(clientInstructions[0]).toContain("<p>Drive safe</p>");
-    expect(clientInstructions[0]).not.toMatch(/onclick|onerror|javascript:|<style/);
+    expect(clientInstructions[0]).not.toMatch(
+      /onclick|onerror|javascript:|<style/,
+    );
   });
 });

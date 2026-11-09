@@ -352,6 +352,12 @@ function serviceIcon(key: string | null): CarDetails["addons"][number]["icon"] {
   return "default";
 }
 
+function serviceType(key: string | null): CarDetails["addons"][number]["type"] {
+  if (key === "adding_driver") return "driver_service";
+  if (key === "travel_abroad") return "company_service";
+  return "car_service";
+}
+
 function toQuickFacts(details: CarTechnicalDetailsDto): CarQuickFact[] {
   const facts: CarQuickFact[] = [];
   const power = details.power.trim();
@@ -424,6 +430,7 @@ export function mapCarDetails(details: DetailsDto): CarDetails {
       id: String(service.id),
       title: service.title,
       price: service.price,
+      type: serviceType(service.key),
       icon: serviceIcon(service.key),
     })),
     insuranceOptions: details.insurance

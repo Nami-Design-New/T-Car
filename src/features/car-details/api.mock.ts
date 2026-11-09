@@ -43,8 +43,8 @@ const MOCK_DETAILS_EXTRAS: DetailExtras = {
     },
   ],
   addons: [
-    { id: "1", title: "تفويض خارجي", price: 500, icon: "default" },
-    { id: "2", title: "إضافة سائق", price: 500, icon: "driver" },
+    { id: "1", title: "تفويض خارجي", price: 500, type: "company_service", icon: "default" },
+    { id: "2", title: "إضافة سائق", price: 500, type: "driver_service", icon: "driver" },
   ],
   insuranceOptions: [
     {

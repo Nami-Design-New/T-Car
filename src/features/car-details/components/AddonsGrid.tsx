@@ -6,6 +6,7 @@ import Image from "next/image";
 import { formatCurrency } from "@/shared/lib/format";
 import type { AddonService } from "../model";
 import { cn } from "@/shared/lib/cn";
+import { Price } from "@/shared/ui/Price";
 
 const ICONS = {
   driver: "/icons/driver.svg",
@@ -16,10 +17,11 @@ const ICONS = {
 
 interface Props {
   addons: AddonService[];
+  selectedIds?: string[];
   onChange?: (selectedIds: string[]) => void;
 }
 
-export default function AddonsGrid({ addons, onChange }: Props) {
+export default function AddonsGrid({ addons, selectedIds, onChange }: Props) {
   const t = useTranslations("carDetails");
   const [selected, setSelected] = useState<string[]>([]);
 
@@ -40,16 +42,17 @@ export default function AddonsGrid({ addons, onChange }: Props) {
       <div className="addons-grid grid grid-cols-[repeat(auto-fill,minmax(140px,1fr))] gap-3.5">
         {addons.map((addon) => {
           const icon = ICONS[addon.icon];
-          const isSelected = selected.includes(addon.id);
+          const isSelected = (selectedIds ?? selected).includes(addon.id);
 
           return (
             <button
               key={addon.id}
               type="button"
+              aria-pressed={isSelected}
               className={cn(
                 "addon-card border-stroke-light bg-surface-elevated hover:border-action-primary flex cursor-pointer flex-col items-center gap-2 rounded-lg border px-3 py-5 transition duration-200",
                 isSelected &&
-                  "selected border-action-primary bg-surface-card-primary",
+                  "selected border-action-primary! bg-surface-card-primary!",
               )}
               onClick={() => toggle(addon.id)}
             >
@@ -64,7 +67,7 @@ export default function AddonsGrid({ addons, onChange }: Props) {
                 {addon.title}
               </span>
               <span className="addon-card-price text-action-primary text-[0.8rem] font-bold">
-                {formatCurrency(addon.price)}
+              <Price amount={addon.price} />
               </span>
             </button>
           );

@@ -165,6 +165,45 @@ describe("BookingDailyModal", () => {
     );
   }, 15000);
 
+  it("shows a toast when draft creation fails and keeps the modal open", async () => {
+    const user = userEvent.setup();
+    const onConfirm = vi.fn().mockResolvedValue({
+      ok: false,
+      error: {
+        kind: "validation",
+        status: 422,
+        serverMessage: "The selected service is not available.",
+      },
+    });
+    checkAvailabilityAction.mockResolvedValue({
+      ok: true,
+      data: { slots: ["10"], message: "Fetched successfully." },
+    });
+
+    renderWithIntl(
+      <BookingDailyModal
+        open
+        onClose={vi.fn()}
+        pricePerDay={500}
+        onConfirm={onConfirm}
+        availability={availability}
+      />,
+    );
+
+    const dates = futureDateButtons();
+    await user.click(dates[0]);
+    await user.click(dates[1]);
+    await user.click(await screen.findByRole("button", { name: "10 AM" }));
+    await user.click(screen.getByRole("button", { name: "Confirm booking" }));
+
+    await waitFor(() =>
+      expect(notifyError).toHaveBeenCalledWith(
+        "The selected service is not available.",
+      ),
+    );
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
+  }, 15000);
+
   it("shows the empty availability state when E1 returns no slots", async () => {
     const user = userEvent.setup();
     checkAvailabilityAction.mockResolvedValue({

@@ -12,13 +12,17 @@ import { ICONS } from "@/shared/config/assets";
 import type {
   BookingContext,
   BookingDetails,
+  Order,
   PaymentMethod,
+  BookingServiceSelection,
 } from "@/features/orders";
+import { ok, type Result } from "@/shared/lib/result";
 const RiyalIcon = ICONS.riyal;
 
 import { Button } from "@/shared/ui/Button";
 import { Price } from "@/shared/ui/Price";
 import { useCreateBooking } from "../hooks/useCreateBooking";
+import { useCreateDraft } from "../hooks/useCreateDraft";
 
 const BookingDailyModal = dynamic(() => import("./BookingDailyModal"), {
   ssr: false,
@@ -60,6 +64,8 @@ interface Props {
   maxPrice: number;
   bookingContext: BookingContext;
   signedIn?: boolean;
+  selectedServices?: BookingServiceSelection[];
+  selectedAddons?: { id: string; title: string; price: number }[];
 }
 
 export default function CarBookingCard({
@@ -75,6 +81,8 @@ export default function CarBookingCard({
   maxPrice,
   bookingContext,
   signedIn = true,
+  selectedServices = [],
+  selectedAddons = [],
 }: Props) {
   const t = useTranslations("booking.card");
   // Same rule as the cars list: charge lower_price when set, else max_price.
@@ -85,16 +93,29 @@ export default function CarBookingCard({
   const [loginRequiredOpen, setLoginRequiredOpen] = useState(false);
   const [authOpen, setAuthOpen] = useState(false);
   const { step } = flow;
-  const setStep = (next: "closed" | "dates" | "confirm" | "payment") =>
+  const setStep = (next: "closed" | "dates" | "confirm" | "payment") => {
+    if (next === "closed") {
+      setBooking(null);
+      setDraft(null);
+    }
     setFlow({ step: next });
+  };
   const { submitting, createBooking } = useCreateBooking(carId);
+  const { submitting: creatingDraft, createDraft } = useCreateDraft(carId);
   const errorMessage = useErrorMessage();
   const [booking, setBooking] = useState<BookingDetails | null>(null);
+  const [draft, setDraft] = useState<Order | null>(null);
   const canBook = Boolean(bookingContext.location && bookingContext.branch);
 
-  const handleDatesConfirmed = (details: BookingDetails) => {
+  const handleDatesConfirmed = async (
+    details: BookingDetails,
+  ): Promise<Result<void>> => {
+    const result = await createDraft(bookingContext, details, selectedServices);
+    if (!result.ok) return result;
     setBooking(details);
+    setDraft(result.data);
     setStep("confirm");
+    return ok(undefined);
   };
 
   const handlePay = async (method: PaymentMethod) => {
@@ -171,12 +192,16 @@ export default function CarBookingCard({
         <BookingMonthlyModal
           open
           onClose={() => setStep("closed")}
+          loading={creatingDraft}
           pricePerDay={pricePerDay}
           onConfirm={handleDatesConfirmed}
           availability={{
             carId,
             branchId: bookingContext.branch!.id,
             deliveryType: bookingContext.deliveryType,
+            branch: bookingContext.branch!,
+            showroom,
+            showroomLogo,
           }}
         />
       )}
@@ -185,17 +210,21 @@ export default function CarBookingCard({
         <BookingDailyModal
           open
           onClose={() => setStep("closed")}
+          loading={creatingDraft}
           pricePerDay={pricePerDay}
           onConfirm={handleDatesConfirmed}
           availability={{
             carId,
             branchId: bookingContext.branch!.id,
             deliveryType: bookingContext.deliveryType,
+            branch: bookingContext.branch!,
+            showroom,
+            showroomLogo,
           }}
         />
       )}
 
-      {booking && step === "confirm" && (
+      {booking && draft && step === "confirm" && (
         <BookingConfirmModal
           open
           onClose={() => setStep("closed")}
@@ -209,6 +238,8 @@ export default function CarBookingCard({
           showroom={showroom}
           rating={rating}
           booking={booking}
+          draft={draft}
+          selectedAddons={selectedAddons}
         />
       )}
 

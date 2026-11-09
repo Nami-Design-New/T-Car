@@ -6,6 +6,9 @@ import CarBookingCard from "./CarBookingCard";
 vi.mock("../hooks/useCreateBooking", () => ({
   useCreateBooking: () => ({ submitting: false, createBooking: vi.fn() }),
 }));
+vi.mock("../hooks/useCreateDraft", () => ({
+  useCreateDraft: () => ({ submitting: false, createDraft: vi.fn() }),
+}));
 
 describe("CarBookingCard", () => {
   it("disables booking and asks for a location without complete rental context", () => {

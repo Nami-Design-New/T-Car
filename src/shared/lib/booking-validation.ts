@@ -41,6 +41,11 @@ const locationSchema = z
       .string({ error: "booking.invalidLocation" })
       .trim()
       .max(MAX_ADDRESS_LENGTH, { error: "booking.addressTooLong" }),
+    region: z
+      .string({ error: "booking.invalidLocation" })
+      .trim()
+      .max(255, { error: "booking.invalidLocation" })
+      .optional(),
   })
   .nullable()
   .optional();

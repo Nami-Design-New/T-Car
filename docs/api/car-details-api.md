@@ -315,7 +315,7 @@ column is what `/[locale]/cars/[id]` does today with the matching URL.
 | G2 | booking_type present, no delivery_type | 422: the delivery type field is required | Car renders with `from_branch` (interim, as G1) | Same as G1 | Interim applied; backend request open |
 | G3 | booking_type=station, no train_station_id | 200 with car data (airport requires its ID; station does not) | Car renders | No change: the flow sends the selected station ID. Backend question: is the missing station-ID validation intended, given that airport requires its ID? | Backend question open |
 | G4 | booking_type=station, train_station_id=999999 | 422: the selected train station is invalid | Error boundary | Only reachable with an edited URL; keep | Recorded |
-| G5 | booking_type=international, no country_id | 422: the country is required for international bookings | Error boundary | Only reachable with an edited URL; keep | Recorded |
+| G5 | booking_type=international, no country_id | 422: the country is required for international bookings | Route rewrites the URL to `booking_type=daily&delivery_type=from_branch` and removes the incomplete international context before reading the car | Keep the safe URL fallback; the backend contract remains unchanged | Frontend handled |
 | G6 | booking_type=international, country_id=999999 | 422: the selected country does not exist | Error boundary | Only reachable with an edited URL; keep | Recorded |
 | G7 | No location, valid booking and delivery types | 200 with car data (was 422 on 2026-11-05) | Car renders without the nearest-branch card; branch list stays empty because GET /branches still needs the full tuple | No change | Recorded |
 

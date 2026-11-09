@@ -48,7 +48,7 @@ export const createDraftSchema = z.object({
         id: z
           .string()
           .trim()
-          .regex(/^[1-9]\d*$/, { error: "booking.invalidService" }),
+          .regex(/^[1-9]\d*$/, { error: "booking.invalidLocation" }),
         type: z.enum([
           "car_service",
           "driver_service",
@@ -62,7 +62,7 @@ export const createDraftSchema = z.object({
   countryId: z
     .string()
     .trim()
-    .regex(/^[1-9]\d*$/, { error: "booking.invalidCountry" })
+    .regex(/^[1-9]\d*$/, { error: "booking.invalidLocation" })
     .optional(),
 });
 

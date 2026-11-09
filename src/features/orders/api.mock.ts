@@ -136,6 +136,7 @@ export const MOCK_ORDERS: Order[] = MOCK_ORDER_LIST.map((item) => ({
   serviceFee: 100,
   completionFee: 25,
   discount: 0,
+  additionalServicesCost: 0,
   totalPrice: 2625,
   taxValue: 262.5,
   finalPrice: 2887.5,

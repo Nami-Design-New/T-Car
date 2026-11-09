@@ -16,12 +16,15 @@ import {
   checkAvailabilityAction,
   type BookingDeliveryTypeRequest,
   type BookingDetails,
+  type BookingContext,
 } from "@/features/orders";
 import { fromActionResult } from "@/shared/lib/result";
+import type { Result } from "@/shared/lib/result";
 import { useErrorMessage } from "@/shared/hooks/useErrorMessage";
 import { useNotify } from "@/shared/hooks/useNotify";
 import { ICONS } from "@/shared/config/assets";
 import BookingTimeSlots from "./BookingTimeSlots";
+import BookingBranchSummary from "./BookingBranchSummary";
 
 const deliveryCarIcon = ICONS.deliveryCar;
 
@@ -29,12 +32,19 @@ interface Props {
   open: boolean;
   onClose: () => void;
   pricePerDay: number;
-  onConfirm: (details: BookingDetails) => void;
+  onConfirm: (
+    details: BookingDetails,
+  ) => void | Result<void> | Promise<void | Result<void>>;
+  loading?: boolean;
   modal?: boolean;
   availability?: {
     carId: string;
     branchId: string;
     deliveryType: BookingDeliveryTypeRequest;
+    branch?: NonNullable<BookingContext["branch"]>;
+    showroom?: string;
+    showroomLogo?: string;
+    branchAddress?: string;
   };
 }
 
@@ -78,6 +88,7 @@ export default function BookingMonthlyModal({
   onClose,
   pricePerDay,
   onConfirm,
+  loading = false,
   modal = true,
   availability,
 }: Props) {
@@ -222,9 +233,9 @@ export default function BookingMonthlyModal({
     setMapField(null);
   };
 
-  const handleConfirmClick = () => {
+  const handleConfirmClick = async () => {
     if (!range.start || !range.end) return;
-    onConfirm({
+    const result = await onConfirm({
       startDate: range.start,
       endDate: range.end,
       time,
@@ -241,6 +252,9 @@ export default function BookingMonthlyModal({
         bookingType: "monthly",
         months: rentalMonths,
     });
+    if (result && !result.ok) {
+      notify.error(result.error.serverMessage ?? errorMessage(result.error));
+    }
   };
 
   const addressCard = (
@@ -313,7 +327,7 @@ export default function BookingMonthlyModal({
             <div className="mb-2 text-sm text-[#101820]">
               {tm("monthsCount")}
             </div>
-            <div className="mx-auto mb-[18px] flex max-w-[225px] items-center justify-between">
+            <div className="mx-auto mb-4.5 flex max-w-56.25 items-center justify-between">
               <button
                 type="button"
                 className="grid size-7 place-items-center rounded-md border-0 bg-white text-[22px] leading-none text-[#101820] disabled:cursor-not-allowed disabled:opacity-50"
@@ -412,6 +426,27 @@ export default function BookingMonthlyModal({
             }
           />
 
+          {availability?.deliveryType === "from_branch" && availability.branch ? (
+            <BookingBranchSummary
+              branch={availability.branch}
+              showroom={availability.showroom ?? ""}
+              showroomLogo={availability.showroomLogo}
+              pickupLabel={t("pickupAddress")}
+              returnLabel={t("dropoffAddress")}
+              returnTitle={t("returnToNearestBranchTitle")}
+              returnMessage={t("returnToNearestBranchMessage")}
+              distanceLabel={t("kilometerShort")}
+            />
+          ) : availability?.deliveryType === "from_branch" ? (
+            <div className="mb-5 rounded-md border border-stroke-light bg-surface-card-primary p-3">
+              <p className="mb-1 text-sm font-semibold text-text-primary">
+                {t("pickupAddress")}
+              </p>
+              <p className="m-0 text-sm text-text-subtle">
+                {availability.branchAddress ?? t("pickupLocation")}
+              </p>
+            </div>
+          ) : (
           <div className="mb-5 grid gap-4 md:grid-cols-2">
             {(["pickup", "dropoff"] as const).map((field) => {
             const pickup = field === "pickup";
@@ -441,6 +476,7 @@ export default function BookingMonthlyModal({
             );
             })}
           </div>
+          )}
 
           <div className="mb-5 flex flex-col gap-2">
             <label className="text-sm font-semibold text-text-primary">
@@ -460,7 +496,7 @@ export default function BookingMonthlyModal({
               type="button"
               className="order-2 flex-1"
               onClick={handleConfirmClick}
-              disabled={loadingSlots || availableSlots.length === 0}
+              disabled={loading || loadingSlots || availableSlots.length === 0}
             >
               {t("continue")}
             </Button>

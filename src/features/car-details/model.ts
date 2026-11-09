@@ -35,8 +35,8 @@ export function parseCarDetailsQuery(
   const longitudeValue = first(input.lng);
   const latitude = Number(latitudeValue);
   const longitude = Number(longitudeValue);
-  const type = first(input.type);
-  const deliveryType = first(input.deliveryType);
+  const type = first(input.type) ?? first(input.booking_type);
+  const deliveryType = first(input.deliveryType) ?? first(input.delivery_type);
 
   const location =
     region &&
@@ -61,14 +61,14 @@ export function parseCarDetailsQuery(
     )
       ? { bookingType: type as CarBookingType }
       : {}),
-    ...(selectedId(input.airportId)
-      ? { airportId: selectedId(input.airportId) }
+    ...(selectedId(input.airportId ?? input.airport_id)
+      ? { airportId: selectedId(input.airportId ?? input.airport_id) }
       : {}),
-    ...(selectedId(input.stationId)
-      ? { stationId: selectedId(input.stationId) }
+    ...(selectedId(input.stationId ?? input.station_id)
+      ? { stationId: selectedId(input.stationId ?? input.station_id) }
       : {}),
-    ...(selectedId(input.countryId)
-      ? { countryId: selectedId(input.countryId) }
+    ...(selectedId(input.countryId ?? input.country_id)
+      ? { countryId: selectedId(input.countryId ?? input.country_id) }
       : {}),
   };
 }
@@ -88,11 +88,43 @@ export const DEFAULT_DELIVERY_TYPE: NonNullable<
 export function withDefaultRentalContext(
   query: CarDetailsQuery,
 ): CarDetailsQuery {
+  // International reads require a country. If the user removes it while the
+  // details page is open, do not send an invalid international request.
+  const safeQuery =
+    query.bookingType === "international" && !query.countryId
+      ? { ...query, bookingType: undefined }
+      : query;
+
   return {
-    ...query,
-    bookingType: query.bookingType ?? DEFAULT_BOOKING_TYPE,
-    deliveryType: query.deliveryType ?? DEFAULT_DELIVERY_TYPE,
+    ...safeQuery,
+    bookingType: safeQuery.bookingType ?? DEFAULT_BOOKING_TYPE,
+    deliveryType: safeQuery.deliveryType ?? DEFAULT_DELIVERY_TYPE,
   };
+}
+
+/** Returns a canonical URL query when an international context loses its country. */
+export function toSafeCarDetailsSearchParams(
+  input: SearchParamsInput,
+): URLSearchParams | null {
+  const query = parseCarDetailsQuery(input);
+  if (query.bookingType !== "international" || query.countryId) return null;
+
+  const search = new URLSearchParams();
+  for (const [key, value] of Object.entries(input)) {
+    if (value === undefined) continue;
+    for (const item of Array.isArray(value) ? value : [value]) {
+      search.append(key, item);
+    }
+  }
+
+  ["type", "booking_type", "countryId", "country_id"].forEach((key) =>
+    search.delete(key),
+  );
+  search.delete("deliveryType");
+  search.delete("delivery_type");
+  search.set("booking_type", DEFAULT_BOOKING_TYPE);
+  search.set("delivery_type", DEFAULT_DELIVERY_TYPE);
+  return search;
 }
 
 /** Stable cache key for the server read shared by metadata and the page. */
@@ -139,6 +171,12 @@ export interface AddonService {
   id: string;
   title: string;
   price: number;
+  type:
+    | "car_service"
+    | "driver_service"
+    | "company_service"
+    | "child_seat_service"
+    | "airport_fast_delivery";
   icon: "driver" | "travel" | "shield" | "default";
 }
 
@@ -187,8 +225,10 @@ export interface CarPickupInfo {
 }
 
 /** Prices keep the API names (`lower_price`, `max_price`). */
-export interface CarDetails
-  extends Omit<CarListing, "pricePerDay" | "originalPrice"> {
+export interface CarDetails extends Omit<
+  CarListing,
+  "pricePerDay" | "originalPrice"
+> {
   lowerPrice: number;
   maxPrice: number;
   reviewsCount: number;

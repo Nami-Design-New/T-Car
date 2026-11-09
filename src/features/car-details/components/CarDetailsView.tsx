@@ -1,4 +1,8 @@
+"use client";
+
+import { useState } from "react";
 import { CarBookingCard } from "@/features/booking";
+import type { BookingServiceSelection } from "@/features/orders";
 import type { BookingContext } from "@/features/orders";
 import type {
   CarDetails,
@@ -32,6 +36,14 @@ export default function CarDetailsView({
   bookingContext,
   signedIn,
 }: Props) {
+  const [selectedAddonIds, setSelectedAddonIds] = useState<string[]>([]);
+  const selectedServices: BookingServiceSelection[] = car.addons
+    .filter((addon) => selectedAddonIds.includes(addon.id))
+    .map(({ id, type }) => ({ id, type }));
+  const selectedAddons = car.addons.filter((addon) =>
+    selectedAddonIds.includes(addon.id),
+  );
+
   return (
     <>
       <section className="py-20 max-md:py-12">
@@ -53,7 +65,13 @@ export default function CarDetailsView({
                 />
               )}
               <WarrantiesList warranties={car.warranties} />
-              {car.addons.length > 0 && <AddonsGrid addons={car.addons} />}
+              {car.addons.length > 0 && (
+                <AddonsGrid
+                  addons={car.addons}
+                  selectedIds={selectedAddonIds}
+                  onChange={setSelectedAddonIds}
+                />
+              )}
               {car.insuranceOptions[0] && (
                 <InsuranceOptions option={car.insuranceOptions[0]} />
               )}
@@ -73,6 +91,8 @@ export default function CarDetailsView({
                 lowerPrice={car.lowerPrice}
                 maxPrice={car.maxPrice}
                 bookingContext={bookingContext}
+                selectedServices={selectedServices}
+                selectedAddons={selectedAddons}
                 signedIn={signedIn}
               />
 
