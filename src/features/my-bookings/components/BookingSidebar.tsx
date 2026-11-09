@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import dynamic from "next/dynamic";
 import { FiStar } from "react-icons/fi";
-import { canRate, isDraft, type Order } from "@/features/orders";
+import { canRate, type Order } from "@/features/orders";
 import { formatAmount } from "@/shared/lib/format";
 import { HtmlContent } from "@/shared/ui/HtmlContent";
 import { useBookingActions } from "../hooks/useBookingActions";
@@ -24,7 +24,7 @@ export default function BookingSidebar({ booking }: Props) {
   const t = useTranslations("myBookings.sidebar");
   const [showReview, setShowReview] = useState(false);
   const { submitting, review } = useBookingActions(booking.id);
-  const showReviewAction = !isDraft(booking) && canRate(booking);
+  const showReviewAction = canRate(booking);
 
   return (
     <aside className="border-stroke-light bg-surface-elevated sticky top-6 flex flex-col gap-4 rounded-lg border p-6 max-[860px]:static">

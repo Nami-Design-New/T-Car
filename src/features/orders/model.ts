@@ -68,8 +68,7 @@ export type OrderDeliveryType =
   | "to_location"
   | "from_branch"
   | "from_airport"
-  | "from_station"
-  | "from_location";
+  | "from_station";
 
 export interface OrderLocation {
   latitude: number | null;
@@ -99,7 +98,8 @@ export interface Order {
   status: OrderStatus;
   lateHours: number | null;
   bookingType: BookingType;
-  deliveryType: OrderDeliveryType;
+  /** The detail DTO accepts any backend value (booking 153 sends from_location). */
+  deliveryType: OrderDeliveryType | (string & {});
   pickupAt: string;
   returnAt: string;
   pickupLocation: OrderLocation;
@@ -193,9 +193,6 @@ export const bookingInstant = (value: string): Date =>
 const dateAfter = (value: string, now: Date) => bookingInstant(value) > now;
 const dateReached = (value: string, now: Date) =>
   bookingInstant(value) <= now;
-
-export const isDraft = (order: Pick<Order, "createdAt">) =>
-  order.createdAt === null;
 
 export function canCancel(
   order: Pick<Order, "status" | "pickupAt">,

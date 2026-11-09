@@ -13,7 +13,6 @@ import {
   canCancel,
   canExtend,
   canModify,
-  isDraft,
   type BookingEditRequest,
   type Order,
 } from "@/features/orders";
@@ -69,10 +68,9 @@ export default function BookingDetailsHeader({ booking }: Props) {
   const close = useCallback(() => setFlow({ step: "idle" }), []);
   const open = (step: "extend" | "edit" | "cancel") => setFlow({ step });
 
-  const draft = isDraft(booking);
-  const allowEdit = !draft && canModify(booking);
-  const allowExtend = !draft && canExtend(booking);
-  const allowCancel = !draft && canCancel(booking);
+  const allowEdit = canModify(booking);
+  const allowExtend = canExtend(booking);
+  const allowCancel = canCancel(booking);
   const hasActions = allowEdit || allowExtend || allowCancel;
 
   const handleExtend = async (days: number) => {

@@ -32,8 +32,9 @@ export async function getMyBookingsTotal(tab: OrderListTab): Promise<number> {
 }
 
 /**
- * Null for an unknown id, so the page can call notFound(). A dead session signs
- * in again; other failures throw to error.tsx. Cached per request:
+ * Null for an unknown id and for another customer's booking (HTTP 200 body
+ * code 422, R4), so the page can call notFound(). A dead session signs in
+ * again; other failures throw to error.tsx. Cached per request:
  * generateMetadata and the page share one read.
  */
 export async function readBookingDetails(id: string): Promise<Order | null> {
@@ -45,8 +46,10 @@ export async function readBookingDetails(id: string): Promise<Order | null> {
       return await bookingsApi.getOrder(id);
     } catch (error) {
       const appError = toAppError(error);
-      // 422 on this input-free read can only be ownership (R4).
-      if (appError.kind === "not_found" || appError.status === 422) return null;
+      // 422 on this input-free read is an ownership error: the visitor has no
+      // such booking. The backend message stays display-only.
+      if (appError.kind === "not_found" || appError.status === 422)
+        return null;
       throw appError;
     }
   });

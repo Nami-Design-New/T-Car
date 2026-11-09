@@ -716,7 +716,11 @@ API, map its 11 statuses strictly, and load later pages through `InfiniteList`.
 Each tab keeps its count badge: the endpoint returns only the selected tab's
 total, so the page also reads the other tab with `per_page=1`. O3 is done:
 booking details read live E7 data, strictly map the order, sanitize terms on
-the server, and render the API's price rows and action availability. The
+the server, and render the API's price rows and action availability. On 2026-11-09 the user
+removed the draft concept (no `isDraft`; status and the `canX` rules decide),
+kept a body 404 and a body 422 (another customer's booking) on the details
+read as the not-found page, and the
+response `delivery_type` accepts any string (`from_location` is ignored). The
 remaining plan integrates checkout, cancel, extend, and rate (O4–O12).
 The user answered Q1–Q6, Q9, Q11 and P1–P6, P8 on 2026-11-08 (§8.1: all
 booking types, no points, no coupon, wallet with or without one method). Open

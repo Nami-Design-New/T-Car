@@ -12,7 +12,6 @@ export {
   canExtend,
   canModify,
   canRate,
-  isDraft,
   orderStatusTone,
   orderTabForStatus,
 } from "./model";

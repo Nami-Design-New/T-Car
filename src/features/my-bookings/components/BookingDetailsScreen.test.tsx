@@ -119,15 +119,15 @@ describe("booking details UI", () => {
     expect(screen.getByText("Please call first")).toBeInTheDocument();
   });
 
-  it("shows no action menu for an unpaid draft, but keeps the order number", () => {
+  it("shows the action menu for a booking without createdAt like any other", () => {
     renderWithIntl(
       <BookingDetailsHeader
         booking={{ ...ORDER, status: "coming", createdAt: null }}
       />,
     );
     expect(
-      screen.queryByRole("button", { name: "Booking actions" }),
-    ).not.toBeInTheDocument();
+      screen.getByRole("button", { name: "Booking actions" }),
+    ).toBeInTheDocument();
     expect(screen.getByText(`#${ORDER.orderNumber}`)).toBeInTheDocument();
   });
 
@@ -173,15 +173,9 @@ describe("booking details UI", () => {
       rerender(<BookingDetailsScreen booking={{ ...ORDER, status }} />);
       expect(screen.queryByText(safety)).not.toBeInTheDocument();
     }
-    rerender(
-      <BookingDetailsScreen
-        booking={{ ...ORDER, status: "coming", createdAt: null }}
-      />,
-    );
-    expect(screen.queryByText(safety)).not.toBeInTheDocument();
   });
 
-  it("shows the order time in Riyadh time, and none for a draft", () => {
+  it("shows the order time in Riyadh time, only with a createdAt", () => {
     const { rerender } = renderWithIntl(
       <BookingDetailsScreen
         booking={{ ...ORDER, createdAt: "2026-11-29 20:00:00" }}
@@ -194,16 +188,17 @@ describe("booking details UI", () => {
     expect(screen.queryByText("Order time")).not.toBeInTheDocument();
   });
 
-  it("shows no actions or countdown for a running unpaid draft", () => {
+  it("treats a running booking without createdAt like any other current booking", () => {
     renderWithIntl(
       <BookingDetailsScreen
         booking={{ ...ORDER, status: "current", createdAt: null }}
       />,
     );
 
+    // A current booking offers the extension; the countdown stays late only.
     expect(
-      screen.queryByRole("button", { name: "Booking actions" }),
-    ).not.toBeInTheDocument();
+      screen.getByRole("button", { name: "Booking actions" }),
+    ).toBeInTheDocument();
     expect(screen.queryByTestId("booking-countdown")).not.toBeInTheDocument();
   });
 

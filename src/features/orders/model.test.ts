@@ -5,7 +5,6 @@ import {
   canModify,
   bookingInstant,
   canRate,
-  isDraft,
   type Order,
 } from "./model";
 
@@ -66,11 +65,9 @@ describe("order action rules", () => {
     expect(canModify({ ...order, status: "late" }, NOW)).toBe(false);
   });
 
-  it("allows rating complete orders and identifies drafts by createdAt", () => {
+  it("allows rating complete orders only", () => {
     expect(canRate({ status: "complete" })).toBe(true);
     expect(canRate({ status: "cancelled" })).toBe(false);
-    expect(isDraft({ createdAt: null })).toBe(true);
-    expect(isDraft(order)).toBe(false);
   });
 
   it("cancels new, accepted, and coming only", () => {

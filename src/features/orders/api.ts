@@ -12,7 +12,6 @@ import type {
   BookingReviewInput,
   CreateBookingRequest,
   Order,
-  OrderDeliveryType,
   OrderListItem,
   OrderStatus,
 } from "./model";
@@ -98,7 +97,8 @@ export interface OrderDto {
   status: OrderStatus;
   late_hours: number | null;
   booking_type: BookingType;
-  delivery_type: OrderDeliveryType;
+  /** Any string: the guard accepts values beyond the request list (Q5b). */
+  delivery_type: string;
   pickup_day: string;
   delivery_day: string;
   pickup_time: string;
@@ -166,14 +166,6 @@ const BOOKING_TYPES = [
   "international",
 ] as const satisfies readonly BookingType[];
 
-const DELIVERY_TYPES = [
-  "to_location",
-  "from_branch",
-  "from_airport",
-  "from_station",
-  "from_location",
-] as const satisfies readonly OrderDeliveryType[];
-
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === "object" && value !== null;
 
@@ -213,9 +205,6 @@ const isOrderStatus = (value: unknown): value is OrderStatus =>
 
 const isBookingType = (value: unknown): value is BookingType =>
   BOOKING_TYPES.some((type) => type === value);
-
-const isDeliveryType = (value: unknown): value is OrderDeliveryType =>
-  DELIVERY_TYPES.some((type) => type === value);
 
 const isDatePart = (value: unknown): value is string =>
   typeof value === "string" &&
@@ -325,7 +314,7 @@ function isOrderDto(value: unknown): value is OrderDto {
     isOrderStatus(value.status) &&
     isNullableNumber(value.late_hours) &&
     isBookingType(value.booking_type) &&
-    isDeliveryType(value.delivery_type) &&
+    typeof value.delivery_type === "string" &&
     isDatePart(value.pickup_day) &&
     isDatePart(value.delivery_day) &&
     isTimePart(value.pickup_time) &&
@@ -536,9 +525,20 @@ async function listOrders({
   return mapOrdersResponse(response);
 }
 
+/** Debug output for local API integration work; never emitted by production builds. Removed in O12. */
+function logDetailData(label: string, value: unknown): void {
+  if (process.env.NODE_ENV === "development") {
+    // eslint-disable-next-line no-console -- intentional local API integration inspection.
+    console.info(`[orders] ${label}`, value);
+  }
+}
+
 async function getOrder(id: string): Promise<Order> {
   const response = await serverHttp.get(`/booking/${id}`);
-  return mapOrderResponse(response);
+  logDetailData("retrieved API data", response);
+  const order = mapOrderResponse(response);
+  logDetailData("mapped detail model", order);
+  return order;
 }
 
 /**
@@ -556,6 +556,6 @@ export const bookingsApi: BookingsApi = {
   cancelBooking: (...args) => bookingsMock.cancelBooking(...args),
   // O11 replaces reviews.
   submitReview: (...args) => bookingsMock.submitReview(...args),
-  // O5 replaces draft creation (payment follows in O6).
+  // O5 sends real booking creation (payment follows in O6).
   createBooking: (...args) => bookingsMock.createBooking(...args),
 };

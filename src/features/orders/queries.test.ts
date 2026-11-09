@@ -1,6 +1,10 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const state = vi.hoisted(() => ({ error: undefined as unknown, calls: 0 }));
+const state = vi.hoisted(() => ({
+  error: undefined as unknown,
+  booking: undefined as unknown,
+  calls: 0,
+}));
 
 vi.mock("server-only", () => ({}));
 vi.mock("@/shared/lib/errors", async (importOriginal) => {
@@ -16,7 +20,7 @@ vi.mock("./api", () => ({
     getOrder: async () => {
       state.calls += 1;
       if (state.error) throw state.error;
-      return null;
+      return state.booking;
     },
     listOrders: vi.fn(),
   },
@@ -27,6 +31,7 @@ import { readBookingDetails } from "./queries";
 describe("getBookingDetails", () => {
   beforeEach(() => {
     state.error = undefined;
+    state.booking = undefined;
     state.calls = 0;
   });
 
@@ -36,8 +41,18 @@ describe("getBookingDetails", () => {
     expect(result).toBeNull();
   });
 
+  it("returns the booking for an existing id", async () => {
+    state.booking = { id: "153" };
+    const result = await readBookingDetails("153");
+    expect(result).toEqual({ id: "153" });
+  });
+
   it("returns null for an ownership 422", async () => {
-    state.error = { kind: "validation", status: 422 };
+    state.error = {
+      kind: "validation",
+      status: 422,
+      serverMessage: "You are not allowed to perform this action.",
+    };
     const result = await readBookingDetails("42201");
     expect(result).toBeNull();
   });

@@ -1,4 +1,4 @@
-import { isDraft, type Order } from "@/features/orders";
+import { type Order } from "@/features/orders";
 import BookingDetailsHeader from "./BookingDetailsHeader";
 import BookingHero from "./BookingHero";
 import BookingDatesInfo from "./BookingDatesInfo";
@@ -22,16 +22,15 @@ export default function BookingDetailsScreen({ booking }: Props) {
 
           <div className="grid grid-cols-[1fr_340px] items-start gap-6 max-[860px]:grid-cols-1">
             <div className="flex min-w-0 flex-col gap-6">
-              {/* Upcoming or running (not an unpaid draft): payment-safety and
-                  direct-extension notices. */}
-              {!isDraft(booking) &&
-                (booking.status === "coming" ||
-                  booking.status === "current") && <BookingNotices />}
+              {/* Upcoming or running: payment-safety and direct-extension
+                  notices. */}
+              {(booking.status === "coming" ||
+                booking.status === "current") && <BookingNotices />}
               <BookingDatesInfo booking={booking} />
 
               {/* Only a late booking: the card counts the time overdue since
                   the return time. */}
-              {!isDraft(booking) && booking.status === "late" && (
+              {booking.status === "late" && (
                 <BookingCountdown targetDateTime={booking.returnAt} />
               )}
             </div>

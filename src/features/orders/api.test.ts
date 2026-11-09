@@ -222,7 +222,7 @@ describe("order details API", () => {
     );
   });
 
-  it("rejects a non-numeric coordinate and an unknown delivery type", () => {
+  it("rejects a non-numeric coordinate and accepts an unknown delivery type", () => {
     expectServerError(() =>
       mapOrderResponse({
         ...orderResponse,
@@ -232,12 +232,12 @@ describe("order details API", () => {
         },
       }),
     );
-    expectServerError(() =>
-      mapOrderResponse({
-        ...orderResponse,
-        data: { ...orderResponse.data, delivery_type: "by_drone" },
-      }),
-    );
+    // The guard accepts any string: booking 153 answers from_location (Q5b).
+    const order = mapOrderResponse({
+      ...orderResponse,
+      data: { ...orderResponse.data, delivery_type: "by_drone" },
+    });
+    expect(order.deliveryType).toBe("by_drone");
   });
 
   it("accepts null location fields", () => {
@@ -266,7 +266,7 @@ describe("order details API", () => {
     });
   });
 
-  it("accepts an unpaid draft without the optional has_driver field", () => {
+  it("accepts a booking without the optional has_driver field", () => {
     const { has_driver: _missing, ...data } = orderResponse.data;
     const order = mapOrderResponse({
       ...orderResponse,
