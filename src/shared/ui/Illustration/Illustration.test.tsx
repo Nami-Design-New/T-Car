@@ -50,6 +50,15 @@ describe('Illustration', () => {
     );
   });
 
+  it('renders a drawn static scene for every state name', () => {
+    for (const name of ['error', 'offline', 'unauthorized', 'resource'] as const) {
+      const { container } = render(<Illustration name={name} />);
+      expect(container.querySelector('svg')).not.toBeNull();
+      expect(container.firstChild).toHaveAttribute('aria-hidden', 'true');
+      container.remove();
+    }
+  });
+
   it('holds a still frame when the user prefers reduced motion', async () => {
     mockReducedMotion(true);
     render(<Illustration name="empty" />);

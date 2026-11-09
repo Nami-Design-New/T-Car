@@ -75,4 +75,20 @@ describe('ErrorState', () => {
     expect(screen.queryByRole('heading')).not.toBeInTheDocument();
     expect(screen.getByText('Something went wrong').tagName).toBe('P');
   });
+
+  it('shows a scene instead of the icon circle on the page size', () => {
+    const { container } = renderWithIntl(
+      <ErrorState error={new Error('boom')} size="page" />
+    );
+    expect(
+      container.querySelector('.error-state__illustration')
+    ).toBeInTheDocument();
+  });
+
+  it('keeps the plain icon circle on the section size', () => {
+    const { container } = renderWithIntl(<ErrorState error={new Error('boom')} />);
+    expect(
+      container.querySelector('.error-state__illustration')
+    ).not.toBeInTheDocument();
+  });
 });
