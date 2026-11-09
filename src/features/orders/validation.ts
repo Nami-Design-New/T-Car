@@ -41,14 +41,19 @@ export const availabilitySchema = z
   .object({
     carId: z.string().regex(/^[1-9]\d*$/, { error: "booking.carRequired" }),
     branchId: z.string().regex(/^[1-9]\d*$/, { error: "booking.invalidLocation" }),
-    type: z.literal("daily"),
+    type: z.enum(["daily", "monthly"], { error: "booking.invalidType" }),
     fromDay: apiDate,
-    toDay: apiDate,
+    toDay: apiDate.optional(),
+    count: z.number().int().min(1).max(12).optional(),
     deliveryType: z.enum(["to_location", "from_branch"]),
   })
-  .refine((value) => value.toDay > value.fromDay, {
-    path: ["toDay"],
-    error: "booking.invalidDates",
+  .superRefine((value, context) => {
+    if (value.type === "daily" && (!value.toDay || value.toDay <= value.fromDay)) {
+      context.addIssue({ path: ["toDay"], code: "custom", message: "booking.invalidDates" });
+    }
+    if (value.type === "monthly" && value.count === undefined) {
+      context.addIssue({ path: ["count"], code: "custom", message: "booking.invalidMonths" });
+    }
   });
 
 /** Entered values for extending a booking; the service owns availability limits. */

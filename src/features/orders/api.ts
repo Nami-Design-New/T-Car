@@ -562,6 +562,7 @@ async function checkAvailability({
   type,
   fromDay,
   toDay,
+  count,
   deliveryType,
 }: AvailabilityRequest): Promise<Availability> {
   const response = await serverHttp.get("/booking/is-available-days", {
@@ -570,7 +571,8 @@ async function checkAvailability({
       branch_id: Number(branchId),
       type,
       from_day: fromDay,
-      to_day: toDay,
+      ...(toDay ? { to_day: toDay } : {}),
+      ...(count ? { count } : {}),
       delivery_type: deliveryType,
     },
   });

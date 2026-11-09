@@ -17,6 +17,8 @@ export interface BookingDetails {
   dropoffAddress?: string;
   pickupLocation?: LocationData | null;
   dropoffLocation?: LocationData | null;
+  bookingType?: BookingType;
+  months?: number;
 }
 
 export interface CreateBookingRequest {
@@ -93,9 +95,10 @@ export interface BookingContext {
 export interface AvailabilityRequest {
   carId: string;
   branchId: string;
-  type: "daily";
+  type: "daily" | "monthly";
   fromDay: string;
-  toDay: string;
+  toDay?: string;
+  count?: number;
   deliveryType: BookingDeliveryTypeRequest;
 }
 

@@ -782,9 +782,15 @@
     }
   },
   "booking": {
+    "loginRequired": {
+      "dialogLabel": "Sign in to book",
+      "title": "Sign-in required",
+      "description": "To book your car, please sign in first",
+      "login": "Sign in"
+    },
     "daily": {
       "editBooking": "Edit booking",
-      "newBooking": "New booking",
+      "newBooking": "Car booking",
       "weekdays": {
         "sun": "Sun",
         "mon": "Mon",
@@ -830,12 +836,15 @@
       "selectDropoff": "Set drop-off location",
       "pickupTime": "Pickup time",
       "loadingTimes": "Loading available times...",
+      "selectDatesFirst": "Select pickup and return dates first to see available times.",
       "noAvailableTimes": "No pickup times are available for these dates.",
       "previousMonth": "Previous month",
       "nextMonth": "Next month"
     },
     "monthly": {
-      "title": "Monthly booking",
+      "title": "Car booking",
+      "pickupDay": "Select pickup day",
+      "datePlaceholder": "YYYY/MM/DD",
       "monthsCount": "Number of months",
       "increase": "Add a month",
       "decrease": "Remove a month",

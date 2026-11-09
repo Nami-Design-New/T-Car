@@ -13,6 +13,7 @@ import {
   getCarPolicies,
 } from "@/features/car-details/queries";
 import type { BookingContext } from "@/features/orders";
+import { auth } from "@/auth";
 
 interface Props {
   params: Promise<{ carId: string }>;
@@ -51,10 +52,11 @@ export default async function CarDetailsPage({ params, searchParams }: Props) {
   if (!car) notFound();
 
   // Resolve the car first so an unknown ID remains a proper not-found route.
-  const [ratings, policies, branches] = await Promise.all([
+  const [ratings, policies, branches, session] = await Promise.all([
     getCompanyRatings(carId, queryKey),
     getCarPolicies(),
     getCarBranches(carId, queryKey),
+    auth(),
   ]);
 
   const bookingContext: BookingContext = {
@@ -76,6 +78,7 @@ export default async function CarDetailsPage({ params, searchParams }: Props) {
       policies={policies}
       branches={branches}
       bookingContext={bookingContext}
+      signedIn={Boolean(session?.user)}
     />
   );
 }

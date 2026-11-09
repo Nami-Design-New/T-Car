@@ -58,7 +58,7 @@ describe("BookingDailyModal", () => {
     const dates = futureDateButtons();
     await user.click(dates[0]);
     await user.click(dates[1]);
-    await user.click(await screen.findByRole("button", { name: "10:00" }));
+    await user.click(await screen.findByRole("button", { name: "10 AM" }));
     expect(checkAvailabilityAction).toHaveBeenCalledWith({
       ...availability,
       type: "daily",
@@ -163,5 +163,35 @@ describe("BookingDailyModal", () => {
         screen.getAllByRole("button", { pressed: true }),
       ).toHaveLength(2),
     );
+  }, 15000);
+
+  it("shows the empty availability state when E1 returns no slots", async () => {
+    const user = userEvent.setup();
+    checkAvailabilityAction.mockResolvedValue({
+      ok: true,
+      data: { slots: [], message: "No pickup times are available." },
+    });
+
+    renderWithIntl(
+      <BookingDailyModal
+        open
+        onClose={vi.fn()}
+        pricePerDay={500}
+        onConfirm={vi.fn()}
+        availability={availability}
+      />,
+    );
+
+    const dates = futureDateButtons();
+    await user.click(dates[0]);
+    await user.click(dates[1]);
+
+    expect(
+      await screen.findByText("No pickup times are available."),
+    ).toBeInTheDocument();
+    expect(notifyError).toHaveBeenCalledWith(
+      "No pickup times are available.",
+    );
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
   }, 15000);
 });

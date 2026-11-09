@@ -713,15 +713,17 @@ booking endpoints probed on TEST; one unpaid draft, 226, created). O1 is done:
 `features/orders` now owns all booking data access, actions, queries, and data
 models. O2 is done: the active and past tabs read `GET /booking` from the live
 API, map its 11 statuses strictly, and load later pages through `InfiniteList`.
-Each tab keeps its count badge: the endpoint returns only the selected tab's
-total, so the page also reads the other tab with `per_page=1`. O3 is done:
+The app does not show active/past count badges. O3 is done:
 booking details read live E7 data, strictly map the order, sanitize terms on
 the server, and render the API's price rows and action availability. On 2026-11-09 the user
 removed the draft concept (no `isDraft`; status and the `canX` rules decide),
 kept a body 404 and a body 422 (another customer's booking) on the details
 read as the not-found page, and the
 response `delivery_type` accepts any string (`from_location` is ignored). The
-remaining plan integrates checkout, cancel, extend, and rate (O4–O12).
+O4 daily availability is in progress. O9a is also in progress: monthly
+context now selects the feature-owned monthly modal and sends E1 `count`; its
+draft and payment wiring remains behind O5/O6. The remaining plan integrates
+checkout, cancel, extend, and rate (O4–O12).
 The user answered Q1–Q6, Q9, Q11 and P1–P6, P8 on 2026-11-08 (§8.1: all
 booking types, no points, no coupon, wallet with or without one method). Open
 items are listed in §8.2 / §8.3 with the fraction that settles each. Booking

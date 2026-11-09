@@ -21,6 +21,7 @@ interface Props {
   policies: CarPolicies;
   branches: PickupBranch[];
   bookingContext: BookingContext;
+  signedIn: boolean;
 }
 
 export default function CarDetailsView({
@@ -29,6 +30,7 @@ export default function CarDetailsView({
   policies,
   branches,
   bookingContext,
+  signedIn,
 }: Props) {
   return (
     <>
@@ -71,6 +73,7 @@ export default function CarDetailsView({
                 lowerPrice={car.lowerPrice}
                 maxPrice={car.maxPrice}
                 bookingContext={bookingContext}
+                signedIn={signedIn}
               />
 
               {ratings.count > 0 && (

@@ -19,22 +19,16 @@ interface Props {
   initialPage: Page<OrderListItem>;
   /** From the URL (?status=); the page parses it. */
   status: BookingTab;
-  activeCount: number;
-  pastCount: number;
 }
 
 export default function BookingsTab({
   initialPage,
   status,
-  activeCount,
-  pastCount,
 }: Props) {
   return (
     <div>
       <BookingsTabs
         active={status}
-        activeCount={activeCount}
-        pastCount={pastCount}
       />
       {/* Keyed by tab: switching tabs only changes the query string, which keeps
           this component mounted, and the list must restart from the new tab's

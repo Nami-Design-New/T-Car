@@ -6,6 +6,7 @@ import { ResultDialog } from "@/shared/ui/ResultDialog";
 import { useTranslations } from "next-intl";
 import dynamic from "next/dynamic";
 import { useState } from "react";
+import { LazyAuthModal } from "@/features/auth";
 
 import { ICONS } from "@/shared/config/assets";
 import type {
@@ -22,12 +23,19 @@ import { useCreateBooking } from "../hooks/useCreateBooking";
 const BookingDailyModal = dynamic(() => import("./BookingDailyModal"), {
   ssr: false,
 });
+const BookingMonthlyModal = dynamic(() => import("./BookingMonthlyModal"), {
+  ssr: false,
+});
 const BookingConfirmModal = dynamic(() => import("./BookingConfirmModal"), {
   ssr: false,
 });
 const PaymentMethodModal = dynamic(() => import("./PaymentMethodModal"), {
   ssr: false,
 });
+const BookingLoginRequiredModal = dynamic(
+  () => import("./BookingLoginRequiredModal"),
+  { ssr: false },
+);
 
 /** One sheet at a time. A failed booking keeps the payment sheet open with the error. */
 type Flow =
@@ -51,6 +59,7 @@ interface Props {
   /** API `max_price`: the regular price, struck through when discounted. */
   maxPrice: number;
   bookingContext: BookingContext;
+  signedIn?: boolean;
 }
 
 export default function CarBookingCard({
@@ -65,6 +74,7 @@ export default function CarBookingCard({
   lowerPrice,
   maxPrice,
   bookingContext,
+  signedIn = true,
 }: Props) {
   const t = useTranslations("booking.card");
   // Same rule as the cars list: charge lower_price when set, else max_price.
@@ -72,6 +82,8 @@ export default function CarBookingCard({
   const strikePrice =
     lowerPrice > 0 && maxPrice > lowerPrice ? maxPrice : undefined;
   const [flow, setFlow] = useState<Flow>({ step: "closed" });
+  const [loginRequiredOpen, setLoginRequiredOpen] = useState(false);
+  const [authOpen, setAuthOpen] = useState(false);
   const { step } = flow;
   const setStep = (next: "closed" | "dates" | "confirm" | "payment") =>
     setFlow({ step: next });
@@ -99,6 +111,14 @@ export default function CarBookingCard({
   const handleBookingSuccess = () =>
     window.location.assign("/account/bookings");
 
+  const handleBookNow = () => {
+    if (!signedIn) {
+      setLoginRequiredOpen(true);
+      return;
+    }
+    setStep("dates");
+  };
+
   return (
     <aside className="border-stroke-light bg-surface-elevated rounded-xl border p-6 shadow-[0_2px_8px_rgba(30,30,30,0.06)] max-lg:flex max-lg:items-end max-lg:gap-4 max-lg:p-4">
       <div className="mb-4.5 flex flex-col items-center gap-2 max-lg:mb-0 max-lg:shrink-0 md:flex-row">
@@ -122,7 +142,7 @@ export default function CarBookingCard({
         type="button"
         className="w-full max-lg:flex-1"
         size="lg"
-        onClick={() => setStep("dates")}
+        onClick={handleBookNow}
         disabled={!canBook}
       >
         {t("bookNow")}
@@ -134,7 +154,34 @@ export default function CarBookingCard({
         </p>
       )}
 
-      {step === "dates" && (
+      <BookingLoginRequiredModal
+        open={loginRequiredOpen}
+        onClose={() => setLoginRequiredOpen(false)}
+        onLogin={() => {
+          setLoginRequiredOpen(false);
+          setAuthOpen(true);
+        }}
+      />
+
+      {authOpen && (
+        <LazyAuthModal show onHide={() => setAuthOpen(false)} />
+      )}
+
+      {step === "dates" && bookingContext.bookingType === "monthly" && (
+        <BookingMonthlyModal
+          open
+          onClose={() => setStep("closed")}
+          pricePerDay={pricePerDay}
+          onConfirm={handleDatesConfirmed}
+          availability={{
+            carId,
+            branchId: bookingContext.branch!.id,
+            deliveryType: bookingContext.deliveryType,
+          }}
+        />
+      )}
+
+      {step === "dates" && bookingContext.bookingType !== "monthly" && (
         <BookingDailyModal
           open
           onClose={() => setStep("closed")}

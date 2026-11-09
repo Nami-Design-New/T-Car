@@ -780,9 +780,15 @@
     }
   },
   "booking": {
+    "loginRequired": {
+      "dialogLabel": "تسجيل الدخول للحجز",
+      "title": "تسجيل الدخول مطلوب",
+      "description": "لتتمكن من حجز سيارتك، يرجى تسجيل الدخول أولاً",
+      "login": "تسجيل الدخول"
+    },
     "daily": {
       "editBooking": "تعديل الحجز",
-      "newBooking": "حجز جديد",
+      "newBooking": "حجز سيارة",
       "weekdays": {
         "sun": "الأحد",
         "mon": "الاثنين",
@@ -828,12 +834,15 @@
       "selectDropoff": "حدد موقع التسليم",
       "pickupTime": "حدد وقت الاستلام",
       "loadingTimes": "جارٍ تحميل الأوقات المتاحة...",
+      "selectDatesFirst": "حدد تاريخ الاستلام والتسليم أولاً لعرض الأوقات المتاحة.",
       "noAvailableTimes": "لا توجد أوقات استلام متاحة لهذه التواريخ.",
       "previousMonth": "الشهر السابق",
       "nextMonth": "الشهر التالي"
     },
     "monthly": {
-      "title": "حجز شهري",
+      "title": "حجز سيارة",
+      "pickupDay": "حدد يوم الاستلام",
+      "datePlaceholder": "YYYY/MM/DD",
       "monthsCount": "عدد الشهور",
       "increase": "زيادة عدد الشهور",
       "decrease": "تقليل عدد الشهور",

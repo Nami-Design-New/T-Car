@@ -31,24 +31,22 @@ const booking = (id: string, status: OrderListItem['status']): OrderListItem => 
 const page = (items: OrderListItem[]): Page<OrderListItem> => ({ items, page: 1, lastPage: 1, total: items.length });
 
 describe('BookingsTab', () => {
-  it('shows the active page with its link marked current and both counts', () => {
+  it('shows the active page with its link marked current', () => {
     renderWithIntl(
-      <BookingsTab initialPage={page([booking('1', 'current')])} status="active" activeCount={1} pastCount={4} />
+      <BookingsTab initialPage={page([booking('1', 'current')])} status="active" />
     );
     const nav = screen.getByRole('navigation', { name: 'My bookings' });
     const [activeLink, pastLink] = within(nav).getAllByRole('link');
     expect(activeLink).toHaveAttribute('href', '/account/bookings');
     expect(activeLink).toHaveAttribute('aria-current', 'page');
-    expect(activeLink).toHaveTextContent('1');
     expect(pastLink).toHaveAttribute('href', '/account/bookings?status=past');
     expect(pastLink).not.toHaveAttribute('aria-current');
-    expect(pastLink).toHaveTextContent('4');
     expect(screen.getByText('Brand Car 1')).toBeInTheDocument();
   });
 
   it('shows the past page for status=past', () => {
     renderWithIntl(
-      <BookingsTab initialPage={page([booking('3', 'complete')])} status="past" activeCount={0} pastCount={1} />
+      <BookingsTab initialPage={page([booking('3', 'complete')])} status="past" />
     );
     expect(screen.getByRole('link', { name: /Past/ })).toHaveAttribute('aria-current', 'page');
     expect(screen.getByText('Brand Car 3')).toBeInTheDocument();
@@ -56,15 +54,15 @@ describe('BookingsTab', () => {
 
   it('restarts the list from the new page when the tab changes', () => {
     const { rerender } = renderWithIntl(
-      <BookingsTab initialPage={page([booking('1', 'current')])} status="active" activeCount={1} pastCount={1} />
+      <BookingsTab initialPage={page([booking('1', 'current')])} status="active" />
     );
-    rerender(<BookingsTab initialPage={page([booking('3', 'complete')])} status="past" activeCount={1} pastCount={1} />);
+    rerender(<BookingsTab initialPage={page([booking('3', 'complete')])} status="past" />);
     expect(screen.getByText('Brand Car 3')).toBeInTheDocument();
     expect(screen.queryByText('Brand Car 1')).not.toBeInTheDocument();
   });
 
   it('shows the empty state when the chosen list is empty', () => {
-    renderWithIntl(<BookingsTab initialPage={page([])} status="past" activeCount={1} pastCount={0} />);
+    renderWithIntl(<BookingsTab initialPage={page([])} status="past" />);
     expect(screen.getByRole('heading', { name: 'No bookings yet' })).toBeInTheDocument();
     expect(screen.getByText('No past bookings')).toBeInTheDocument();
   });

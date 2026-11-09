@@ -5,8 +5,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
-import { Swiper, SwiperSlide } from "swiper/react";
-import "swiper/css";
 import { FiChevronRight, FiChevronLeft, FiMapPin } from "react-icons/fi";
 import { formatCurrency } from "@/shared/lib/format";
 import {
@@ -33,6 +31,7 @@ const deliveryCarIcon = ICONS.deliveryCar;
 import { MapLocationModal } from "@/shared/ui/MapLocationModal";
 import type { LocationData } from "@/shared/lib/location";
 import { Price } from "@/shared/ui/Price";
+import BookingTimeSlots from "./BookingTimeSlots";
 
 interface Props {
   open: boolean;
@@ -112,6 +111,9 @@ export default function BookingDailyModal({
   const [mapField, setMapField] = useState<MapField | null>(null);
   const [availableSlots, setAvailableSlots] = useState<string[]>([]);
   const [loadingSlots, setLoadingSlots] = useState(false);
+  const [availabilityError, setAvailabilityError] = useState<string | null>(
+    null,
+  );
   const errorMessage = useErrorMessage();
   const fieldError = useFieldErrorMessage();
   const notify = useNotify();
@@ -154,6 +156,31 @@ export default function BookingDailyModal({
   const dropoffAddressField = register("dropoffAddress");
   const notesField = register("notes");
 
+  const handleClose = () => {
+    reset({
+      startDate: null,
+      endDate: null,
+      time: "",
+      days: 1,
+      pricePerDay,
+      subtotal: 0,
+      vat: 0,
+      total: 0,
+      notes: "",
+      pickupAddress: "",
+      dropoffAddress: "",
+      pickupLocation: null,
+      dropoffLocation: null,
+    });
+    setCursor(new Date());
+    setRange({ start: null, end: null });
+    setMapField(null);
+    setAvailableSlots([]);
+    setLoadingSlots(false);
+    setAvailabilityError(null);
+    onClose();
+  };
+
   // Prefill when opened in edit mode or when initialDetails provided.
   useEffect(() => {
     if (!open) return;
@@ -190,6 +217,7 @@ export default function BookingDailyModal({
     });
     setRange({ start: null, end: null });
     setAvailableSlots([]);
+    setAvailabilityError(null);
   }, [open, initialDetails, pricePerDay, reset]);
 
   useEffect(() => {
@@ -199,6 +227,7 @@ export default function BookingDailyModal({
     let active = true;
     setLoadingSlots(true);
     setAvailableSlots([]);
+    setAvailabilityError(null);
     setValue("time", "", { shouldValidate: false });
     clearErrors();
 
@@ -216,14 +245,14 @@ export default function BookingDailyModal({
         if (result.data.slots.length === 0) {
           const message = result.data.message || t("noAvailableTimes");
           notify.error(message);
-          setError("root.server", { type: "server", message });
+          setAvailabilityError(message);
         }
         return;
       }
 
       const message = result.error.serverMessage ?? errorMessage(result.error);
       if (result.error.serverMessage) notify.error(result.error.serverMessage);
-      setError("root.server", { type: "server", message });
+      setAvailabilityError(message);
     });
 
     return () => {
@@ -239,6 +268,7 @@ export default function BookingDailyModal({
     range.end,
     range.start,
     setError,
+    setAvailabilityError,
     setValue,
     t,
   ]);
@@ -357,7 +387,7 @@ export default function BookingDailyModal({
   return (
     <Dialog
       open={open}
-      onClose={onClose}
+      onClose={handleClose}
       size="lg"
       label={mode === "edit" ? t("editBooking") : t("newBooking")}
     >
@@ -427,15 +457,20 @@ export default function BookingDailyModal({
                   range.end &&
                   day > range.start &&
                   day < range.end;
+                const hasRange = Boolean(range.start && range.end);
+                const isSingleDay = Boolean(isStart && isEnd);
 
                 return (
                   <span
                     key={i}
                     className={cn(
-                      "cell flex h-10 items-center justify-center",
+                      "cell flex h-10 items-center justify-center overflow-hidden",
                       inRange && "bg-action-primary/15",
-                      isStart && "rounded-s-md bg-action-primary/15",
-                      isEnd && "rounded-e-md bg-action-primary/15",
+                      isStart &&
+                        (isSingleDay || !hasRange
+                          ? "rounded-md bg-action-primary"
+                          : "rounded-s-md bg-action-primary"),
+                      isEnd && !isSingleDay && "rounded-e-md bg-action-primary",
                     )}
                   >
                     <button
@@ -443,9 +478,9 @@ export default function BookingDailyModal({
                       disabled={disabled}
                       aria-pressed={Boolean(isStart || isEnd)}
                       className={cn(
-                        "size-full rounded-md border-0 bg-transparent text-sm font-semibold text-text-primary transition hover:bg-surface-card-primary disabled:cursor-not-allowed disabled:text-text-placeholder",
+                        "size-full rounded-none border-0 bg-transparent text-sm font-semibold text-text-primary transition hover:bg-surface-card-primary disabled:cursor-not-allowed disabled:text-text-placeholder",
                         (isStart || isEnd) &&
-                          "selected !bg-action-primary font-bold !text-text-on-action hover:!bg-action-primary",
+                          "selected font-bold text-text-on-action! hover:bg-transparent!",
                       )}
                       onClick={() => handlePick(day)}
                     >
@@ -472,55 +507,39 @@ export default function BookingDailyModal({
             )}
           </div>
 
-          <div className="mb-4.5">
-            <label className="mb-2 block text-start text-sm font-bold text-text-primary">
-              {t("pickupDropoffTime")}
-            </label>
-            <Swiper
-              slidesPerView={4.5}
-              spaceBetween={6}
-              watchOverflow
-              className="time-swiper p-1.5"
-            >
-              {(mode === "edit" && initialDetails
+          <BookingTimeSlots
+            label={t("pickupDropoffTime")}
+            slots={
+              mode === "edit" && initialDetails
                 ? [initialDetails.time]
                 : availableSlots
-              ).map((slot) => {
-                return (
-                  <SwiperSlide key={slot} className="h-auto!">
-                    <button
-                      type="button"
-                      aria-label={`${slot}:00`}
-                      aria-pressed={time === slot}
-                      className={cn(
-                        "flex min-h-9 cursor-pointer w-full items-center justify-center gap-1 rounded-md border-0 px-2 py-2 text-xs text-text-primary transition",
-                        time === slot &&
-                          "bg-action-primary! font-bold text-text-on-action! shadow-[0_3px_8px_rgba(31,127,250,0.2)]",
-                      )}
-                      onClick={() =>
-                        setValue("time", slot, {
-                          shouldDirty: true,
-                          shouldValidate: true,
-                        })
-                      }
-                    >
-                      <span dir="ltr">{slot}:00</span>
-                    </button>
-                  </SwiperSlide>
-                );
-              })}
-            </Swiper>
-            {loadingSlots && (
-              <p className="text-sm text-text-subtle" role="status">
-                {t("loadingTimes")}
-              </p>
-            )}
-            {errors.time && (
-              <p className="form_error" role="alert">
-                {fieldError(errors.time.message)}
-              </p>
-            )}
-          </div>
+            }
+            emptyText={
+              mode === "edit" || (range.start && range.end)
+                ? t("noAvailableTimes")
+                : t("selectDatesFirst")
+            }
+            value={time}
+            onChange={(slot) =>
+              setValue("time", slot, {
+                shouldDirty: true,
+                shouldValidate: true,
+              })
+            }
+            loading={loadingSlots}
+            loadingText={t("loadingTimes")}
+            error={
+              availabilityError ? (
+                <p className="form_error" role="alert">
+                  {availabilityError}
+                </p>
+              ) : errors.time ? (
+                <p className="form_error" role="alert">
+                  {fieldError(errors.time.message)}
+                </p>
+              ) : undefined
+            }
+          />
 
           <div className="grid gap-6 md:grid-cols-2">
             <div className="mb-4.5 min-w-0">
@@ -662,7 +681,7 @@ export default function BookingDailyModal({
             </div>
           </div>
 
-          <div className="booking_field">
+          <div className="">
             <FormTextarea
               label={t("additionalDetails")}
               {...notesField}
@@ -688,17 +707,7 @@ export default function BookingDailyModal({
           )}
 
           <div className="sticky bottom-[-24px] z-1 mb-[-24px] flex items-center gap-3.5 border-t border-stroke-light bg-surface-elevated pb-6 pt-4.5">
-            <Button
-              type="submit"
-              size="lg"
-              className="flex-1"
-              disabled={!range.start || !range.end}
-              loading={loading}
-            >
-              {mode === "edit" ? t("submitEdit") : t("continue")}
-            </Button>
-
-            {mode !== "edit" ? (
+           {mode !== "edit" ? (
               <div className="booking_total shrink-0 text-center">
                 <span className="block text-md text-text-subtle">
                   {t("total")}
@@ -709,6 +718,17 @@ export default function BookingDailyModal({
                 />
               </div>
             ) : null}
+            <Button
+              type="submit"
+              size="lg"
+              className="flex-1"
+              disabled={!range.start || !range.end}
+              loading={loading}
+            >
+              {mode === "edit" ? t("submitEdit") : t("continue")}
+            </Button>
+
+
           </div>
         </form>
         {mapField !== null && (

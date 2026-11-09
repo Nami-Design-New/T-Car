@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import BookingModal from "@/components/modals/BookingModal";
-import BookingMonthlyModal from "@/components/modals/BookingMonthlyModal";
+import { BookingMonthlyModal } from "@/features/booking";
 
 export default function BookingModalPreviewPage() {
   const [monthly, setMonthly] = useState(false);

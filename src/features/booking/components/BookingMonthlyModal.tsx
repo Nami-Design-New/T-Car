@@ -1,20 +1,27 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
-import { Swiper, SwiperSlide } from "swiper/react";
-import "swiper/css";
-import { FiMapPin } from "react-icons/fi";
+import { FiCalendar, FiMapPin } from "react-icons/fi";
 import { formatCurrency } from "@/shared/lib/format";
 import { Button } from "@/shared/ui/Button";
+import { FormInput } from "@/shared/ui/Form";
 import { Dialog } from "@/shared/ui/Dialog";
+import { Price } from "@/shared/ui/Price";
 import { MapLocationModal } from "@/shared/ui/MapLocationModal";
 import { cn } from "@/shared/lib/cn";
 import type { LocationData } from "@/shared/lib/location";
-import type { BookingDetails } from "@/features/booking";
-import { TIME_SLOTS } from "@/features/booking/validation";
+import {
+  checkAvailabilityAction,
+  type BookingDeliveryTypeRequest,
+  type BookingDetails,
+} from "@/features/orders";
+import { fromActionResult } from "@/shared/lib/result";
+import { useErrorMessage } from "@/shared/hooks/useErrorMessage";
+import { useNotify } from "@/shared/hooks/useNotify";
 import { ICONS } from "@/shared/config/assets";
+import BookingTimeSlots from "./BookingTimeSlots";
 
 const deliveryCarIcon = ICONS.deliveryCar;
 
@@ -24,6 +31,11 @@ interface Props {
   pricePerDay: number;
   onConfirm: (details: BookingDetails) => void;
   modal?: boolean;
+  availability?: {
+    carId: string;
+    branchId: string;
+    deliveryType: BookingDeliveryTypeRequest;
+  };
 }
 
 interface DateRange {
@@ -49,8 +61,8 @@ const MONTHS = [
 ];
 const VAT_RATE = 0.15;
 
-function getMonthlyRange(months: number): DateRange {
-  const start = new Date();
+function getMonthlyRange(months: number, startDate = new Date()): DateRange {
+  const start = new Date(startDate);
   start.setHours(0, 0, 0, 0);
   const end = new Date(start);
   end.setMonth(end.getMonth() + months);
@@ -67,12 +79,13 @@ export default function BookingMonthlyModal({
   pricePerDay,
   onConfirm,
   modal = true,
+  availability,
 }: Props) {
   const t = useTranslations("booking.daily");
   const tm = useTranslations("booking.monthly");
   const [rentalMonths, setRentalMonths] = useState(1);
   const [range, setRange] = useState<DateRange>(() => getMonthlyRange(1));
-  const [time, setTime] = useState<(typeof TIME_SLOTS)[number]>("9:00 AM");
+  const [time, setTime] = useState("9:00 AM");
   const [notes, setNotes] = useState("");
   const [pickupAddress, setPickupAddress] = useState("");
   const [dropoffAddress, setDropoffAddress] = useState("");
@@ -83,12 +96,99 @@ export default function BookingMonthlyModal({
     null,
   );
   const [mapField, setMapField] = useState<MapField | null>(null);
+  const [availableSlots, setAvailableSlots] = useState<string[]>([]);
+  const [loadingSlots, setLoadingSlots] = useState(false);
+  const [availabilityError, setAvailabilityError] = useState<string | null>(
+    null,
+  );
+  const pickupDateInputRef = useRef<HTMLInputElement>(null);
+  const notify = useNotify();
+  const errorMessage = useErrorMessage();
 
   const changeRentalMonths = (months: number) => {
     const nextMonths = Math.min(12, Math.max(1, months));
     setRentalMonths(nextMonths);
-    setRange(getMonthlyRange(nextMonths));
+    setRange(getMonthlyRange(nextMonths, range.start ?? undefined));
   };
+
+  const changePickupDate = (value: string) => {
+    if (!value) return;
+    const [year, month, day] = value.split("-").map(Number);
+    const start = new Date(year, month - 1, day);
+    start.setHours(0, 0, 0, 0);
+    setRange(getMonthlyRange(rentalMonths, start));
+  };
+
+  const openPickupDatePicker = () => {
+    const input = pickupDateInputRef.current;
+    if (!input) return;
+
+    if (typeof input.showPicker === "function") {
+      input.showPicker();
+    } else {
+      input.focus();
+    }
+  };
+
+  const handleClose = () => {
+    setRentalMonths(1);
+    setRange(getMonthlyRange(1));
+    setTime("9:00 AM");
+    setNotes("");
+    setPickupAddress("");
+    setDropoffAddress("");
+    setPickupLocation(null);
+    setDropoffLocation(null);
+    setMapField(null);
+    setAvailableSlots([]);
+    setLoadingSlots(false);
+    setAvailabilityError(null);
+    onClose();
+  };
+
+  const toApiDay = (date: Date) =>
+    [date.getFullYear(), String(date.getMonth() + 1).padStart(2, "0"), String(date.getDate()).padStart(2, "0")].join("-");
+
+  useEffect(() => {
+    if (!open || !availability || !range.start) return;
+    let active = true;
+    setLoadingSlots(true);
+    setAvailableSlots([]);
+    setAvailabilityError(null);
+    void checkAvailabilityAction({
+      ...availability,
+      type: "monthly",
+      fromDay: toApiDay(range.start),
+      count: rentalMonths,
+    }).then((actionResult) => {
+      if (!active) return;
+      const result = fromActionResult(actionResult);
+      setLoadingSlots(false);
+      if (result.ok) {
+        setAvailableSlots(result.data.slots);
+        if (result.data.slots.length === 0) {
+          const message = result.data.message || t("noAvailableTimes");
+          notify.error(message);
+          setAvailabilityError(message);
+        }
+      } else {
+        const message = result.error.serverMessage ?? errorMessage(result.error);
+        if (result.error.serverMessage) notify.error(result.error.serverMessage);
+        setAvailabilityError(message);
+      }
+    });
+    return () => {
+      active = false;
+    };
+  }, [
+    availability,
+    errorMessage,
+    open,
+    notify,
+    range.start,
+    rentalMonths,
+    t,
+  ]);
 
   const totalDays =
     range.start && range.end
@@ -138,6 +238,8 @@ export default function BookingMonthlyModal({
       dropoffAddress,
       pickupLocation,
       dropoffLocation,
+        bookingType: "monthly",
+        months: rentalMonths,
     });
   };
 
@@ -196,7 +298,7 @@ export default function BookingMonthlyModal({
   return (
     <Dialog
       open={open}
-      onClose={onClose}
+      onClose={handleClose}
       size="lg"
       modal={modal}
       label={tm("title")}
@@ -206,7 +308,7 @@ export default function BookingMonthlyModal({
         <Dialog.Close />
       </Dialog.Header>
       <Dialog.Body className="mt-6 scrollbar-none [&::-webkit-scrollbar]:hidden">
-        <div className="relative min-h-0 flex-1 overflow-y-auto rounded-xl bg-surface-elevated p-6 animate-[popup_0.35s_ease]">
+        <div className="relative min-h-0 flex-1 overflow-y-auto rounded-xl bg-surface-elevated  animate-[popup_0.35s_ease]">
           <div className="mb-5 rounded-[14px] bg-[#eaf3ff] px-[22px] py-5 text-center">
             <div className="mb-2 text-sm text-[#101820]">
               {tm("monthsCount")}
@@ -269,41 +371,54 @@ export default function BookingMonthlyModal({
             </div>
           </div>
 
-          <div className="mb-5">
-            <label className="mb-2 block text-sm font-semibold text-text-primary">
-              {t("pickupDropoffTime")}
-            </label>
-            <Swiper
-              slidesPerView={4.5}
-              spaceBetween={6}
-              watchOverflow
-              className="rounded-md border border-stroke-light bg-surface-card-primary p-1.5"
+          <div className="mb-5 flex flex-col gap-2">
+            <label
+              htmlFor="monthly-pickup-date"
+              className="text-sm font-semibold text-text-primary"
             >
-              {TIME_SLOTS.map((slot) => (
-                <SwiperSlide key={slot} className="!h-auto">
-                  <button
-                    type="button"
-                    aria-label={slot}
-                    className={cn(
-                      "flex min-h-9 w-full items-center justify-center rounded-md border-0 px-2 py-2 text-xs text-text-primary",
-                      time === slot &&
-                        "!bg-action-primary font-bold !text-text-on-action",
-                    )}
-                    onClick={() => setTime(slot)}
-                  >
-                    {slot}
-                  </button>
-                </SwiperSlide>
-              ))}
-            </Swiper>
+              {tm("pickupDay")}
+            </label>
+            <FormInput
+              id="monthly-pickup-date"
+              ref={pickupDateInputRef}
+              type="date"
+              dir={"rtl"}
+              min={toApiDay(new Date())}
+              value={range.start ? toApiDay(range.start) : ""}
+              onChange={(event) => changePickupDate(event.target.value)}
+              aria-label={tm("pickupDay")}
+              placeholder={tm("datePlaceholder")}
+              icon={<FiCalendar aria-hidden="true" />}
+              iconAction={openPickupDatePicker}
+              iconActionLabel={tm("pickupDay")}
+              className={"[&::-webkit-calendar-picker-indicator]:opacity-0 rtl:text-end! text-start!"}
+            />
           </div>
 
-          {(["pickup", "dropoff"] as const).map((field) => {
+          <BookingTimeSlots
+            label={t("pickupDropoffTime")}
+            slots={availableSlots}
+            emptyText={t("noAvailableTimes")}
+            value={time}
+            onChange={setTime}
+            loading={loadingSlots}
+            loadingText={t("loadingTimes")}
+            error={
+              availabilityError ? (
+                <p className="form_error" role="alert">
+                  {availabilityError}
+                </p>
+              ) : undefined
+            }
+          />
+
+          <div className="mb-5 grid gap-4 md:grid-cols-2">
+            {(["pickup", "dropoff"] as const).map((field) => {
             const pickup = field === "pickup";
             const address = pickup ? pickupAddress : dropoffAddress;
             const location = pickup ? pickupLocation : dropoffLocation;
             return (
-              <div key={field} className="mb-5 flex flex-col gap-2">
+              <div key={field} className="flex flex-col gap-2">
                 <div className="flex items-center justify-between gap-3">
                   <label
                     htmlFor={`${field}-address`}
@@ -324,7 +439,8 @@ export default function BookingMonthlyModal({
                 <p className="m-0 text-xs text-text-subtle">{distanceHint}</p>
               </div>
             );
-          })}
+            })}
+          </div>
 
           <div className="mb-5 flex flex-col gap-2">
             <label className="text-sm font-semibold text-text-primary">
@@ -344,15 +460,22 @@ export default function BookingMonthlyModal({
               type="button"
               className="order-2 flex-1"
               onClick={handleConfirmClick}
+              disabled={loadingSlots || availableSlots.length === 0}
             >
               {t("continue")}
             </Button>
-            <div className="flex flex-col items-start">
-              <span className="text-xs text-text-subtle">{t("total")}</span>
-              <h3 className="m-0 text-xl font-extrabold text-action-primary">
-                {formatCurrency(total)}
-              </h3>
+
+
+            <div className="booking_total shrink-0 text-center">
+              <span className="block text-md text-text-subtle">
+                {t("total")}
+              </span>
+              <Price
+                amount={total}
+                amountClassName="text-2xl  font-extrabold text-action-primary"
+              />
             </div>
+
           </div>
         </div>
       </Dialog.Body>

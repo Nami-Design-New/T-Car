@@ -124,6 +124,11 @@ export const IMAGES = {
     width: 140,
     height: 110,
   },
+  bookingLoginRequired: {
+    src: "/images/illustrations/booking-login-required.png",
+    width: 280,
+    height: 220,
+  },
 } as const;
 
 export const RESULT_ANIMATIONS = {

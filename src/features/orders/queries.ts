@@ -19,18 +19,6 @@ export function getMyBookings(
   );
 }
 
-/** The number of bookings in a tab, for its count badge (one item is read). */
-export async function getMyBookingsTotal(tab: OrderListTab): Promise<number> {
-  const page = await protectedRead(() =>
-    bookingsApi.listOrders({
-      status: tab === "active" ? "current" : "past",
-      page: 1,
-      perPage: 1,
-    }),
-  );
-  return page.total;
-}
-
 /**
  * Null for an unknown id and for another customer's booking (HTTP 200 body
  * code 422, R4), so the page can call notFound(). A dead session signs in
