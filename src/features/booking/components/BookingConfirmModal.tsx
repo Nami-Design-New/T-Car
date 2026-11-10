@@ -140,7 +140,12 @@ export default function BookingConfirmModal({
                     <Price
                       amount={carPrice}
                       size="sm"
-                      suffix={t("perDay")}
+                      suffix={t(
+                        (draft?.bookingType ?? booking.bookingType) ===
+                          "monthly"
+                          ? "perMonth"
+                          : "perDay",
+                      )}
                       amountClassName="text-base font-bold text-action-primary"
                     />
                   </div>

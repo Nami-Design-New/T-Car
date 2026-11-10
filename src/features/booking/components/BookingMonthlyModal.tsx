@@ -94,6 +94,7 @@ export default function BookingMonthlyModal({
 }: Props) {
   const t = useTranslations("booking.daily");
   const tm = useTranslations("booking.monthly");
+  const tc = useTranslations("booking.card");
   const [rentalMonths, setRentalMonths] = useState(1);
   const [range, setRange] = useState<DateRange>(() => getMonthlyRange(1));
   const [time, setTime] = useState("9:00 AM");
@@ -158,7 +159,11 @@ export default function BookingMonthlyModal({
   };
 
   const toApiDay = (date: Date) =>
-    [date.getFullYear(), String(date.getMonth() + 1).padStart(2, "0"), String(date.getDate()).padStart(2, "0")].join("-");
+    [
+      date.getFullYear(),
+      String(date.getMonth() + 1).padStart(2, "0"),
+      String(date.getDate()).padStart(2, "0"),
+    ].join("-");
 
   useEffect(() => {
     if (!open || !availability || !range.start) return;
@@ -183,23 +188,17 @@ export default function BookingMonthlyModal({
           setAvailabilityError(message);
         }
       } else {
-        const message = result.error.serverMessage ?? errorMessage(result.error);
-        if (result.error.serverMessage) notify.error(result.error.serverMessage);
+        const message =
+          result.error.serverMessage ?? errorMessage(result.error);
+        if (result.error.serverMessage)
+          notify.error(result.error.serverMessage);
         setAvailabilityError(message);
       }
     });
     return () => {
       active = false;
     };
-  }, [
-    availability,
-    errorMessage,
-    open,
-    notify,
-    range.start,
-    rentalMonths,
-    t,
-  ]);
+  }, [availability, errorMessage, open, notify, range.start, rentalMonths, t]);
 
   const totalDays =
     range.start && range.end
@@ -249,8 +248,8 @@ export default function BookingMonthlyModal({
       dropoffAddress,
       pickupLocation,
       dropoffLocation,
-        bookingType: "monthly",
-        months: rentalMonths,
+      bookingType: "monthly",
+      months: rentalMonths,
     });
     if (result && !result.ok) {
       notify.error(result.error.serverMessage ?? errorMessage(result.error));
@@ -267,25 +266,25 @@ export default function BookingMonthlyModal({
     return location ? (
       <button
         type="button"
-        className="grid w-full grid-cols-[36px_minmax(0,1fr)_auto] items-center gap-2.5 rounded-md border border-stroke-light bg-surface-card-primary px-3 py-2 text-start"
+        className="border-stroke-light bg-surface-card-primary grid w-full grid-cols-[36px_minmax(0,1fr)_auto] items-center gap-2.5 rounded-md border px-3 py-2 text-start"
         onClick={() => setMapField(field)}
         aria-label={pickup ? t("changePickup") : t("changeDropoff")}
       >
         <span
-          className="grid size-9 place-items-center rounded-sm bg-surface-elevated"
+          className="bg-surface-elevated grid size-9 place-items-center rounded-sm"
           aria-hidden="true"
         >
           <Image src={deliveryCarIcon} alt="" width={24} height={24} />
         </span>
         <span className="flex min-w-0 flex-col gap-0.5">
-          <strong className="truncate text-xs text-text-primary">
+          <strong className="text-text-primary truncate text-xs">
             {getAddressTitle(address, fallback)}
           </strong>
-          <small className="truncate text-[10px] text-text-primary">
+          <small className="text-text-primary truncate text-[10px]">
             {address}
           </small>
         </span>
-        <span className="whitespace-nowrap text-[9px] text-text-subtle">
+        <span className="text-text-subtle text-[9px] whitespace-nowrap">
           {t("selected")}
         </span>
       </button>
@@ -304,7 +303,7 @@ export default function BookingMonthlyModal({
             setDropoffLocation(null);
           }
         }}
-        className="w-full rounded-md border border-stroke-light bg-surface-elevated px-4 py-3 text-sm outline-none transition focus:border-action-primary focus:ring-4 focus:ring-action-primary/15"
+        className="border-stroke-light bg-surface-elevated focus:border-action-primary focus:ring-action-primary/15 w-full rounded-md border px-4 py-3 text-sm transition outline-none focus:ring-4"
       />
     );
   };
@@ -321,8 +320,8 @@ export default function BookingMonthlyModal({
         <Dialog.Title>{tm("title")}</Dialog.Title>
         <Dialog.Close />
       </Dialog.Header>
-      <Dialog.Body className="mt-6 scrollbar-none [&::-webkit-scrollbar]:hidden">
-        <div className="relative min-h-0 flex-1 overflow-y-auto rounded-xl bg-surface-elevated  animate-[popup_0.35s_ease]">
+      <Dialog.Body>
+        <div className="bg-surface-elevated relative min-h-0 flex-1 animate-[popup_0.35s_ease] overflow-y-auto">
           <div className="mb-5 rounded-[14px] bg-[#eaf3ff] px-[22px] py-5 text-center">
             <div className="mb-2 text-sm text-[#101820]">
               {tm("monthsCount")}
@@ -388,7 +387,7 @@ export default function BookingMonthlyModal({
           <div className="mb-5 flex flex-col gap-2">
             <label
               htmlFor="monthly-pickup-date"
-              className="text-sm font-semibold text-text-primary"
+              className="text-text-primary text-sm font-semibold"
             >
               {tm("pickupDay")}
             </label>
@@ -405,7 +404,9 @@ export default function BookingMonthlyModal({
               icon={<FiCalendar aria-hidden="true" />}
               iconAction={openPickupDatePicker}
               iconActionLabel={tm("pickupDay")}
-              className={"[&::-webkit-calendar-picker-indicator]:opacity-0 rtl:text-end! text-start!"}
+              className={
+                "text-start! rtl:text-end! [&::-webkit-calendar-picker-indicator]:opacity-0"
+              }
             />
           </div>
 
@@ -426,7 +427,8 @@ export default function BookingMonthlyModal({
             }
           />
 
-          {availability?.deliveryType === "from_branch" && availability.branch ? (
+          {availability?.deliveryType === "from_branch" &&
+          availability.branch ? (
             <BookingBranchSummary
               branch={availability.branch}
               showroom={availability.showroom ?? ""}
@@ -438,48 +440,50 @@ export default function BookingMonthlyModal({
               distanceLabel={t("kilometerShort")}
             />
           ) : availability?.deliveryType === "from_branch" ? (
-            <div className="mb-5 rounded-md border border-stroke-light bg-surface-card-primary p-3">
-              <p className="mb-1 text-sm font-semibold text-text-primary">
+            <div className="border-stroke-light bg-surface-card-primary mb-5 rounded-md border p-3">
+              <p className="text-text-primary mb-1 text-sm font-semibold">
                 {t("pickupAddress")}
               </p>
-              <p className="m-0 text-sm text-text-subtle">
+              <p className="text-text-subtle m-0 text-sm">
                 {availability.branchAddress ?? t("pickupLocation")}
               </p>
             </div>
           ) : (
-          <div className="mb-5 grid gap-4 md:grid-cols-2">
-            {(["pickup", "dropoff"] as const).map((field) => {
-            const pickup = field === "pickup";
-            const address = pickup ? pickupAddress : dropoffAddress;
-            const location = pickup ? pickupLocation : dropoffLocation;
-            return (
-              <div key={field} className="flex flex-col gap-2">
-                <div className="flex items-center justify-between gap-3">
-                  <label
-                    htmlFor={`${field}-address`}
-                    className="text-sm font-semibold text-text-primary"
-                  >
-                    {pickup ? t("pickupAddress") : t("dropoffAddress")}
-                  </label>
-                  <button
-                    type="button"
-                    className="inline-flex items-center gap-1 border-0 bg-transparent p-0 text-xs font-semibold text-action-primary"
-                    onClick={() => setMapField(field)}
-                  >
-                    <FiMapPin aria-hidden="true" />
-                    {t("chooseFromMap")}
-                  </button>
-                </div>
-                {addressCard(field, address, location)}
-                <p className="m-0 text-xs text-text-subtle">{distanceHint}</p>
-              </div>
-            );
-            })}
-          </div>
+            <div className="mb-5 grid gap-4 md:grid-cols-2">
+              {(["pickup", "dropoff"] as const).map((field) => {
+                const pickup = field === "pickup";
+                const address = pickup ? pickupAddress : dropoffAddress;
+                const location = pickup ? pickupLocation : dropoffLocation;
+                return (
+                  <div key={field} className="flex flex-col gap-2">
+                    <div className="flex items-center justify-between gap-3">
+                      <label
+                        htmlFor={`${field}-address`}
+                        className="text-text-primary text-sm font-semibold"
+                      >
+                        {pickup ? t("pickupAddress") : t("dropoffAddress")}
+                      </label>
+                      <button
+                        type="button"
+                        className="text-action-primary inline-flex items-center gap-1 border-0 bg-transparent p-0 text-xs font-semibold"
+                        onClick={() => setMapField(field)}
+                      >
+                        <FiMapPin aria-hidden="true" />
+                        {t("chooseFromMap")}
+                      </button>
+                    </div>
+                    {addressCard(field, address, location)}
+                    <p className="text-text-subtle m-0 text-xs">
+                      {distanceHint}
+                    </p>
+                  </div>
+                );
+              })}
+            </div>
           )}
 
           <div className="mb-5 flex flex-col gap-2">
-            <label className="text-sm font-semibold text-text-primary">
+            <label className="text-text-primary text-sm font-semibold">
               {t("additionalDetails")}
             </label>
             <textarea
@@ -487,11 +491,11 @@ export default function BookingMonthlyModal({
               placeholder={t("notesPlaceholder")}
               value={notes}
               onChange={(event) => setNotes(event.target.value)}
-              className="w-full resize-y rounded-md border border-stroke-light bg-surface-elevated px-4 py-3.5 text-[15px] transition focus:border-action-primary focus:outline-none focus:ring-4 focus:ring-action-primary/15"
+              className="border-stroke-light bg-surface-elevated focus:border-action-primary focus:ring-action-primary/15 w-full resize-y rounded-md border px-4 py-3.5 text-[15px] transition focus:ring-4 focus:outline-none"
             />
           </div>
 
-          <div className="flex items-center gap-3.5 border-t border-stroke-light pt-4">
+          <div className="border-stroke-light flex items-center gap-3.5 border-t pt-4">
             <Button
               type="button"
               className="order-2 flex-1"
@@ -501,17 +505,16 @@ export default function BookingMonthlyModal({
               {t("continue")}
             </Button>
 
-
-            <div className="booking_total shrink-0 text-center">
-              <span className="block text-md text-text-subtle">
-                {t("total")}
-              </span>
+            {/* The car price per month, as on the booking card; the draft (E2) gives the total. */}
+            <div className="booking_total flex shrink-0 items-end gap-1.5">
               <Price
-                amount={total}
-                amountClassName="text-2xl  font-extrabold text-action-primary"
+                amount={pricePerDay}
+                amountClassName="text-2xl font-extrabold text-action-primary"
               />
+              <small className="text-text-subtle text-base">
+                {tc("perMonth")}
+              </small>
             </div>
-
           </div>
         </div>
       </Dialog.Body>

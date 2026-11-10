@@ -26,6 +26,8 @@ interface Props {
   branches: PickupBranch[];
   bookingContext: BookingContext;
   signedIn: boolean;
+  /** `false` blocks booking until a license is uploaded; `null` = unknown. */
+  licenseUploaded: boolean | null;
 }
 
 export default function CarDetailsView({
@@ -35,6 +37,7 @@ export default function CarDetailsView({
   branches,
   bookingContext,
   signedIn,
+  licenseUploaded,
 }: Props) {
   const [selectedAddonIds, setSelectedAddonIds] = useState<string[]>([]);
   const selectedServices: BookingServiceSelection[] = car.addons
@@ -94,6 +97,7 @@ export default function CarDetailsView({
                 selectedServices={selectedServices}
                 selectedAddons={selectedAddons}
                 signedIn={signedIn}
+                licenseUploaded={licenseUploaded}
               />
 
               {ratings.count > 0 && (

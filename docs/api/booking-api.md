@@ -2,10 +2,12 @@
 
 Last verified: 2026-11-08  
 Base URL: `https://t-car.app/api/user` (TEST)  
-Status: plan only. O0 (contract and probes) is documented here. The user's
-answers of 2026-11-08 are recorded in §8.1 and applied throughout. The questions
-still open are in §8.2 and §8.3, each with the fraction that must answer or
-investigate it. Every booking screen still runs on `services/mocks/bookings.ts`.
+Status: in progress. O0–O5 are done (the list, details, availability, and the
+draft with its confirmation are on the live API); O9a is in progress; O6–O12
+are next. The user's answers are recorded in §8.1 and applied throughout. The
+questions still open are in §8.2 and §8.3, each with the fraction that must
+answer or investigate it. Payment, cancel, extend, edit, and rate still run on
+the `orders` mock until their fraction.
 
 Sources: Bruno `tcar/User Application/Booking/*.yml` (17 requests and their
 `docs` blocks), the current `features/booking`, `features/my-bookings`,
@@ -39,6 +41,8 @@ every commit).
 | R14 | **Payment choice** (P3): the customer picks the wallet alone, one gateway method alone, or the wallet **plus** one gateway method (the wallet pays first, the method pays the rest). Requests: wallet alone → `use_wallet=1`; method alone → `payment_method_id`; both → `use_wallet=1` + `payment_method_id`. A wallet-alone choice that the balance does not cover gets the backend 422 (shown per R5); the UI may also disable "wallet alone" when `wallet_balance < final_price`. |
 | R15 | Every booking type is supported, each with its own booking modal (P1): daily, monthly, airport, station, international. |
 | R16 | No location in the rental context, or no nearest branch for it → "Book now" is disabled and the card asks the customer to choose a location (P2). Never guess a branch. |
+| R17 | **Driving license required** (P11). A signed-in customer without a license on file (profile `license: null`) cannot start a booking: "Book now" opens the account license upload dialog first, and a successful upload continues to the dates step. The car page reads the status with `getLicenseStatus()` (`account/queries.ts`); an unreadable profile is "unknown" and does not block (the backend stays authoritative). |
+| R18 | **Car-details prices follow the booking type** (Q3b answer). The car read is made with `booking_type`, and for `monthly` `lower_price` / `max_price` are monthly prices (TEST car 1: daily 90 / 100, monthly 45 / 55). The card, the daily and monthly date dialogs (their footer shows this car price, not a client total, R6), and the confirmation label it "/ month" for monthly and "/ day" otherwise. |
 
 ## 2. Endpoints
 
@@ -336,9 +340,10 @@ driver service): `price 90 + service_fee 9 + completion_fee 3 +
 additional_services_cost 10 + delivery_fee 0 = total_price 112`; `tax_value
 11.2` (10%); `final_price 123.2`; `discount 110` is **not** subtracted from
 `total_price`; `car_price` 45 while the car's `lower_price` is 90. The
-`car_price` / `discount` reading is open (Q3b, §8.2) and is settled in O5.
+user confirmed these values are shown as returned (Q3b, §8.1).
 
-Fields with no row: `additional_services_cost` (P10), `coupon_*` (R13),
+Extra row: "Additional services" = `additional_services_cost`, the total of the
+selected add-ons (P10, answered), shown when > 0. Fields with no row: `coupon_*` (R13),
 `cancellation_fee` / `refund_amount` (shown only on a cancelled booking, O7),
 the `service_fee_rate*` pair (not in the design).
 
@@ -561,7 +566,7 @@ booking without the user's approval.
 | O2 | Bookings list from E6 | `orders/api.ts` (DTO, guard, mapper, `listOrders({status,page,perPage})`), `orders/model.ts` (`OrderStatus`, `OrderListItem`, status groups), `my-bookings` list components, `messages/*.json` | `/account/bookings` and `?status=past` read E6 on the server; cards show car, year, company logo and rate, localized date, status badge for all 11 statuses, late hours; next pages via `InfiniteList` (route handler or action); empty state per tab; mock and `api.test.ts` updated | | Done (53c7a80, 2026-11-08) |
 | O3 | Booking details from E7 | `orders/api.ts` (`OrderDto` guard/mapper, `getOrder`), `orders/queries.ts`, `my-bookings` details components; move the car-details HTML sanitizer + `HtmlContent` to `shared` (`shared/lib/sanitizeHtml.ts`, `shared/ui/HtmlContent`) and reuse it | Reference = `order_number`; the §4.3 price-details rows; branch or delivery addresses; pickup and return date-time; terms HTML; buttons follow the §4.3 rules; unknown id **and** another user's id give `NEXT_NOT_FOUND`; `late` shows late hours; `pointsUsed`, `warrantyNote` and their UI removed (P8) | Q1b, Q4b (keep R4 until the backend changes), Q5b | Done (3341a48, 2026-11-08; follow-up 303b98a 2026-11-09: no drafts, 422 → not found, any response delivery type). Q1b and Q5b closed; Q4b waits on the backend. Production build and page smoke not run for this commit (the user's dev server was running): run them at the start of O4 |
 | O4 | Daily checkout step 1: context and availability | `car-details` page → `CarDetailsView` → `CarBookingCard` (`BookingContext`), `booking/components/BookingDailyModal.tsx`, `orders/actions.ts` (`checkAvailabilityAction`), `shared/lib/booking-validation.ts` | The dates dialog loads slots from E1 for the picked range and branch; `time` is `HH`; no slot or 422 (including "not available" for `to_location`, Q5) shows the backend message and keeps the dialog open; with no location or no nearest branch "Book now" is disabled and the card asks for a location (R16) | | Done (2026-11-09; verified with typecheck, lint, and 33 focused tests) |
-| O5 | Checkout step 2: draft and confirmation | `car-details` `AddonService.type` + `AddonsGrid` lifted selection, `orders` (`createDraftAction`), `BookingConfirmModal.tsx`, `booking/model.ts` | Confirm shows the price-details rows of §4.3 from the draft, the selected add-ons, terms HTML; `to_location` sends both points with region; travel-abroad add-on requires the selected country; R6 formulas removed | Q3b, P10, Q16 | In progress (2026-11-09; E2 draft creation and selected add-on pairs are sent after dates, with API context and locations; confirmation now renders draft prices, locations, terms, and add-ons. Remaining: settle Q3b, P10, and Q16) |
+| O5 | Checkout step 2: draft and confirmation | `car-details` `AddonService.type` + `AddonsGrid` lifted selection, `orders` (`createDraftAction`), `BookingConfirmModal.tsx`, `booking/model.ts`; license gate: `account` (`getLicenseStatus`, `LazyLicenseUploadDialog`), `CarBookingCard.tsx` | Confirm shows the price-details rows of §4.3 from the draft, the selected add-ons, terms HTML; `to_location` sends both points with region; travel-abroad add-on requires the selected country; R6 formulas removed; "/ month" label for monthly (R18); no license → upload dialog before the dates step (R17) | Q3b, P10, Q16, P11 | Done (2026-11-10: Q3b, P10, Q16 answered by the user; R17 and R18 added) |
 | O6 | Checkout step 3: payment and pay | `orders` (`getPaymentOptionsAction`, `payAction`), `PaymentMethodModal.tsx`, shared `usePaymentWindow` hook extracted from `features/wallet` | Methods and wallet balance from E3; points switch removed; wallet alone, method alone, or wallet + method (R14); E5 gateway opens the payment tab (R10) or a wallet-covered payment succeeds at once; result → `/account/bookings` (P6); wallet top-up still works with the shared hook. No coupon (P5) | P7, Q8 | Not started |
 | O7 | Cancel | `orders` (`cancelQuoteAction`, `cancelAction`), `CancelBookingModal.tsx`, `my-bookings` hooks | Dialog shows the E8 quote (paid, fee, percentage, refund); confirm cancels and refreshes; 422 shown in the dialog; the quote body is checked against §4.8 on a real cancellable booking (with the user's approval) | | Not started |
 | O8 | Extend | `orders` (`extensionQuoteAction`, `extendAction`), `ExtendDurationModal.tsx` (+ payment step from O6) | Counter is extra days (or months for monthly); quote from E9 incl. late fee; pay via E10 with R14 (gateway or wallet); pending extension hides the button | Q10, Q12, Q13 | Not started |
@@ -573,8 +578,8 @@ booking without the user's approval.
 | O11 | Rate | `orders` (`rateAction`), `BookingReviewModal.tsx`, `my-bookings/validation.ts` | Only on `complete`; driver stars only when `has_driver`; prefilled from `my_rating`; re-rating updates | Q6b | Not started |
 | O12 | Clean-up and live smoke | delete `services/bookings.api.ts`, `services/mocks/bookings.ts` if still present, `TIME_SLOTS`, `cancellationFee`, `toEditRequest`; the dev-only `logDetailData` in `features/orders/api.ts` and `features/car-details/api.ts` (kept until the whole booking feature ends, user decision 2026-11-09); `docs/README.md`; this file §9 | No production import of a booking mock; ar/en smoke of list, details, checkout up to the gateway link for each booking type, and every 422 path in §5 reachable from the UI | | Not started |
 
-Progress (2026-11-09): O0–O4 done on `feature/booking-api` (local commits, not
-pushed). O3 also shipped UI the user asked for during review: actions in the
+Progress (2026-11-10): O0–O5 done on `feature/booking-api` (local commits, not
+pushed); O9a in progress; next is O6. O3 also shipped UI the user asked for during review: actions in the
 shared `Menu` with a round horizontal-dots trigger, `BackButton` to the list, the
 late countdown (time overdue since the return time, with the late-fee hint;
 shown for `late` only), the payment-safety and direct-extension notices
@@ -610,15 +615,18 @@ same commit, with the date and the source (backend reply, user, or probe).
 | P5 | Coupon | Not in this version. | R13; E4 out of scope. |
 | P6 | After a successful payment | The bookings list. | O6 → `/account/bookings`. |
 | P8 | Fields the API lacks | No points in the app; remove the warranty for now. | O3 removes `pointsUsed` and `warrantyNote` and their UI. |
+| Q1b | Telling a draft from a paid `coming` booking (2026-11-09) | There is no draft in the app; the backend will add `created_at`. | `isDraft` removed; status and the `canX` rules decide. If `created_at` is later set on drafts too, recheck a draft's E7. |
+| Q3b | `car_price` and `discount` (2026-11-10) | The draft prices are correct as returned. The car-details price is the per-month price when the type is monthly. | Show the API fields as they are (R6); R18 labels the price per month. |
+| Q5b | `delivery_type: "from_location"` in responses (2026-11-09) | Ignore it. | Removed from `OrderDeliveryType`; the response guard accepts any string, and the app only tests `from_branch` vs anything else. |
+| Q16 | `/privacy-policy` at checkout (2026-11-10) | `order.terms` is enough. | E14 is not used by the checkout. |
+| P10 | Add-ons in the price details (2026-11-10) | The additional services price is the total of the selected add-ons. | The confirmation keeps an "Additional services" row reading `additional_services_cost` (shown when > 0). |
+| P11 | Driving license (2026-11-10) | A customer without a license cannot book; open the license dialog to add one. | R17. |
 
 ### 8.2 Open: backend (answer or investigate in the named fraction)
 
 | # | Question | Observed | Fraction |
 | - | -------- | -------- | -------- |
-| Q1b | A draft and a paid upcoming booking are both `coming`. Is `created_at: null` the reliable way to tell a draft, or will a flag be added? | Still open after O3: draft 226 now returns 404, so the earlier `created_at: null` observation could not be reconfirmed. O3 follows the recorded contract and isolates it in `isDraft`. **Closed 2026-11-09 (user): there is no draft in the app; `isDraft` removed, status and the `canX` rules decide; the backend will add `created_at`.** If it is then set on drafts too, `isDraft` (created_at null) stops detecting drafts and needs another signal; recheck a draft's E7 once deployed. | O3, O5 |
-| Q3b | Draft 226: `car_price` 45 while the car's `lower_price` is 90, and `discount` 110 is not subtracted from `total_price`. Is `car_price` the daily price after the offer, and is `discount` informational (already inside `price`)? | Draft 226 | O5 |
 | Q4b | Return 403 (or 404) instead of `code: 422` for another user's booking on E3, E4, E5, E7, E8, E9, E10, E11, E12, E13, so it is distinct from validation. | Still open after O3: E7 for another user's booking (1) still returns body `code: 422`; R4 remains in force. **User, 2026-11-09: E7 now returns 404; app rule: body 404 and body 422 both show not found (R4).** Live probe the same day (booking 1, another user's) still answered body `code: 422`; unknown id 99999 answers `code: 404`. The app maps both to `notFound()`, so no code change either way; recheck the other endpoints when they switch. | O3 |
-| Q5b | Responses use `delivery_type: "from_location"`, which requests reject. Confirm it means "delivered to an address" (requested as `to_location`; also seen on an airport booking) and list every response value. | Still open after O3: 150 and 153 still return `from_location` with pickup/delivery address fields; the UI treats it like `to_location`, **Closed 2026-11-09 (user): ignore `from_location`.** Removed from `OrderDeliveryType`; the response guard accepts any string. It does not need to: the app never sends it, and reads only test `from_branch` vs anything else (addresses in `BookingDatesInfo`, the extend rule in `canExtend`, `toEditRequest`). Live 2026-11-09: 151 `from_branch`, 153 `from_location`. Remaining risk: the strict DTO guard rejects a value it does not list. But no explicit backend confirmation was obtained. | O3 |
 | Q6b | `has_driver` was `false` on a draft with a `driver_service` add-on, and it is missing from the `create-booking` response. What does it mean (a delivery driver?), and when may `driver_rate` be sent? | Draft 226 | O11 |
 | Q7 | The user cannot see a modification request's status, id, or difference (only `has_modify_request`). Add them to `GET /booking/{id}` so the app can offer "pay the difference". | E7 | O10 |
 | Q8 | `payment_methods[].icon` is a Bootstrap Icons class. Provide an image URL, or confirm the full `type` list for local icons. | E3 | O6 |
@@ -627,7 +635,6 @@ same commit, with the date and the source (backend reply, user, or probe).
 | Q13 | `extension-quote` also returns `additional_services_cost` and `offer_discount`; confirm they are part of the contract. | E9 | O8 |
 | Q14 | Bruno "known issues": station return location and `'delivery _lat'` typo; `pickup_time` + `store=0` server error; `rebook` binding. Status? | Bruno | O9c, O10 |
 | Q15 | A modification on a draft says "only allowed before car pickup" although pickup is in the future. Use a draft-specific message? | E11 on 226 | O10 |
-| Q16 | Is `GET /privacy-policy` meant for the checkout, or is `order.terms` enough? | E14 | O5 |
 
 ### 8.3 Open: product (ask the user in the named fraction)
 
@@ -635,7 +642,6 @@ same commit, with the date and the source (backend reply, user, or probe).
 | - | -------- | -------- |
 | P7 | Gateway: new tab with `window.opener` (wallet pattern) or same-tab redirect? Q9 makes the wallet pattern possible; use it unless the user says otherwise. | O6 |
 | P9 | Designs for the monthly, airport, station, and international booking modals: where are they, and does monthly keep the current `BookingMonthlyModal` UI? Airport also needs a "return at the same airport" choice (`delivery_to_airport`). | O9a–O9d |
-| P10 | The design has no row for `additional_services_cost`. Live evidence (2026-11-08): on booking 151 the add-ons (100) are outside `total_price` (99) but inside `final_price` (211), so the eight design rows do not add up to the total; on draft 226 they were inside `total_price`. Add an "additional services" row, or list the add-ons under the price? | O5 |
 
 ## 9. Probe record (2026-11-08)
 

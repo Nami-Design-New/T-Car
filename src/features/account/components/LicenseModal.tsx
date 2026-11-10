@@ -23,6 +23,8 @@ interface Props {
   onSubmit: (file: File) => Promise<AppError | undefined>;
   licenseUrl?: string;
   loading?: boolean;
+  /** Why the license is asked for (shown above the upload area). */
+  description?: string;
 }
 
 export default function LicenseModal({
@@ -31,6 +33,7 @@ export default function LicenseModal({
   onSubmit,
   licenseUrl,
   loading = false,
+  description,
 }: Props) {
   const t = useTranslations("account.license");
   const errorMessage = useErrorMessage();
@@ -110,6 +113,9 @@ export default function LicenseModal({
 
       <Dialog.Body className="flex flex-col max-[480px]:p-2.5">
         <form onSubmit={submit} noValidate>
+          {description && (
+            <p className="text-text-primary mt-0 mb-3 text-sm">{description}</p>
+          )}
           {imageUrl ? (
             <div className="justify flex flex-col">
               <div className="border-stroke-light relative rounded-lg border">

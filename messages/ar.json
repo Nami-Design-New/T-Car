@@ -90,6 +90,7 @@
       "uploadPrompt": "اضغط هنا لرفع صورة رخصة القيادة",
       "fileTypes": "JPG أو JPEG أو PNG، حتى 15 ميجابايت",
       "editImage": "تغيير صورة رخصة القيادة",
+      "requiredToBook": "يجب رفع رخصة القيادة قبل حجز السيارة.",
       "submit": "إرسال"
     },
     "verifyPhone": {
@@ -859,6 +860,7 @@
       "back": "رجوع",
       "title": "تأكيد الحجز",
       "perDay": "/يوم",
+      "perMonth": "/ شهر",
       "pickupAddress": "عنوان الاستلام",
       "dropoffAddress": "عنوان التسليم",
       "pickupTime": "موعد الاستلام",
@@ -924,6 +926,7 @@
       "currency": "ريال",
       "insteadOf": " بدلاً من",
       "perDay": "/ يوم",
+      "perMonth": "/ شهر",
       "bookNow": "احجز الآن",
       "chooseLocation": "اختر موقعًا لحجز هذه السيارة.",
       "paymentNote": "لن يتم خصم أي مبلغ الآن، الدفع عند الاستلام",

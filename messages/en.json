@@ -90,6 +90,7 @@
       "uploadPrompt": "Click here to upload a photo of your driving license",
       "fileTypes": "JPG, JPEG, or PNG, up to 15 MB",
       "editImage": "Change driving license image",
+      "requiredToBook": "You need to upload your driving license before you can book a car.",
       "submit": "Upload"
     },
     "verifyPhone": {
@@ -861,6 +862,7 @@
       "back": "Back",
       "title": "Confirm booking",
       "perDay": "/ day",
+      "perMonth": "/ month",
       "pickupAddress": "Pickup address",
       "dropoffAddress": "Drop-off address",
       "pickupTime": "Pickup time",
@@ -925,6 +927,7 @@
     "card": {
       "currency": "SAR",
       "perDay": "/ day",
+      "perMonth": "/ month",
       "insteadOf": "instead of",
       "bookNow": "Book now",
       "chooseLocation": "Choose a location to book this car.",

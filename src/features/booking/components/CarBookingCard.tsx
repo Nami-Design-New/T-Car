@@ -7,6 +7,7 @@ import { useTranslations } from "next-intl";
 import dynamic from "next/dynamic";
 import { useState } from "react";
 import { LazyAuthModal } from "@/features/auth";
+import { LazyLicenseUploadDialog } from "@/features/account";
 
 import { ICONS } from "@/shared/config/assets";
 import type {
@@ -64,6 +65,8 @@ interface Props {
   maxPrice: number;
   bookingContext: BookingContext;
   signedIn?: boolean;
+  /** `false`: "Book now" asks for the driving license first. `null`/undefined: unknown, not blocked. */
+  licenseUploaded?: boolean | null;
   selectedServices?: BookingServiceSelection[];
   selectedAddons?: { id: string; title: string; price: number }[];
 }
@@ -81,17 +84,22 @@ export default function CarBookingCard({
   maxPrice,
   bookingContext,
   signedIn = true,
+  licenseUploaded = null,
   selectedServices = [],
   selectedAddons = [],
 }: Props) {
   const t = useTranslations("booking.card");
   // Same rule as the cars list: charge lower_price when set, else max_price.
+  // The car-details read is made with the booking type, so for monthly these
+  // are monthly prices.
   const pricePerDay = lowerPrice > 0 ? lowerPrice : maxPrice;
   const strikePrice =
     lowerPrice > 0 && maxPrice > lowerPrice ? maxPrice : undefined;
   const [flow, setFlow] = useState<Flow>({ step: "closed" });
   const [loginRequiredOpen, setLoginRequiredOpen] = useState(false);
   const [authOpen, setAuthOpen] = useState(false);
+  const [hasLicense, setHasLicense] = useState(licenseUploaded !== false);
+  const [licenseOpen, setLicenseOpen] = useState(false);
   const { step } = flow;
   const setStep = (next: "closed" | "dates" | "confirm" | "payment") => {
     if (next === "closed") {
@@ -137,6 +145,16 @@ export default function CarBookingCard({
       setLoginRequiredOpen(true);
       return;
     }
+    if (!hasLicense) {
+      setLicenseOpen(true);
+      return;
+    }
+    setStep("dates");
+  };
+
+  const handleLicenseUploaded = () => {
+    setHasLicense(true);
+    setLicenseOpen(false);
     setStep("dates");
   };
 
@@ -147,7 +165,9 @@ export default function CarBookingCard({
           <h2 className="m-0 flex items-center gap-1.5 leading-none">
             <Price amountClassName="text-action-primary" amount={pricePerDay} />
           </h2>
-          <small className="text-text-subtle text-base">{t("perDay")}</small>
+          <small className="text-text-subtle text-base">
+            {t(bookingContext.bookingType === "monthly" ? "perMonth" : "perDay")}
+          </small>
         </div>
         <div className="flex items-center gap-2">
           <p className="m-0">{t("insteadOf")}</p>
@@ -186,6 +206,14 @@ export default function CarBookingCard({
 
       {authOpen && (
         <LazyAuthModal show onHide={() => setAuthOpen(false)} />
+      )}
+
+      {licenseOpen && (
+        <LazyLicenseUploadDialog
+          open
+          onClose={() => setLicenseOpen(false)}
+          onUploaded={handleLicenseUploaded}
+        />
       )}
 
       {step === "dates" && bookingContext.bookingType === "monthly" && (

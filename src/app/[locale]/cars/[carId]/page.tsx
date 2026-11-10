@@ -14,6 +14,7 @@ import {
   getCarPolicies,
 } from "@/features/car-details/queries";
 import type { BookingContext } from "@/features/orders";
+import { getLicenseStatus } from "@/features/account/queries";
 import { auth } from "@/auth";
 import { redirect } from "@/i18n/navigation";
 
@@ -61,12 +62,14 @@ export default async function CarDetailsPage({ params, searchParams }: Props) {
   if (!car) notFound();
 
   // Resolve the car first so an unknown ID remains a proper not-found route.
-  const [ratings, policies, branches, session] = await Promise.all([
-    getCompanyRatings(carId, queryKey),
-    getCarPolicies(),
-    getCarBranches(carId, queryKey),
-    auth(),
-  ]);
+  const [ratings, policies, branches, session, licenseUploaded] =
+    await Promise.all([
+      getCompanyRatings(carId, queryKey),
+      getCarPolicies(),
+      getCarBranches(carId, queryKey),
+      auth(),
+      getLicenseStatus(),
+    ]);
 
   const bookingContext: BookingContext = {
     bookingType: rentalQuery.bookingType!,
@@ -88,6 +91,7 @@ export default async function CarDetailsPage({ params, searchParams }: Props) {
       branches={branches}
       bookingContext={bookingContext}
       signedIn={Boolean(session?.user)}
+      licenseUploaded={licenseUploaded}
     />
   );
 }

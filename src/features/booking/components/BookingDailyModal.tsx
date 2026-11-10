@@ -112,6 +112,7 @@ export default function BookingDailyModal({
   availability,
 }: Props) {
   const t = useTranslations("booking.daily");
+  const tc = useTranslations("booking.card");
   const [cursor, setCursor] = useState<Date>(new Date());
   const [range, setRange] = useState<DateRange>({ start: null, end: null });
   const [mapField, setMapField] = useState<MapField | null>(null);
@@ -337,8 +338,7 @@ export default function BookingDailyModal({
   const subtotal =
     mode === "edit" ? (initialDetails?.subtotal ?? 0) : calculatedSubtotal;
   const vat = mode === "edit" ? (initialDetails?.vat ?? 0) : calculatedVat;
-  const total =
-    mode === "edit" ? (initialDetails?.total ?? 0) : subtotal + vat;
+  const total = mode === "edit" ? (initialDetails?.total ?? 0) : subtotal + vat;
 
   const handleLocationConfirm = (location: LocationData) => {
     const address =
@@ -405,49 +405,55 @@ export default function BookingDailyModal({
         </Dialog.Title>
         <Dialog.Close />
       </Dialog.Header>
-      <Dialog.Body className="min-h-0 overflow-y-auto mt-6 scrollbar-none [&::-webkit-scrollbar]:hidden">
+      <Dialog.Body>
         <form
-          className=" relative flex min-h-0 w-full flex-1 flex-col overflow-y-auto rounded-xl bg-surface-elevated p-6 animate-[popup_0.35s_ease]"
+          className="bg-surface-elevated relative flex min-h-0 w-full flex-1 animate-[popup_0.35s_ease] flex-col overflow-y-auto p-6"
           onSubmit={submit}
           noValidate
         >
-          <div className=" mb-5.5">
+          <div className="mb-5.5">
             <div className="calendar_header mb-4 flex items-center justify-between">
               <button
                 type="button"
-                className="grid size-8 place-items-center rounded-sm border-0 bg-black/4 text-text-primary transition hover:bg-action-primary/10 hover:text-action-primary"
+                className="text-text-primary hover:bg-action-primary/10 hover:text-action-primary grid size-8 place-items-center rounded-sm border-0 bg-black/4 transition"
                 aria-label={t("previousMonth")}
                 onClick={() => setCursor(new Date(year, month - 1, 1))}
               >
-                <FiChevronLeft className="rtl:scale-x-[-1]" aria-hidden="true" />
+                <FiChevronLeft
+                  className="rtl:scale-x-[-1]"
+                  aria-hidden="true"
+                />
               </button>
 
-              <span className="text-base font-bold text-text-primary">
+              <span className="text-text-primary text-base font-bold">
                 {t(`months.${MONTHS[month]}`)} {year}
               </span>
 
               <button
                 type="button"
-                className="grid size-8 place-items-center rounded-sm border-0 bg-black/4 text-text-primary transition hover:bg-action-primary/10 hover:text-action-primary"
+                className="text-text-primary hover:bg-action-primary/10 hover:text-action-primary grid size-8 place-items-center rounded-sm border-0 bg-black/4 transition"
                 aria-label={t("nextMonth")}
                 onClick={() => setCursor(new Date(year, month + 1, 1))}
               >
-                <FiChevronRight className="rtl:scale-x-[-1]" aria-hidden="true" />
+                <FiChevronRight
+                  className="rtl:scale-x-[-1]"
+                  aria-hidden="true"
+                />
               </button>
             </div>
 
-            <div className=" mb-2 grid grid-cols-7">
+            <div className="mb-2 grid grid-cols-7">
               {WEEKDAYS.map((day) => (
                 <span
                   key={day}
-                  className="text-center text-[0.72rem] font-semibold text-text-subtle"
+                  className="text-text-subtle text-center text-[0.72rem] font-semibold"
                 >
                   {t(`weekdays.${day}`)}
                 </span>
               ))}
             </div>
 
-            <div className=" grid grid-cols-7">
+            <div className="grid grid-cols-7">
               {cells.map((day, i) => {
                 if (!day)
                   return (
@@ -476,9 +482,9 @@ export default function BookingDailyModal({
                       inRange && "bg-action-primary/15",
                       isStart &&
                         (isSingleDay || !hasRange
-                          ? "rounded-md bg-action-primary"
-                          : "rounded-s-md bg-action-primary"),
-                      isEnd && !isSingleDay && "rounded-e-md bg-action-primary",
+                          ? "bg-action-primary rounded-md"
+                          : "bg-action-primary rounded-s-md"),
+                      isEnd && !isSingleDay && "bg-action-primary rounded-e-md",
                     )}
                   >
                     <button
@@ -486,9 +492,9 @@ export default function BookingDailyModal({
                       disabled={disabled}
                       aria-pressed={Boolean(isStart || isEnd)}
                       className={cn(
-                        "size-full rounded-none border-0 bg-transparent text-sm font-semibold text-text-primary transition hover:bg-surface-card-primary disabled:cursor-not-allowed disabled:text-text-placeholder",
+                        "text-text-primary hover:bg-surface-card-primary disabled:text-text-placeholder size-full rounded-none border-0 bg-transparent text-sm font-semibold transition disabled:cursor-not-allowed",
                         (isStart || isEnd) &&
-                          "selected font-bold text-text-on-action! hover:bg-transparent!",
+                          "selected text-text-on-action! font-bold hover:bg-transparent!",
                       )}
                       onClick={() => handlePick(day)}
                     >
@@ -500,14 +506,14 @@ export default function BookingDailyModal({
             </div>
 
             {range.start && (
-              <div className=" mt-4 rounded-sm bg-surface-card-primary p-2.5 text-center text-[0.82rem] font-semibold text-action-primary">
+              <div className="bg-surface-card-primary text-action-primary mt-4 rounded-sm p-2.5 text-center text-[0.82rem] font-semibold">
                 {range.end
                   ? `${range.start.toLocaleDateString()} ${t("to")} ${range.end.toLocaleDateString()}`
                   : `${range.start.toLocaleDateString()} — ${t("chooseEndDate")}`}
               </div>
             )}
             {(errors.startDate || errors.endDate) && (
-              <p className=" text-sm text-status-error" role="alert">
+              <p className="text-status-error text-sm" role="alert">
                 {fieldError(
                   errors.startDate?.message ?? errors.endDate?.message,
                 )}
@@ -549,7 +555,8 @@ export default function BookingDailyModal({
             }
           />
 
-          {availability?.deliveryType === "from_branch" && availability.branch ? (
+          {availability?.deliveryType === "from_branch" &&
+          availability.branch ? (
             <BookingBranchSummary
               branch={availability.branch}
               showroom={availability.showroom ?? ""}
@@ -561,154 +568,158 @@ export default function BookingDailyModal({
               distanceLabel={t("kilometerShort")}
             />
           ) : availability?.deliveryType === "from_branch" ? (
-            <div className="mb-4.5 rounded-md border border-stroke-light bg-surface-card-primary p-3">
-              <p className="mb-1 font-bold text-text-primary">
+            <div className="border-stroke-light bg-surface-card-primary mb-4.5 rounded-md border p-3">
+              <p className="text-text-primary mb-1 font-bold">
                 {t("pickupAddress")}
               </p>
-              <p className="m-0 text-sm text-text-subtle">
+              <p className="text-text-subtle m-0 text-sm">
                 {availability.branchAddress ?? t("pickupLocation")}
               </p>
             </div>
           ) : (
-          <div className="grid gap-6 md:grid-cols-2">
-            <div className="mb-4.5 min-w-0">
-              <div className="mb-2 flex items-center justify-between">
-                <label
-                  className="font-bold text-text-primary"
-                  htmlFor="pickup-address"
-                >
-                  {t("pickupAddress")}
-                </label>
-                <button
-                  className="inline-flex items-center gap-1 border-0 bg-transparent p-0 text-xs text-action-primary underline underline-offset-2"
-                  type="button"
-                  onClick={() => setMapField("pickup")}
-                >
-                  <FiMapPin className="text-sm" />
-                  {t("chooseFromMap")}
-                </button>
+            <div className="grid gap-6 md:grid-cols-2">
+              <div className="mb-4.5 min-w-0">
+                <div className="mb-2 flex items-center justify-between">
+                  <label
+                    className="text-text-primary font-bold"
+                    htmlFor="pickup-address"
+                  >
+                    {t("pickupAddress")}
+                  </label>
+                  <button
+                    className="text-action-primary inline-flex items-center gap-1 border-0 bg-transparent p-0 text-xs underline underline-offset-2"
+                    type="button"
+                    onClick={() => setMapField("pickup")}
+                  >
+                    <FiMapPin className="text-sm" />
+                    {t("chooseFromMap")}
+                  </button>
+                </div>
+                {pickupLocation ? (
+                  <button
+                    type="button"
+                    className="border-stroke-light bg-surface-card-primary flex w-full items-center gap-3 rounded-md border p-3 text-start"
+                    onClick={() => setMapField("pickup")}
+                    aria-label={t("changePickup")}
+                  >
+                    <span className="bg-surface-elevated grid size-9 shrink-0 place-items-center rounded-sm">
+                      <Image
+                        src={deliveryCarIcon}
+                        alt=""
+                        width={24}
+                        height={24}
+                      />
+                    </span>
+                    <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+                      <strong className="text-text-primary truncate text-sm">
+                        {getAddressTitle(pickupAddress, t("pickupLocation"))}
+                      </strong>
+                      <small className="text-text-subtle truncate text-xs">
+                        {pickupAddress}
+                      </small>
+                    </span>
+                    <span className="text-action-primary text-xs font-semibold">
+                      {t("selected")}
+                    </span>
+                  </button>
+                ) : (
+                  <FormInput
+                    {...pickupAddressField}
+                    id="pickup-address"
+                    type="text"
+                    placeholder={t("enterAddress")}
+                    error={
+                      errors.pickupAddress
+                        ? fieldError(errors.pickupAddress.message)
+                        : undefined
+                    }
+                    value={pickupAddress}
+                    onChange={(event) => {
+                      setValue("pickupAddress", event.target.value, {
+                        shouldValidate: true,
+                      });
+                      setValue("pickupLocation", null, {
+                        shouldValidate: true,
+                      });
+                    }}
+                  />
+                )}
+                <p className="text-text-subtle mt-2 text-xs">
+                  {t("distanceHint")}
+                </p>
               </div>
-              {pickupLocation ? (
-                <button
-                  type="button"
-                  className="flex w-full items-center gap-3 rounded-md border border-stroke-light bg-surface-card-primary p-3 text-start"
-                  onClick={() => setMapField("pickup")}
-                  aria-label={t("changePickup")}
-                >
-                  <span className="grid size-9 shrink-0 place-items-center rounded-sm bg-surface-elevated">
-                    <Image
-                      src={deliveryCarIcon}
-                      alt=""
-                      width={24}
-                      height={24}
-                    />
-                  </span>
-                  <span className="flex min-w-0 flex-1 flex-col gap-0.5">
-                    <strong className="truncate text-sm text-text-primary">
-                      {getAddressTitle(pickupAddress, t("pickupLocation"))}
-                    </strong>
-                    <small className="truncate text-xs text-text-subtle">
-                      {pickupAddress}
-                    </small>
-                  </span>
-                  <span className="text-xs font-semibold text-action-primary">
-                    {t("selected")}
-                  </span>
-                </button>
-              ) : (
-                <FormInput
-                  {...pickupAddressField}
-                  id="pickup-address"
-                  type="text"
-                  placeholder={t("enterAddress")}
-                  error={
-                    errors.pickupAddress
-                      ? fieldError(errors.pickupAddress.message)
-                      : undefined
-                  }
-                  value={pickupAddress}
-                  onChange={(event) => {
-                    setValue("pickupAddress", event.target.value, {
-                      shouldValidate: true,
-                    });
-                    setValue("pickupLocation", null, { shouldValidate: true });
-                  }}
-                />
-              )}
-              <p className="mt-2 text-xs text-text-subtle">
-                {t("distanceHint")}
-              </p>
-            </div>
 
-            <div className="  mb-4.5 min-w-0">
-              <div className=" mb-2 flex items-center justify-between">
-                <label
-                  className="font-bold text-text-primary"
-                  htmlFor="dropoff-address"
-                >
-                  {t("dropoffAddress")}
-                </label>
-                <button
-                  className="inline-flex items-center gap-1 border-0 bg-transparent p-0 text-xs text-action-primary underline underline-offset-2"
-                  type="button"
-                  onClick={() => setMapField("dropoff")}
-                >
-                  <FiMapPin className="text-sm" />
-                  {t("chooseFromMap")}
-                </button>
+              <div className="mb-4.5 min-w-0">
+                <div className="mb-2 flex items-center justify-between">
+                  <label
+                    className="text-text-primary font-bold"
+                    htmlFor="dropoff-address"
+                  >
+                    {t("dropoffAddress")}
+                  </label>
+                  <button
+                    className="text-action-primary inline-flex items-center gap-1 border-0 bg-transparent p-0 text-xs underline underline-offset-2"
+                    type="button"
+                    onClick={() => setMapField("dropoff")}
+                  >
+                    <FiMapPin className="text-sm" />
+                    {t("chooseFromMap")}
+                  </button>
+                </div>
+                {dropoffLocation ? (
+                  <button
+                    type="button"
+                    className="border-stroke-light bg-surface-card-primary flex w-full items-center gap-3 rounded-md border p-3 text-start"
+                    onClick={() => setMapField("dropoff")}
+                    aria-label={t("changeDropoff")}
+                  >
+                    <span className="bg-surface-elevated grid size-9 shrink-0 place-items-center rounded-sm">
+                      <Image
+                        src={deliveryCarIcon}
+                        alt=""
+                        width={24}
+                        height={24}
+                      />
+                    </span>
+                    <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+                      <strong className="text-text-primary truncate text-sm">
+                        {getAddressTitle(dropoffAddress, t("dropoffLocation"))}
+                      </strong>
+                      <small className="text-text-subtle truncate text-xs">
+                        {dropoffAddress}
+                      </small>
+                    </span>
+                    <span className="text-action-primary text-xs font-semibold">
+                      {t("selected")}
+                    </span>
+                  </button>
+                ) : (
+                  <FormInput
+                    {...dropoffAddressField}
+                    id="dropoff-address"
+                    type="text"
+                    placeholder={t("enterAddress")}
+                    error={
+                      errors.dropoffAddress
+                        ? fieldError(errors.dropoffAddress.message)
+                        : undefined
+                    }
+                    value={dropoffAddress}
+                    onChange={(event) => {
+                      setValue("dropoffAddress", event.target.value, {
+                        shouldValidate: true,
+                      });
+                      setValue("dropoffLocation", null, {
+                        shouldValidate: true,
+                      });
+                    }}
+                  />
+                )}
+                <p className="text-text-subtle mt-2 text-xs">
+                  {t("distanceHint")}
+                </p>
               </div>
-              {dropoffLocation ? (
-                <button
-                  type="button"
-                  className=" flex w-full items-center gap-3 rounded-md border border-stroke-light bg-surface-card-primary p-3 text-start"
-                  onClick={() => setMapField("dropoff")}
-                  aria-label={t("changeDropoff")}
-                >
-                  <span className=" grid size-9 shrink-0 place-items-center rounded-sm bg-surface-elevated">
-                    <Image
-                      src={deliveryCarIcon}
-                      alt=""
-                      width={24}
-                      height={24}
-                    />
-                  </span>
-                  <span className=" flex min-w-0 flex-1 flex-col gap-0.5">
-                    <strong className="truncate text-sm text-text-primary">
-                      {getAddressTitle(dropoffAddress, t("dropoffLocation"))}
-                    </strong>
-                    <small className="truncate text-xs text-text-subtle">
-                      {dropoffAddress}
-                    </small>
-                  </span>
-                  <span className="text-xs font-semibold text-action-primary">
-                    {t("selected")}
-                  </span>
-                </button>
-              ) : (
-                <FormInput
-                  {...dropoffAddressField}
-                  id="dropoff-address"
-                  type="text"
-                  placeholder={t("enterAddress")}
-                  error={
-                    errors.dropoffAddress
-                      ? fieldError(errors.dropoffAddress.message)
-                      : undefined
-                  }
-                  value={dropoffAddress}
-                  onChange={(event) => {
-                    setValue("dropoffAddress", event.target.value, {
-                      shouldValidate: true,
-                    });
-                    setValue("dropoffLocation", null, { shouldValidate: true });
-                  }}
-                />
-              )}
-              <p className="mt-2 text-xs text-text-subtle">
-                {t("distanceHint")}
-              </p>
             </div>
-          </div>
           )}
 
           <div className="">
@@ -731,21 +742,22 @@ export default function BookingDailyModal({
           </div>
 
           {errors.root?.server?.message && (
-            <p className=" text-sm text-status-error" role="alert">
+            <p className="text-status-error text-sm" role="alert">
               {errors.root.server.message}
             </p>
           )}
 
-          <div className="sticky bottom-[-24px] z-1 mb-[-24px] flex items-center gap-3.5 border-t border-stroke-light bg-surface-elevated pb-6 pt-4.5">
-           {mode !== "edit" ? (
-              <div className="booking_total shrink-0 text-center">
-                <span className="block text-md text-text-subtle">
-                  {t("total")}
-                </span>
+          <div className="border-stroke-light bg-surface-elevated sticky bottom-[-24px] z-1 mb-[-24px] flex items-center gap-3.5 border-t pt-4.5 pb-6">
+            {mode !== "edit" ? (
+              // The car price, as on the booking card; the draft (E2) gives the total.
+              <div className="booking_total flex shrink-0 items-end gap-1.5">
                 <Price
-                  amount={total}
+                  amount={pricePerDay}
                   amountClassName="text-2xl font-extrabold text-text-primary"
                 />
+                <small className="text-text-subtle text-base">
+                  {tc("perDay")}
+                </small>
               </div>
             ) : null}
             <Button
@@ -757,8 +769,6 @@ export default function BookingDailyModal({
             >
               {mode === "edit" ? t("submitEdit") : t("continue")}
             </Button>
-
-
           </div>
         </form>
         {mapField !== null && (

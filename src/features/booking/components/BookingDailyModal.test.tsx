@@ -38,6 +38,21 @@ function futureDateButtons() {
 describe("BookingDailyModal", () => {
   beforeEach(() => vi.clearAllMocks());
 
+  it("shows the car price per day, not a client-side total", () => {
+    renderWithIntl(
+      <BookingDailyModal
+        open
+        onClose={vi.fn()}
+        pricePerDay={90}
+        onConfirm={vi.fn()}
+        availability={availability}
+      />,
+    );
+
+    expect(screen.getByText("/ day")).toBeInTheDocument();
+    expect(screen.queryByText("Total")).not.toBeInTheDocument();
+  });
+
   it("submits normalized daily booking details with the keyboard", async () => {
     const user = userEvent.setup();
     const onConfirm = vi.fn();
