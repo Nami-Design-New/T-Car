@@ -3,6 +3,7 @@ import { isApiEnvelope, type ApiEnvelope } from "@/services/http/envelope";
 import { serverHttp } from "@/services/http/server";
 import { AppError } from "@/shared/lib/errors";
 import { fail, ok, type Result } from "@/shared/lib/result";
+import { isHttpsUrl } from "@/shared/lib/paymentWindow";
 import type {
   WalletData,
   WalletTransaction,
@@ -141,15 +142,6 @@ interface WalletTopUpDto {
   success_url: string;
   fail_url: string;
 }
-
-const isHttpsUrl = (value: unknown): value is string => {
-  if (typeof value !== "string") return false;
-  try {
-    return new URL(value).protocol === "https:";
-  } catch {
-    return false;
-  }
-};
 
 function isWalletTopUpDto(value: unknown): value is WalletTopUpDto {
   return (

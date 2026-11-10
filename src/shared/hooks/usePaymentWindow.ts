@@ -2,10 +2,10 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
-  topUpOutcome,
-  type WalletTopUpOutcome,
-  type WalletTopUpPayment,
-} from "../model";
+  paymentOutcome,
+  type PaymentLinks,
+  type PaymentOutcome,
+} from "@/shared/lib/paymentWindow";
 
 /** The payment tab being watched, and the origins allowed to report its outcome. */
 interface PendingPayment {
@@ -19,13 +19,14 @@ interface PendingPayment {
 const CLOSED_CHECK_MS = 1000;
 
 /**
- * Watches a payment tab opened by this page. The tab's result page posts the
- * outcome back (`topUpOutcome`) and this page closes the tab; a tab closed
+ * Watches a gateway payment tab opened by this page (wallet top-up, booking
+ * payment). The tab's result page posts the
+ * outcome back (`paymentOutcome`) and this page closes the tab; a tab closed
  * without one reports `null`.
  * Only messages from that tab and the API's success/fail origins count.
  */
-export function useTopUpPayment(
-  onDone: (outcome: WalletTopUpOutcome | null) => void,
+export function usePaymentWindow(
+  onDone: (outcome: PaymentOutcome | null) => void,
 ) {
   // null while no payment tab is open; set by `watch`.
   const [pending, setPending] = useState<PendingPayment | null>(null);
@@ -38,7 +39,7 @@ export function useTopUpPayment(
 
     // Stops watching (the cleanup below removes the listener and the timer),
     // so the outcome is reported once.
-    const finish = (outcome: WalletTopUpOutcome | null) => {
+    const finish = (outcome: PaymentOutcome | null) => {
       setPending(null);
       onDoneRef.current(outcome);
     };
@@ -52,7 +53,7 @@ export function useTopUpPayment(
       )
         return;
       // Only 'payment-success' / 'payment-failed' count.
-      const outcome = topUpOutcome(event.data);
+      const outcome = paymentOutcome(event.data);
       if (!outcome) return;
       pending.tab.close();
       finish(outcome);
@@ -72,7 +73,7 @@ export function useTopUpPayment(
   }, [pending]);
 
   /** Starts watching `tab` once it has been sent to `payment.paymentUrl`. */
-  const watch = useCallback((tab: Window, payment: WalletTopUpPayment) => {
+  const watch = useCallback((tab: Window, payment: PaymentLinks) => {
     setPending({
       tab,
       origins: [

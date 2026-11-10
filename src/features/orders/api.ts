@@ -5,6 +5,8 @@ import { serverHttp } from "@/services/http/server";
 import { AppError } from "@/shared/lib/errors";
 import { toPage, type Page } from "@/shared/lib/pagination";
 import { sanitizeBackendHtml } from "@/shared/lib/sanitizeHtml";
+import { isHttpsUrl } from "@/shared/lib/paymentWindow";
+import { fail, ok, type Result } from "@/shared/lib/result";
 import { bookingsMock } from "./api.mock";
 import type {
   Availability,
@@ -13,10 +15,13 @@ import type {
   BookingEditRequest,
   BookingReviewInput,
   CreateDraftRequest,
-  CreateBookingRequest,
   Order,
   OrderListItem,
   OrderStatus,
+  PaymentMethodOption,
+  PaymentOptions,
+  PayOrderRequest,
+  PayOrderResult,
 } from "./model";
 
 export type OrdersListStatus = "current" | "past";
@@ -38,8 +43,11 @@ export interface BookingsApi {
   requestBookingEdit(id: string, request: BookingEditRequest): Promise<void>;
   cancelBooking(id: string): Promise<void>;
   submitReview(id: string, input: BookingReviewInput): Promise<void>;
-  createBooking(request: CreateBookingRequest): Promise<void>;
   createDraft(request: CreateDraftRequest): Promise<Order>;
+  /** E3: the company's gateway methods and the wallet balance for a draft. */
+  getPaymentOptions(orderId: string): Promise<PaymentOptions>;
+  /** E5: pays the draft; a 422 comes back as a failed Result (R5). */
+  payOrder(request: PayOrderRequest): Promise<Result<PayOrderResult>>;
 }
 
 export interface AvailabilityDto {
@@ -416,6 +424,72 @@ export function mapOrdersResponse(value: unknown): Page<OrderListItem> {
   return toPage(value.data.map(toOrderListItem), pagination);
 }
 
+interface PaymentMethodDto {
+  id: number;
+  title: string;
+  /** Live only; missing from the Bruno example. */
+  type?: string;
+}
+
+function isPaymentMethodDto(value: unknown): value is PaymentMethodDto {
+  return (
+    isRecord(value) &&
+    isId(value.id) &&
+    typeof value.title === "string" &&
+    (value.type === undefined || typeof value.type === "string")
+  );
+}
+
+/** E3 → PaymentOptions. `points` / `points_value` and the Bootstrap `icon` class are not mapped (R13, Q8). */
+export function mapPaymentOptionsResponse(value: unknown): PaymentOptions {
+  const data = isRecord(value) ? value.data : undefined;
+  if (
+    !isApiEnvelope(value) ||
+    !isRecord(data) ||
+    !Array.isArray(data.payment_methods) ||
+    !data.payment_methods.every(isPaymentMethodDto) ||
+    !isFiniteNumber(data.wallet_balance)
+  ) {
+    throw new AppError("server");
+  }
+  return {
+    methods: data.payment_methods.map(
+      (method): PaymentMethodOption => ({
+        id: String(method.id),
+        title: method.title,
+        type: method.type ?? "",
+      }),
+    ),
+    walletBalance: data.wallet_balance,
+  };
+}
+
+/**
+ * E5 → PayOrderResult. `data: null` means the wallet paid everything; three
+ * https links mean a gateway tab (R10). Anything else is a `server` error.
+ */
+export function mapPayResponse(value: unknown): PayOrderResult {
+  if (!isApiEnvelope(value)) throw new AppError("server");
+  const { data } = value as { data: unknown };
+  if (data === null || data === undefined) return { kind: "paid" };
+  if (
+    isRecord(data) &&
+    isHttpsUrl(data.payment_url) &&
+    isHttpsUrl(data.success_url) &&
+    isHttpsUrl(data.fail_url)
+  ) {
+    return {
+      kind: "gateway",
+      payment: {
+        paymentUrl: data.payment_url,
+        successUrl: data.success_url,
+        failUrl: data.fail_url,
+      },
+    };
+  }
+  throw new AppError("server");
+}
+
 export function mapAvailabilityResponse(value: unknown): Availability {
   const data = isRecord(value) ? value.data : undefined;
   if (!isApiEnvelope(value) || value.code !== 200 || !isAvailabilityDto(data)) {
@@ -670,6 +744,47 @@ async function createDraft(request: CreateDraftRequest): Promise<Order> {
   return order;
 }
 
+async function getPaymentOptions(orderId: string): Promise<PaymentOptions> {
+  const path = `/booking/${orderId}/payment-methods`;
+  logBookingData("request", { method: "GET", path });
+  const response = await serverHttp.get(path);
+  logBookingData("response", { method: "GET", path, data: response });
+  return mapPaymentOptionsResponse(response);
+}
+
+/** E5 multipart body (R7, R14): `use_wallet=1` and/or `payment_method_id`; never `use_points` (R13). */
+export function toPayFormData(request: PayOrderRequest): FormData {
+  const form = new FormData();
+  form.set("order_id", request.orderId);
+  if (request.useWallet) form.set("use_wallet", "1");
+  if (request.paymentMethodId)
+    form.set("payment_method_id", request.paymentMethodId);
+  return form;
+}
+
+async function payOrder(
+  request: PayOrderRequest,
+): Promise<Result<PayOrderResult>> {
+  try {
+    const form = toPayFormData(request);
+    logBookingData("request", {
+      method: "POST",
+      path: "/booking/pay",
+      body: Object.fromEntries(form.entries()),
+    });
+    const response = await serverHttp.post("/booking/pay", form);
+    logBookingData("response", {
+      method: "POST",
+      path: "/booking/pay",
+      data: response,
+    });
+    const message = isApiEnvelope(response) ? response.message : undefined;
+    return ok(mapPayResponse(response), message);
+  } catch (error) {
+    return fail(error);
+  }
+}
+
 /** Debug output for local API integration work; never emitted by production builds. Removed in O12. */
 function logBookingData(label: string, value: unknown): void {
   if (process.env.NODE_ENV === "development") {
@@ -707,7 +822,7 @@ export const bookingsApi: BookingsApi = {
   cancelBooking: (...args) => bookingsMock.cancelBooking(...args),
   // O11 replaces reviews.
   submitReview: (...args) => bookingsMock.submitReview(...args),
-  // O5 sends real booking creation (payment follows in O6).
-  createBooking: (...args) => bookingsMock.createBooking(...args),
   createDraft,
+  getPaymentOptions,
+  payOrder,
 };

@@ -3,8 +3,11 @@ import { describe, expect, it, vi } from "vitest";
 import { renderWithIntl } from "@/shared/test/render";
 import CarBookingCard from "./CarBookingCard";
 
-vi.mock("../hooks/useCreateBooking", () => ({
-  useCreateBooking: () => ({ submitting: false, createBooking: vi.fn() }),
+vi.mock("@/i18n/navigation", () => ({
+  useRouter: () => ({ push: vi.fn() }),
+}));
+vi.mock("../hooks/usePayOrder", () => ({
+  usePayOrder: () => ({ submitting: false, payOrder: vi.fn() }),
 }));
 vi.mock("@/features/account", () => ({
   LazyLicenseUploadDialog: ({ open }: { open: boolean }) =>

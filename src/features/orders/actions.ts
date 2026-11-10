@@ -18,18 +18,20 @@ import type {
   BookingEditRequest,
   BookingReviewInput,
   CreateDraftRequest,
-  CreateBookingRequest,
   Order,
   OrderListItem,
   OrderListTab,
+  PaymentOptions,
+  PayOrderRequest,
+  PayOrderResult,
 } from "./model";
 import type { Page } from "@/shared/lib/pagination";
 import {
   availabilitySchema,
   bookingEditSchema,
   bookingReviewSchema,
-  createBookingSchema,
   createDraftSchema,
+  payOrderSchema,
   extendBookingSchema,
 } from "./validation";
 
@@ -85,17 +87,36 @@ export async function getOrdersPageAction(
   }
 }
 
-/** Creates a booking after checking the session at the Server Action boundary. */
-export async function createBookingAction(
-  request: CreateBookingRequest,
-): Promise<ActionResult<void>> {
+const ORDER_ID = /^[1-9]\d*$/;
+
+/** E3 for the checkout payment step. */
+export async function getPaymentOptionsAction(
+  orderId: string,
+): Promise<ActionResult<PaymentOptions>> {
   try {
     const session = await auth();
     if (!session?.user?.id) throw new AppError("unauthorized");
-    await bookingsApi.createBooking(parse(createBookingSchema, request));
-    return toActionResult(ok(undefined));
+    if (typeof orderId !== "string" || !ORDER_ID.test(orderId))
+      throw new AppError("validation");
+    return toActionResult(ok(await bookingsApi.getPaymentOptions(orderId)));
   } catch (error) {
-    reportError(error, { scope: "booking.create", carId: request.carId });
+    reportError(error, { scope: "booking.paymentOptions", orderId });
+    return toActionResult(fail(error));
+  }
+}
+
+/** E5: pays the draft with the wallet, one method, or both (R14). */
+export async function payOrderAction(
+  request: PayOrderRequest,
+): Promise<ActionResult<PayOrderResult>> {
+  try {
+    const session = await auth();
+    if (!session?.user?.id) throw new AppError("unauthorized");
+    const result = await bookingsApi.payOrder(parse(payOrderSchema, request));
+    if (!result.ok) reportError(result.error, { scope: "booking.pay" });
+    return toActionResult(result);
+  } catch (error) {
+    reportError(error, { scope: "booking.pay", orderId: request?.orderId });
     return toActionResult(fail(error));
   }
 }

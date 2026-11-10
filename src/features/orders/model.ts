@@ -1,6 +1,46 @@
 import type { LocationData } from "@/shared/lib/location";
+import type { PaymentLinks } from "@/shared/lib/paymentWindow";
 
-export type PaymentMethod = "wallet" | "visa" | "tabby" | "tamara";
+/** E3: one active gateway method of the booking's company. */
+export interface PaymentMethodOption {
+  id: string;
+  title: string;
+  /** Observed: `tamara`, `tabby`, `apple_pay`, `online`; unknown values are kept (neutral icon). */
+  type: string;
+}
+
+/** E3 for one draft. Points are not mapped (R13). */
+export interface PaymentOptions {
+  methods: PaymentMethodOption[];
+  walletBalance: number;
+}
+
+/**
+ * R14: the wallet alone, one gateway method alone, or the wallet plus one
+ * method (the wallet pays first, the method pays the rest).
+ */
+export interface PaymentChoice {
+  useWallet: boolean;
+  paymentMethodId: string | null;
+}
+
+/** E5 input. Never carries points (R13). */
+export interface PayOrderRequest extends PaymentChoice {
+  orderId: string;
+}
+
+/** E5 result: paid at once (the wallet covered it) or a gateway tab to open (R10). */
+export type PayOrderResult =
+  | { kind: "paid" }
+  | { kind: "gateway"; payment: PaymentLinks };
+
+/** Whether a choice is complete: at least the wallet or one method. */
+export const isPaymentChoiceComplete = (choice: PaymentChoice): boolean =>
+  choice.useWallet || choice.paymentMethodId !== null;
+
+/** R14: the wallet alone cannot pay more than its balance (the backend also answers 422). */
+export const walletCoversAlone = (balance: number, amount: number): boolean =>
+  balance >= amount;
 
 /** What the daily booking form produces: dates, time, places, and the price. */
 export interface BookingDetails {
@@ -19,13 +59,6 @@ export interface BookingDetails {
   dropoffLocation?: LocationData | null;
   bookingType?: BookingType;
   months?: number;
-}
-
-export interface CreateBookingRequest {
-  carId: string;
-  details: BookingDetails;
-  paymentMethod: PaymentMethod;
-  termsAccepted: boolean;
 }
 
 export type BookingServiceType =

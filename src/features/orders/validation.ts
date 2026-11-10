@@ -1,28 +1,25 @@
 import { z } from "zod";
 import { bookingDetailsSchema } from "@/shared/lib/booking-validation";
 
-export const paymentMethodSchema = z.enum(
-  ["wallet", "visa", "tabby", "tamara"],
-  {
-    error: "booking.paymentMethodRequired",
-  },
-);
-
 export const bookingTermsSchema = z.object({
   termsAccepted: z
     .boolean()
     .refine((value) => value, { error: "booking.termsRequired" }),
 });
 
-export const createBookingSchema = z.object({
-  carId: z
-    .string({ error: "booking.carRequired" })
-    .trim()
-    .min(1, { error: "booking.carRequired" }),
-  details: bookingDetailsSchema,
-  paymentMethod: paymentMethodSchema,
-  termsAccepted: bookingTermsSchema.shape.termsAccepted,
-});
+const positiveId = z.string().trim().regex(/^[1-9]\d*$/);
+
+/** E5 input (R14): the wallet, one method, or both; never points (R13). */
+export const payOrderSchema = z
+  .object({
+    orderId: positiveId,
+    useWallet: z.boolean(),
+    paymentMethodId: positiveId.nullable(),
+  })
+  .refine((value) => value.useWallet || value.paymentMethodId !== null, {
+    error: "booking.paymentMethodRequired",
+    path: ["paymentMethodId"],
+  });
 
 export const createDraftSchema = z.object({
   carId: z
@@ -123,7 +120,7 @@ export const bookingReviewSchema = z.object({
 /** Edit requests use the same normalized booking details as initial checkout. */
 export const bookingEditSchema = bookingDetailsSchema;
 
-export type CreateBookingValues = z.output<typeof createBookingSchema>;
+export type PayOrderValues = z.output<typeof payOrderSchema>;
 export type CreateDraftValues = z.output<typeof createDraftSchema>;
 export type BookingTermsValues = z.infer<typeof bookingTermsSchema>;
 export type ExtendBookingFormValues = z.infer<typeof extendBookingSchema>;

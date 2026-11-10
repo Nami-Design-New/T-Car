@@ -31,8 +31,8 @@ conventions are in `docs/01-architecture-layers.md` §1.5.
 5. Done when the fraction is committed, verified, and the status tables in
    `docs/README.md` reflect it.
 
-Ask the user before: any `git commit` (and which branch it goes on); deleting `BookingModal`, `BookingMonthlyModal`,
-`InsufficientBalanceModal` (waiting on product); choosing a backend contract
+Ask the user before: any `git commit` (and which branch it goes on); deleting `BookingModal`, `BookingMonthlyModal` (waiting on product;
+`InsufficientBalanceModal` is in use in `features/booking` since booking API O6); choosing a backend contract
 (no real endpoints exist); anything that contradicts a doc.
 
 ## Conventions

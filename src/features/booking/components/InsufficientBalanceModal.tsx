@@ -3,15 +3,19 @@
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { Dialog } from "@/shared/ui/Dialog";
+import { Button } from "@/shared/ui/Button";
 import { PAYMENT_ICONS } from "@/shared/config/assets";
-const walletIcon = PAYMENT_ICONS.wallet;
+
+const lowBalanceIcon = PAYMENT_ICONS.lowBalance;
 
 interface Props {
   open: boolean;
   onClose: () => void;
+  /** "Top up now": the caller takes the customer to the wallet. */
   onConfirm: () => void;
 }
 
+/** Shown when the wallet balance does not cover the booking total (O6, R14). */
 export default function InsufficientBalanceModal({
   open,
   onClose,
@@ -25,6 +29,7 @@ export default function InsufficientBalanceModal({
       onClose={onClose}
       className="w-[min(430px,calc(100%-32px))] overflow-hidden rounded-2xl bg-surface-elevated px-[18px] pt-5 pb-[26px] max-[575px]:px-4"
       placement="bottom-sheet"
+      label={t("title")}
     >
       <span
         className="mx-auto mb-[18px] block h-2 w-[86px] rounded-full bg-surface-disabled"
@@ -41,10 +46,10 @@ export default function InsufficientBalanceModal({
       <div className="mt-1 flex h-[205px] items-center justify-center max-[575px]:h-[180px]">
         <Image
           className="max-[575px]:size-[132px]"
-          src={walletIcon}
+          src={lowBalanceIcon.src}
           alt=""
-          width={150}
-          height={150}
+          width={lowBalanceIcon.width}
+          height={lowBalanceIcon.height}
         />
       </div>
 
@@ -57,13 +62,9 @@ export default function InsufficientBalanceModal({
         </p>
       </div>
 
-      <button
-        type="button"
-        className="h-[58px] w-full rounded-md border-0 bg-action-primary text-[17px] text-text-on-action hover:bg-action-primary/90"
-        onClick={onConfirm}
-      >
+      <Button type="button" size="lg" className="w-full" onClick={onConfirm}>
         {t("topUp")}
-      </button>
+      </Button>
     </Dialog>
   );
 }

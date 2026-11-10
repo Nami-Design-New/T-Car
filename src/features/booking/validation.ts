@@ -4,12 +4,5 @@ export type {
   BookingDetailsValues,
   BookingLocation,
 } from "@/shared/lib/booking-validation";
-export {
-  bookingTermsSchema,
-  createBookingSchema,
-  paymentMethodSchema,
-} from "@/features/orders";
-export type {
-  BookingTermsValues,
-  CreateBookingValues,
-} from "@/features/orders";
+export { bookingTermsSchema } from "@/features/orders";
+export type { BookingTermsValues } from "@/features/orders";

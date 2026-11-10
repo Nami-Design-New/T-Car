@@ -2,37 +2,9 @@ import { describe, expect, it } from "vitest";
 import { toValidationError } from "@/shared/lib/validation";
 import {
   bookingReviewSchema,
-  createBookingSchema,
   extendBookingSchema,
+  payOrderSchema,
 } from "./validation";
-
-function tomorrow() {
-  const date = new Date();
-  date.setHours(0, 0, 0, 0);
-  date.setDate(date.getDate() + 1);
-  return date;
-}
-
-function validDetails() {
-  const startDate = tomorrow();
-  const endDate = new Date(startDate);
-  endDate.setDate(endDate.getDate() + 2);
-  return {
-    startDate,
-    endDate,
-    time: "09",
-    days: 2,
-    pricePerDay: 500,
-    subtotal: 1000,
-    vat: 150,
-    total: 1150,
-    notes: " Need a child seat ",
-    pickupAddress: " Riyadh branch ",
-    dropoffAddress: " ",
-    pickupLocation: null,
-    dropoffLocation: null,
-  };
-}
 
 function fieldErrors(result: {
   success: boolean;
@@ -78,21 +50,33 @@ describe("orders validation", () => {
     });
   });
 
-  it("requires accepted terms and a supported payment method", () => {
-    const details = validDetails();
-    const result = createBookingSchema.safeParse({
-      carId: "car-1",
-      details,
-      paymentMethod: "cash",
-      termsAccepted: false,
-    });
+  it("accepts the wallet alone, a method alone, or both (R14)", () => {
+    for (const choice of [
+      { useWallet: true, paymentMethodId: null },
+      { useWallet: false, paymentMethodId: "6" },
+      { useWallet: true, paymentMethodId: "6" },
+    ]) {
+      expect(payOrderSchema.safeParse({ orderId: "226", ...choice }).success).toBe(
+        true,
+      );
+    }
+  });
 
-    expect(result.success).toBe(false);
+  it("requires the wallet or a method, and numeric ids", () => {
+    const result = payOrderSchema.safeParse({
+      orderId: "226",
+      useWallet: false,
+      paymentMethodId: null,
+    });
     expect(
       result.success ? undefined : toValidationError(result.error).fieldErrors,
-    ).toMatchObject({
-      paymentMethod: expect.any(String),
-      termsAccepted: "booking.termsRequired",
-    });
+    ).toEqual({ paymentMethodId: "booking.paymentMethodRequired" });
+    expect(
+      payOrderSchema.safeParse({
+        orderId: "abc",
+        useWallet: true,
+        paymentMethodId: null,
+      }).success,
+    ).toBe(false);
   });
 });

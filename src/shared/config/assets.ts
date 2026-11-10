@@ -87,6 +87,8 @@ export const PAYMENT_ICONS = {
   card: { src: "/icons/payment/card.svg", width: 32, height: 32 },
   tabby: { src: "/icons/payment/tabby.svg", width: 32, height: 32 },
   tamara: { src: "/icons/payment/tamara.svg", width: 32, height: 32 },
+  /** Insufficient-balance illustration (checkout wallet). */
+  lowBalance: { src: "/icons/low-balance.svg", width: 150, height: 150 },
 } as const;
 
 export const IMAGES = {

@@ -1,6 +1,7 @@
 import { orderTabForStatus, type Order, type OrderListItem } from "./model";
 import { AppError } from "@/shared/lib/errors";
 import { toPage, type Page } from "@/shared/lib/pagination";
+import { fail, ok } from "@/shared/lib/result";
 import { MOCK_OFFICES } from "@/services/mocks/offices";
 import type { BookingsApi } from "./api";
 
@@ -164,6 +165,8 @@ const MOCK_LIST_FAILURE_PAGE = 99;
 const MOCK_DETAILS_FAILURE_ID = "server-error";
 /** Mock only: branch 422 reproduces the backend's unavailable-days response. */
 const MOCK_UNAVAILABLE_BRANCH_ID = "422";
+/** Mock only (E3/E5): the wallet balance; a wallet-alone payment above it fails with the backend's 422. */
+const MOCK_WALLET_BALANCE = 500;
 
 const delay = (ms = 300) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -263,19 +266,6 @@ export const bookingsMock: BookingsApi = {
     }
   },
 
-  async createBooking({ details }) {
-    await delay(800);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    if (details.startDate < today) {
-      throw new AppError("validation", "booking.startInPast", undefined, {
-        startDate: "booking.startInPast",
-      });
-    }
-    if (details.days > MOCK_MAX_RENTAL_DAYS)
-      throw new AppError("conflict", "booking.carUnavailable");
-  },
-
   async createDraft({ details }) {
     await delay(800);
     const today = new Date();
@@ -288,5 +278,44 @@ export const bookingsMock: BookingsApi = {
     if (details.days > MOCK_MAX_RENTAL_DAYS)
       throw new AppError("conflict", "booking.carUnavailable");
     return findOrder("1");
+  },
+
+  async getPaymentOptions(orderId) {
+    await delay();
+    findOrder(orderId);
+    return {
+      methods: [
+        { id: "6", title: "Online Payment", type: "online" },
+        { id: "7", title: "Tabby", type: "tabby" },
+        { id: "8", title: "Tamara", type: "tamara" },
+      ],
+      walletBalance: MOCK_WALLET_BALANCE,
+    };
+  },
+
+  async payOrder({ orderId, useWallet, paymentMethodId }) {
+    await delay(600);
+    const order = findOrder(orderId);
+    if (useWallet && !paymentMethodId) {
+      if (order.finalPrice > MOCK_WALLET_BALANCE) {
+        return fail(
+          new AppError("validation", undefined, 422, undefined, {
+            serverMessage: "The payment method is required.",
+          }),
+        );
+      }
+      return ok({ kind: "paid" }, "Payment successful.");
+    }
+    return ok(
+      {
+        kind: "gateway",
+        payment: {
+          paymentUrl: `https://t-car.app/order/pay/${orderId}`,
+          successUrl: `https://t-car.app/order/success/${orderId}`,
+          failUrl: `https://t-car.app/order/fail/${orderId}`,
+        },
+      },
+      "Proceed to payment now.",
+    );
   },
 };

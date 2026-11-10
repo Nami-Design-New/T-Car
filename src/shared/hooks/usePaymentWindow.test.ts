@@ -1,6 +1,6 @@
 import { act, renderHook } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { useTopUpPayment } from "./useTopUpPayment";
+import { usePaymentWindow } from "./usePaymentWindow";
 
 const payment = {
   paymentUrl: "https://t-car.app/wallet/pay/75",
@@ -26,10 +26,10 @@ function post(
 beforeEach(() => vi.useFakeTimers());
 afterEach(() => vi.useRealTimers());
 
-describe("useTopUpPayment", () => {
+describe("usePaymentWindow", () => {
   it("reports the outcome the payment tab posts, once", () => {
     const onDone = vi.fn();
-    const { result } = renderHook(() => useTopUpPayment(onDone));
+    const { result } = renderHook(() => usePaymentWindow(onDone));
 
     act(() => result.current.watch(tab, payment));
     expect(result.current.paying).toBe(true);
@@ -44,7 +44,7 @@ describe("useTopUpPayment", () => {
 
   it("ignores messages from other origins, other windows, or of another shape", () => {
     const onDone = vi.fn();
-    const { result } = renderHook(() => useTopUpPayment(onDone));
+    const { result } = renderHook(() => usePaymentWindow(onDone));
 
     act(() => result.current.watch(tab, payment));
     post("payment-success", "https://evil.example");
@@ -57,7 +57,7 @@ describe("useTopUpPayment", () => {
   it("reports null when the tab closes without an outcome", () => {
     const onDone = vi.fn();
     const closedTab = { closed: false } as Window;
-    const { result } = renderHook(() => useTopUpPayment(onDone));
+    const { result } = renderHook(() => usePaymentWindow(onDone));
 
     act(() => result.current.watch(closedTab, payment));
     act(() => {

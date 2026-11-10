@@ -902,18 +902,15 @@
       "close": "Close",
       "wallet": "Wallet",
       "walletDescription": "Pay from your wallet faster",
-      "points": "Use points",
-      "pointsDescription": "Save by paying with your points",
-      "upTo": "Up to",
-      "pointsUnit": "points",
+      "useWallet": "Use wallet balance",
+      "walletCovers": "Your wallet balance covers the full amount.",
+      "walletPartial": "Your wallet pays first. Choose a payment method for the rest.",
+      "methodsTitle": "Payment methods",
+      "noMethods": "No payment methods are available for this booking.",
       "currency": "SAR",
       "confirming": "Confirming booking...",
       "confirm": "Confirm",
       "options": {
-        "visa": {
-          "title": "Electronic payment (Visa / Mastercard)",
-          "description": "Mada, Visa, and Mastercard accepted worldwide"
-        },
         "tabby": {
           "title": "Pay later with Tabby",
           "description": "Split your bill into 4 interest-free payments"
@@ -934,7 +931,9 @@
       "paymentNote": "No amount will be charged now; pay on pickup",
       "successTitle": "Booking confirmed successfully!",
       "successDescription": "Redirecting to your bookings...",
-      "goNow": "Go now"
+      "goNow": "Go now",
+      "waitingPayment": "Waiting for payment...",
+      "paymentFailed": "The payment was not completed. You can try again."
     }
   },
   "carDetails": {

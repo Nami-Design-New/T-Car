@@ -6,7 +6,7 @@ import { ResultDialog } from "@/shared/ui/ResultDialog";
 import { useTranslations } from "next-intl";
 import dynamic from "next/dynamic";
 import { useCallback, useState } from "react";
-import { useTopUpPayment } from "../hooks/useTopUpPayment";
+import { usePaymentWindow } from "@/shared/hooks/usePaymentWindow";
 import { useWallet } from "../hooks/useWallet";
 import {
   MAX_TOP_UP,
@@ -50,7 +50,7 @@ export default function WalletSection({ initialData }: Props) {
   const close = useCallback(() => setFlow({ step: "idle" }), []);
 
   // The API owns the balance: re-read it whatever the payment tab reports.
-  const { watch } = useTopUpPayment((outcome) => {
+  const { watch } = usePaymentWindow((outcome) => {
     reload();
     if (outcome) setFlow({ step: "result", kind: "topup", status: outcome });
   });

@@ -11,7 +11,10 @@ import {
   mapAvailabilityResponse,
   mapOrderResponse,
   mapOrdersResponse,
+  mapPaymentOptionsResponse,
+  mapPayResponse,
   toCreateDraftFormData,
+  toPayFormData,
 } from "./api";
 import type { CreateDraftRequest } from "./model";
 
@@ -429,3 +432,159 @@ function expectServerError(read: () => unknown) {
     expect((error as AppError).kind).toBe("server");
   }
 }
+
+const paymentOptionsResponse = {
+  data: {
+    payment_methods: [
+      { id: 6, title: "Online Payment", type: "online", icon: "bi-globe" },
+      { id: 7, title: "Tabby", type: "tabby", icon: "bi-credit-card" },
+    ],
+    wallet_balance: 120.5,
+    points: 40,
+    points_value: 4,
+  },
+  message: "Fetched successfully.",
+  code: 200,
+};
+
+const gatewayResponse = {
+  data: {
+    payment_url: "https://t-car.app/order/pay/226?amount=123.2&locale=en",
+    success_url: "https://t-car.app/order/success/226",
+    fail_url: "https://t-car.app/order/fail/226",
+  },
+  message: "Proceed to payment now.",
+  code: 200,
+};
+
+describe("payment options API (E3)", () => {
+  beforeEach(() => get.mockReset());
+
+  it("maps methods and the wallet balance, without points or icon classes", () => {
+    expect(mapPaymentOptionsResponse(paymentOptionsResponse)).toEqual({
+      methods: [
+        { id: "6", title: "Online Payment", type: "online" },
+        { id: "7", title: "Tabby", type: "tabby" },
+      ],
+      walletBalance: 120.5,
+    });
+  });
+
+  it("keeps a method without type (Bruno shape) with an empty type", () => {
+    const { methods } = mapPaymentOptionsResponse({
+      ...paymentOptionsResponse,
+      data: {
+        ...paymentOptionsResponse.data,
+        payment_methods: [{ id: 6, title: "Online Payment", icon: "bi-globe" }],
+      },
+    });
+    expect(methods).toEqual([{ id: "6", title: "Online Payment", type: "" }]);
+  });
+
+  it("rejects a missing wallet balance as a server error", () => {
+    expectServerError(() =>
+      mapPaymentOptionsResponse({
+        ...paymentOptionsResponse,
+        data: { payment_methods: [] },
+      }),
+    );
+  });
+
+  it("requests E3 for the order", async () => {
+    get.mockResolvedValue(paymentOptionsResponse);
+    await bookingsApi.getPaymentOptions("226");
+    expect(get).toHaveBeenCalledWith("/booking/226/payment-methods");
+  });
+});
+
+describe("pay API (E5)", () => {
+  beforeEach(() => post.mockReset());
+
+  it("maps gateway links", () => {
+    expect(mapPayResponse(gatewayResponse)).toEqual({
+      kind: "gateway",
+      payment: {
+        paymentUrl: "https://t-car.app/order/pay/226?amount=123.2&locale=en",
+        successUrl: "https://t-car.app/order/success/226",
+        failUrl: "https://t-car.app/order/fail/226",
+      },
+    });
+  });
+
+  it("maps data: null to a payment the wallet covered", () => {
+    expect(
+      mapPayResponse({ data: null, message: "Payment successful.", code: 200 }),
+    ).toEqual({ kind: "paid" });
+  });
+
+  it("rejects a non-https gateway link as a server error", () => {
+    expectServerError(() =>
+      mapPayResponse({
+        ...gatewayResponse,
+        data: { ...gatewayResponse.data, payment_url: "javascript:alert(1)" },
+      }),
+    );
+  });
+
+  it("sends use_wallet and payment_method_id only when chosen, never use_points", () => {
+    const both = toPayFormData({
+      orderId: "226",
+      useWallet: true,
+      paymentMethodId: "6",
+    });
+    expect(Object.fromEntries(both.entries())).toEqual({
+      order_id: "226",
+      use_wallet: "1",
+      payment_method_id: "6",
+    });
+    const methodOnly = toPayFormData({
+      orderId: "226",
+      useWallet: false,
+      paymentMethodId: "6",
+    });
+    expect(Object.fromEntries(methodOnly.entries())).toEqual({
+      order_id: "226",
+      payment_method_id: "6",
+    });
+    const walletOnly = toPayFormData({
+      orderId: "226",
+      useWallet: true,
+      paymentMethodId: null,
+    });
+    expect(Object.fromEntries(walletOnly.entries())).toEqual({
+      order_id: "226",
+      use_wallet: "1",
+    });
+  });
+
+  it("returns the backend message on success and a 422 as a failed Result", async () => {
+    post.mockResolvedValueOnce(gatewayResponse);
+    await expect(
+      bookingsApi.payOrder({
+        orderId: "226",
+        useWallet: false,
+        paymentMethodId: "6",
+      }),
+    ).resolves.toMatchObject({
+      ok: true,
+      message: "Proceed to payment now.",
+      data: { kind: "gateway" },
+    });
+    expect(post).toHaveBeenCalledWith("/booking/pay", expect.any(FormData));
+
+    post.mockRejectedValueOnce(
+      new AppError("validation", undefined, 422, undefined, {
+        serverMessage: "This order has already been paid.",
+      }),
+    );
+    const failed = await bookingsApi.payOrder({
+      orderId: "226",
+      useWallet: true,
+      paymentMethodId: null,
+    });
+    expect(failed.ok).toBe(false);
+    expect(failed.ok ? undefined : failed.error.serverMessage).toBe(
+      "This order has already been paid.",
+    );
+  });
+});

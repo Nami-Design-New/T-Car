@@ -1,6 +1,9 @@
 "use client";
 
 import { useErrorMessage } from "@/shared/hooks/useErrorMessage";
+import { useNotify } from "@/shared/hooks/useNotify";
+import { usePaymentWindow } from "@/shared/hooks/usePaymentWindow";
+import { useRouter } from "@/i18n/navigation";
 import type { AppError } from "@/shared/lib/errors";
 import { ResultDialog } from "@/shared/ui/ResultDialog";
 import { useTranslations } from "next-intl";
@@ -14,7 +17,7 @@ import type {
   BookingContext,
   BookingDetails,
   Order,
-  PaymentMethod,
+  PaymentChoice,
   BookingServiceSelection,
 } from "@/features/orders";
 import { ok, type Result } from "@/shared/lib/result";
@@ -22,7 +25,7 @@ const RiyalIcon = ICONS.riyal;
 
 import { Button } from "@/shared/ui/Button";
 import { Price } from "@/shared/ui/Price";
-import { useCreateBooking } from "../hooks/useCreateBooking";
+import { usePayOrder } from "../hooks/usePayOrder";
 import { useCreateDraft } from "../hooks/useCreateDraft";
 
 const BookingDailyModal = dynamic(() => import("./BookingDailyModal"), {
@@ -42,13 +45,18 @@ const BookingLoginRequiredModal = dynamic(
   { ssr: false },
 );
 
-/** One sheet at a time. A failed booking keeps the payment sheet open with the error. */
+/**
+ * One sheet at a time. A failed pay request keeps the payment sheet open with
+ * the error; a gateway that reports failure shows "failed", then the sheet
+ * again (the draft stays unpaid and can be paid again).
+ */
 type Flow =
   | { step: "closed" }
   | { step: "dates" }
   | { step: "confirm" }
   | { step: "payment"; error?: AppError }
-  | { step: "success" };
+  | { step: "success" }
+  | { step: "failed" };
 
 interface Props {
   carId: string;
@@ -108,7 +116,9 @@ export default function CarBookingCard({
     }
     setFlow({ step: next });
   };
-  const { submitting, createBooking } = useCreateBooking(carId);
+  const { submitting, payOrder } = usePayOrder();
+  const notify = useNotify();
+  const router = useRouter();
   const { submitting: creatingDraft, createDraft } = useCreateDraft(carId);
   const errorMessage = useErrorMessage();
   const [booking, setBooking] = useState<BookingDetails | null>(null);
@@ -126,19 +136,51 @@ export default function CarBookingCard({
     return ok(undefined);
   };
 
-  const handlePay = async (method: PaymentMethod) => {
-    if (!booking || submitting) return;
+  // R10: the gateway tab reports back; the bookings list (drafts are never
+  // listed there) is the confirmation, P6.
+  const { watch, paying } = usePaymentWindow((outcome) => {
+    if (outcome === "success") setFlow({ step: "success" });
+    else if (outcome === "failed") setFlow({ step: "failed" });
+    // Closed without an outcome: back to the sheet, nothing to report.
+  });
 
-    const result = await createBooking(booking, method, true);
-    setFlow(
-      result.ok
-        ? { step: "success" }
-        : { step: "payment", error: result.error },
-    );
+  const handlePay = async (choice: PaymentChoice) => {
+    if (!draft || submitting || paying) return;
+
+    // Opened inside the click, before the request, so it is not blocked as a
+    // pop-up. Only a gateway method can need it. No `noopener`: the payment
+    // page reports back through `window.opener`.
+    const tab = choice.paymentMethodId ? window.open("", "_blank") : null;
+    const result = await payOrder(draft.id, choice);
+    if (!result.ok) {
+      tab?.close();
+      // R5: the backend 422 message is a toast; the sheet stays open.
+      if (result.error.kind === "validation" && result.error.serverMessage) {
+        notify.error(result.error.serverMessage);
+        setFlow({ step: "payment" });
+        return;
+      }
+      setFlow({ step: "payment", error: result.error });
+      return;
+    }
+    if (result.message) notify.success(result.message);
+    if (result.data.kind === "paid") {
+      tab?.close();
+      setFlow({ step: "success" });
+      return;
+    }
+    const { payment } = result.data;
+    if (!tab) {
+      // Pop-up blocked: pay in this tab.
+      window.location.assign(payment.paymentUrl);
+      return;
+    }
+    tab.location.href = payment.paymentUrl;
+    watch(tab, payment);
+    setFlow({ step: "payment" });
   };
 
-  const handleBookingSuccess = () =>
-    window.location.assign("/account/bookings");
+  const handleBookingSuccess = () => router.push("/account/bookings");
 
   const handleBookNow = () => {
     if (!signedIn) {
@@ -271,14 +313,20 @@ export default function CarBookingCard({
         />
       )}
 
-      {step === "payment" && (
+      {draft && step === "payment" && (
         <PaymentMethodModal
           open
           onClose={() => {
             if (!submitting) setStep("closed");
           }}
+          orderId={draft.id}
+          amount={draft.finalPrice}
           onConfirm={handlePay}
-          loading={submitting}
+          // The draft stays on the server unpaid; after topping up, the
+          // customer books again (a new draft replaces it, §3.2).
+          onTopUp={() => router.push("/account/wallet")}
+          loading={submitting || paying}
+          loadingLabel={paying ? t("waitingPayment") : undefined}
           error={
             flow.step === "payment" && flow.error
               ? errorMessage(flow.error)
@@ -286,6 +334,14 @@ export default function CarBookingCard({
           }
         />
       )}
+
+      <ResultDialog
+        open={step === "failed"}
+        status="error"
+        description={t("paymentFailed")}
+        autoCloseMs={3000}
+        onClose={() => setFlow({ step: draft ? "payment" : "closed" })}
+      />
 
       <ResultDialog
         open={step === "success"}

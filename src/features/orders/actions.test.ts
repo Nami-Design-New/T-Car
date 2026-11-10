@@ -3,16 +3,18 @@ import { AppError } from "@/shared/lib/errors";
 
 const {
   auth,
+  getPaymentOptions,
+  payOrder,
   checkAvailability,
-  createBooking,
   createDraft,
   extendBooking,
   requestBookingEdit,
   submitReview,
 } = vi.hoisted(() => ({
   auth: vi.fn(),
+  getPaymentOptions: vi.fn(),
+  payOrder: vi.fn(),
   checkAvailability: vi.fn(),
-  createBooking: vi.fn(),
   createDraft: vi.fn(),
   extendBooking: vi.fn(),
   requestBookingEdit: vi.fn(),
@@ -23,8 +25,9 @@ vi.mock("@/auth", () => ({ auth }));
 vi.mock("./api", () => ({
   bookingsApi: {
     checkAvailability,
-    createBooking,
-    createDraft,
+    getPaymentOptions,
+    payOrder,
+      createDraft,
     extendBooking,
     requestBookingEdit,
     submitReview,
@@ -34,7 +37,8 @@ vi.mock("@/shared/lib/report", () => ({ reportError: vi.fn() }));
 
 import {
   checkAvailabilityAction,
-  createBookingAction,
+  getPaymentOptionsAction,
+  payOrderAction,
   createDraftAction,
   extendBookingAction,
   requestBookingEditAction,
@@ -82,87 +86,100 @@ describe("checkAvailabilityAction", () => {
   });
 });
 
-function validRequest() {
-  const startDate = new Date();
-  startDate.setHours(0, 0, 0, 0);
-  startDate.setDate(startDate.getDate() + 1);
-  const endDate = new Date(startDate);
-  endDate.setDate(endDate.getDate() + 1);
-  return {
-    carId: "car-1",
-    details: {
-      startDate,
-      endDate,
-      time: "09",
-      days: 1,
-      pricePerDay: 500,
-      subtotal: 500,
-      vat: 75,
-      total: 575,
-      notes: " Need help ",
-      pickupAddress: " Riyadh ",
-      dropoffAddress: "",
-      pickupLocation: null,
-      dropoffLocation: null,
-    },
-    paymentMethod: "wallet" as const,
-    termsAccepted: true,
-  };
-}
+describe("getPaymentOptionsAction", () => {
+  it("returns E3 methods and the wallet balance", async () => {
+    const options = {
+      methods: [{ id: "6", title: "Online Payment", type: "online" }],
+      walletBalance: 120,
+    };
+    getPaymentOptions.mockResolvedValue(options);
 
-describe("createBookingAction", () => {
-  it("rejects malformed input before calling the service", async () => {
+    await expect(getPaymentOptionsAction("226")).resolves.toEqual({
+      ok: true,
+      data: options,
+    });
+    expect(getPaymentOptions).toHaveBeenCalledWith("226");
+  });
+
+  it("rejects a malformed order id before calling the API", async () => {
+    await expect(getPaymentOptionsAction("../1")).resolves.toEqual({
+      ok: false,
+      error: { kind: "validation" },
+    });
+    expect(getPaymentOptions).not.toHaveBeenCalled();
+  });
+
+  it("requires an authenticated customer", async () => {
+    auth.mockResolvedValue(null);
+    await expect(getPaymentOptionsAction("226")).resolves.toEqual({
+      ok: false,
+      error: { kind: "unauthorized" },
+    });
+  });
+});
+
+describe("payOrderAction", () => {
+  const request = { orderId: "226", useWallet: true, paymentMethodId: "6" };
+
+  it("returns the gateway links and the backend message", async () => {
+    const result = {
+      ok: true,
+      data: {
+        kind: "gateway",
+        payment: {
+          paymentUrl: "https://t-car.app/order/pay/226",
+          successUrl: "https://t-car.app/order/success/226",
+          failUrl: "https://t-car.app/order/fail/226",
+        },
+      },
+      message: "Proceed to payment now.",
+    };
+    payOrder.mockResolvedValue(result);
+
+    await expect(payOrderAction(request)).resolves.toEqual(result);
+    expect(payOrder).toHaveBeenCalledWith(request);
+  });
+
+  it("preserves a backend 422 message", async () => {
+    payOrder.mockResolvedValue({
+      ok: false,
+      error: new AppError("validation", undefined, 422, undefined, {
+        serverMessage: "The payment method is required.",
+      }),
+    });
+
     await expect(
-      createBookingAction({ ...validRequest(), termsAccepted: false }),
+      payOrderAction({ ...request, paymentMethodId: null }),
     ).resolves.toEqual({
       ok: false,
       error: {
         kind: "validation",
-        code: "booking.termsRequired",
-        fieldErrors: { termsAccepted: "booking.termsRequired" },
+        status: 422,
+        serverMessage: "The payment method is required.",
       },
     });
-    expect(createBooking).not.toHaveBeenCalled();
   });
 
-  it("requires a session before calling the service", async () => {
-    auth.mockResolvedValue(null);
+  it("rejects a choice without the wallet or a method", async () => {
+    await expect(
+      payOrderAction({ orderId: "226", useWallet: false, paymentMethodId: null }),
+    ).resolves.toMatchObject({
+      ok: false,
+      error: {
+        kind: "validation",
+        fieldErrors: { paymentMethodId: "booking.paymentMethodRequired" },
+      },
+    });
+    expect(payOrder).not.toHaveBeenCalled();
+  });
 
-    await expect(createBookingAction(validRequest())).resolves.toEqual({
+  it("requires an authenticated customer", async () => {
+    auth.mockResolvedValue(null);
+    await expect(payOrderAction(request)).resolves.toEqual({
       ok: false,
       error: { kind: "unauthorized" },
     });
-    expect(createBooking).not.toHaveBeenCalled();
-  });
-
-  it("passes the normalized request to the service", async () => {
-    await expect(createBookingAction(validRequest())).resolves.toEqual({
-      ok: true,
-      data: undefined,
-    });
-    expect(createBooking).toHaveBeenCalledWith(
-      expect.objectContaining({
-        carId: "car-1",
-        paymentMethod: "wallet",
-        termsAccepted: true,
-        details: expect.objectContaining({
-          notes: "Need help",
-          pickupAddress: "Riyadh",
-          dropoffAddress: undefined,
-        }),
-      }),
-    );
-  });
-
-  it("preserves service failures as an ActionResult", async () => {
-    createBooking.mockRejectedValue(
-      new AppError("conflict", "booking.carUnavailable"),
-    );
-
-    await expect(createBookingAction(validRequest())).resolves.toEqual({
-      ok: false,
-      error: { kind: "conflict", code: "booking.carUnavailable" },
-    });
+    expect(payOrder).not.toHaveBeenCalled();
   });
 });
 
@@ -271,7 +288,6 @@ beforeEach(() => {
     slots: ["08"],
     message: "Fetched successfully.",
   });
-  createBooking.mockResolvedValue(undefined);
   createDraft.mockResolvedValue({ id: "226" });
   extendBooking.mockResolvedValue(undefined);
   requestBookingEdit.mockResolvedValue(undefined);
