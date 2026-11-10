@@ -43,7 +43,7 @@ export interface RentalContext {
   airportId?: string;
   stationId?: string;
   countryId?: string;
-  /** Required for daily, monthly, and international; absent for airport/station. */
+  /** Required for delivery flows; included for airport/station when available. */
   lat?: string;
   lng?: string;
   region?: string;
@@ -62,8 +62,8 @@ const POSITIVE_ID = /^[1-9]\d*$/;
  * The rental context in a URL, or null when the flow was not finished. The
  * same steps as `useRentalFlow`: daily, monthly, and international pick a
  * delivery type; airport an airport; station a station; international also a
- * country; daily, monthly, and international also need a location with a
- * region. Airport and station identify their pickup point directly.
+ * country; delivery flows require a complete customer location, while
+ * airport and station include the saved location when it is available.
  */
 export function readRentalContext(params: {
   get(name: string): string | null;
@@ -91,36 +91,32 @@ export function readRentalContext(params: {
   if (type === "station" && !stationId) return null;
   if (type === "international" && !countryId) return null;
 
-  if (type === "airport" || type === "station") {
-    return {
-      type,
-      ...(type === "airport" ? { airportId } : { stationId }),
-    };
-  }
-
   const region = params.get("region")?.trim();
   const lat = params.get("lat")?.trim();
   const lng = params.get("lng")?.trim();
   const latitude = Number(lat);
   const longitude = Number(lng);
-  if (
+  const invalidLocation =
     !region ||
     !lat ||
     !lng ||
     !Number.isFinite(latitude) ||
     !Number.isFinite(longitude) ||
     Math.abs(latitude) > 90 ||
-    Math.abs(longitude) > 180
-  )
+    Math.abs(longitude) > 180;
+  const isPickupPoint = type === "airport" || type === "station";
+  if (invalidLocation && !isPickupPoint)
     return null;
 
   return {
     type,
+    ...(type === "airport" ? { airportId } : {}),
+    ...(type === "station" ? { stationId } : {}),
     ...(deliveryType ? { deliveryType } : {}),
     ...(type === "international" ? { countryId } : {}),
-    lat,
-    lng,
-    region,
+    ...(!invalidLocation
+      ? { lat, lng, region }
+      : {}),
   };
 }
 

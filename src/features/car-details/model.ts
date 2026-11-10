@@ -110,15 +110,8 @@ export function withDefaultRentalContext(
         ? "from_station"
         : (safeQuery.deliveryType ?? DEFAULT_DELIVERY_TYPE);
 
-  const isPickupPointBooking =
-    bookingType === "airport" || bookingType === "station";
-  // A location is meaningful for delivery choices only. Let the selected
-  // airport/station identify the branch, even if a stale URL contains a map
-  // location from an earlier flow.
-  const { location: _location, ...queryWithoutLocation } = safeQuery;
-
   return {
-    ...(isPickupPointBooking ? queryWithoutLocation : safeQuery),
+    ...safeQuery,
     bookingType,
     deliveryType,
   };

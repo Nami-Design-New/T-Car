@@ -11,6 +11,10 @@ const location = {
 };
 
 function setup() {
+  window.localStorage.setItem(
+    "tcar.guestLocation",
+    JSON.stringify({ status: "granted", savedAt: "2026-11-10", ...location }),
+  );
   const onComplete = vi.fn<(params: URLSearchParams) => void>();
   const { result } = renderHook(() => useRentalFlow({ onComplete }));
   const completedWith = () =>
@@ -53,11 +57,26 @@ describe("useRentalFlow", () => {
     });
   });
 
-  it("completes at the airport selection without requesting a location", () => {
+  it("uses the saved location after the airport selection", () => {
     const { result, completedWith } = setup();
     act(() => result.current.start("airport"));
     act(() => result.current.confirmAirport({ id: 7 } as Airport));
     expect(result.current.step).toBeNull();
+    expect(completedWith()).toEqual({
+      type: "airport",
+      airportId: "7",
+      lat: "24.7",
+      lng: "46.6",
+      region: "Riyadh Region",
+    });
+  });
+
+  it("omits location when it is not saved", () => {
+    const { result, completedWith } = setup();
+    window.localStorage.clear();
+    act(() => result.current.start("airport"));
+    act(() => result.current.confirmAirport({ id: 7 } as Airport));
+
     expect(completedWith()).toEqual({ type: "airport", airportId: "7" });
   });
 
@@ -71,12 +90,18 @@ describe("useRentalFlow", () => {
     expect(onComplete).not.toHaveBeenCalled();
   });
 
-  it("completes at the station selection without requesting a location", () => {
+  it("uses the saved location after the station selection", () => {
     const { result, completedWith } = setup();
     act(() => result.current.start("station"));
     act(() => result.current.confirmStation({ id: 3 } as Station));
     expect(result.current.step).toBeNull();
-    expect(completedWith()).toEqual({ type: "station", stationId: "3" });
+    expect(completedWith()).toEqual({
+      type: "station",
+      stationId: "3",
+      lat: "24.7",
+      lng: "46.6",
+      region: "Riyadh Region",
+    });
   });
 
   it("asks for the pickup type after the country", () => {

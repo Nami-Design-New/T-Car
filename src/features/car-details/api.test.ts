@@ -183,7 +183,7 @@ describe("withDefaultRentalContext", () => {
     });
   });
 
-  it("keeps delivery locations but removes them for airport and station reads", () => {
+  it("keeps delivery locations for airport and station reads", () => {
     const location = { region: "Riyadh", latitude: 24.7, longitude: 46.6 };
     expect(
       withDefaultRentalContext({
@@ -194,9 +194,9 @@ describe("withDefaultRentalContext", () => {
       }),
     ).toEqual({
       bookingType: "airport",
-      // The details read requires a delivery type; airport has none of its own.
       deliveryType: "from_airport",
       airportId: "12",
+      location,
     });
     expect(
       withDefaultRentalContext({ bookingType: "station", stationId: "4" }),
@@ -238,7 +238,7 @@ describe("withDefaultRentalContext", () => {
 });
 
 describe("carDetailsApi.getCarDetails", () => {
-  it("maps core fields and does not send a customer location for airport reads", async () => {
+  it("maps core fields and sends the location for airport reads", async () => {
     get.mockResolvedValue(envelope(details));
 
     await expect(
@@ -255,7 +255,7 @@ describe("carDetailsApi.getCarDetails", () => {
     ).resolves.toEqual(mapCarDetails(details));
 
     expect(get).toHaveBeenCalledWith(
-      "/cars/3?booking_type=airport&airport_id=12",
+      "/cars/3?region=Riyadh+Region&latitude=24.7136&longitude=46.6753&delivery_type=from_airport&booking_type=airport&airport_id=12",
     );
   });
 

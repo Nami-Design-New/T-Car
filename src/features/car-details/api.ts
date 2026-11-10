@@ -467,14 +467,12 @@ export function mapCarDetails(details: DetailsDto): CarDetails {
 
 function toSearch(query: CarDetailsQuery): URLSearchParams {
   const search = new URLSearchParams();
-  const isPickupPointBooking =
-    query.bookingType === "airport" || query.bookingType === "station";
-  if (query.location && !isPickupPointBooking) {
+  if (query.location) {
     search.set("region", query.location.region);
     search.set("latitude", String(query.location.latitude));
     search.set("longitude", String(query.location.longitude));
   }
-  if (query.deliveryType && !isPickupPointBooking)
+  if (query.deliveryType)
     search.set("delivery_type", query.deliveryType);
   if (query.bookingType) search.set("booking_type", query.bookingType);
   if (query.airportId) search.set("airport_id", query.airportId);
