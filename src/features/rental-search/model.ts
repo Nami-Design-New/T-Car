@@ -35,7 +35,7 @@ export type RentalDeliveryType = "to_location" | "from_branch";
 /**
  * A finished rental-flow choice, as `useRentalFlow` writes it to the `/cars`
  * URL: the type, its own choice (delivery type, airport, station, or country),
- * and the confirmed location.
+ * and, where delivery needs it, the confirmed customer location.
  */
 export interface RentalContext {
   type: RentalType;
@@ -43,9 +43,10 @@ export interface RentalContext {
   airportId?: string;
   stationId?: string;
   countryId?: string;
-  lat: string;
-  lng: string;
-  region: string;
+  /** Required for daily, monthly, and international; absent for airport/station. */
+  lat?: string;
+  lng?: string;
+  region?: string;
 }
 
 const RENTAL_TYPES: readonly RentalType[] = [
@@ -61,29 +62,14 @@ const POSITIVE_ID = /^[1-9]\d*$/;
  * The rental context in a URL, or null when the flow was not finished. The
  * same steps as `useRentalFlow`: daily, monthly, and international pick a
  * delivery type; airport an airport; station a station; international also a
- * country; every type a location with a region.
+ * country; daily, monthly, and international also need a location with a
+ * region. Airport and station identify their pickup point directly.
  */
 export function readRentalContext(params: {
   get(name: string): string | null;
 }): RentalContext | null {
   const type = params.get("type") as RentalType | null;
   if (!type || !RENTAL_TYPES.includes(type)) return null;
-
-  const region = params.get("region")?.trim();
-  const lat = params.get("lat")?.trim();
-  const lng = params.get("lng")?.trim();
-  const latitude = Number(lat);
-  const longitude = Number(lng);
-  if (
-    !region ||
-    !lat ||
-    !lng ||
-    !Number.isFinite(latitude) ||
-    !Number.isFinite(longitude) ||
-    Math.abs(latitude) > 90 ||
-    Math.abs(longitude) > 180
-  )
-    return null;
 
   const raw = params.get("deliveryType");
   const deliveryType: RentalDeliveryType | undefined =
@@ -105,11 +91,32 @@ export function readRentalContext(params: {
   if (type === "station" && !stationId) return null;
   if (type === "international" && !countryId) return null;
 
+  if (type === "airport" || type === "station") {
+    return {
+      type,
+      ...(type === "airport" ? { airportId } : { stationId }),
+    };
+  }
+
+  const region = params.get("region")?.trim();
+  const lat = params.get("lat")?.trim();
+  const lng = params.get("lng")?.trim();
+  const latitude = Number(lat);
+  const longitude = Number(lng);
+  if (
+    !region ||
+    !lat ||
+    !lng ||
+    !Number.isFinite(latitude) ||
+    !Number.isFinite(longitude) ||
+    Math.abs(latitude) > 90 ||
+    Math.abs(longitude) > 180
+  )
+    return null;
+
   return {
     type,
     ...(deliveryType ? { deliveryType } : {}),
-    ...(type === "airport" ? { airportId } : {}),
-    ...(type === "station" ? { stationId } : {}),
     ...(type === "international" ? { countryId } : {}),
     lat,
     lng,
@@ -124,9 +131,9 @@ export function rentalContextParams(context: RentalContext): URLSearchParams {
   if (context.stationId) params.set("stationId", context.stationId);
   if (context.countryId) params.set("countryId", context.countryId);
   if (context.deliveryType) params.set("deliveryType", context.deliveryType);
-  params.set("lat", context.lat);
-  params.set("lng", context.lng);
-  params.set("region", context.region);
+  if (context.lat) params.set("lat", context.lat);
+  if (context.lng) params.set("lng", context.lng);
+  if (context.region) params.set("region", context.region);
   return params;
 }
 

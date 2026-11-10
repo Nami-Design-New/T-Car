@@ -213,6 +213,7 @@
       "locating": "جاري التحديد...",
       "useCurrentLocation": "استخدام موقعي الحالي",
       "confirm": "تأكيد الموقع",
+      "allowedDistance": "يجب ان يكون الموقع في حدود <strong>{distance} كم</strong> من موقع المعرض",
       "unsupported": "المتصفح لا يدعم تحديد الموقع",
       "permissionDenied": "تم رفض إذن الوصول للموقع",
       "unavailable": "تعذر تحديد موقعك الحالي"
@@ -789,6 +790,8 @@
     },
     "daily": {
       "editBooking": "تعديل الحجز",
+      "chosenAirport": "المطار الذي اخترته",
+      "chosenStation": "المحطة التي اخترتها",
       "newBooking": "حجز سيارة",
       "weekdays": {
         "sun": "الأحد",
@@ -828,7 +831,7 @@
       "dropoffLocation": "موقع التسليم",
       "selected": "تم التحديد",
       "enterAddress": "ادخل عنوانك",
-      "distanceHint": "يجب أن يكون الموقع في حدود 20 كم من موقع المعرض",
+      "distanceHint": "يجب أن يكون الموقع في حدود {distance} كم من موقع المعرض",
       "additionalDetails": "تفاصيل إضافية",
       "notesPlaceholder": "اكتب أي ملاحظات أو طلبات خاصة...",
       "submitEdit": "إرسال طلب التعديل",
@@ -852,7 +855,7 @@
       "decrease": "تقليل عدد الشهور",
       "months": "{count, plural, =1 {# شهر} other {# شهور}}",
       "sliderLabel": "عدد شهور الحجز",
-      "distanceHint": "يجب أن يكون الموقع في حدود <strong>20 كم</strong> من موقع المعرض"
+      "distanceHint": "يجب أن يكون الموقع في حدود <strong>{distance} كم</strong> من موقع المعرض"
     },
     "confirm": {
       "dialogLabel": "تأكيد الحجز",

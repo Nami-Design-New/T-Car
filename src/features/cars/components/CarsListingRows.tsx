@@ -22,6 +22,7 @@ import CarsListingOfficeRow from "./CarsListingOfficeRow";
 interface Props {
   query: CarsListingQuery;
   onSelectCar?: (car: CarListing) => void;
+  showAirportPickup?: boolean;
 }
 interface ListProps extends Props {
   onSelectCar: (car: CarListing) => void;
@@ -38,7 +39,7 @@ function locationFromStorage(): CityCarsLocation | null {
     : null;
 }
 
-function Rows({ query, onSelectCar }: ListProps) {
+function Rows({ query, onSelectCar, showAirportPickup }: ListProps) {
   const t = useTranslations("carsPage");
   const locale = useLocale();
   const fetchPage = useCallback(
@@ -64,6 +65,7 @@ function Rows({ query, onSelectCar }: ListProps) {
             <CarsListingOfficeRow
               group={group}
               query={query}
+              showAirportPickup={showAirportPickup}
               onSelectCar={(car) => car.availability && onSelectCar(car)}
             />
           </InfiniteList.Item>
@@ -81,7 +83,11 @@ function Rows({ query, onSelectCar }: ListProps) {
 }
 
 /** Adds the guest's browser-only saved location before requesting listing rows. */
-export default function CarsListingRows({ query, onSelectCar }: Props) {
+export default function CarsListingRows({
+  query,
+  onSelectCar,
+  showAirportPickup,
+}: Props) {
   const [location, setLocation] = useState<CityCarsLocation | null | undefined>(
     undefined,
   );
@@ -99,6 +105,7 @@ export default function CarsListingRows({ query, onSelectCar }: Props) {
     <Rows
       key={JSON.stringify(locationQuery)}
       query={locationQuery}
+      showAirportPickup={showAirportPickup}
       onSelectCar={onSelectCar ?? (() => undefined)}
     />
   );

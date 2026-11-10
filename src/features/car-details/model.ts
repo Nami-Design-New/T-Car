@@ -9,7 +9,12 @@ export interface CarDetailsQuery {
     latitude: number;
     longitude: number;
   };
-  deliveryType?: "to_location" | "from_branch";
+  /**
+   * From the URL: `to_location` or `from_branch`. The details read sends
+   * `from_airport` / `from_station` for airport and station (it rejects a read
+   * without a delivery type; E1 and E2 send none for those types).
+   */
+  deliveryType?: "to_location" | "from_branch" | "from_airport" | "from_station";
   bookingType?: CarBookingType;
   airportId?: string;
   stationId?: string;
@@ -95,10 +100,27 @@ export function withDefaultRentalContext(
       ? { ...query, bookingType: undefined }
       : query;
 
+  const bookingType = safeQuery.bookingType ?? DEFAULT_BOOKING_TYPE;
+  // Airport and station have no delivery type of their own; the details read
+  // still requires one and accepts from_airport / from_station (probe 2026-11-10).
+  const deliveryType =
+    bookingType === "airport"
+      ? "from_airport"
+      : bookingType === "station"
+        ? "from_station"
+        : (safeQuery.deliveryType ?? DEFAULT_DELIVERY_TYPE);
+
+  const isPickupPointBooking =
+    bookingType === "airport" || bookingType === "station";
+  // A location is meaningful for delivery choices only. Let the selected
+  // airport/station identify the branch, even if a stale URL contains a map
+  // location from an earlier flow.
+  const { location: _location, ...queryWithoutLocation } = safeQuery;
+
   return {
-    ...safeQuery,
-    bookingType: safeQuery.bookingType ?? DEFAULT_BOOKING_TYPE,
-    deliveryType: safeQuery.deliveryType ?? DEFAULT_DELIVERY_TYPE,
+    ...(isPickupPointBooking ? queryWithoutLocation : safeQuery),
+    bookingType,
+    deliveryType,
   };
 }
 
@@ -241,4 +263,9 @@ export interface CarDetails extends Omit<
   insuranceOptions: InsuranceOption[];
   reviews: Review[];
   pickupInfo: CarPickupInfo;
+  /** `branch_data.has_airport` / `has_station`: the company has a branch there (R19). */
+  hasAirportBranch: boolean;
+  hasStationBranch: boolean;
+  /** `allowed_distance`: the branch delivery range in km (to_location). */
+  allowedDistanceKm?: number;
 }

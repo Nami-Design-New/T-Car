@@ -36,7 +36,7 @@ export default function BookingStatusBadge({
   return (
     <div
       className={clsx(
-        "flex w-full min-w-0 flex-wrap items-center justify-between gap-2 rounded-md px-2 py-1 md:px-4 md:py-2",
+        "flex w-full min-w-0 flex-wrap items-center justify-between gap-2 rounded-md px-2 py-1 text-sm md:px-4 md:py-2",
         TONE_CLASSES[tone],
         className,
       )}

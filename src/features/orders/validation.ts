@@ -37,7 +37,7 @@ export const createDraftSchema = z.object({
     "station",
     "international",
   ]),
-  deliveryType: z.enum(["to_location", "from_branch"]),
+  deliveryType: z.enum(["to_location", "from_branch"]).optional(),
   details: bookingDetailsSchema,
   services: z
     .array(
@@ -61,6 +61,52 @@ export const createDraftSchema = z.object({
     .trim()
     .regex(/^[1-9]\d*$/, { error: "booking.invalidLocation" })
     .optional(),
+  airportId: z
+    .string()
+    .trim()
+    .regex(/^[1-9]\d*$/, { error: "booking.invalidLocation" })
+    .optional(),
+  stationId: z
+    .string()
+    .trim()
+    .regex(/^[1-9]\d*$/, { error: "booking.invalidLocation" })
+    .optional(),
+  returnAtPickupPoint: z.boolean().optional(),
+  returnLocation: z
+    .object({
+      lat: z.number().min(-90).max(90),
+      lng: z.number().min(-180).max(180),
+      region: z.string().trim().min(1).max(255),
+      address: z.string().trim().min(1).max(500),
+    })
+    .optional(),
+}).superRefine((value, context) => {
+  const invalid = (path: string) =>
+    context.addIssue({
+      path: [path],
+      code: "custom",
+      message: "booking.invalidLocation",
+    });
+  const { bookingType: type } = value;
+  // create-booking doc: delivery_type only for daily, monthly, international.
+  if (
+    (type === "daily" || type === "monthly" || type === "international") &&
+    !value.deliveryType
+  )
+    invalid("deliveryType");
+  if (type === "airport") {
+    if (!value.airportId) invalid("airportId");
+    if (value.returnAtPickupPoint === undefined) invalid("returnAtPickupPoint");
+    // delivery_to_airport=0: the client sends the return location.
+    if (value.returnAtPickupPoint === false && !value.returnLocation)
+      invalid("returnLocation");
+  }
+  if (type === "station") {
+    if (!value.stationId) invalid("stationId");
+    if (value.returnAtPickupPoint === undefined) invalid("returnAtPickupPoint");
+    // Known issue: delivery_* is sent for every station booking.
+    if (!value.returnLocation) invalid("returnLocation");
+  }
 });
 
 const apiDate = z
@@ -80,14 +126,24 @@ export const availabilitySchema = z
   .object({
     carId: z.string().regex(/^[1-9]\d*$/, { error: "booking.carRequired" }),
     branchId: z.string().regex(/^[1-9]\d*$/, { error: "booking.invalidLocation" }),
-    type: z.enum(["daily", "monthly"], { error: "booking.invalidType" }),
+    type: z.enum(["daily", "monthly", "airport", "station", "international"], {
+      error: "booking.invalidType",
+    }),
     fromDay: apiDate,
     toDay: apiDate.optional(),
     count: z.number().int().min(1).max(12).optional(),
-    deliveryType: z.enum(["to_location", "from_branch"]),
+    // Daily, monthly, and international only; airport and station send none.
+    deliveryType: z.enum(["to_location", "from_branch"]).optional(),
   })
   .superRefine((value, context) => {
-    if (value.type === "daily" && (!value.toDay || value.toDay <= value.fromDay)) {
+    if (
+      value.type !== "airport" &&
+      value.type !== "station" &&
+      !value.deliveryType
+    ) {
+      context.addIssue({ path: ["deliveryType"], code: "custom", message: "booking.invalidLocation" });
+    }
+    if (value.type !== "monthly" && (!value.toDay || value.toDay <= value.fromDay)) {
       context.addIssue({ path: ["toDay"], code: "custom", message: "booking.invalidDates" });
     }
     if (value.type === "monthly" && value.count === undefined) {

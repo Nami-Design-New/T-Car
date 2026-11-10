@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useTranslations } from "next-intl";
@@ -20,6 +20,7 @@ import { cn } from "@/shared/lib/cn";
 import {
   checkAvailabilityAction,
   type BookingDeliveryTypeRequest,
+  type BookingType,
   type BookingDetails,
   type BookingContext,
 } from "@/features/orders";
@@ -34,6 +35,7 @@ import type { LocationData } from "@/shared/lib/location";
 import { Price } from "@/shared/ui/Price";
 import BookingTimeSlots from "./BookingTimeSlots";
 import BookingBranchSummary from "./BookingBranchSummary";
+import { allowedAreaOf, mapStartLocation } from "./bookingMap";
 
 interface Props {
   open: boolean;
@@ -48,7 +50,14 @@ interface Props {
   availability?: {
     carId: string;
     branchId: string;
-    deliveryType: BookingDeliveryTypeRequest;
+    /** Every type except monthly uses this dialog (R15); defaults to daily. */
+    bookingType?: Exclude<BookingType, "monthly">;
+    /** Absent for airport and station. */
+    deliveryType?: BookingDeliveryTypeRequest;
+    /** Car details `allowed_distance` (km): drawn around the branch on the map. */
+    allowedDistanceKm?: number;
+    /** Airport / station: whether the company has a branch there (R19). */
+    pickupPoint?: { kind: "airport" | "station"; hasBranch: boolean };
     branch?: NonNullable<BookingContext["branch"]>;
     showroom?: string;
     showroomLogo?: string;
@@ -159,6 +168,16 @@ export default function BookingDailyModal({
   const dropoffAddress = watch("dropoffAddress") ?? "";
   const pickupLocation = watch("pickupLocation") ?? null;
   const dropoffLocation = watch("dropoffLocation") ?? null;
+  // The chosen point, else the saved browser location (read once per opening).
+  const mapStart = useMemo(
+    () =>
+      mapField === null
+        ? null
+        : mapStartLocation(
+            mapField === "dropoff" ? dropoffLocation : pickupLocation,
+          ),
+    [mapField, dropoffLocation, pickupLocation],
+  );
   const pickupAddressField = register("pickupAddress");
   const dropoffAddressField = register("dropoffAddress");
   const notesField = register("notes");
@@ -238,9 +257,13 @@ export default function BookingDailyModal({
     setValue("time", "", { shouldValidate: false });
     clearErrors();
 
+    const { carId, branchId, deliveryType, bookingType } = availability;
     void checkAvailabilityAction({
-      ...availability,
-      type: "daily",
+      carId,
+      branchId,
+      // Airport and station send their own type and no delivery_type.
+      ...(deliveryType ? { deliveryType } : {}),
+      type: bookingType ?? "daily",
       fromDay: toApiDay(range.start),
       toDay: toApiDay(range.end),
     }).then((actionResult) => {
@@ -555,7 +578,32 @@ export default function BookingDailyModal({
             }
           />
 
-          {availability?.deliveryType === "from_branch" &&
+          {availability?.pickupPoint && availability.branch ? (
+            <BookingBranchSummary
+              branch={availability.branch}
+              showroom={availability.showroom ?? ""}
+              showroomLogo={availability.showroomLogo}
+              pickupLabel={t("pickupAddress")}
+              returnLabel={t("dropoffAddress")}
+              returnTitle={t("returnToNearestBranchTitle")}
+              returnMessage={t("returnToNearestBranchMessage")}
+              distanceLabel={t("kilometerShort")}
+              // R19: with a branch there, pickup and return are that branch;
+              // without one, pickup at the chosen airport / station.
+              returnAtBranch={availability.pickupPoint.hasBranch}
+              {...(availability.pickupPoint.hasBranch
+                ? {}
+                : {
+                    pickupPlace: {
+                      kind: availability.pickupPoint.kind,
+                      title:
+                        availability.pickupPoint.kind === "airport"
+                          ? t("chosenAirport")
+                          : t("chosenStation"),
+                    },
+                  })}
+            />
+          ) : availability?.deliveryType === "from_branch" &&
           availability.branch ? (
             <BookingBranchSummary
               branch={availability.branch}
@@ -644,9 +692,14 @@ export default function BookingDailyModal({
                     }}
                   />
                 )}
-                <p className="text-text-subtle mt-2 text-xs">
-                  {t("distanceHint")}
-                </p>
+                {/* The branch delivery range from car details (allowed_distance). */}
+                {availability?.allowedDistanceKm ? (
+                  <p className="text-text-subtle mt-2 text-xs">
+                    {t("distanceHint", {
+                      distance: availability.allowedDistanceKm.toLocaleString(),
+                    })}
+                  </p>
+                ) : null}
               </div>
 
               <div className="mb-4.5 min-w-0">
@@ -715,9 +768,14 @@ export default function BookingDailyModal({
                     }}
                   />
                 )}
-                <p className="text-text-subtle mt-2 text-xs">
-                  {t("distanceHint")}
-                </p>
+                {/* The branch delivery range from car details (allowed_distance). */}
+                {availability?.allowedDistanceKm ? (
+                  <p className="text-text-subtle mt-2 text-xs">
+                    {t("distanceHint", {
+                      distance: availability.allowedDistanceKm.toLocaleString(),
+                    })}
+                  </p>
+                ) : null}
               </div>
             </div>
           )}
@@ -779,9 +837,11 @@ export default function BookingDailyModal({
             title={
               mapField === "dropoff" ? t("selectDropoff") : t("selectPickup")
             }
-            initialLocation={
-              mapField === "dropoff" ? dropoffLocation : pickupLocation
-            }
+            initialLocation={mapStart}
+            allowedArea={allowedAreaOf(
+              availability?.branch,
+              availability?.allowedDistanceKm,
+            )}
           />
         )}
       </Dialog.Body>

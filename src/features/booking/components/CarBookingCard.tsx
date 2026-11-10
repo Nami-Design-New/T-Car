@@ -123,7 +123,16 @@ export default function CarBookingCard({
   const errorMessage = useErrorMessage();
   const [booking, setBooking] = useState<BookingDetails | null>(null);
   const [draft, setDraft] = useState<Order | null>(null);
-  const canBook = Boolean(bookingContext.location && bookingContext.branch);
+  const isPickupPointBooking =
+    bookingContext.bookingType === "airport" ||
+    bookingContext.bookingType === "station";
+  // Airport and station bookings get their pickup point from the selected
+  // airport/station. All other booking types still need the customer's map
+  // location as well as the branch returned by the details read.
+  const canBook = Boolean(
+    bookingContext.branch &&
+      (isPickupPointBooking || bookingContext.location),
+  );
 
   const handleDatesConfirmed = async (
     details: BookingDetails,
@@ -208,7 +217,9 @@ export default function CarBookingCard({
             <Price amountClassName="text-action-primary" amount={pricePerDay} />
           </h2>
           <small className="text-text-subtle text-base">
-            {t(bookingContext.bookingType === "monthly" ? "perMonth" : "perDay")}
+            {t(
+              bookingContext.bookingType === "monthly" ? "perMonth" : "perDay",
+            )}
           </small>
         </div>
         <div className="flex items-center gap-2">
@@ -232,7 +243,7 @@ export default function CarBookingCard({
       </Button>
 
       {!canBook && (
-        <p className="mt-2 text-center text-sm text-status-error">
+        <p className="text-status-error mt-2 text-center text-sm">
           {t("chooseLocation")}
         </p>
       )}
@@ -246,9 +257,7 @@ export default function CarBookingCard({
         }}
       />
 
-      {authOpen && (
-        <LazyAuthModal show onHide={() => setAuthOpen(false)} />
-      )}
+      {authOpen && <LazyAuthModal show onHide={() => setAuthOpen(false)} />}
 
       {licenseOpen && (
         <LazyLicenseUploadDialog
@@ -268,10 +277,11 @@ export default function CarBookingCard({
           availability={{
             carId,
             branchId: bookingContext.branch!.id,
-            deliveryType: bookingContext.deliveryType,
+            deliveryType: bookingContext.deliveryType ?? "from_branch",
             branch: bookingContext.branch!,
             showroom,
             showroomLogo,
+            allowedDistanceKm: bookingContext.allowedDistanceKm,
           }}
         />
       )}
@@ -286,10 +296,21 @@ export default function CarBookingCard({
           availability={{
             carId,
             branchId: bookingContext.branch!.id,
+            bookingType: bookingContext.bookingType,
             deliveryType: bookingContext.deliveryType,
             branch: bookingContext.branch!,
             showroom,
             showroomLogo,
+            allowedDistanceKm: bookingContext.allowedDistanceKm,
+            ...(bookingContext.bookingType === "airport" ||
+            bookingContext.bookingType === "station"
+              ? {
+                  pickupPoint: {
+                    kind: bookingContext.bookingType,
+                    hasBranch: bookingContext.pickupPointHasBranch === true,
+                  },
+                }
+              : {}),
           }}
         />
       )}

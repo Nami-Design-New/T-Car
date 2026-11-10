@@ -214,6 +214,7 @@ export type CarsListingSource = "offer" | "careful_chooses" | "general";
 /** Filters and booking context accepted by the public cars-listing endpoints. */
 export interface CarsListingQuery extends CityCarsQuery {
   source: CarsListingSource;
+  bookingType?: "daily" | "monthly" | "airport" | "station" | "international";
   deliveryType?: "to_location" | "from_branch";
   airportId?: string;
   stationId?: string;
@@ -301,6 +302,7 @@ export function toCarsListingSearchParams(
   } else {
     search.set("type", query.source);
   }
+  if (query.bookingType) search.set("booking_type", query.bookingType);
   if (query.deliveryType) search.set("delivery_type", query.deliveryType);
   if (query.airportId) search.set("airport_id", query.airportId);
   if (query.stationId) search.set("train_station_id", query.stationId);
@@ -336,10 +338,15 @@ export function toCarsListingQuery(
   params: CarSearchParams,
   source: CarsListingSource,
 ): CarsListingQuery {
-  const { airportId, stationId, countryId, deliveryType } = params.context;
+  const { type, airportId, stationId, countryId, deliveryType } = params.context;
   return {
     ...toCityCarsQuery(params),
     source,
+    ...(["daily", "monthly", "airport", "station", "international"].includes(
+      type ?? "",
+    )
+      ? { bookingType: type as CarsListingQuery["bookingType"] }
+      : {}),
     ...(deliveryType === "to_location" || deliveryType === "from_branch"
       ? { deliveryType }
       : {}),

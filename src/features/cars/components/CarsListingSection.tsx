@@ -44,7 +44,11 @@ export default function CarsListingSection({ query, options }: Props) {
   };
   return (
     <>
-      <CarsListingRows query={query} onSelectCar={selectCar} />
+      <CarsListingRows
+        query={query}
+        onSelectCar={selectCar}
+        showAirportPickup={rentalContext?.type === "airport"}
+      />
       {selectedCar?.availability && (
         <CityCarBookingFlow
           key={selectionVersion}

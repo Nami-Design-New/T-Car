@@ -47,8 +47,21 @@ describe("readRentalContext", () => {
     expect(read({ type: "airport", airportId: "4", ...location })).toEqual({
       type: "airport",
       airportId: "4",
-      ...location,
     });
+  });
+
+  it("reads airport and station contexts without a customer location", () => {
+    const airport = read({ type: "airport", airportId: "4" });
+    const station = read({ type: "station", stationId: "8" });
+
+    expect(airport).toEqual({ type: "airport", airportId: "4" });
+    expect(station).toEqual({ type: "station", stationId: "8" });
+    expect(rentalContextParams(airport!).toString()).toBe(
+      "type=airport&airportId=4",
+    );
+    expect(rentalContextParams(station!).toString()).toBe(
+      "type=station&stationId=8",
+    );
   });
 
   it("requires a complete location and a known type", () => {
@@ -96,5 +109,11 @@ describe("carSupportsRentalContext", () => {
         read({ type: "monthly", deliveryType: "from_branch", ...location })!,
       ),
     ).toBe(false);
+    expect(
+      carSupportsRentalContext(
+        availability,
+        read({ type: "airport", airportId: "4" })!,
+      ),
+    ).toBe(true);
   });
 });

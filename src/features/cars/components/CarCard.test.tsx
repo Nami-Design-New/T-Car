@@ -60,6 +60,25 @@ describe("CarCard offer badge", () => {
   });
 });
 
+describe("CarCard airport pickup badge", () => {
+  it("shows for an airport-flow listing car with airport pickup", () => {
+    renderWithIntl(
+      <CarCard
+        car={{ ...car, pickupPoint: "airport" }}
+        showAirportPickup
+      />,
+    );
+
+    expect(screen.getByText("Airport pickup")).toBeInTheDocument();
+  });
+
+  it("does not show outside the airport flow", () => {
+    renderWithIntl(<CarCard car={{ ...car, pickupPoint: "airport" }} />);
+
+    expect(screen.queryByText("Airport pickup")).not.toBeInTheDocument();
+  });
+});
+
 describe("CarCard details navigation", () => {
   it("carries the saved region into the details URL", async () => {
     window.localStorage.setItem(

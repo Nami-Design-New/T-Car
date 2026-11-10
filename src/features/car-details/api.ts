@@ -91,6 +91,8 @@ interface DetailsDto {
   serevices: ServiceDto[];
   insurance: InsuranceDto | null;
   warranties: WarrantyDto[];
+  /** Delivery range in km around the branch for to_location (observed 60). */
+  allowed_distance?: number | null;
 }
 
 interface DetailBranchDto {
@@ -330,7 +332,11 @@ function isDetailsDto(value: unknown): value is DetailsDto {
     value.serevices.every(isService) &&
     Array.isArray(value.warranties) &&
     value.warranties.every(isWarranty) &&
-    (value.insurance === null || isInsurance(value.insurance))
+    (value.insurance === null || isInsurance(value.insurance)) &&
+    (value.allowed_distance === undefined ||
+      value.allowed_distance === null ||
+      (typeof value.allowed_distance === "number" &&
+        Number.isFinite(value.allowed_distance)))
   );
 }
 
@@ -418,6 +424,12 @@ export function mapCarDetails(details: DetailsDto): CarDetails {
       : branchData.has_station
         ? "station"
         : undefined,
+    ...(typeof details.allowed_distance === "number" &&
+    details.allowed_distance > 0
+      ? { allowedDistanceKm: details.allowed_distance }
+      : {}),
+    hasAirportBranch: branchData.has_airport,
+    hasStationBranch: branchData.has_station,
     offer: toOffer(car),
     reviewsCount: 0,
     quickFacts: toQuickFacts(car.details),
@@ -455,12 +467,15 @@ export function mapCarDetails(details: DetailsDto): CarDetails {
 
 function toSearch(query: CarDetailsQuery): URLSearchParams {
   const search = new URLSearchParams();
-  if (query.location) {
+  const isPickupPointBooking =
+    query.bookingType === "airport" || query.bookingType === "station";
+  if (query.location && !isPickupPointBooking) {
     search.set("region", query.location.region);
     search.set("latitude", String(query.location.latitude));
     search.set("longitude", String(query.location.longitude));
   }
-  if (query.deliveryType) search.set("delivery_type", query.deliveryType);
+  if (query.deliveryType && !isPickupPointBooking)
+    search.set("delivery_type", query.deliveryType);
   if (query.bookingType) search.set("booking_type", query.bookingType);
   if (query.airportId) search.set("airport_id", query.airportId);
   if (query.stationId) search.set("train_station_id", query.stationId);

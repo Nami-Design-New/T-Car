@@ -13,7 +13,6 @@ import { Price } from "@/shared/ui/Price";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { LuPlane } from "react-icons/lu";
-import { MdTrain } from "react-icons/md";
 
 const star = ICONS.starFill;
 
@@ -22,6 +21,8 @@ export interface CarCardProps {
   className?: string;
   imageSizes?: string;
   priority?: boolean;
+  /** The `/cars` airport flow is active, so airport pickup is relevant. */
+  showAirportPickup?: boolean;
   /** Lets contextual listings begin their booking flow instead of navigating. */
   onSelect?: (car: CarListing) => void;
 }
@@ -31,6 +32,7 @@ export default function CarCard({
   className,
   imageSizes = "(max-width: 767px) 86vw, (max-width: 1199px) 45vw, 350px",
   priority = false,
+  showAirportPickup = false,
   onSelect,
 }: CarCardProps) {
   const router = useRouter();
@@ -80,22 +82,13 @@ export default function CarCard({
             className="object-cover transition duration-500 group-hover:scale-[1.035]"
           />
 
-          {car.pickupPoint ? (
+          {showAirportPickup && car.pickupPoint === "airport" ? (
             <span className="bg-surface-card-primary text-action-primary absolute inset-s-0 top-0 z-2 inline-flex min-h-7.5 items-center gap-1 rounded-ee-md px-3 py-2 text-xs font-normal backdrop-blur-sm">
-              {car.pickupPoint === "airport" ? (
-                <LuPlane
-                  className="text-action-primary text-sm"
-                  aria-hidden="true"
-                />
-              ) : (
-                <MdTrain
-                  className="text-action-primary text-sm"
-                  aria-hidden="true"
-                />
-              )}
-              {car.pickupPoint === "airport"
-                ? t("airportPickup")
-                : t("stationPickup")}
+              <LuPlane
+                className="text-action-primary text-sm"
+                aria-hidden="true"
+              />
+              {t("airportPickup")}
             </span>
           ) : null}
 

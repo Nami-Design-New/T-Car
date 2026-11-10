@@ -389,6 +389,32 @@ describe("order details API", () => {
     });
   });
 
+  it("accepts numeric airport location coordinates", () => {
+    const order = mapOrderResponse({
+      ...orderResponse,
+      data: {
+        ...orderResponse.data,
+        booking_type: "airport",
+        pickup_location: {
+          pickup_lat: 30.043518,
+          pickup_long: 31.218555,
+          address: "Airport pickup",
+        },
+        delivery_location: {
+          delivery_lat: 30.043518,
+          delivery_long: 31.218555,
+          address: "Airport return",
+        },
+      },
+    });
+
+    expect(order.pickupLocation).toEqual({
+      latitude: 30.043518,
+      longitude: 31.218555,
+      address: "Airport pickup",
+    });
+  });
+
   it("accepts a booking without the optional has_driver field", () => {
     const { has_driver: _missing, ...data } = orderResponse.data;
     const order = mapOrderResponse({
@@ -586,5 +612,113 @@ describe("pay API (E5)", () => {
     expect(failed.ok ? undefined : failed.error.serverMessage).toBe(
       "This order has already been paid.",
     );
+  });
+});
+
+describe("airport and station draft bodies (create-booking doc)", () => {
+  const details = {
+    startDate: new Date(2026, 10, 10),
+    endDate: new Date(2026, 10, 12),
+    time: "09",
+    days: 2,
+    pricePerDay: 90,
+    subtotal: 180,
+    vat: 0,
+    total: 180,
+    notes: "",
+    pickupLocation: null,
+    dropoffLocation: null,
+  };
+  const branchReturn = {
+    lat: 30.04,
+    lng: 31.23,
+    region: "Cairo",
+    address: "Branch street",
+  };
+  const base = { carId: "1", branchId: "3", details };
+  const body = (request: CreateDraftRequest) =>
+    Object.fromEntries(toCreateDraftFormData(request).entries());
+  const common = {
+    car_id: "1",
+    branch_id: "3",
+    from_day: "2026-11-10",
+    to_day: "2026-11-12",
+    time: "09",
+  };
+
+  it("airport with a branch there: delivery_to_airport=1, no delivery_type or delivery_*", () => {
+    expect(
+      body({
+        ...base,
+        bookingType: "airport",
+        airportId: "2",
+        returnAtPickupPoint: true,
+        returnLocation: branchReturn,
+      }),
+    ).toEqual({
+      ...common,
+      type: "airport",
+      airport_id: "2",
+      delivery_to_airport: "1",
+    });
+  });
+
+  it("airport without a branch there: delivery_to_airport=0 with the return location", () => {
+    expect(
+      body({
+        ...base,
+        bookingType: "airport",
+        airportId: "2",
+        returnAtPickupPoint: false,
+        returnLocation: branchReturn,
+      }),
+    ).toEqual({
+      ...common,
+      type: "airport",
+      airport_id: "2",
+      delivery_to_airport: "0",
+      delivery_lat: "30.04",
+      delivery_long: "31.23",
+      delivery_region: "Cairo",
+      delivery_address: "Branch street",
+    });
+  });
+
+  it("station always sends delivery_* (backend known issue)", () => {
+    expect(
+      body({
+        ...base,
+        bookingType: "station",
+        stationId: "5",
+        returnAtPickupPoint: true,
+        returnLocation: branchReturn,
+      }),
+    ).toMatchObject({
+      type: "station",
+      train_station_id: "5",
+      delivery_to_station: "1",
+      delivery_lat: "30.04",
+      delivery_address: "Branch street",
+    });
+  });
+
+  it("E1 for airport sends its own type and no delivery_type", async () => {
+    get.mockResolvedValue(availabilityResponse);
+    await bookingsApi.checkAvailability({
+      carId: "1",
+      branchId: "3",
+      type: "airport",
+      fromDay: "2026-11-10",
+      toDay: "2026-11-12",
+    });
+    expect(get).toHaveBeenLastCalledWith("/booking/is-available-days", {
+      query: {
+        car_id: 1,
+        branch_id: 3,
+        type: "airport",
+        from_day: "2026-11-10",
+        to_day: "2026-11-12",
+      },
+    });
   });
 });

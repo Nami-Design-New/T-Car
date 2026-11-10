@@ -215,6 +215,7 @@
       "locating": "Locating...",
       "useCurrentLocation": "Use my current location",
       "confirm": "Confirm location",
+      "allowedDistance": "The location must be within <strong>{distance} km</strong> of the showroom",
       "unsupported": "Your browser does not support location services.",
       "permissionDenied": "Location permission was denied.",
       "unavailable": "Your current location could not be determined."
@@ -791,6 +792,8 @@
     },
     "daily": {
       "editBooking": "Edit booking",
+      "chosenAirport": "The airport you chose",
+      "chosenStation": "The station you chose",
       "newBooking": "Car booking",
       "weekdays": {
         "sun": "Sun",
@@ -830,7 +833,7 @@
       "dropoffLocation": "Drop-off location",
       "selected": "Selected",
       "enterAddress": "Enter your address",
-      "distanceHint": "The location must be within 20 km of the showroom",
+      "distanceHint": "The location must be within {distance} km of the showroom",
       "additionalDetails": "Additional details",
       "notesPlaceholder": "Write any notes or special requests...",
       "submitEdit": "Send change request",
@@ -854,7 +857,7 @@
       "decrease": "Remove a month",
       "months": "{count, plural, =1 {# month} other {# months}}",
       "sliderLabel": "Booking length in months",
-      "distanceHint": "The location must be within <strong>20 km</strong> of the showroom"
+      "distanceHint": "The location must be within <strong>{distance} km</strong> of the showroom"
     },
     "confirm": {
       "dialogLabel": "Confirm booking",

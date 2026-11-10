@@ -71,12 +71,25 @@ export default async function CarDetailsPage({ params, searchParams }: Props) {
       getLicenseStatus(),
     ]);
 
+  const bookingType = rentalQuery.bookingType!;
+  const deliveryType = rentalQuery.deliveryType;
   const bookingContext: BookingContext = {
-    bookingType: rentalQuery.bookingType!,
-    deliveryType: rentalQuery.deliveryType!,
+    bookingType,
+    // Airport and station have no delivery type (create-booking doc).
+    ...(deliveryType === "to_location" || deliveryType === "from_branch"
+      ? { deliveryType }
+      : {}),
+    ...(bookingType === "airport"
+      ? { pickupPointHasBranch: car.hasAirportBranch }
+      : bookingType === "station"
+        ? { pickupPointHasBranch: car.hasStationBranch }
+        : {}),
     ...(parsedQuery.location ? { location: parsedQuery.location } : {}),
     ...(car.pickupInfo.nearestBranch
       ? { branch: car.pickupInfo.nearestBranch }
+      : {}),
+    ...(car.allowedDistanceKm
+      ? { allowedDistanceKm: car.allowedDistanceKm }
       : {}),
     ...(parsedQuery.airportId ? { airportId: parsedQuery.airportId } : {}),
     ...(parsedQuery.stationId ? { stationId: parsedQuery.stationId } : {}),

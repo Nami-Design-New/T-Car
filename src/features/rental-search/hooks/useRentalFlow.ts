@@ -24,8 +24,9 @@ interface Options {
 }
 
 /**
- * Rental-type flow: tab → (country → pickup | airport | station | pickup)
- * → map → `/cars`. Each choice is carried into the final search params.
+ * Rental-type flow: tab → (country → pickup | pickup) → map → `/cars`, or
+ * tab → airport | station → `/cars` (no location for those). Each choice is
+ * carried into the final search params.
  */
 export function useRentalFlow({ onComplete }: Options) {
   const [rentalType, setRentalType] = useState<RentalType | null>(null);
@@ -61,14 +62,23 @@ export function useRentalFlow({ onComplete }: Options) {
     setStep("map");
   };
 
+  // Airport and station need no customer location (create-booking doc: the
+  // server takes pickup from the airport or station, and the details read finds
+  // the branch from it), so choosing one finishes the flow.
   const confirmAirport = (selected: Airport) => {
     setAirport(selected);
-    setStep("map");
+    setStep(null);
+    onComplete(
+      new URLSearchParams({ type: "airport", airportId: String(selected.id) }),
+    );
   };
 
   const confirmStation = (selected: Station) => {
     setStation(selected);
-    setStep("map");
+    setStep(null);
+    onComplete(
+      new URLSearchParams({ type: "station", stationId: String(selected.id) }),
+    );
   };
 
   const confirmCountry = (selected: Country) => {

@@ -210,26 +210,36 @@ describe("toCityCarsSearchParams", () => {
 });
 
 describe("cars-listing search params", () => {
-  it("maps the hero context and source without a booking type", () => {
+  it("maps the hero context, including its booking type and source", () => {
     const params = parseCarSearchParams(
-      { q: " kia ", airportId: "2", deliveryType: "from_branch" },
+      {
+        q: " kia ",
+        type: "airport",
+        airportId: "2",
+        deliveryType: "from_branch",
+      },
       settingsPriceRange,
     );
     expect(toCarsListingQuery(params, "general")).toEqual({
       source: "general",
       query: "kia",
+      bookingType: "airport",
       airportId: "2",
       deliveryType: "from_branch",
     });
   });
 
   it("uses type for groups and come_from for a company continuation", () => {
-    const query = { source: "careful_chooses" as const, region: "Madinah" };
+    const query = {
+      source: "careful_chooses" as const,
+      bookingType: "station" as const,
+      region: "Madinah",
+    };
     expect(toCarsListingSearchParams(query, 1, 1).toString()).toBe(
-      "per_page=1&page=1&region=Madinah&type=careful_chooses",
+      "per_page=1&page=1&region=Madinah&type=careful_chooses&booking_type=station",
     );
     expect(toCarsListingSearchParams(query, 2, 10, "4").toString()).toBe(
-      "per_page=10&page=2&region=Madinah&company_id=4&come_from=careful_chooses",
+      "per_page=10&page=2&region=Madinah&company_id=4&come_from=careful_chooses&booking_type=station",
     );
   });
 });

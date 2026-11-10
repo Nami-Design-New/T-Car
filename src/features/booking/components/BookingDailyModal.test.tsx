@@ -38,6 +38,26 @@ function futureDateButtons() {
 describe("BookingDailyModal", () => {
   beforeEach(() => vi.clearAllMocks());
 
+  it("shows the allowed delivery distance under the address fields", () => {
+    renderWithIntl(
+      <BookingDailyModal
+        open
+        onClose={vi.fn()}
+        pricePerDay={90}
+        onConfirm={vi.fn()}
+        availability={{
+          ...availability,
+          deliveryType: "to_location",
+          allowedDistanceKm: 60,
+        }}
+      />,
+    );
+
+    expect(
+      screen.getAllByText("The location must be within 60 km of the showroom"),
+    ).toHaveLength(2);
+  });
+
   it("shows the car price per day, not a client-side total", () => {
     renderWithIntl(
       <BookingDailyModal

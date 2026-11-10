@@ -42,6 +42,7 @@ every commit).
 | R15 | Every booking type is supported (P1). **Two dialogs** (user, 2026-11-10): `BookingMonthlyModal` for monthly, `BookingDailyModal` for daily, airport, station, and international. Delivery type: daily, monthly, and international choose `from_branch` or `to_location` in the rental flow; airport and station have none (the car is handed over at the airport or station). |
 | R19 | **Airport and station addresses** (user, 2026-11-10). The customer picks "from the airport" and then an airport (station: a station). (a) The company has **no** branch at that airport (`branch_data.has_airport` false): pickup address = the chosen airport; return (drop-off) address = the nearest branch, as in the Figma design. (b) The company **has** a branch at that airport (`has_airport` true): pickup and return are both that branch. Station follows the same rule with `has_station`. The "return to the nearest branch" text is static UI (already built: `BookingBranchSummary`, `returnToNearestBranch*` messages); no extra design is needed. |
 | R20 | **Entry points to car details** (user, 2026-11-10). (1) Home car rails, (2) the home filter → `/cars`, (3) "show all" offers / chosen for you → `/cars?source=…`: a car card opens the availability flow, then the details. (4) The rental tabs → `/cars` with a finished flow in the URL: a car card that offers that booking and delivery type opens the details directly (`readRentalContext`). |
+| R21 | **Delivery range on the map** (user, 2026-11-10). Car details `allowed_distance` (km, observed 60) is the branch delivery range: the pickup and return maps of the daily and monthly dialogs draw it as a circle around the branch and open fitted to it. Both maps open at the chosen point, else at the saved browser location (`tcar.guestLocation`), like the rental-flow map. The circle is filled `#1F7FFA1A`. The map pin is `map-marker.svg`. A point outside the circle is not kept: a drag, search result, or current location outside it puts the pin back on the last point inside (the branch when there is none, also when the map would open outside), and the hint under it ("يجب ان يكون الموقع في حدود {distance} كم من موقع المعرض", distance = `allowed_distance`) turns into an error; "Confirm location" is also disabled while the pin is outside (haversine distance from the branch, `shared/lib/geo.ts`). The picked address shows with `map-marker.svg`. The backend still decides (`validation.booking_location_outside_branch`). |
 | R16 | No location in the rental context, or no nearest branch for it → "Book now" is disabled and the card asks the customer to choose a location (P2). Never guess a branch. |
 | R17 | **Driving license required** (P11). A signed-in customer without a license on file (profile `license: null`) cannot start a booking: "Book now" opens the account license upload dialog first, and a successful upload continues to the dates step. The car page reads the status with `getLicenseStatus()` (`account/queries.ts`); an unreadable profile is "unknown" and does not block (the backend stays authoritative). |
 | R18 | **Car-details prices follow the booking type** (Q3b answer). The car read is made with `booking_type`, and for `monthly` `lower_price` / `max_price` are monthly prices (TEST car 1: daily 90 / 100, monthly 45 / 55). The card, the daily and monthly date dialogs (their footer shows this car price, not a client total, R6), and the confirmation label it "/ month" for monthly and "/ day" otherwise. |
@@ -99,6 +100,18 @@ interface AvailabilityQuery {
   Confirmed (Q5): a `to_location` booking is possible only when the car is
   available for `to_location` at that branch. This 422 is the expected answer,
   not a bug: show the message and keep the dates dialog open.
+- **Airport and station send no `delivery_type`** (user, 2026-11-10), in E1 and
+  E2: the car is handed over at the airport or station (R15, R19). E1 takes
+  `type=airport` / `type=station`.
+- **Car details is different** (probe 2026-11-10, car 1, Monufia): `GET /cars/{id}`
+  with `booking_type=airport` (or `station`) and **no** `delivery_type` answers
+  422 "The delivery type field is required." It accepts `from_airport` /
+  `from_station` (and `from_branch`). The details read sends `booking_type`,
+  but omits `delivery_type` for airport/station (user decision, 2026-11-10); a
+  fresh probe of that exact combination remains needed. E1 and E2 send neither.
+  In every probe that day `branch_data.branch` was `null` and `has_airport` /
+  `has_station` were `false`, so R16 blocks "Book now" (same backend issue as
+  daily `from_branch`).
 
 ### 3.2 E2 `POST /booking/create-booking` (multipart)
 
@@ -136,6 +149,35 @@ type ServiceType =
   | 'child_seat_service'
   | 'airport_fast_delivery';
 ```
+
+Backend create-booking doc (received 2026-11-10), points that matter here:
+
+- `delivery_type` is required only for daily, monthly, and international;
+  airport and station send none (§3.1).
+- Airport / station: `pickup_*` is filled by the server from the airport or
+  station. `delivery_to_airport=1` → `delivery_*` is filled from the airport
+  too; `0` → the client sends `delivery_*` for the return location.
+- Known issue (station): the return location is copied only for
+  `delivery_to_airport=1`, and the station return latitude is saved under
+  `'delivery _lat'`. Until fixed, **send `delivery_*` for every station
+  booking**.
+- `airport_id` / `train_station_id` must be in the same region as the branch.
+- Service pairs must exist for this car, branch, `type`, and `delivery_type`
+  (`validation.invalid_service`); travel abroad is rejected on international.
+- The doc says `count` for non-monthly types is `to_day - from_day + 1`; the
+  live draft 226 (11-10 → 11-12) returned `count: 2` and the user confirmed
+  nights (Q2). Trust the response, never the client count.
+
+Airport and station request bodies (R19; the "return to the nearest branch"
+text is static UI, and the return location is the booking's branch,
+`branch_id`, already on the page from the car-details read):
+
+| Case | Fields |
+| ---- | ------ |
+| Airport, company branch at that airport (`has_airport`) | `airport_id`, `delivery_to_airport=1` |
+| Airport, no branch there | `airport_id`, `delivery_to_airport=0`, `delivery_*` = the booking branch |
+| Station, branch at that station (`has_station`) | `train_station_id`, `delivery_to_station=1`, `delivery_*` = the booking branch (known issue) |
+| Station, no branch there | `train_station_id`, `delivery_to_station=0`, `delivery_*` = the booking branch |
 
 `payment_method_id` (in the Bruno sample) is ignored here; it belongs to E5.
 Creating a draft **deletes the user's previous draft**.
@@ -286,8 +328,9 @@ interface OrderDto {
   delivery_day: string;       // YYYY-MM-DD (return day)
   pickup_time: string;        // 'HH:mm:ss'
   delivery_time: string;      // 'HH:mm:ss'
-  pickup_location:   { pickup_lat: string | null;   pickup_long: string | null;   address: string | null };
-  delivery_location: { delivery_lat: string | null; delivery_long: string | null; address: string | null };
+  // TEST returns strings for some bookings and finite numbers for airport bookings.
+  pickup_location:   { pickup_lat: string | number | null;   pickup_long: string | number | null;   address: string | null };
+  delivery_location: { delivery_lat: string | number | null; delivery_long: string | number | null; address: string | null };
   branch: OrderBranchDto;
   note: string | null;
   // prices (numbers, SAR)
@@ -573,8 +616,8 @@ booking without the user's approval.
 | O7 | Cancel | `orders` (`cancelQuoteAction`, `cancelAction`), `CancelBookingModal.tsx`, `my-bookings` hooks | Dialog shows the E8 quote (paid, fee, percentage, refund); confirm cancels and refreshes; 422 shown in the dialog; the quote body is checked against §4.8 on a real cancellable booking (with the user's approval) | | Not started |
 | O8 | Extend | `orders` (`extensionQuoteAction`, `extendAction`), `ExtendDurationModal.tsx` (+ payment step from O6) | Counter is extra days (or months for monthly); quote from E9 incl. late fee; pay via E10 with R14 (gateway or wallet); pending extension hides the button | Q10, Q12, Q13 | Not started |
 | O9a | Monthly booking modal | `features/booking/components/BookingMonthlyModal.tsx`, `orders` actions | Monthly context now selects the feature-owned modal and E1 sends `type=monthly` with `count`; E2 draft creation and payment still follow O5/O6 | P9 | In progress (modal move and live E1 wiring, 2026-11-09; 2026-11-10: the months counter, slider, and period are their own `MonthCountPicker` with the plus / minus / caret icons) |
-| O9b | Airport booking (in `BookingDailyModal`, R15) | `BookingDailyModal.tsx`, `orders` (E1/E2 builders), car-details `BookingContext` | E1 with `type=airport` (+ `delivery_type=from_airport`, to be probed); addresses per R19 (no airport branch: pickup = airport, return = nearest branch; airport branch: both = branch); E2 with `airport_id` and `delivery_to_airport` (1 for case b; case a: 0 plus `delivery_*` = the nearest branch, to be probed); confirm and pay reuse O5/O6 | R19 contract probes | Not started |
-| O9c | Station booking (in `BookingDailyModal`, R15) | same as O9b | As O9b with `type=station`, `train_station_id`, `delivery_to_station`, R19 with `has_station`; `delivery_*` always sent (backend bug, Q14) | Q14 | Not started |
+| O9b | Airport booking (in `BookingDailyModal`, R15) | `BookingDailyModal.tsx`, `orders` (E1/E2 builders), car-details `BookingContext` | E1 with `type=airport` (+ `delivery_type=from_airport`, to be probed); addresses per R19 (no airport branch: pickup = airport, return = nearest branch; airport branch: both = branch); E2 with `airport_id` and `delivery_to_airport` (1 for case b; case a: 0 plus `delivery_*` = the nearest branch, to be probed); confirm and pay reuse O5/O6 | R19 contract probes | Code done, not yet live-tested (2026-11-10): the details read sends `from_airport`; E1 `type=airport` without `delivery_type`; E2 per the create-booking doc (`airport_id`, `delivery_to_airport` from `has_airport`, `delivery_*` = the booking branch when 0, no `delivery_type`); the daily dialog shows the airport or the airport branch (R19). Blocked live: TEST returns no `branch_data.branch` and `has_airport` false for car 1 |
+| O9c | Station booking (in `BookingDailyModal`, R15) | same as O9b | As O9b with `type=station`, `train_station_id`, `delivery_to_station`, R19 with `has_station`; `delivery_*` always sent (backend bug, Q14) | Q14 | Code done with O9b, not yet live-tested: `from_station`, `type=station`, `train_station_id`, `delivery_to_station` from `has_station`, `delivery_*` always (known issue) |
 | O9d | International booking (in `BookingDailyModal`, R15) | `BookingDailyModal.tsx`, `orders` | E2 with `type=international`, `delivery_type`, `country_id`; travel-abroad add-on hidden (the backend rejects it with international) | P9 | Not started |
 | O10 | Modification request | `orders` (`modificationPreviewAction`, `modificationRequestAction`, `payModificationAction`), new edit dialog replacing `EditDailyBookingModal` (P4) | The dialog offers "pickup time" or "number of days"; `days_count` preview then store; `pickup_time` store only; difference payment (E12, R14) once the backend exposes the request status | Q7, Q14, Q15 | Not started; difference payment blocked on Q7 |
 | O11 | Rate | `orders` (`rateAction`), `BookingReviewModal.tsx`, `my-bookings/validation.ts` | Only on `complete`; driver stars only when `has_driver`; prefilled from `my_rating`; re-rating updates | Q6b | Not started |

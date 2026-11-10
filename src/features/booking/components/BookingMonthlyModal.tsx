@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { FiCalendar, FiMapPin } from "react-icons/fi";
@@ -26,6 +26,7 @@ import { ICONS } from "@/shared/config/assets";
 import BookingTimeSlots from "./BookingTimeSlots";
 import BookingBranchSummary from "./BookingBranchSummary";
 import MonthCountPicker from "./MonthCountPicker";
+import { allowedAreaOf, mapStartLocation } from "./bookingMap";
 
 const deliveryCarIcon = ICONS.deliveryCar;
 
@@ -46,6 +47,8 @@ interface Props {
     showroom?: string;
     showroomLogo?: string;
     branchAddress?: string;
+    /** Car details `allowed_distance` (km): drawn around the branch on the map. */
+    allowedDistanceKm?: number;
   };
 }
 
@@ -95,6 +98,16 @@ export default function BookingMonthlyModal({
     null,
   );
   const [mapField, setMapField] = useState<MapField | null>(null);
+  // The chosen point, else the saved browser location (read once per opening).
+  const mapStart = useMemo(
+    () =>
+      mapField === null
+        ? null
+        : mapStartLocation(
+            mapField === "dropoff" ? dropoffLocation : pickupLocation,
+          ),
+    [mapField, dropoffLocation, pickupLocation],
+  );
   const [availableSlots, setAvailableSlots] = useState<string[]>([]);
   const [loadingSlots, setLoadingSlots] = useState(false);
   const [availabilityError, setAvailabilityError] = useState<string | null>(
@@ -196,9 +209,13 @@ export default function BookingMonthlyModal({
   const subtotal = pricePerDay * totalDays;
   const vat = Math.round(subtotal * VAT_RATE);
   const total = subtotal + vat;
-  const distanceHint = tm.rich("distanceHint", {
-    strong: (chunks) => <strong>{chunks}</strong>,
-  });
+  // The branch delivery range from car details (allowed_distance).
+  const distanceHint = availability?.allowedDistanceKm
+    ? tm.rich("distanceHint", {
+        distance: availability.allowedDistanceKm.toLocaleString(),
+        strong: (chunks) => <strong>{chunks}</strong>,
+      })
+    : null;
 
   const handleLocationConfirm = (location: LocationData) => {
     const address =
@@ -401,9 +418,11 @@ export default function BookingMonthlyModal({
                       </button>
                     </div>
                     {addressCard(field, address, location)}
-                    <p className="text-text-subtle m-0 text-xs">
-                      {distanceHint}
-                    </p>
+                    {distanceHint && (
+                      <p className="text-text-subtle m-0 text-xs">
+                        {distanceHint}
+                      </p>
+                    )}
                   </div>
                 );
               })}
@@ -455,9 +474,11 @@ export default function BookingMonthlyModal({
           title={
             mapField === "dropoff" ? t("selectDropoff") : t("selectPickup")
           }
-          initialLocation={
-            mapField === "dropoff" ? dropoffLocation : pickupLocation
-          }
+          initialLocation={mapStart}
+          allowedArea={allowedAreaOf(
+            availability?.branch,
+            availability?.allowedDistanceKm,
+          )}
         />
       )}
     </Dialog>

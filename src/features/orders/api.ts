@@ -106,6 +106,9 @@ interface OrderBranchDto {
   logo: string | null;
 }
 
+/** TEST returns order location coordinates as strings for some types and numbers for airport bookings. */
+type OrderCoordinate = string | number | null;
+
 export interface OrderDto {
   id: number;
   order_number: string;
@@ -121,13 +124,13 @@ export interface OrderDto {
   pickup_time: string;
   delivery_time: string;
   pickup_location: {
-    pickup_lat: string | null;
-    pickup_long: string | null;
+    pickup_lat: OrderCoordinate;
+    pickup_long: OrderCoordinate;
     address: string | null;
   };
   delivery_location: {
-    delivery_lat: string | null;
-    delivery_long: string | null;
+    delivery_lat: OrderCoordinate;
+    delivery_long: OrderCoordinate;
     address: string | null;
   };
   branch: OrderBranchDto;
@@ -205,8 +208,8 @@ const isId = (value: unknown): value is number =>
 const isNumericString = (value: unknown): value is string =>
   typeof value === "string" && /^-?\d+(?:\.\d+)?$/.test(value);
 
-const isNullableNumericString = (value: unknown): value is string | null =>
-  value === null || isNumericString(value);
+const isOrderCoordinate = (value: unknown): value is OrderCoordinate =>
+  value === null || isFiniteNumber(value) || isNumericString(value);
 
 /**
  * E6 sends 'YYYY-MM-DD HH:mm' (§4.2); a 'T' separator and seconds are also
@@ -296,8 +299,8 @@ function isPickupLocation(
 ): value is OrderDto["pickup_location"] {
   return (
     isRecord(value) &&
-    isNullableNumericString(value.pickup_lat) &&
-    isNullableNumericString(value.pickup_long) &&
+    isOrderCoordinate(value.pickup_lat) &&
+    isOrderCoordinate(value.pickup_long) &&
     isNullableString(value.address)
   );
 }
@@ -307,8 +310,8 @@ function isDeliveryLocation(
 ): value is OrderDto["delivery_location"] {
   return (
     isRecord(value) &&
-    isNullableNumericString(value.delivery_lat) &&
-    isNullableNumericString(value.delivery_long) &&
+    isOrderCoordinate(value.delivery_lat) &&
+    isOrderCoordinate(value.delivery_long) &&
     isNullableString(value.address)
   );
 }
@@ -453,13 +456,11 @@ export function mapPaymentOptionsResponse(value: unknown): PaymentOptions {
     throw new AppError("server");
   }
   return {
-    methods: data.payment_methods.map(
-      (method): PaymentMethodOption => ({
-        id: String(method.id),
-        title: method.title,
-        type: method.type ?? "",
-      }),
-    ),
+    methods: data.payment_methods.map((method): PaymentMethodOption => ({
+      id: String(method.id),
+      title: method.title,
+      type: method.type ?? "",
+    })),
     walletBalance: data.wallet_balance,
   };
 }
@@ -521,10 +522,11 @@ function toOrderListItem(order: OrderListItemDto): OrderListItem {
   };
 }
 
-const toCoordinate = (value: string | null): number | null =>
+const toCoordinate = (value: OrderCoordinate): number | null =>
   value === null ? null : Number(value);
 
 export function mapOrderResponse(value: unknown): Order {
+  logBookingData("order response before DTO validation", value);
   const data = isRecord(value) ? value.data : undefined;
   if (!isApiEnvelope(value) || value.code !== 200 || !isOrderDto(data)) {
     throw new AppError("server");
@@ -626,10 +628,20 @@ async function listOrders({
 }: ListOrdersParams): Promise<Page<OrderListItem>> {
   const query = { status, page, per_page: perPage };
   logBookingData("request", { method: "GET", path: "/booking", query });
-  const response = await serverHttp.get<ApiPage<unknown>>("/booking", { query });
-  logBookingData("response", { method: "GET", path: "/booking", data: response });
+  const response = await serverHttp.get<ApiPage<unknown>>("/booking", {
+    query,
+  });
+  logBookingData("response", {
+    method: "GET",
+    path: "/booking",
+    data: response,
+  });
   const orders = mapOrdersResponse(response);
-  logBookingData("mapped response", { method: "GET", path: "/booking", data: orders });
+  logBookingData("mapped response", {
+    method: "GET",
+    path: "/booking",
+    data: orders,
+  });
   return orders;
 }
 
@@ -649,14 +661,17 @@ async function checkAvailability({
     from_day: fromDay,
     ...(toDay ? { to_day: toDay } : {}),
     ...(count ? { count } : {}),
-    delivery_type: deliveryType,
+    // Airport and station send no delivery_type.
+    ...(deliveryType ? { delivery_type: deliveryType } : {}),
   };
   logBookingData("request", {
     method: "GET",
     path: "/booking/is-available-days",
     query,
   });
-  const response = await serverHttp.get("/booking/is-available-days", { query });
+  const response = await serverHttp.get("/booking/is-available-days", {
+    query,
+  });
   logBookingData("response", {
     method: "GET",
     path: "/booking/is-available-days",
@@ -687,7 +702,8 @@ export function toCreateDraftFormData(request: CreateDraftRequest): FormData {
   form.set("type", request.bookingType);
   form.set("from_day", formatApiDate(details.startDate));
   form.set("time", details.time);
-  form.set("delivery_type", request.deliveryType);
+  // Only daily, monthly, and international have a delivery type.
+  if (request.deliveryType) form.set("delivery_type", request.deliveryType);
 
   if (request.bookingType === "monthly") {
     form.set("count", String(details.months ?? details.days));
@@ -711,6 +727,28 @@ export function toCreateDraftFormData(request: CreateDraftRequest): FormData {
     form.set("delivery_address", details.dropoffAddress ?? dropoff.address);
   }
 
+  // Airport / station (create-booking doc): the server fills pickup_* from the
+  // airport or station. delivery_to_*=1 returns the car there; with 0 the
+  // client sends delivery_*. Station always sends delivery_* (known issue).
+  if (request.bookingType === "airport" || request.bookingType === "station") {
+    const airport = request.bookingType === "airport";
+    if (airport && request.airportId) form.set("airport_id", request.airportId);
+    if (!airport && request.stationId)
+      form.set("train_station_id", request.stationId);
+    form.set(
+      airport ? "delivery_to_airport" : "delivery_to_station",
+      request.returnAtPickupPoint ? "1" : "0",
+    );
+    const sendReturn = !airport || !request.returnAtPickupPoint;
+    if (sendReturn && request.returnLocation) {
+      const { lat, lng, region, address } = request.returnLocation;
+      form.set("delivery_lat", String(lat));
+      form.set("delivery_long", String(lng));
+      form.set("delivery_region", region);
+      form.set("delivery_address", address);
+    }
+  }
+
   for (const [index, service] of (request.services ?? []).entries()) {
     form.set(`service_id[${index}]`, service.id);
     form.set(`service_type[${index}]`, service.type);
@@ -726,10 +764,7 @@ async function createDraft(request: CreateDraftRequest): Promise<Order> {
     path: "/booking/create-booking",
     body: Object.fromEntries(form.entries()),
   });
-  const response = await serverHttp.post(
-    "/booking/create-booking",
-    form,
-  );
+  const response = await serverHttp.post("/booking/create-booking", form);
   logBookingData("response", {
     method: "POST",
     path: "/booking/create-booking",

@@ -5,6 +5,9 @@ import {
   canModify,
   bookingInstant,
   canRate,
+  toCreateDraftRequest,
+  type BookingContext,
+  type BookingDetails,
   type Order,
 } from "./model";
 
@@ -100,5 +103,72 @@ describe("bookingInstant", () => {
     expect(bookingInstant("2026-11-10T10:00:00Z").toISOString()).toBe(
       "2026-11-10T10:00:00.000Z",
     );
+  });
+});
+
+describe("toCreateDraftRequest", () => {
+  const details = { time: "09" } as BookingDetails;
+  const branch = {
+    id: "3",
+    name: "cairo",
+    address: "Branch street",
+    distanceKm: 8,
+    latitude: 30.04,
+    longitude: 31.23,
+    region: "Cairo",
+  };
+  const context = (extra: Partial<BookingContext>): BookingContext => ({
+    bookingType: "daily",
+    deliveryType: "from_branch",
+    branch,
+    ...extra,
+  });
+
+  it("returns null without a branch (R16)", () => {
+    expect(
+      toCreateDraftRequest("1", context({ branch: undefined }), details),
+    ).toBeNull();
+  });
+
+  it("keeps the delivery type for daily and drops it for airport", () => {
+    expect(toCreateDraftRequest("1", context({}), details)).toMatchObject({
+      deliveryType: "from_branch",
+    });
+    const airport = toCreateDraftRequest(
+      "1",
+      context({
+        bookingType: "airport",
+        deliveryType: undefined,
+        airportId: "2",
+        pickupPointHasBranch: false,
+      }),
+      details,
+    );
+    expect(airport).not.toHaveProperty("deliveryType");
+    expect(airport).toMatchObject({
+      airportId: "2",
+      returnAtPickupPoint: false,
+      returnLocation: {
+        lat: 30.04,
+        lng: 31.23,
+        region: "Cairo",
+        address: "Branch street",
+      },
+    });
+  });
+
+  it("returns at the station branch when the company has one there", () => {
+    expect(
+      toCreateDraftRequest(
+        "1",
+        context({
+          bookingType: "station",
+          deliveryType: undefined,
+          stationId: "5",
+          pickupPointHasBranch: true,
+        }),
+        details,
+      ),
+    ).toMatchObject({ stationId: "5", returnAtPickupPoint: true });
   });
 });

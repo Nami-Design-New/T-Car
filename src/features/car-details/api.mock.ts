@@ -155,6 +155,8 @@ export const carDetailsMock: CarDetailsApi = {
     return {
       ...listing,
       ...MOCK_DETAILS_EXTRAS,
+      hasAirportBranch: listing.pickupPoint === "airport",
+      hasStationBranch: listing.pickupPoint === "station",
       reviewsCount: listing.reviewsCount ?? 0,
       showroomLogo: MOCK_OFFICES.find(
         (office) => office.showroom === listing.showroom,

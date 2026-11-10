@@ -73,15 +73,83 @@ export interface BookingServiceSelection {
   type: BookingServiceType;
 }
 
+/** Where the car goes back, sent as `delivery_*` (create-booking doc). */
+export interface ReturnLocation {
+  lat: number;
+  lng: number;
+  region: string;
+  address: string;
+}
+
 /** E2 input. Prices are intentionally absent: the API creates the draft. */
 export interface CreateDraftRequest {
   carId: string;
   branchId: string;
   bookingType: BookingType;
-  deliveryType: BookingDeliveryTypeRequest;
+  /** Daily, monthly, and international only; airport and station send none. */
+  deliveryType?: BookingDeliveryTypeRequest;
   details: BookingDetails;
   services?: BookingServiceSelection[];
   countryId?: string;
+  airportId?: string;
+  stationId?: string;
+  /**
+   * Airport / station: `delivery_to_airport` / `delivery_to_station`. True
+   * when the company has a branch there (R19): the car is returned there.
+   */
+  returnAtPickupPoint?: boolean;
+  /**
+   * `delivery_*`: airport with `returnAtPickupPoint` false, and every
+   * station booking (backend known issue). The booking branch (R19).
+   */
+  returnLocation?: ReturnLocation;
+}
+
+/** Whether a booking type chooses a delivery type (airport and station do not). */
+export const hasDeliveryType = (type: BookingType): boolean =>
+  type === "daily" || type === "monthly" || type === "international";
+
+/**
+ * E2 input from the car page context (create-booking doc). Null without a
+ * branch (R16). Airport / station: no delivery type; `delivery_to_*` follows
+ * whether the company has a branch there; the return location is the
+ * booking branch (R19).
+ */
+export function toCreateDraftRequest(
+  carId: string,
+  context: BookingContext,
+  details: BookingDetails,
+  services?: BookingServiceSelection[],
+): CreateDraftRequest | null {
+  const { branch, bookingType } = context;
+  if (!branch) return null;
+  const request: CreateDraftRequest = {
+    carId,
+    branchId: branch.id,
+    bookingType,
+    details,
+    services,
+  };
+  if (hasDeliveryType(bookingType)) request.deliveryType = context.deliveryType;
+  if (bookingType === "international") request.countryId = context.countryId;
+  if (bookingType === "airport" || bookingType === "station") {
+    if (bookingType === "airport") request.airportId = context.airportId;
+    else request.stationId = context.stationId;
+    request.returnAtPickupPoint = context.pickupPointHasBranch === true;
+    if (
+      branch.latitude !== undefined &&
+      branch.longitude !== undefined &&
+      branch.region
+    ) {
+      request.returnLocation = {
+        lat: branch.latitude,
+        lng: branch.longitude,
+        region: branch.region,
+        address: branch.address,
+      };
+    }
+  }
+  return request;
 }
 
 export type OrderStatus =
@@ -126,7 +194,8 @@ export type BookingDeliveryTypeRequest = "to_location" | "from_branch";
 
 export interface BookingContext {
   bookingType: BookingType;
-  deliveryType: BookingDeliveryTypeRequest;
+  /** Absent for airport and station (they have no delivery type). */
+  deliveryType?: BookingDeliveryTypeRequest;
   location?: {
     region: string;
     latitude: number;
@@ -146,16 +215,27 @@ export interface BookingContext {
   airportId?: string;
   stationId?: string;
   countryId?: string;
+  /**
+   * Airport / station: whether the company has a branch there
+   * (`branch_data.has_airport` / `has_station`), R19.
+   */
+  pickupPointHasBranch?: boolean;
+  /**
+   * Car details `allowed_distance` (km): to_location pickup and return must be
+   * within this range of the branch (create-booking doc); drawn on the map.
+   */
+  allowedDistanceKm?: number;
 }
 
 export interface AvailabilityRequest {
   carId: string;
   branchId: string;
-  type: "daily" | "monthly";
+  type: BookingType;
   fromDay: string;
   toDay?: string;
   count?: number;
-  deliveryType: BookingDeliveryTypeRequest;
+  /** Daily, monthly, and international only. */
+  deliveryType?: BookingDeliveryTypeRequest;
 }
 
 export interface Availability {

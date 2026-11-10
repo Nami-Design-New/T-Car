@@ -183,7 +183,7 @@ describe("withDefaultRentalContext", () => {
     });
   });
 
-  it("keeps the selected flow values and location", () => {
+  it("keeps delivery locations but removes them for airport and station reads", () => {
     const location = { region: "Riyadh", latitude: 24.7, longitude: 46.6 };
     expect(
       withDefaultRentalContext({
@@ -193,11 +193,24 @@ describe("withDefaultRentalContext", () => {
         airportId: "12",
       }),
     ).toEqual({
-      location,
       bookingType: "airport",
-      deliveryType: "to_location",
+      // The details read requires a delivery type; airport has none of its own.
+      deliveryType: "from_airport",
       airportId: "12",
     });
+    expect(
+      withDefaultRentalContext({ bookingType: "station", stationId: "4" }),
+    ).toEqual({
+      bookingType: "station",
+      deliveryType: "from_station",
+      stationId: "4",
+    });
+    expect(
+      withDefaultRentalContext({
+        bookingType: "daily",
+        deliveryType: "to_location",
+      }),
+    ).toEqual({ bookingType: "daily", deliveryType: "to_location" });
     expect(withDefaultRentalContext({ bookingType: "monthly" })).toEqual({
       bookingType: "monthly",
       deliveryType: "from_branch",
@@ -225,7 +238,7 @@ describe("withDefaultRentalContext", () => {
 });
 
 describe("carDetailsApi.getCarDetails", () => {
-  it("maps core fields and sends selected context under backend names", async () => {
+  it("maps core fields and does not send a customer location for airport reads", async () => {
     get.mockResolvedValue(envelope(details));
 
     await expect(
@@ -235,14 +248,14 @@ describe("carDetailsApi.getCarDetails", () => {
           latitude: 24.7136,
           longitude: 46.6753,
         },
-        deliveryType: "to_location",
+        deliveryType: "from_airport",
         bookingType: "airport",
         airportId: "12",
       }),
     ).resolves.toEqual(mapCarDetails(details));
 
     expect(get).toHaveBeenCalledWith(
-      "/cars/3?region=Riyadh+Region&latitude=24.7136&longitude=46.6753&delivery_type=to_location&booking_type=airport&airport_id=12",
+      "/cars/3?booking_type=airport&airport_id=12",
     );
   });
 

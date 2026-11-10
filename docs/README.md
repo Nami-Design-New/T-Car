@@ -733,6 +733,13 @@ now in `shared/hooks` and also used by the wallet top-up. Next is O7 (cancel). O
 context now selects the feature-owned monthly modal and sends E1 `count`; its
 draft and payment wiring remains behind O5/O6. The remaining plan integrates
 checkout, cancel, extend, and rate (O4–O12).
+Airport and station flow follow-up (2026-11-10): choosing the pickup point now
+opens the matching car results without a customer-map step; the car-details
+read omits a stale customer location so the backend selects the airport or
+station branch, while "Book now" still requires that a branch was returned.
+The grouped `/cars-listing` and `/company-cars` reads now forward the selected
+flow type as `booking_type`; airport and station contexts intentionally omit
+customer location data.
 The user answered Q1–Q6, Q9, Q11 and P1–P6, P8 on 2026-11-08 (§8.1: all
 booking types, no points, no coupon, wallet with or without one method). Open
 items are listed in §8.2 / §8.3 with the fraction that settles each. Booking

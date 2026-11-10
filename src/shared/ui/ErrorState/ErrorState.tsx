@@ -41,7 +41,7 @@ export function ErrorState({
   const sizeClasses = {
     page: "error-state--page min-h-[50vh] justify-center px-4 py-10",
     section: "error-state--section px-4 py-10",
-    inline: "error-state--inline flex-row flex-wrap justify-center p-4",
+    inline: "error-state--inline  justify-center p-4",
   };
 
   return (
@@ -59,7 +59,7 @@ export function ErrorState({
           className="error-state__illustration mb-2 w-80 max-md:w-64"
         />
       ) : (
-        <span
+        <div
           className={cn(
             "bg-status-error-background text-status-error inline-flex size-14 items-center justify-center rounded-full text-[26px]",
             size === "inline" && "size-8 text-base",
@@ -67,7 +67,7 @@ export function ErrorState({
           aria-hidden="true"
         >
           {offline ? <FiWifiOff /> : <FiAlertTriangle />}
-        </span>
+        </div>
       )}
 
       <Heading

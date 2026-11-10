@@ -32,6 +32,9 @@ const requestSchema = z
     typeIds: optionalIds,
     serviceIds: optionalIds,
     companyIds: optionalIds,
+    bookingType: z
+      .enum(["daily", "monthly", "airport", "station", "international"])
+      .optional(),
     deliveryType: z.enum(["to_location", "from_branch"]).optional(),
     airportId: id.optional(),
     stationId: id.optional(),
@@ -63,6 +66,7 @@ export async function GET(request: NextRequest) {
     typeIds: idsFrom(search, "type_id"),
     serviceIds: idsFrom(search, "service_id"),
     companyIds: idsFrom(search, "company_id"),
+    bookingType: search.get("booking_type") ?? undefined,
     deliveryType: search.get("delivery_type") ?? undefined,
     airportId: search.get("airport_id") ?? undefined,
     stationId: search.get("train_station_id") ?? undefined,

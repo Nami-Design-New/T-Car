@@ -14,7 +14,7 @@ export default function BookingNotices() {
     <div className="flex flex-col gap-3">
       <p
         role="note"
-        className="border-warning-500 bg-warning-50 text-warning-700 m-0 flex items-start gap-3 rounded-md border-e-2 p-4 text-sm leading-relaxed"
+        className="border-warning-500 bg-warning-50 text-warning-700 m-0 flex items-start gap-3 rounded-md border-s-2 p-4 text-sm leading-relaxed"
       >
         <Image
           src={ICONS.info.src}

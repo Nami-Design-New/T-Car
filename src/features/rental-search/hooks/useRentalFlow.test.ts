@@ -14,7 +14,7 @@ function setup() {
   const onComplete = vi.fn<(params: URLSearchParams) => void>();
   const { result } = renderHook(() => useRentalFlow({ onComplete }));
   const completedWith = () =>
-    Object.fromEntries(onComplete.mock.calls[0][0].entries());
+    Object.fromEntries(onComplete.mock.lastCall![0].entries());
   return { result, onComplete, completedWith };
 }
 
@@ -53,13 +53,12 @@ describe("useRentalFlow", () => {
     });
   });
 
-  it("carries the airport into the search params", () => {
+  it("completes at the airport selection without requesting a location", () => {
     const { result, completedWith } = setup();
     act(() => result.current.start("airport"));
     act(() => result.current.confirmAirport({ id: 7 } as Airport));
-    expect(result.current.step).toBe("map");
-    act(() => result.current.confirmLocation(location));
-    expect(completedWith()).toMatchObject({ type: "airport", airportId: "7" });
+    expect(result.current.step).toBeNull();
+    expect(completedWith()).toEqual({ type: "airport", airportId: "7" });
   });
 
   it("does not complete without a region", () => {
@@ -72,12 +71,12 @@ describe("useRentalFlow", () => {
     expect(onComplete).not.toHaveBeenCalled();
   });
 
-  it("carries the station into the search params", () => {
+  it("completes at the station selection without requesting a location", () => {
     const { result, completedWith } = setup();
     act(() => result.current.start("station"));
     act(() => result.current.confirmStation({ id: 3 } as Station));
-    act(() => result.current.confirmLocation(location));
-    expect(completedWith()).toMatchObject({ type: "station", stationId: "3" });
+    expect(result.current.step).toBeNull();
+    expect(completedWith()).toEqual({ type: "station", stationId: "3" });
   });
 
   it("asks for the pickup type after the country", () => {

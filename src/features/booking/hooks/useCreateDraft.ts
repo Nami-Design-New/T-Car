@@ -6,9 +6,9 @@ import { AppError } from "@/shared/lib/errors";
 import { reportError } from "@/shared/lib/report";
 import {
   createDraftAction,
+  toCreateDraftRequest,
   type BookingContext,
   type BookingDetails,
-  type CreateDraftRequest,
   type Order,
   type BookingServiceSelection,
 } from "@/features/orders";
@@ -24,19 +24,10 @@ export function useCreateDraft(carId: string) {
     ): Promise<Result<Order>> => {
       setSubmitting(true);
       try {
-        if (!context.branch) {
+        const request = toCreateDraftRequest(carId, context, details, services);
+        if (!request) {
           return fail(new AppError("validation", "booking.invalidLocation"));
         }
-
-        const request: CreateDraftRequest = {
-          carId,
-          branchId: context.branch.id,
-          bookingType: context.bookingType,
-          deliveryType: context.deliveryType,
-          details,
-          services,
-          countryId: context.countryId,
-        };
         return fromActionResult(await createDraftAction(request));
       } catch (error) {
         reportError(error, { scope: "booking.draft" });

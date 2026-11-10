@@ -74,6 +74,29 @@ describe("CarBookingCard", () => {
       />,
     );
 
+  it("allows an airport booking with a branch but no customer location", () => {
+    renderCard({
+      bookingContext: {
+        bookingType: "airport",
+        airportId: "7",
+        branch: bookableContext.branch,
+      },
+    });
+
+    expect(screen.getByRole("button", { name: "Book now" })).toBeEnabled();
+    expect(
+      screen.queryByText("Choose a location to book this car."),
+    ).not.toBeInTheDocument();
+  });
+
+  it("disables an airport booking when no branch is available", () => {
+    renderCard({
+      bookingContext: { bookingType: "airport", airportId: "7" },
+    });
+
+    expect(screen.getByRole("button", { name: "Book now" })).toBeDisabled();
+  });
+
   it("labels the price per month for a monthly rental", () => {
     renderCard({
       bookingContext: { ...bookableContext, bookingType: "monthly" },
