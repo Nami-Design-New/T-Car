@@ -9,6 +9,7 @@ vi.mock("@/services/http/server", () => ({ serverHttp: { get, post } }));
 import {
   bookingsApi,
   mapAvailabilityResponse,
+  mapCancelQuoteResponse,
   mapOrderResponse,
   mapOrdersResponse,
   mapPaymentOptionsResponse,
@@ -612,6 +613,53 @@ describe("pay API (E5)", () => {
     expect(failed.ok ? undefined : failed.error.serverMessage).toBe(
       "This order has already been paid.",
     );
+  });
+});
+
+describe("cancel API (E8)", () => {
+  beforeEach(() => post.mockReset());
+
+  const quoteResponse = {
+    data: {
+      payed_amount: 2500,
+      can_cancel_fee_amount: 1000,
+      cancel_fee_percentage: 25,
+      total: 1500,
+    },
+    message: "Cancellation quote fetched successfully.",
+    code: 200,
+  };
+
+  it("maps the cancellation quote", () => {
+    expect(mapCancelQuoteResponse(quoteResponse)).toEqual({
+      paidAmount: 2500,
+      cancellationFee: 1000,
+      discountPercent: 25,
+      total: 1500,
+    });
+  });
+
+  it("requests the quote with is_quote=1", async () => {
+    post.mockResolvedValue(quoteResponse);
+
+    await expect(bookingsApi.getCancelQuote("153")).resolves.toEqual({
+      paidAmount: 2500,
+      cancellationFee: 1000,
+      discountPercent: 25,
+      total: 1500,
+    });
+    expect(post).toHaveBeenCalledWith("/booking/153/cancel", undefined, {
+      query: { is_quote: 1 },
+    });
+  });
+
+  it("posts is_quote=0 and validates the cancelled order response", async () => {
+    post.mockResolvedValue(orderResponse);
+
+    await expect(bookingsApi.cancelBooking("153")).resolves.toBeUndefined();
+    expect(post).toHaveBeenCalledWith("/booking/153/cancel", undefined, {
+      query: { is_quote: 0 },
+    });
   });
 });
 

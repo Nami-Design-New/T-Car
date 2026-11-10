@@ -14,6 +14,7 @@ import {
   canExtend,
   canModify,
   type BookingEditRequest,
+  type CancelQuote,
   type Order,
 } from "@/features/orders";
 import { bookingTabFor, bookingsListPath, toEditRequest } from "../model";
@@ -60,13 +61,21 @@ export default function BookingDetailsHeader({ booking }: Props) {
   const t = useTranslations("myBookings.details");
   const router = useRouter();
   const [flow, setFlow] = useState<HeaderFlow>({ step: "idle" });
-  const { submitting, extend, requestEdit, cancel } = useBookingActions(
-    booking.id,
-  );
+  const [cancelQuote, setCancelQuote] = useState<CancelQuote>();
+  const { submitting, extend, requestEdit, getCancelQuote, cancel } =
+    useBookingActions(booking.id);
   const errorMessage = useErrorMessage();
 
   const close = useCallback(() => setFlow({ step: "idle" }), []);
   const open = (step: "extend" | "edit" | "cancel") => setFlow({ step });
+
+  const openCancel = async () => {
+    setCancelQuote(undefined);
+    setFlow({ step: "cancel" });
+    const result = await getCancelQuote();
+    if (!result.ok) setFlow({ step: "cancel", error: result.error });
+    else setCancelQuote(result.data);
+  };
 
   const allowEdit = canModify(booking);
   const allowExtend = canExtend(booking);
@@ -91,11 +100,12 @@ export default function BookingDetailsHeader({ booking }: Props) {
   const handleCancel = async () => {
     if (submitting) return;
     const result = await cancel();
-    setFlow(
-      result.ok
-        ? { step: "result", kind: "cancelled" }
-        : { step: "cancel", error: result.error },
-    );
+    if (result.ok) {
+      router.refresh();
+      setFlow({ step: "result", kind: "cancelled" });
+    } else {
+      setFlow({ step: "cancel", error: result.error });
+    }
   };
 
   return (
@@ -147,7 +157,7 @@ export default function BookingDetailsHeader({ booking }: Props) {
                 </Menu.Item>
               )}
               {allowCancel && (
-                <Menu.Item tone="danger" onSelect={() => open("cancel")}>
+                <Menu.Item tone="danger" onSelect={() => void openCancel()}>
                   <FiX aria-hidden="true" />
                   {t("cancel")}
                 </Menu.Item>
@@ -189,6 +199,7 @@ export default function BookingDetailsHeader({ booking }: Props) {
         }}
         onConfirm={handleCancel}
         bookingAmount={booking.finalPrice}
+        quote={cancelQuote}
         loading={submitting}
         error={
           flow.step === "cancel" && flow.error

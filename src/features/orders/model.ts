@@ -31,8 +31,7 @@ export interface PayOrderRequest extends PaymentChoice {
 
 /** E5 result: paid at once (the wallet covered it) or a gateway tab to open (R10). */
 export type PayOrderResult =
-  | { kind: "paid" }
-  | { kind: "gateway"; payment: PaymentLinks };
+  { kind: "paid" } | { kind: "gateway"; payment: PaymentLinks };
 
 /** Whether a choice is complete: at least the wallet or one method. */
 export const isPaymentChoiceComplete = (choice: PaymentChoice): boolean =>
@@ -184,11 +183,7 @@ export interface OrderListItem {
 }
 
 export type BookingType =
-  | "daily"
-  | "monthly"
-  | "station"
-  | "airport"
-  | "international";
+  "daily" | "monthly" | "station" | "airport" | "international";
 
 export type BookingDeliveryTypeRequest = "to_location" | "from_branch";
 
@@ -245,10 +240,7 @@ export interface Availability {
 }
 
 export type OrderDeliveryType =
-  | "to_location"
-  | "from_branch"
-  | "from_airport"
-  | "from_station";
+  "to_location" | "from_branch" | "from_airport" | "from_station";
 
 export interface OrderLocation {
   latitude: number | null;
@@ -356,6 +348,14 @@ export interface BookingReviewInput {
   driverRating: number;
 }
 
+/** E8 cancel quote returned before a cancellation is confirmed. */
+export interface CancelQuote {
+  paidAmount: number;
+  cancellationFee: number;
+  discountPercent: number;
+  total: number;
+}
+
 /**
  * Booking times come without an offset and are Saudi wall-clock time
  * (Asia/Riyadh, UTC+3, no DST). Reading them with that offset gives the same
@@ -372,8 +372,7 @@ export const bookingInstant = (value: string): Date =>
   );
 
 const dateAfter = (value: string, now: Date) => bookingInstant(value) > now;
-const dateReached = (value: string, now: Date) =>
-  bookingInstant(value) <= now;
+const dateReached = (value: string, now: Date) => bookingInstant(value) <= now;
 
 export function canCancel(
   order: Pick<Order, "status" | "pickupAt">,

@@ -1,6 +1,7 @@
 export {
   checkAvailabilityAction,
   cancelBookingAction,
+  getCancelQuoteAction,
   createDraftAction,
   extendBookingAction,
   getOrdersPageAction,
@@ -26,6 +27,7 @@ export type {
   Availability,
   AvailabilityRequest,
   BookingContext,
+  CancelQuote,
   BookingDeliveryTypeRequest,
   BookingType,
   BookingDetails,

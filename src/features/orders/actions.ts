@@ -15,6 +15,7 @@ import { bookingsApi, ORDERS_PER_PAGE } from "./api";
 import type {
   Availability,
   AvailabilityRequest,
+  CancelQuote,
   BookingEditRequest,
   BookingReviewInput,
   CreateDraftRequest,
@@ -177,6 +178,21 @@ export async function cancelBookingAction(
   bookingId: string,
 ): Promise<ActionResult<void>> {
   return run("bookings.cancel", () => bookingsApi.cancelBooking(bookingId));
+}
+
+export async function getCancelQuoteAction(
+  bookingId: string,
+): Promise<ActionResult<CancelQuote>> {
+  try {
+    const session = await auth();
+    if (!session?.user?.id) throw new AppError("unauthorized");
+    if (typeof bookingId !== "string" || !ORDER_ID.test(bookingId))
+      throw new AppError("validation");
+    return toActionResult(ok(await bookingsApi.getCancelQuote(bookingId)));
+  } catch (error) {
+    reportError(error, { scope: "bookings.cancelQuote", bookingId });
+    return toActionResult(fail(error));
+  }
 }
 
 export async function submitBookingReviewAction(

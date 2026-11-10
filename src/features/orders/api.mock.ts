@@ -236,6 +236,18 @@ export const bookingsMock: BookingsApi = {
     }
   },
 
+  async getCancelQuote(id) {
+    const order = findActiveOrder(id);
+    const cancellationFee = order.cancellationFee;
+    return {
+      paidAmount: order.finalPrice,
+      cancellationFee,
+      discountPercent:
+        order.finalPrice > 0 ? (cancellationFee / order.finalPrice) * 100 : 0,
+      total: Math.max(order.finalPrice - cancellationFee, 0),
+    };
+  },
+
   async cancelBooking(id) {
     await delay(600);
     const order = findActiveOrder(id);

@@ -11,6 +11,7 @@ import { bookingsMock } from "./api.mock";
 import type {
   Availability,
   AvailabilityRequest,
+  CancelQuote,
   BookingType,
   BookingEditRequest,
   BookingReviewInput,
@@ -38,6 +39,8 @@ export interface BookingsApi {
   listOrders(params: ListOrdersParams): Promise<Page<OrderListItem>>;
   /** Throws a `not_found` AppError for an unknown id. */
   getOrder(id: string): Promise<Order>;
+  /** E8: previews the cancellation refund and fee. */
+  getCancelQuote(id: string): Promise<CancelQuote>;
   /** `days` is the new total rental length. */
   extendBooking(id: string, days: number): Promise<void>;
   requestBookingEdit(id: string, request: BookingEditRequest): Promise<void>;
@@ -164,6 +167,13 @@ export interface OrderDto {
   terms: string;
 }
 
+export interface CancelQuoteDto {
+  payed_amount: number;
+  can_cancel_fee_amount: number;
+  cancel_fee_percentage: number;
+  total: number;
+}
+
 const ORDER_STATUSES = [
   "start",
   "new",
@@ -188,6 +198,31 @@ const BOOKING_TYPES = [
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === "object" && value !== null;
+
+const isCancelQuoteDto = (value: unknown): value is CancelQuoteDto =>
+  isRecord(value) &&
+  typeof value.payed_amount === "number" &&
+  typeof value.can_cancel_fee_amount === "number" &&
+  typeof value.cancel_fee_percentage === "number" &&
+  typeof value.total === "number";
+
+export function mapCancelQuoteResponse(response: unknown): CancelQuote {
+  const data = isApiEnvelope(response) ? response.data : undefined;
+  if (
+    !isApiEnvelope(response) ||
+    response.code !== 200 ||
+    !isCancelQuoteDto(data)
+  ) {
+    throw new AppError("server");
+  }
+
+  return {
+    paidAmount: data.payed_amount,
+    cancellationFee: data.can_cancel_fee_amount,
+    discountPercent: data.cancel_fee_percentage,
+    total: data.total,
+  };
+}
 
 const isFiniteNumber = (value: unknown): value is number =>
   typeof value === "number" && Number.isFinite(value);
@@ -841,9 +876,27 @@ async function getOrder(id: string): Promise<Order> {
   return order;
 }
 
+async function getCancelQuote(id: string): Promise<CancelQuote> {
+  const path = `/booking/${id}/cancel`;
+  const query = { is_quote: 1 };
+  logBookingData("request", { method: "POST", path, query });
+  const response = await serverHttp.post(path, undefined, { query });
+  logBookingData("response", { method: "POST", path, data: response });
+  return mapCancelQuoteResponse(response);
+}
+
+async function cancelBooking(id: string): Promise<void> {
+  const path = `/booking/${id}/cancel`;
+  const query = { is_quote: 0 };
+  logBookingData("request", { method: "POST", path, query });
+  const response = await serverHttp.post(path, undefined, { query });
+  logBookingData("response", { method: "POST", path, data: response });
+  mapOrderResponse(response);
+}
+
 /**
- * O3 makes the list and details live. The remaining methods forward to
- * the stateless mock until their named booking API fractions replace them.
+ * O3 makes the list and details live. O7 also replaces the cancel mock with
+ * the quote and cancellation endpoints; the remaining writes stay mocked.
  */
 export const bookingsApi: BookingsApi = {
   checkAvailability,
@@ -853,8 +906,8 @@ export const bookingsApi: BookingsApi = {
   extendBooking: (...args) => bookingsMock.extendBooking(...args),
   // O10 replaces modification requests.
   requestBookingEdit: (...args) => bookingsMock.requestBookingEdit(...args),
-  // O7 replaces cancellation.
-  cancelBooking: (...args) => bookingsMock.cancelBooking(...args),
+  getCancelQuote,
+  cancelBooking,
   // O11 replaces reviews.
   submitReview: (...args) => bookingsMock.submitReview(...args),
   createDraft,

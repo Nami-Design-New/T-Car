@@ -9,6 +9,7 @@ const {
   createDraft,
   extendBooking,
   requestBookingEdit,
+  getCancelQuote,
   submitReview,
 } = vi.hoisted(() => ({
   auth: vi.fn(),
@@ -18,6 +19,7 @@ const {
   createDraft: vi.fn(),
   extendBooking: vi.fn(),
   requestBookingEdit: vi.fn(),
+  getCancelQuote: vi.fn(),
   submitReview: vi.fn(),
 }));
 
@@ -27,9 +29,10 @@ vi.mock("./api", () => ({
     checkAvailability,
     getPaymentOptions,
     payOrder,
-      createDraft,
+    createDraft,
     extendBooking,
     requestBookingEdit,
+    getCancelQuote,
     submitReview,
   },
 }));
@@ -42,6 +45,7 @@ import {
   createDraftAction,
   extendBookingAction,
   requestBookingEditAction,
+  getCancelQuoteAction,
   submitBookingReviewAction,
 } from "./actions";
 
@@ -61,10 +65,12 @@ describe("checkAvailabilityAction", () => {
       message: "Fetched successfully.",
     });
 
-    await expect(checkAvailabilityAction(availabilityRequest)).resolves.toEqual({
-      ok: true,
-      data: { slots: ["08", "10"], message: "Fetched successfully." },
-    });
+    await expect(checkAvailabilityAction(availabilityRequest)).resolves.toEqual(
+      {
+        ok: true,
+        data: { slots: ["08", "10"], message: "Fetched successfully." },
+      },
+    );
     expect(checkAvailability).toHaveBeenCalledWith(availabilityRequest);
   });
 
@@ -75,14 +81,16 @@ describe("checkAvailabilityAction", () => {
       }),
     );
 
-    await expect(checkAvailabilityAction(availabilityRequest)).resolves.toEqual({
-      ok: false,
-      error: {
-        kind: "validation",
-        status: 422,
-        serverMessage: "The car is not available for the selected days.",
+    await expect(checkAvailabilityAction(availabilityRequest)).resolves.toEqual(
+      {
+        ok: false,
+        error: {
+          kind: "validation",
+          status: 422,
+          serverMessage: "The car is not available for the selected days.",
+        },
       },
-    });
+    );
   });
 });
 
@@ -115,6 +123,41 @@ describe("getPaymentOptionsAction", () => {
       ok: false,
       error: { kind: "unauthorized" },
     });
+  });
+});
+
+describe("getCancelQuoteAction", () => {
+  beforeEach(() => {
+    getCancelQuote.mockReset();
+    auth.mockResolvedValue({ user: { id: "42" } });
+  });
+
+  it("returns the quote for an authenticated customer", async () => {
+    getCancelQuote.mockResolvedValue({
+      paidAmount: 2500,
+      cancellationFee: 1000,
+      discountPercent: 25,
+      total: 1500,
+    });
+
+    await expect(getCancelQuoteAction("153")).resolves.toEqual({
+      ok: true,
+      data: {
+        paidAmount: 2500,
+        cancellationFee: 1000,
+        discountPercent: 25,
+        total: 1500,
+      },
+    });
+    expect(getCancelQuote).toHaveBeenCalledWith("153");
+  });
+
+  it("rejects an invalid booking id without requesting the API", async () => {
+    await expect(getCancelQuoteAction("0")).resolves.toMatchObject({
+      ok: false,
+      error: { kind: "validation" },
+    });
+    expect(getCancelQuote).not.toHaveBeenCalled();
   });
 });
 
@@ -162,7 +205,11 @@ describe("payOrderAction", () => {
 
   it("rejects a choice without the wallet or a method", async () => {
     await expect(
-      payOrderAction({ orderId: "226", useWallet: false, paymentMethodId: null }),
+      payOrderAction({
+        orderId: "226",
+        useWallet: false,
+        paymentMethodId: null,
+      }),
     ).resolves.toMatchObject({
       ok: false,
       error: {
