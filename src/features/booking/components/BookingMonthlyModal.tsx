@@ -25,6 +25,7 @@ import { useNotify } from "@/shared/hooks/useNotify";
 import { ICONS } from "@/shared/config/assets";
 import BookingTimeSlots from "./BookingTimeSlots";
 import BookingBranchSummary from "./BookingBranchSummary";
+import MonthCountPicker from "./MonthCountPicker";
 
 const deliveryCarIcon = ICONS.deliveryCar;
 
@@ -55,20 +56,6 @@ interface DateRange {
 
 type MapField = "pickup" | "dropoff";
 
-const MONTHS = [
-  "jan",
-  "feb",
-  "mar",
-  "apr",
-  "may",
-  "jun",
-  "jul",
-  "aug",
-  "sep",
-  "oct",
-  "nov",
-  "dec",
-];
 const VAT_RATE = 0.15;
 
 function getMonthlyRange(months: number, startDate = new Date()): DateRange {
@@ -118,9 +105,8 @@ export default function BookingMonthlyModal({
   const errorMessage = useErrorMessage();
 
   const changeRentalMonths = (months: number) => {
-    const nextMonths = Math.min(12, Math.max(1, months));
-    setRentalMonths(nextMonths);
-    setRange(getMonthlyRange(nextMonths, range.start ?? undefined));
+    setRentalMonths(months);
+    setRange(getMonthlyRange(months, range.start ?? undefined));
   };
 
   const changePickupDate = (value: string) => {
@@ -210,9 +196,6 @@ export default function BookingMonthlyModal({
   const subtotal = pricePerDay * totalDays;
   const vat = Math.round(subtotal * VAT_RATE);
   const total = subtotal + vat;
-  const monthProgress = (rentalMonths / 12) * 100;
-  const formatShort = (date: Date) =>
-    `${date.getDate()} ${t(`months.${MONTHS[date.getMonth()]}`)} ${date.getFullYear()}`;
   const distanceHint = tm.rich("distanceHint", {
     strong: (chunks) => <strong>{chunks}</strong>,
   });
@@ -322,67 +305,12 @@ export default function BookingMonthlyModal({
       </Dialog.Header>
       <Dialog.Body>
         <div className="bg-surface-elevated relative min-h-0 flex-1 animate-[popup_0.35s_ease] overflow-y-auto">
-          <div className="mb-5 rounded-[14px] bg-[#eaf3ff] px-[22px] py-5 text-center">
-            <div className="mb-2 text-sm text-[#101820]">
-              {tm("monthsCount")}
-            </div>
-            <div className="mx-auto mb-4.5 flex max-w-56.25 items-center justify-between">
-              <button
-                type="button"
-                className="grid size-7 place-items-center rounded-md border-0 bg-white text-[22px] leading-none text-[#101820] disabled:cursor-not-allowed disabled:opacity-50"
-                aria-label={tm("increase")}
-                onClick={() => changeRentalMonths(rentalMonths + 1)}
-                disabled={rentalMonths === 12}
-              >
-                +
-              </button>
-              <strong className="text-[32px] leading-none text-[#101820]">
-                {rentalMonths}
-              </strong>
-              <button
-                type="button"
-                className="grid size-7 place-items-center rounded-md border-0 bg-white text-[22px] leading-none text-[#101820] disabled:cursor-not-allowed disabled:opacity-50"
-                aria-label={tm("decrease")}
-                onClick={() => changeRentalMonths(rentalMonths - 1)}
-                disabled={rentalMonths === 1}
-              >
-                −
-              </button>
-            </div>
-            <div className="relative mb-3.5 h-[60px] overflow-hidden rounded-[13px] bg-[#a4a4a4] text-white">
-              <span
-                className="absolute inset-y-0 start-0 rounded-[13px] bg-[#287ff0] transition-[width] duration-200"
-                style={{ width: `${monthProgress}%` }}
-              />
-              <span className="pointer-events-none absolute inset-0 grid place-items-center text-sm">
-                {tm("months", { count: rentalMonths })}
-              </span>
-              <span
-                className="pointer-events-none absolute top-1/2 flex -translate-y-1/2 items-center gap-0.5 text-[15px]"
-                style={{ insetInlineStart: `calc(${monthProgress}% - 28px)` }}
-              >
-                <span>▶</span>
-                <span className="size-6 rounded-full border-2 border-white bg-[#287ff0] shadow-sm" />
-                <span>◀</span>
-              </span>
-              <input
-                type="range"
-                className="absolute inset-0 z-2 m-0 h-full w-full cursor-pointer opacity-0"
-                min="1"
-                max="12"
-                step="1"
-                value={rentalMonths}
-                aria-label={tm("sliderLabel")}
-                onChange={(event) =>
-                  changeRentalMonths(Number(event.target.value))
-                }
-              />
-            </div>
-            <div className="text-[13px] text-[#101820]">
-              {formatShort(range.start!)} <strong>{t("to")}</strong>{" "}
-              {formatShort(range.end!)}
-            </div>
-          </div>
+          <MonthCountPicker
+            value={rentalMonths}
+            onChange={changeRentalMonths}
+            startDate={range.start!}
+            endDate={range.end!}
+          />
 
           <div className="mb-5 flex flex-col gap-2">
             <label
