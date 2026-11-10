@@ -738,8 +738,11 @@ opens the matching car results without a customer-map step; the car-details
 read omits a stale customer location so the backend selects the airport or
 station branch, while "Book now" still requires that a branch was returned.
 The grouped `/cars-listing` and `/company-cars` reads now forward the selected
-flow type as `booking_type`; airport and station contexts intentionally omit
-customer location data.
+flow type as `booking_type`. The car-details read always sends `region`,
+`latitude`, and `longitude` when a complete location is available. Airport and
+station use `delivery_type=from_airport` / `from_station`; their location comes
+from the saved browser location, and when local storage has no usable location,
+all location parameters are omitted.
 The user answered Q1–Q6, Q9, Q11 and P1–P6, P8 on 2026-11-08 (§8.1: all
 booking types, no points, no coupon, wallet with or without one method). Open
 items are listed in §8.2 / §8.3 with the fraction that settles each. Booking
