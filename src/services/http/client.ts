@@ -1,10 +1,10 @@
-import { env } from '@/shared/config/env';
-import { AppError, kindFromStatus, toAppError } from '@/shared/lib/errors';
-import { isApiEnvelope } from './envelope';
+import { env } from "@/shared/config/env";
+import { AppError, kindFromStatus, toAppError } from "@/shared/lib/errors";
+import { isApiEnvelope } from "./envelope";
 
 type QueryValue = string | number | boolean | null | undefined;
 
-export interface RequestOptions extends Omit<RequestInit, 'body' | 'method'> {
+export interface RequestOptions extends Omit<RequestInit, "body" | "method"> {
   query?: Record<string, QueryValue>;
   /** Sent as JSON, unless it is FormData. */
   body?: unknown | FormData;
@@ -13,22 +13,75 @@ export interface RequestOptions extends Omit<RequestInit, 'body' | 'method'> {
 
 export interface HttpClientConfig {
   baseUrl: string;
-  getToken?: () => string | null | undefined | Promise<string | null | undefined>;
+  getToken?: () =>
+    string | null | undefined | Promise<string | null | undefined>;
   /** Sent as `Accept-Language` (the backend localizes `message`), unless the caller sets it. */
-  getLocale?: () => string | null | undefined | Promise<string | null | undefined>;
+  getLocale?: () =>
+    string | null | undefined | Promise<string | null | undefined>;
   /** Called (and awaited) on a 401 (HTTP or body `code`), before the `unauthorized` AppError is thrown. */
   onUnauthorized?: () => void | Promise<void>;
 }
 
 const DEFAULT_TIMEOUT_MS = 15000;
+const SENSITIVE_KEY = /authorization|cookie|password|secret|token/i;
+let nextRequestId = 1;
 
-function buildUrl(baseUrl: string, path: string, query?: RequestOptions['query']): string {
-  const url = `${baseUrl.replace(/\/+$/, '')}/${path.replace(/^\/+/, '')}`;
+/** Development-only transport diagnostics. Never logs credentials or file data. */
+function httpLog(
+  event: "request" | "response" | "error",
+  details: unknown,
+): void {
+  if (process.env.NODE_ENV !== "development") return;
+  // eslint-disable-next-line no-console -- intentional local HTTP inspection.
+  console.info(`[http] ${event}`, details);
+}
+
+/** Makes request / response values safe and readable in a development log. */
+function toLogValue(value: unknown, key?: string): unknown {
+  if (key && SENSITIVE_KEY.test(key)) return "[redacted]";
+  if (typeof FormData !== "undefined" && value instanceof FormData) {
+    const entries: Record<string, unknown> = {};
+    value.forEach((entry, entryKey) => {
+      const current = entries[entryKey];
+      const logged = toLogValue(entry, entryKey);
+      entries[entryKey] = current === undefined ? logged : [current, logged];
+    });
+    return entries;
+  }
+  if (typeof Blob !== "undefined" && value instanceof Blob) {
+    return {
+      file:
+        typeof File !== "undefined" && value instanceof File
+          ? value.name
+          : undefined,
+      type: value.type,
+      size: value.size,
+    };
+  }
+  if (Array.isArray(value)) return value.map((item) => toLogValue(item));
+  if (value && typeof value === "object") {
+    return Object.fromEntries(
+      Object.entries(value).map(([entryKey, entry]) => [
+        entryKey,
+        toLogValue(entry, entryKey),
+      ]),
+    );
+  }
+  return value;
+}
+
+function buildUrl(
+  baseUrl: string,
+  path: string,
+  query?: RequestOptions["query"],
+): string {
+  const url = `${baseUrl.replace(/\/+$/, "")}/${path.replace(/^\/+/, "")}`;
   if (!query) return url;
 
   const params = new URLSearchParams();
   Object.entries(query).forEach(([key, value]) => {
-    if (value !== undefined && value !== null) params.append(key, String(value));
+    if (value !== undefined && value !== null)
+      params.append(key, String(value));
   });
   const search = params.toString();
   return search ? `${url}?${search}` : url;
@@ -58,7 +111,11 @@ export function createHttpClient({
   getLocale,
   onUnauthorized,
 }: HttpClientConfig) {
-  async function fail(status: number, body: unknown, cause?: unknown): Promise<never> {
+  async function fail(
+    status: number,
+    body: unknown,
+    cause?: unknown,
+  ): Promise<never> {
     if (status === 401) await onUnauthorized?.();
     const serverMessage = isApiEnvelope(body) ? body.message : undefined;
     throw new AppError(kindFromStatus(status), undefined, status, undefined, {
@@ -70,33 +127,57 @@ export function createHttpClient({
   async function request<T>(
     method: string,
     path: string,
-    { query, body, timeoutMs = DEFAULT_TIMEOUT_MS, headers, signal, ...init }: RequestOptions = {}
+    {
+      query,
+      body,
+      timeoutMs = DEFAULT_TIMEOUT_MS,
+      headers,
+      signal,
+      ...init
+    }: RequestOptions = {},
   ): Promise<T> {
+    const requestId = nextRequestId++;
+    const url = buildUrl(baseUrl, path, query);
+    const startedAt = performance.now();
     const requestHeaders = new Headers(headers);
-    requestHeaders.set('Accept', 'application/json');
-    const isFormData = typeof FormData !== 'undefined' && body instanceof FormData;
+    requestHeaders.set("Accept", "application/json");
+    const isFormData =
+      typeof FormData !== "undefined" && body instanceof FormData;
     if (body !== undefined && !isFormData) {
-      requestHeaders.set('Content-Type', 'application/json');
+      requestHeaders.set("Content-Type", "application/json");
     }
 
     const token = await getToken?.();
-    if (token) requestHeaders.set('Authorization', `Bearer ${token}`);
-    if (!requestHeaders.has('Accept-Language')) {
+    if (token) requestHeaders.set("Authorization", `Bearer ${token}`);
+    if (!requestHeaders.has("Accept-Language")) {
       const locale = await getLocale?.();
-      if (locale) requestHeaders.set('Accept-Language', locale);
+      if (locale) requestHeaders.set("Accept-Language", locale);
     }
 
     const controller = new AbortController();
     const timer = setTimeout(
-      () => controller.abort(new DOMException('Request timed out', 'TimeoutError')),
-      timeoutMs
+      () =>
+        controller.abort(new DOMException("Request timed out", "TimeoutError")),
+      timeoutMs,
     );
     if (signal?.aborted) controller.abort(signal.reason);
-    else signal?.addEventListener('abort', () => controller.abort(signal.reason), { once: true });
+    else
+      signal?.addEventListener("abort", () => controller.abort(signal.reason), {
+        once: true,
+      });
+
+    httpLog("request", {
+      requestId,
+      method,
+      path,
+      url,
+      query: toLogValue(query),
+      body: toLogValue(body),
+    });
 
     let response: Response;
     try {
-      response = await fetch(buildUrl(baseUrl, path, query), {
+      response = await fetch(url, {
         ...init,
         method,
         headers: requestHeaders,
@@ -109,35 +190,57 @@ export function createHttpClient({
         signal: controller.signal,
       });
     } catch (error) {
+      httpLog("error", {
+        requestId,
+        method,
+        path,
+        durationMs: Math.round(performance.now() - startedAt),
+        error: toLogValue(error),
+      });
       throw toAppError(error);
     } finally {
       clearTimeout(timer);
     }
+
+    const payload =
+      response.status === 204 ? undefined : await readJson(response);
+    httpLog("response", {
+      requestId,
+      method,
+      path,
+      status: response.status,
+      durationMs: Math.round(performance.now() - startedAt),
+      data: toLogValue(payload),
+    });
 
     if (response.status === 401 || response.status >= 500) {
       return fail(response.status, undefined, response);
     }
     if (response.status === 204) return undefined as T;
 
-    const payload = await readJson(response);
     const bodyCode = isApiEnvelope(payload) ? payload.code : undefined;
-    const code = bodyCode !== undefined && bodyCode >= 400 ? bodyCode : response.status;
+    const code =
+      bodyCode !== undefined && bodyCode >= 400 ? bodyCode : response.status;
     if (!response.ok || code >= 400) return fail(code, payload, response);
     if (payload === undefined) {
-      throw new AppError('server', undefined, response.status, undefined, { cause: response });
+      throw new AppError("server", undefined, response.status, undefined, {
+        cause: response,
+      });
     }
     return payload as T;
   }
 
   return {
-    get: <T>(path: string, options?: RequestOptions) => request<T>('GET', path, options),
+    get: <T>(path: string, options?: RequestOptions) =>
+      request<T>("GET", path, options),
     post: <T>(path: string, body?: unknown, options?: RequestOptions) =>
-      request<T>('POST', path, { ...options, body }),
+      request<T>("POST", path, { ...options, body }),
     put: <T>(path: string, body?: unknown, options?: RequestOptions) =>
-      request<T>('PUT', path, { ...options, body }),
+      request<T>("PUT", path, { ...options, body }),
     patch: <T>(path: string, body?: unknown, options?: RequestOptions) =>
-      request<T>('PATCH', path, { ...options, body }),
-    delete: <T>(path: string, options?: RequestOptions) => request<T>('DELETE', path, options),
+      request<T>("PATCH", path, { ...options, body }),
+    delete: <T>(path: string, options?: RequestOptions) =>
+      request<T>("DELETE", path, options),
   };
 }
 
@@ -150,5 +253,6 @@ export type HttpClient = ReturnType<typeof createHttpClient>;
  */
 export const http = createHttpClient({
   baseUrl: env.publicApiUrl,
-  getLocale: () => (typeof document === 'undefined' ? undefined : document.documentElement.lang),
+  getLocale: () =>
+    typeof document === "undefined" ? undefined : document.documentElement.lang,
 });

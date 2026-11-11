@@ -30,7 +30,10 @@ const envelope = (code: number, message: string, data: unknown = null) => ({
   code,
 });
 
-afterEach(() => vi.unstubAllGlobals());
+afterEach(() => {
+  vi.unstubAllGlobals();
+  vi.unstubAllEnvs();
+});
 
 describe("createHttpClient", () => {
   it("returns the whole envelope on success", async () => {
@@ -142,15 +145,52 @@ describe("createHttpClient", () => {
   });
 
   it("sends FormData unchanged without forcing a JSON content type", async () => {
-    const fetchMock = respond(200, envelope(200, "License saved successfully.", {}));
+    const fetchMock = respond(
+      200,
+      envelope(200, "License saved successfully.", {}),
+    );
     const client = createHttpClient({ baseUrl: "https://api.test/user" });
     const formData = new FormData();
-    formData.set("license", new Blob(["license"], { type: "image/png" }), "license.png");
+    formData.set(
+      "license",
+      new Blob(["license"], { type: "image/png" }),
+      "license.png",
+    );
 
     await client.post("/license", formData);
 
     const [, init] = fetchMock.mock.calls[0];
     expect(init?.body).toBe(formData);
     expect(new Headers(init?.headers).has("Content-Type")).toBe(false);
+  });
+
+  it("logs the request and raw backend response in development without credentials", async () => {
+    vi.stubEnv("NODE_ENV", "development");
+    const info = vi.spyOn(console, "info").mockImplementation(() => undefined);
+    respond(200, envelope(200, "ok", { access_token: "hidden", id: 1 }));
+    const client = createHttpClient({
+      baseUrl: "https://api.test/user",
+      getToken: () => "backend-token",
+    });
+
+    await client.post("/booking", { token: "body-token", count: 2 });
+
+    expect(info).toHaveBeenCalledWith(
+      "[http] request",
+      expect.objectContaining({
+        method: "POST",
+        path: "/booking",
+        body: { token: "[redacted]", count: 2 },
+      }),
+    );
+    expect(info).toHaveBeenCalledWith(
+      "[http] response",
+      expect.objectContaining({
+        status: 200,
+        data: expect.objectContaining({
+          data: { access_token: "[redacted]", id: 1 },
+        }),
+      }),
+    );
   });
 });
