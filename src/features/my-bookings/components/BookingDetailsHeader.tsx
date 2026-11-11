@@ -70,8 +70,14 @@ export default function BookingDetailsHeader({ booking }: Props) {
   const router = useRouter();
   const [flow, setFlow] = useState<HeaderFlow>({ step: "idle" });
   const [cancelQuote, setCancelQuote] = useState<CancelQuote>();
-  const { submitting, extend, modify, getCancelQuote, cancel } =
-    useBookingActions(booking.id);
+  const {
+    submitting,
+    extend,
+    getExtensionQuote,
+    modify,
+    getCancelQuote,
+    cancel,
+  } = useBookingActions(booking.id);
   const errorMessage = useErrorMessage();
 
   const close = useCallback(() => setFlow({ step: "idle" }), []);
@@ -170,7 +176,10 @@ export default function BookingDetailsHeader({ booking }: Props) {
                 </Menu.Item>
               )}
               {allowExtend && (
-                <Menu.Item onSelect={() => open("extend")}>
+                <Menu.Item
+                  className="cursor-pointer"
+                  onSelect={() => open("extend")}
+                >
                   <Image
                     src={ICONS.calendar.src}
                     width={ICONS.calendar.width}
@@ -202,8 +211,17 @@ export default function BookingDetailsHeader({ booking }: Props) {
           if (!submitting) close();
         }}
         onConfirm={handleExtend}
+        onGetQuote={getExtensionQuote}
         currentDays={booking.count}
         pricePerDay={booking.carPrice}
+        price={booking.price}
+        returnAt={booking.returnAt}
+        status={booking.status === "late" ? "late" : "current"}
+        lateHours={booking.lateHours}
+        taxRate={booking.taxRate}
+        taxRateType={booking.taxRateType}
+        taxValue={booking.taxValue}
+        finalPrice={booking.finalPrice}
         loading={submitting}
         error={
           flow.step === "extend" && flow.error

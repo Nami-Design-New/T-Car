@@ -274,6 +274,22 @@ export interface ModificationQuote {
   differenceAmount: number;
 }
 
+/** E10 GET quote; all displayed extension amounts come from the backend. */
+export interface ExtensionQuote {
+  count: number;
+  carPrice: number;
+  price: number;
+  additionalServicesCost: number;
+  offerDiscount: number;
+  newDeliveryDay: string;
+  lateFee: number;
+  lateDays: number;
+  taxType: string;
+  taxValue: number;
+  taxAddedValue: number;
+  totalAmount: number;
+}
+
 export type OrderDeliveryType =
   "to_location" | "from_branch" | "from_airport" | "from_station";
 

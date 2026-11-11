@@ -228,6 +228,34 @@ export const bookingsMock: BookingsApi = {
       throw new AppError("conflict", "bookings.extendLimit");
   },
 
+  async getExtensionQuote(id, count) {
+    await delay();
+    const order = findActiveOrder(id);
+    const returnAt = new Date(order.returnAt);
+    returnAt.setDate(returnAt.getDate() + Math.max(0, count - order.count));
+    const price = count * order.carPrice;
+    const lateDays =
+      order.status === "late"
+        ? Math.max(1, Math.ceil((order.lateHours ?? 0) / 24))
+        : 0;
+    const lateFee = lateDays * order.carPrice;
+    const taxAddedValue = ((price + lateFee) * order.taxRate) / 100;
+    return {
+      count,
+      carPrice: order.carPrice,
+      price,
+      additionalServicesCost: 0,
+      offerDiscount: 0,
+      newDeliveryDay: returnAt.toISOString().slice(0, 10),
+      lateFee,
+      lateDays,
+      taxType: order.taxRateType,
+      taxValue: order.taxRate,
+      taxAddedValue,
+      totalAmount: price + lateFee + taxAddedValue,
+    };
+  },
+
   async requestBookingEdit(id, request) {
     await delay(600);
     findActiveOrder(id);

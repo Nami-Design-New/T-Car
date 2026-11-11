@@ -11,6 +11,7 @@ import { reportError } from "@/shared/lib/report";
 import {
   cancelBookingAction,
   extendBookingAction,
+  getExtensionQuoteAction,
   getCancelQuoteAction,
   requestModificationAction,
   requestBookingEditAction,
@@ -19,6 +20,7 @@ import {
   type BookingReviewInput,
   type CancelQuote,
   type ModificationQuote,
+  type ExtensionQuote,
   type ModificationRequest,
 } from "@/features/orders";
 
@@ -46,6 +48,12 @@ export function useBookingActions(bookingId: string) {
 
   const extend = useCallback(
     (days: number) => run(() => extendBookingAction(bookingId, days)),
+    [run, bookingId],
+  );
+
+  const getExtensionQuote = useCallback(
+    (count: number): Promise<Result<ExtensionQuote>> =>
+      run(() => getExtensionQuoteAction(bookingId, count), false),
     [run, bookingId],
   );
 
@@ -87,6 +95,7 @@ export function useBookingActions(bookingId: string) {
   return {
     submitting,
     extend,
+    getExtensionQuote,
     requestEdit,
     modify,
     getCancelQuote,

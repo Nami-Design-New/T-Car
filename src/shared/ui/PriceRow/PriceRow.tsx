@@ -7,6 +7,8 @@ export interface PriceRowProps {
   label: string;
   amount: number;
   hint?: string;
+  labelClassName?: string;
+  hintClassName?: string;
   total?: boolean;
 }
 
@@ -15,6 +17,8 @@ export function PriceRow({
   label,
   amount,
   hint,
+  labelClassName,
+  hintClassName,
   total = false,
 }: PriceRowProps) {
   return (
@@ -24,8 +28,14 @@ export function PriceRow({
         total ? "border-b-0" : "border-b",
       )}
     >
-      <span className="text-text-subtle text-sm">{label}</span>
-      {hint ? <span className="text-text-subtle mx-auto">{hint}</span> : null}
+      <span className={cn("text-text-subtle text-sm", labelClassName)}>
+        {label}
+      </span>
+      {hint ? (
+        <span className={cn("text-text-subtle mx-auto", hintClassName)}>
+          {hint}
+        </span>
+      ) : null}
       <span
         className={cn(
           "flex items-center justify-between tabular-nums",

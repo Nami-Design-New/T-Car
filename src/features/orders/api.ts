@@ -15,6 +15,7 @@ import type {
   BookingType,
   BookingEditRequest,
   ModificationQuote,
+  ExtensionQuote,
   ModificationRequest,
   BookingReviewInput,
   CreateDraftRequest,
@@ -46,6 +47,8 @@ export interface BookingsApi {
   getCancelQuote(id: string): Promise<CancelQuote>;
   /** `days` is the new total rental length. */
   extendBooking(id: string, days: number): Promise<void>;
+  /** E10 quote for the selected extension-day count. */
+  getExtensionQuote(id: string, count: number): Promise<ExtensionQuote>;
   requestBookingEdit(id: string, request: BookingEditRequest): Promise<void>;
   requestModification(
     id: string,
@@ -86,6 +89,21 @@ interface ModificationQuoteDto {
   original_final_price?: number;
   new_final_price: number;
   difference_amount: number;
+}
+
+interface ExtensionQuoteDto {
+  count: number;
+  car_price: number;
+  price: number;
+  additional_services_cost: number;
+  offer_discount: number;
+  new_delivery_day: string;
+  late_fee: number;
+  late_days: number;
+  tax_type: string;
+  tax_value: number;
+  tax_added_value: number;
+  total_amount: number;
 }
 
 export interface OrderListItemDto {
@@ -667,6 +685,46 @@ export function mapModificationQuoteResponse(
   };
 }
 
+export function mapExtensionQuoteResponse(value: unknown): ExtensionQuote {
+  const data = isRecord(value) ? value.data : undefined;
+  if (
+    !isApiEnvelope(value) ||
+    value.code !== 200 ||
+    !isRecord(data) ||
+    ![
+      data.count,
+      data.car_price,
+      data.price,
+      data.additional_services_cost,
+      data.offer_discount,
+      data.late_fee,
+      data.late_days,
+      data.tax_value,
+      data.tax_added_value,
+      data.total_amount,
+    ].every(isFiniteNumber) ||
+    !isDatePart(data.new_delivery_day) ||
+    typeof data.tax_type !== "string"
+  )
+    throw new AppError("server");
+
+  const quote = data as unknown as ExtensionQuoteDto;
+  return {
+    count: quote.count,
+    carPrice: quote.car_price,
+    price: quote.price,
+    additionalServicesCost: quote.additional_services_cost,
+    offerDiscount: quote.offer_discount,
+    newDeliveryDay: quote.new_delivery_day,
+    lateFee: quote.late_fee,
+    lateDays: quote.late_days,
+    taxType: quote.tax_type,
+    taxValue: quote.tax_value,
+    taxAddedValue: quote.tax_added_value,
+    totalAmount: quote.total_amount,
+  };
+}
+
 function toOrderListItem(order: OrderListItemDto): OrderListItem {
   return {
     id: String(order.id),
@@ -1039,6 +1097,16 @@ async function getCancelQuote(id: string): Promise<CancelQuote> {
   return mapCancelQuoteResponse(response);
 }
 
+async function getExtensionQuote(
+  id: string,
+  count: number,
+): Promise<ExtensionQuote> {
+  const path = `/booking/${id}/extension-quote`;
+  const query = { count };
+  const response = await serverHttp.get(path, { query });
+  return mapExtensionQuoteResponse(response);
+}
+
 async function cancelBooking(id: string): Promise<string | undefined> {
   const path = `/booking/${id}/cancel`;
   const query = { is_quote: 0 };
@@ -1096,6 +1164,7 @@ export const bookingsApi: BookingsApi = {
   getOrder,
   // O8 replaces extension.
   extendBooking: (...args) => bookingsMock.extendBooking(...args),
+  getExtensionQuote,
   // O10 replaces modification requests.
   requestBookingEdit: (...args) => bookingsMock.requestBookingEdit(...args),
   requestModification,

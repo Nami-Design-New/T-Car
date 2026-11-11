@@ -18,6 +18,7 @@ import type {
   CancelQuote,
   BookingEditRequest,
   ModificationQuote,
+  ExtensionQuote,
   ModificationRequest,
   BookingReviewInput,
   CreateDraftRequest,
@@ -185,6 +186,18 @@ export async function extendBookingAction(
   return run("bookings.extend", () => {
     const values = parse(extendBookingSchema, { days });
     return bookingsApi.extendBooking(bookingId, values.days);
+  });
+}
+
+/** E10 quote before the customer confirms an extension. */
+export async function getExtensionQuoteAction(
+  bookingId: string,
+  count: number,
+): Promise<ActionResult<ExtensionQuote>> {
+  return run("bookings.extensionQuote", () => {
+    if (!ORDER_ID.test(bookingId)) throw new AppError("validation");
+    const values = parse(extendBookingSchema, { days: count });
+    return bookingsApi.getExtensionQuote(bookingId, values.days);
   });
 }
 

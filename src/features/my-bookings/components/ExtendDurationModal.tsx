@@ -1,13 +1,20 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { useTranslations } from "next-intl";
-import { useFieldErrorMessage } from "@/shared/hooks/useErrorMessage";
+import { useFormatter, useTranslations } from "next-intl";
+import type { ExtensionQuote } from "@/features/orders";
+import {
+  useErrorMessage,
+  useFieldErrorMessage,
+} from "@/shared/hooks/useErrorMessage";
+import type { Result } from "@/shared/lib/result";
 import { Button } from "@/shared/ui/Button";
 import { Dialog } from "@/shared/ui/Dialog";
 import { NumberStepper } from "@/shared/ui/NumberStepper";
+import { PriceRow } from "@/shared/ui/PriceRow";
+import { Skeleton } from "@/shared/ui/Skeleton";
 import {
   extendBookingSchema,
   type ExtendBookingFormValues,
@@ -17,10 +24,18 @@ interface Props {
   open: boolean;
   onClose: () => void;
   onConfirm: (newDays: number) => void;
-  currentDays?: number;
+  onGetQuote: (days: number) => Promise<Result<ExtensionQuote>>;
+  currentDays: number;
   pricePerDay: number;
+  price: number;
+  returnAt: string;
+  status: "current" | "late";
+  lateHours: number | null;
+  taxRate: number;
+  taxRateType: string;
+  taxValue: number;
+  finalPrice: number;
   loading?: boolean;
-  /** Already translated; the dialog stays open and shows it after a failed submit. */
   error?: string;
 }
 
@@ -28,13 +43,27 @@ export default function ExtendDurationModal({
   open,
   onClose,
   onConfirm,
-  currentDays = 1,
+  onGetQuote,
+  currentDays,
   pricePerDay,
+  price,
+  returnAt,
+  status,
+  lateHours,
+  taxRate,
+  taxRateType,
+  taxValue,
+  finalPrice,
   loading = false,
   error,
 }: Props) {
   const t = useTranslations("myBookings.extend");
+  const format = useFormatter();
   const fieldError = useFieldErrorMessage();
+  const errorMessage = useErrorMessage();
+  const [quote, setQuote] = useState<ExtensionQuote>();
+  const [quoteLoading, setQuoteLoading] = useState(false);
+  const [quoteError, setQuoteError] = useState<string>();
   const {
     handleSubmit,
     reset,
@@ -48,18 +77,59 @@ export default function ExtendDurationModal({
     defaultValues: { days: currentDays },
   });
   const days = watch("days");
+  const changed = days !== currentDays;
+  const currentLateDays =
+    status === "late" ? Math.max(1, Math.ceil((lateHours ?? 0) / 24)) : 0;
+  const currentLateFee = currentLateDays * pricePerDay;
+  const displayed = quote ?? {
+    count: currentDays,
+    carPrice: pricePerDay,
+    price,
+    newDeliveryDay: returnAt.slice(0, 10),
+    lateFee: currentLateFee,
+    lateDays: currentLateDays,
+    taxType: taxRateType,
+    taxValue: taxRate,
+    taxAddedValue: taxValue,
+    totalAmount: finalPrice,
+  };
+  const extensionEnd = new Date(`${displayed.newDeliveryDay}T12:00:00`);
+  const extensionEndLabel = format.dateTime(extensionEnd, {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    timeZone: "UTC",
+  });
 
   useEffect(() => {
     if (open) reset({ days: currentDays });
   }, [currentDays, open, reset]);
 
-  const changeDays = (value: number) => {
-    setValue("days", value, {
-      shouldDirty: true,
-      shouldValidate: true,
+  useEffect(() => {
+    if (!open || !changed) {
+      setQuote(undefined);
+      setQuoteError(undefined);
+      setQuoteLoading(false);
+      return;
+    }
+    let active = true;
+    setQuoteLoading(true);
+    setQuote(undefined);
+    setQuoteError(undefined);
+    void onGetQuote(days).then((result) => {
+      if (!active) return;
+      setQuoteLoading(false);
+      if (result.ok) setQuote(result.data);
+      else
+        setQuoteError(result.error.serverMessage ?? errorMessage(result.error));
     });
-  };
+    return () => {
+      active = false;
+    };
+  }, [changed, days, errorMessage, onGetQuote, open]);
 
+  const changeDays = (value: number) =>
+    setValue("days", value, { shouldDirty: true, shouldValidate: true });
   const submit = handleSubmit(({ days: nextDays }) => onConfirm(nextDays));
 
   return (
@@ -69,81 +139,97 @@ export default function ExtendDurationModal({
       placement="bottom-sheet"
       label={t("title")}
     >
-      <form
-        className="bg-surface-elevated flex w-full max-w-[420px] flex-col rounded-xl p-5 max-[768px]:px-4 max-[768px]:pt-[42px] max-[768px]:pb-[18px]"
-        onSubmit={submit}
-        noValidate
-      >
-        {/* Close */}
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <Dialog.Title className="text-text-primary py-2.5 text-[22px] max-[768px]:text-[17px]">
-            {t("title")}
-          </Dialog.Title>
-          <Dialog.Close />
-        </div>
-
-        {/* Duration */}
-        <div className="bg-surface-card-primary mb-[18px] rounded-md px-3.5 pt-4 pb-3 text-center">
-          <p className="text-text-primary mb-2 text-sm leading-normal font-medium">
-            {t("selectDays")}
-          </p>
-
-          <NumberStepper
-            value={days}
-            onChange={changeDays}
-            disabled={loading}
-            decreaseLabel={t("decrease")}
-            increaseLabel={t("increase")}
-          />
-
-          <p className="text-text-primary mt-2 mb-0 text-[11px] leading-normal">
-            {t("quotePending")}
-          </p>
-          {errors.days && (
-            <p className="form_error" role="alert">
-              {fieldError(errors.days.message)}
-            </p>
-          )}
-        </div>
-
-        {/* Price Details */}
-        <div className="mb-[18px]">
-          <h3 className="text-text-primary mb-2 text-end text-sm font-bold">
-            {t("priceDetails")}
-          </h3>
-
-          {/* السعر */}
-          <div className="border-stroke-light grid min-h-8.5 grid-cols-[1fr_auto_auto] items-center gap-3 border-b border-dashed px-2.5 last:border-0">
-            <span className="text-text-subtle text-end text-sm">
-              {t("price")}
-            </span>
-
-            <span className="text-text-subtle text-center text-sm"></span>
-
-            <strong className="text-text-primary text-left text-sm font-medium whitespace-nowrap">
-              {pricePerDay} {t("currency")}
-            </strong>
-          </div>
-
-          {/* TODO(O8): replace this with the E9 extension quote rows. */}
-        </div>
-
-        {error && (
-          <p className="text-status-error mb-2 text-sm" role="alert">
-            {error}
-          </p>
-        )}
-
-        {/* Confirm */}
-        <Button
-          type="submit"
-          className="bg-action-primary h-12 w-full cursor-pointer rounded-sm border-0 text-sm font-semibold text-white transition hover:opacity-90"
-          loading={loading}
+      <Dialog.Header>
+        <Dialog.Title>{t("title")}</Dialog.Title>
+        <Dialog.Close />
+      </Dialog.Header>
+      <Dialog.Body>
+        <form
+          className="flex w-full flex-col gap-2"
+          onSubmit={submit}
+          noValidate
         >
-          {loading ? t("extending") : t("confirm")}
+          <div className="bg-surface-card-primary mb-4.5 rounded-md px-3.5 pt-4 pb-3 text-center">
+            <p className="text-text-primary mb-2 text-sm leading-normal font-medium">
+              {t("selectDays")}
+            </p>
+            <NumberStepper
+              value={days}
+              onChange={changeDays}
+              disabled={loading || quoteLoading}
+              decreaseLabel={t("decrease")}
+              increaseLabel={t("increase")}
+            />
+            <p className="text-text-primary mt-2 mb-0 text-xs leading-normal">
+              {t("quotePending", { date: extensionEndLabel })}
+            </p>
+            {errors.days && (
+              <p className="form_error" role="alert">
+                {fieldError(errors.days.message)}
+              </p>
+            )}
+          </div>
+          <section className="border-stroke-light mb-4.5 rounded-lg border p-4">
+            <h3 className="text-text-primary mb-2 text-end text-sm font-bold">
+              {t("priceDetails")}
+            </h3>
+            {quoteLoading ? (
+              <Skeleton shape="rect" height={180} />
+            ) : (
+              <>
+                {quoteError && (
+                  <p className="text-status-error m-0 text-sm" role="alert">
+                    {quoteError}
+                  </p>
+                )}
+                <PriceRow label={t("price")} amount={displayed.carPrice} />
+                <PriceRow
+                  label={t("subtotal")}
+                  amount={displayed.price}
+                  hint={`${displayed.count} × ${displayed.carPrice}`}
+                />
+                {status === "late" && (
+                  <PriceRow
+                    label={t("lateFee")}
+                    amount={displayed.lateFee}
+                    hint={t("lateDays", { count: displayed.lateDays })}
+                    labelClassName="text-status-errorr!"
+                    hintClassName="text-status-error!"
+                  />
+                )}
+                <PriceRow
+                  label={t("vat")}
+                  amount={displayed.taxAddedValue}
+                  hint={
+                    displayed.taxType === "percent"
+                      ? `${displayed.taxValue}%`
+                      : undefined
+                  }
+                />
+                <PriceRow
+                  label={t("total")}
+                  amount={displayed.totalAmount}
+                  total
+                />
+              </>
+            )}
+          </section>
+        </form>
+      </Dialog.Body>
+      <Dialog.Footer>
+        <Button
+          type="button"
+          size="lg"
+          className="w-full"
+          loading={loading}
+          disabled={
+            loading || quoteLoading || (changed && (!quote || !!quoteError))
+          }
+          onClick={() => void submit()}
+        >
+          {t("confirm")}
         </Button>
-      </form>
+      </Dialog.Footer>
     </Dialog>
   );
 }
