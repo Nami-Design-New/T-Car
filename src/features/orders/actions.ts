@@ -139,15 +139,14 @@ export async function createDraftAction(
   }
 }
 
-async function run(
+async function run<T>(
   scope: string,
-  write: () => Promise<void>,
-): Promise<ActionResult<void>> {
+  write: () => Promise<T>,
+): Promise<ActionResult<T>> {
   try {
     const session = await auth();
     if (!session?.user?.id) throw new AppError("unauthorized");
-    await write();
-    return toActionResult(ok(undefined));
+    return toActionResult(ok(await write()));
   } catch (error) {
     reportError(error, { scope });
     return toActionResult(fail(error));
@@ -176,7 +175,7 @@ export async function requestBookingEditAction(
 
 export async function cancelBookingAction(
   bookingId: string,
-): Promise<ActionResult<void>> {
+): Promise<ActionResult<string | undefined>> {
   return run("bookings.cancel", () => bookingsApi.cancelBooking(bookingId));
 }
 

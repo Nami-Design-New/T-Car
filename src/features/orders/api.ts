@@ -44,7 +44,8 @@ export interface BookingsApi {
   /** `days` is the new total rental length. */
   extendBooking(id: string, days: number): Promise<void>;
   requestBookingEdit(id: string, request: BookingEditRequest): Promise<void>;
-  cancelBooking(id: string): Promise<void>;
+  /** E8 confirmation; the optional backend message is shown in the result dialog. */
+  cancelBooking(id: string): Promise<string | undefined>;
   submitReview(id: string, input: BookingReviewInput): Promise<void>;
   createDraft(request: CreateDraftRequest): Promise<Order>;
   /** E3: the company's gateway methods and the wallet balance for a draft. */
@@ -174,6 +175,19 @@ export interface CancelQuoteDto {
   total: number;
 }
 
+/**
+ * E8 with `is_quote=0` returns the cancelled booking, but not the complete
+ * detail payload: the observed response omits `branch`. Keep this distinct
+ * from `OrderDto`, which is used by the details and draft endpoints.
+ */
+interface CancelConfirmationDto {
+  id: number;
+  order_number: string;
+  status: "cancelled";
+  cancellation_fee: number;
+  refund_amount: number;
+}
+
 const ORDER_STATUSES = [
   "start",
   "new",
@@ -206,6 +220,16 @@ const isCancelQuoteDto = (value: unknown): value is CancelQuoteDto =>
   typeof value.cancel_fee_percentage === "number" &&
   typeof value.total === "number";
 
+const isCancelConfirmationDto = (
+  value: unknown,
+): value is CancelConfirmationDto =>
+  isRecord(value) &&
+  isId(value.id) &&
+  typeof value.order_number === "string" &&
+  value.status === "cancelled" &&
+  isFiniteNumber(value.cancellation_fee) &&
+  isFiniteNumber(value.refund_amount);
+
 export function mapCancelQuoteResponse(response: unknown): CancelQuote {
   const data = isApiEnvelope(response) ? response.data : undefined;
   if (
@@ -222,6 +246,18 @@ export function mapCancelQuoteResponse(response: unknown): CancelQuote {
     discountPercent: data.cancel_fee_percentage,
     total: data.total,
   };
+}
+
+/** Validates E8's successful cancellation response without assuming detail-only fields. */
+export function mapCancelConfirmationResponse(response: unknown): void {
+  const data = isApiEnvelope(response) ? response.data : undefined;
+  if (
+    !isApiEnvelope(response) ||
+    response.code !== 200 ||
+    !isCancelConfirmationDto(data)
+  ) {
+    throw new AppError("server");
+  }
 }
 
 const isFiniteNumber = (value: unknown): value is number =>
@@ -885,13 +921,14 @@ async function getCancelQuote(id: string): Promise<CancelQuote> {
   return mapCancelQuoteResponse(response);
 }
 
-async function cancelBooking(id: string): Promise<void> {
+async function cancelBooking(id: string): Promise<string | undefined> {
   const path = `/booking/${id}/cancel`;
   const query = { is_quote: 0 };
   logBookingData("request", { method: "POST", path, query });
   const response = await serverHttp.post(path, undefined, { query });
   logBookingData("response", { method: "POST", path, data: response });
-  mapOrderResponse(response);
+  mapCancelConfirmationResponse(response);
+  return isApiEnvelope(response) ? response.message : undefined;
 }
 
 /**

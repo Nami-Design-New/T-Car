@@ -11,7 +11,6 @@ export {
   submitBookingReviewAction,
 } from "./actions";
 export {
-  bookingInstant,
   canCancel,
   canExtend,
   canModify,

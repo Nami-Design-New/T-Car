@@ -356,72 +356,15 @@ export interface CancelQuote {
   total: number;
 }
 
-/**
- * Booking times come without an offset and are Saudi wall-clock time
- * (Asia/Riyadh, UTC+3, no DST). Reading them with that offset gives the same
- * instant on the server (UTC) and in the browser, so the action rules agree
- * during hydration.
- */
-export const BOOKING_TIME_OFFSET = "+03:00";
+/** Product action-menu policy. The backend remains authoritative for every write. */
+export const canCancel = (order: Pick<Order, "status">): boolean =>
+  order.status === "coming";
 
-export const bookingInstant = (value: string): Date =>
-  new Date(
-    /(?:[zZ]|[+-]\d{2}:\d{2})$/.test(value)
-      ? value
-      : value + BOOKING_TIME_OFFSET,
-  );
+export const canExtend = (order: Pick<Order, "status">): boolean =>
+  order.status === "current" || order.status === "late";
 
-const dateAfter = (value: string, now: Date) => bookingInstant(value) > now;
-const dateReached = (value: string, now: Date) => bookingInstant(value) <= now;
-
-export function canCancel(
-  order: Pick<Order, "status" | "pickupAt">,
-  now = new Date(),
-): boolean {
-  return (
-    (["new", "accepted", "coming"] as const).some(
-      (status) => status === order.status,
-    ) && dateAfter(order.pickupAt, now)
-  );
-}
-
-export function canExtend(
-  order: Pick<
-    Order,
-    | "status"
-    | "deliveryType"
-    | "pickupAt"
-    | "payExtension"
-    | "pendingExtensionId"
-  >,
-  now = new Date(),
-): boolean {
-  if (order.payExtension || order.pendingExtensionId !== null) return false;
-  if (order.status === "current" || order.status === "late") return true;
-  return (
-    (order.status === "accepted" || order.status === "open") &&
-    order.deliveryType === "from_branch" &&
-    dateReached(order.pickupAt, now)
-  );
-}
-
-export function canModify(
-  order: Pick<Order, "status" | "pickupAt" | "hasModifyRequest">,
-  now = new Date(),
-): boolean {
-  const blocked: readonly OrderStatus[] = [
-    "start",
-    "current",
-    "late",
-    "complete",
-    "cancelled",
-  ];
-  return (
-    !blocked.includes(order.status) &&
-    dateAfter(order.pickupAt, now) &&
-    !order.hasModifyRequest
-  );
-}
+export const canModify = (order: Pick<Order, "status">): boolean =>
+  order.status === "coming";
 
 export const canRate = (order: Pick<Order, "status">) =>
   order.status === "complete";

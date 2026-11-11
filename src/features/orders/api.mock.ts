@@ -253,6 +253,7 @@ export const bookingsMock: BookingsApi = {
     const order = findActiveOrder(id);
     if (order.status === "late")
       throw new AppError("conflict", "bookings.cancelNotAllowed");
+    return "Booking cancelled successfully.";
   },
 
   async submitReview(id, { showroomRating, driverRating }) {

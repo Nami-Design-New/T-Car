@@ -10,6 +10,7 @@ const {
   extendBooking,
   requestBookingEdit,
   getCancelQuote,
+  cancelBooking,
   submitReview,
 } = vi.hoisted(() => ({
   auth: vi.fn(),
@@ -20,6 +21,7 @@ const {
   extendBooking: vi.fn(),
   requestBookingEdit: vi.fn(),
   getCancelQuote: vi.fn(),
+  cancelBooking: vi.fn(),
   submitReview: vi.fn(),
 }));
 
@@ -33,6 +35,7 @@ vi.mock("./api", () => ({
     extendBooking,
     requestBookingEdit,
     getCancelQuote,
+    cancelBooking,
     submitReview,
   },
 }));
@@ -46,6 +49,7 @@ import {
   extendBookingAction,
   requestBookingEditAction,
   getCancelQuoteAction,
+  cancelBookingAction,
   submitBookingReviewAction,
 } from "./actions";
 
@@ -158,6 +162,23 @@ describe("getCancelQuoteAction", () => {
       error: { kind: "validation" },
     });
     expect(getCancelQuote).not.toHaveBeenCalled();
+  });
+});
+
+describe("cancelBookingAction", () => {
+  beforeEach(() => {
+    cancelBooking.mockReset();
+    auth.mockResolvedValue({ user: { id: "42" } });
+  });
+
+  it("preserves the backend success message for the result dialog", async () => {
+    cancelBooking.mockResolvedValue("تم إلغاء حجزك بنجاح.");
+
+    await expect(cancelBookingAction("291")).resolves.toEqual({
+      ok: true,
+      data: "تم إلغاء حجزك بنجاح.",
+    });
+    expect(cancelBooking).toHaveBeenCalledWith("291");
   });
 });
 

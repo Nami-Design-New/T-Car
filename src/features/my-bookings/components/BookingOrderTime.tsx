@@ -1,10 +1,9 @@
 "use client";
 
 import { useLocale, useTranslations } from "next-intl";
-import { bookingInstant } from "@/features/orders";
 
 interface Props {
-  /** The API `created_at`, 'YYYY-MM-DD HH:mm:ss' in Riyadh time. */
+  /** The API `created_at`, used as returned. */
   createdAt: string;
 }
 
@@ -15,9 +14,7 @@ export default function BookingOrderTime({ createdAt }: Props) {
   const value = new Intl.DateTimeFormat(locale, {
     dateStyle: "long",
     timeStyle: "short",
-    // A fixed zone: the server and the browser render the same text.
-    timeZone: "Asia/Riyadh",
-  }).format(bookingInstant(createdAt.replace(" ", "T")));
+  }).format(new Date(createdAt));
 
   return (
     <div className="text-text-primary flex items-center justify-between gap-3 text-sm leading-relaxed">

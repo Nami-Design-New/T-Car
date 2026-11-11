@@ -6,6 +6,8 @@ import { Dialog } from "@/shared/ui/Dialog";
 import { Price } from "@/shared/ui/Price";
 
 import { IMAGES } from "@/shared/config/assets";
+import { cn } from "@/shared/lib/cn";
+import { Button } from "@/shared/ui/Button";
 const cancelBookingImage = IMAGES.cancelBooking;
 
 export interface CancelQuote {
@@ -76,20 +78,20 @@ export default function CancelBookingModal({
           </h3>
         </div>
 
-        <div className="bg-status-error-background mb-[18px] rounded-sm px-4 py-3 text-center">
+        <div className="bg-status-error-background mb-4.5 rounded-sm px-4 py-3 text-center">
           <p className="text-text-primary m-0 text-[12px] leading-relaxed">
             {t("feePolicy", { percent: discountPercent })}
           </p>
         </div>
 
         <div className="mb-4 w-full">
-          <h3 className="text-text-primary mb-1.5 text-end text-[15px] font-bold">
+          <h3 className="text-text-primary mb-1.5 text-base font-bold">
             {t("amountDetails")}
           </h3>
 
           <div className="border-stroke-light divide-stroke-light w-full divide-y divide-dashed">
             <AmountRow label={t("paid")} amount={paidAmount} />
-            <div className="border-stroke-light flex min-h-9 items-center justify-between gap-2 border-b border-dashed px-1">
+            <div className="border-stroke-light flex min-h-9 items-center justify-between gap-2 border-x-0 border-b border-dashed px-1">
               <span className="text-text-subtle min-w-0 text-[13px]">
                 {t("discountPercent")}
               </span>
@@ -104,6 +106,7 @@ export default function CancelBookingModal({
             />
             <AmountRow
               label={t("total")}
+              total={true}
               amount={refundedAmount}
               amountClassName="text-text-primary font-bold"
             />
@@ -130,22 +133,26 @@ export default function CancelBookingModal({
       </Dialog.Body>
       <Dialog.Footer>
         <div className="flex w-full items-stretch gap-2">
-          <button
+          <Button
             type="button"
-            className="bg-action-primary order-1 h-[46px] min-w-0 flex-1 cursor-pointer rounded-sm border-0 text-[13px] font-semibold text-white transition hover:opacity-90 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
+            size="lg"
+            className="grow"
             onClick={onConfirm}
             disabled={loading}
+            loading={loading}
           >
-            {loading ? t("cancelling") : t("confirm")}
-          </button>
+            {t("confirm")}
+          </Button>
 
-          <button
+          <Button
             type="button"
-            className="border-stroke-heavy bg-surface-elevated text-text-subtle order-2 h-[46px] w-20 shrink-0 cursor-pointer rounded-sm border text-[13px] font-semibold transition hover:opacity-90 active:scale-[0.98]"
+            variant="outline"
+            size="lg"
+            className="border-stroke-heavy bg-surface-elevated text-text-subtle order-2 w-20 shrink-0"
             onClick={onClose}
           >
             {t("back")}
-          </button>
+          </Button>
         </div>
       </Dialog.Footer>
     </Dialog>
@@ -156,14 +163,23 @@ function AmountRow({
   label,
   amount,
   amountClassName,
+  total,
 }: {
   label: string;
   amount: number;
   amountClassName?: string;
+  total?: boolean;
 }) {
   return (
-    <div className="border-stroke-light flex min-h-9 items-center justify-between gap-2 border-b border-dashed px-1">
-      <span className="text-text-subtle min-w-0 text-[13px]">{label}</span>
+    <div className="border-stroke-light flex min-h-9 items-center justify-between gap-2 border-x-0 border-t-0 border-b border-dashed px-1">
+      <span
+        className={cn(
+          "text-text-subtle min-w-0",
+          total ? "text-xl font-bold" : "text-sm",
+        )}
+      >
+        {label}
+      </span>
       <Price
         amount={amount}
         size="sm"

@@ -396,20 +396,14 @@ Location fields are `null` for `from_branch`; show the branch address then.
 
 Messages: E7 `Fetched successfully.`, E2 `Booking costs calculated successfully.`
 
-Pure rules for `orders/model.ts` (from the Bruno docs; the backend stays authoritative, R12):
+Product action-menu rules for `orders/model.ts` (user decision 2026-11-11; the backend stays authoritative, R12):
 
 ```ts
-const pickupAt = (o) => new Date(`${o.pickup_day}T${o.pickup_time}`);
-canCancel  = ['new','accepted','coming'].includes(status) && pickupAt > now;
-canExtend  = ['current','late'].includes(status)
-          || (['accepted','open'].includes(status) && deliveryType === 'from_branch' && pickupAt <= now);
-           // and no unpaid extension: !payExtension && pendingExtensionId === null (Q10)
-canModify  = !['start','current','late','complete','cancelled'].includes(status)
-          && pickupAt > now && !hasModifyRequest;
+canCancel  = status === 'coming';
+canExtend  = ['current','late'].includes(status);
+canModify  = status === 'coming';
 canRate    = status === 'complete';      // is_rated → the dialog edits the existing rating
-// An unpaid draft is also 'coming' (Q1). Until Q1b is answered, treat
-// created_at === null as a draft: it offers no action and shows no countdown.
-isDraft    = createdAt === null;
+// `complete` exposes none of cancel, extend, or modify, so the action menu is hidden.
 ```
 
 ### 4.4 E1 → `AvailabilityDto`
@@ -488,7 +482,15 @@ interface CancelQuoteDto {            // E8 is_quote=1
   cancel_fee_percentage: number;
   total: number;                      // refunded to the wallet
 }
-// E8 is_quote=0 → OrderDto with status 'cancelled', cancellation_fee, refund_amount
+// E8 is_quote=0 → CancelConfirmationDto: a cancelled booking response.
+// The observed success response omits `branch`, so it is not an OrderDto.
+interface CancelConfirmationDto {
+  id: number;
+  order_number: string;
+  status: 'cancelled';
+  cancellation_fee: number;
+  refund_amount: number;
+}
 
 interface ModificationQuoteDto {      // E11
   modification_request_id: number | null;   // null when store=0

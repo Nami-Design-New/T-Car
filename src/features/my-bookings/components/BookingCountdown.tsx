@@ -2,7 +2,6 @@
 
 import { Fragment, useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
-import { bookingInstant } from "@/features/orders";
 
 interface Props {
   /** The booking's return time; the card counts the time since it. */
@@ -32,11 +31,11 @@ export default function BookingCountdown({ targetDateTime }: Props) {
   const t = useTranslations("myBookings.countdown");
 
   const [state, setState] = useState(() =>
-    getState(bookingInstant(targetDateTime)),
+    getState(new Date(targetDateTime)),
   );
 
   useEffect(() => {
-    const target = bookingInstant(targetDateTime);
+    const target = new Date(targetDateTime);
 
     setState(getState(target));
 

@@ -176,7 +176,7 @@ describe("booking details UI", () => {
     }
   });
 
-  it("shows the order time in Riyadh time, only with a createdAt", () => {
+  it("formats the API order time as returned, only with a createdAt", () => {
     const { rerender } = renderWithIntl(
       <BookingDetailsScreen
         booking={{ ...ORDER, createdAt: "2026-11-29 20:00:00" }}

@@ -1,7 +1,12 @@
 "use client";
 
 import { useCallback, useState } from "react";
-import { fail, fromActionResult, type Result } from "@/shared/lib/result";
+import {
+  fail,
+  fromActionResult,
+  type ActionResult,
+  type Result,
+} from "@/shared/lib/result";
 import { reportError } from "@/shared/lib/report";
 import {
   cancelBookingAction,
@@ -19,9 +24,9 @@ export function useBookingActions(bookingId: string) {
   const [submitting, setSubmitting] = useState(false);
 
   const run = useCallback(
-    async (
-      action: () => Promise<Awaited<ReturnType<typeof extendBookingAction>>>,
-    ): Promise<Result<void>> => {
+    async <T,>(
+      action: () => Promise<ActionResult<T>>,
+    ): Promise<Result<T>> => {
       setSubmitting(true);
       try {
         return fromActionResult(await action());

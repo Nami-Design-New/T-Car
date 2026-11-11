@@ -9,6 +9,7 @@ vi.mock("@/services/http/server", () => ({ serverHttp: { get, post } }));
 import {
   bookingsApi,
   mapAvailabilityResponse,
+  mapCancelConfirmationResponse,
   mapCancelQuoteResponse,
   mapOrderResponse,
   mapOrdersResponse,
@@ -654,12 +655,40 @@ describe("cancel API (E8)", () => {
   });
 
   it("posts is_quote=0 and validates the cancelled order response", async () => {
-    post.mockResolvedValue(orderResponse);
+    post.mockResolvedValue({
+      data: {
+        id: 291,
+        order_number: "ORD-5734F237",
+        status: "cancelled",
+        cancellation_fee: 4,
+        refund_amount: 199.72,
+      },
+      message: "تم إلغاء حجزك بنجاح.",
+      code: 200,
+    });
 
-    await expect(bookingsApi.cancelBooking("153")).resolves.toBeUndefined();
+    await expect(bookingsApi.cancelBooking("153")).resolves.toBe(
+      "تم إلغاء حجزك بنجاح.",
+    );
     expect(post).toHaveBeenCalledWith("/booking/153/cancel", undefined, {
       query: { is_quote: 0 },
     });
+  });
+
+  it("rejects a cancellation response that did not cancel the booking", () => {
+    expectServerError(() =>
+      mapCancelConfirmationResponse({
+        data: {
+          id: 291,
+          order_number: "ORD-5734F237",
+          status: "coming",
+          cancellation_fee: 4,
+          refund_amount: 199.72,
+        },
+        message: "Booking fetched successfully.",
+        code: 200,
+      }),
+    );
   });
 });
 

@@ -43,7 +43,12 @@ type HeaderFlow =
   | { step: "extend"; error?: AppError }
   | { step: "edit" }
   | { step: "cancel"; error?: AppError }
-  | { step: "result"; kind: ResultKind; error?: AppError }; // no error means success
+  | {
+      step: "result";
+      kind: ResultKind;
+      message?: string;
+      error?: AppError;
+    }; // no error means success
 
 const RESULT_KEYS: Record<
   ResultKind,
@@ -102,7 +107,7 @@ export default function BookingDetailsHeader({ booking }: Props) {
     const result = await cancel();
     if (result.ok) {
       router.refresh();
-      setFlow({ step: "result", kind: "cancelled" });
+      setFlow({ step: "result", kind: "cancelled", message: result.data });
     } else {
       setFlow({ step: "cancel", error: result.error });
     }
@@ -215,7 +220,7 @@ export default function BookingDetailsHeader({ booking }: Props) {
           description={
             flow.error
               ? errorMessage(flow.error)
-              : t(RESULT_KEYS[flow.kind].description)
+              : flow.message ?? t(RESULT_KEYS[flow.kind].description)
           }
           onClose={close}
         />
