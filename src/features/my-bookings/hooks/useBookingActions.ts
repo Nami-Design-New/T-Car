@@ -12,11 +12,14 @@ import {
   cancelBookingAction,
   extendBookingAction,
   getCancelQuoteAction,
+  requestModificationAction,
   requestBookingEditAction,
   submitBookingReviewAction,
   type BookingEditRequest,
   type BookingReviewInput,
   type CancelQuote,
+  type ModificationQuote,
+  type ModificationRequest,
 } from "@/features/orders";
 
 /** Booking writes cross authenticated Server Actions and resolve to a Result. */
@@ -24,17 +27,18 @@ export function useBookingActions(bookingId: string) {
   const [submitting, setSubmitting] = useState(false);
 
   const run = useCallback(
-    async <T,>(
+    async <T>(
       action: () => Promise<ActionResult<T>>,
+      trackSubmitting = true,
     ): Promise<Result<T>> => {
-      setSubmitting(true);
+      if (trackSubmitting) setSubmitting(true);
       try {
         return fromActionResult(await action());
       } catch (error) {
         reportError(error, { scope: "bookings.action", bookingId });
         return fail(error);
       } finally {
-        setSubmitting(false);
+        if (trackSubmitting) setSubmitting(false);
       }
     },
     [bookingId],
@@ -48,6 +52,12 @@ export function useBookingActions(bookingId: string) {
   const requestEdit = useCallback(
     (request: BookingEditRequest) =>
       run(() => requestBookingEditAction(bookingId, request)),
+    [run, bookingId],
+  );
+
+  const modify = useCallback(
+    (request: ModificationRequest): Promise<Result<ModificationQuote>> =>
+      run(() => requestModificationAction(bookingId, request), request.store),
     [run, bookingId],
   );
 
@@ -74,5 +84,13 @@ export function useBookingActions(bookingId: string) {
     [run, bookingId],
   );
 
-  return { submitting, extend, requestEdit, getCancelQuote, cancel, review };
+  return {
+    submitting,
+    extend,
+    requestEdit,
+    modify,
+    getCancelQuote,
+    cancel,
+    review,
+  };
 }

@@ -7,7 +7,9 @@ export {
   getOrdersPageAction,
   getPaymentOptionsAction,
   payOrderAction,
+  payModificationAction,
   requestBookingEditAction,
+  requestModificationAction,
   submitBookingReviewAction,
 } from "./actions";
 export {
@@ -33,6 +35,9 @@ export type {
   BookingServiceSelection,
   BookingServiceType,
   BookingEditRequest,
+  ModificationQuote,
+  ModificationRequest,
+  ModificationType,
   BookingReviewInput,
   CreateDraftRequest,
   PaymentChoice,
@@ -41,6 +46,7 @@ export type {
   PaymentOptions,
   PayOrderRequest,
   PayOrderResult,
+  PayModificationRequest,
   Order,
   OrderDeliveryType,
   OrderListItem,
@@ -52,6 +58,7 @@ export type {
 export {
   availabilitySchema,
   bookingEditSchema,
+  modificationRequestSchema,
   bookingReviewSchema,
   bookingTermsSchema,
   createDraftSchema,
@@ -61,6 +68,7 @@ export {
 export type {
   AvailabilityValues,
   BookingEditFormValues,
+  ModificationRequestValues,
   BookingReviewFormValues,
   BookingTermsValues,
   CreateDraftValues,

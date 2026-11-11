@@ -95,6 +95,8 @@ function draft(): Order {
     payExtension: false,
     pendingExtensionId: null,
     hasModifyRequest: false,
+    modifyRequestPendingPayment: false,
+    modifyRequestPaymentAmount: null,
     hasDriver: false,
     isRated: false,
     myRating: { companyRate: null, driverRate: null },

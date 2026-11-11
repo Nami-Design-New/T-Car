@@ -665,7 +665,16 @@
     "perMonth": "/ month",
     "notices": {
       "paymentSafety": "Stay safe: don't share outside links or bank transfer requests. Your payments are safe and guaranteed inside the app. Please extend through the app only.",
-      "directExtension": "T-Car is not responsible for any problems you may face if the booking is extended directly with the car rental company."
+      "directExtension": "T-Car is not responsible for any problems you may face if the booking is extended directly with the car rental company.",
+      "modificationPending": "Your booking modification request is under review. You cannot submit another change request until it is processed."
+    },
+    "modificationPayment": {
+      "title": "Your modification request was approved",
+      "description": "Pay the difference to confirm the modified booking.",
+      "pay": "Pay modification difference",
+      "waitingPayment": "Waiting for payment...",
+      "success": "The modification difference was paid successfully.",
+      "failed": "The modification payment was not completed."
     },
     "countdown": {
       "title": "Late for return",

@@ -14,6 +14,8 @@ import type {
   CancelQuote,
   BookingType,
   BookingEditRequest,
+  ModificationQuote,
+  ModificationRequest,
   BookingReviewInput,
   CreateDraftRequest,
   Order,
@@ -23,6 +25,7 @@ import type {
   PaymentOptions,
   PayOrderRequest,
   PayOrderResult,
+  PayModificationRequest,
 } from "./model";
 
 export type OrdersListStatus = "current" | "past";
@@ -44,6 +47,10 @@ export interface BookingsApi {
   /** `days` is the new total rental length. */
   extendBooking(id: string, days: number): Promise<void>;
   requestBookingEdit(id: string, request: BookingEditRequest): Promise<void>;
+  requestModification(
+    id: string,
+    request: ModificationRequest,
+  ): Promise<ModificationQuote>;
   /** E8 confirmation; the optional backend message is shown in the result dialog. */
   cancelBooking(id: string): Promise<string | undefined>;
   submitReview(id: string, input: BookingReviewInput): Promise<void>;
@@ -52,10 +59,33 @@ export interface BookingsApi {
   getPaymentOptions(orderId: string): Promise<PaymentOptions>;
   /** E5: pays the draft; a 422 comes back as a failed Result (R5). */
   payOrder(request: PayOrderRequest): Promise<Result<PayOrderResult>>;
+  /** E12: pays an approved modification's difference. */
+  payModification(
+    request: PayModificationRequest,
+  ): Promise<Result<PayOrderResult>>;
 }
 
 export interface AvailabilityDto {
   slots: { time: string }[];
+}
+
+interface ModificationQuoteDto {
+  modification_request_id: number | null;
+  car_price: number;
+  price: number;
+  count: number;
+  deliver_fee: number;
+  service_fee: number;
+  completion_fee: number;
+  discount: number;
+  special_discount?: number;
+  additional_services_cost: number;
+  total_price: number;
+  tax_value: number;
+  final_price: number;
+  original_final_price?: number;
+  new_final_price: number;
+  difference_amount: number;
 }
 
 export interface OrderListItemDto {
@@ -161,6 +191,8 @@ export interface OrderDto {
   pay_extension: boolean;
   pending_extension_id: number | null;
   has_modify_request: boolean;
+  modify_request_pending_payment?: boolean;
+  modify_request_payment_amount?: number | null;
   has_driver?: boolean;
   is_rated: boolean;
   my_rating: { company_rate: number | null; driver_rate: number | null };
@@ -432,6 +464,10 @@ function isOrderDto(value: unknown): value is OrderDto {
     typeof value.pay_extension === "boolean" &&
     (value.pending_extension_id === null || isId(value.pending_extension_id)) &&
     typeof value.has_modify_request === "boolean" &&
+    (value.modify_request_pending_payment === undefined ||
+      typeof value.modify_request_pending_payment === "boolean") &&
+    (value.modify_request_payment_amount === undefined ||
+      isNullableNumber(value.modify_request_payment_amount)) &&
     (value.has_driver === undefined || typeof value.has_driver === "boolean") &&
     typeof value.is_rated === "boolean" &&
     isNullableNumber(value.my_rating.company_rate) &&
@@ -573,6 +609,64 @@ export function mapAvailabilityResponse(value: unknown): Availability {
   };
 }
 
+export function mapModificationQuoteResponse(
+  value: unknown,
+): ModificationQuote {
+  const data = isRecord(value) ? value.data : undefined;
+  if (
+    !isApiEnvelope(value) ||
+    value.code !== 200 ||
+    !isRecord(data) ||
+    (data.modification_request_id !== null &&
+      !isId(data.modification_request_id)) ||
+    ![
+      data.count,
+      data.car_price,
+      data.price,
+      data.deliver_fee,
+      data.service_fee,
+      data.completion_fee,
+      data.discount,
+      data.additional_services_cost,
+      data.total_price,
+      data.tax_value,
+      data.final_price,
+      data.new_final_price,
+      data.difference_amount,
+    ].every(isFiniteNumber)
+  )
+    throw new AppError("server");
+  if (
+    (data.special_discount !== undefined &&
+      !isFiniteNumber(data.special_discount)) ||
+    (data.original_final_price !== undefined &&
+      !isFiniteNumber(data.original_final_price))
+  )
+    throw new AppError("server");
+  const quote = data as unknown as ModificationQuoteDto;
+  return {
+    modificationRequestId:
+      quote.modification_request_id === null
+        ? null
+        : String(quote.modification_request_id),
+    count: quote.count,
+    carPrice: quote.car_price,
+    price: quote.price,
+    deliveryFee: quote.deliver_fee,
+    serviceFee: quote.service_fee,
+    completionFee: quote.completion_fee,
+    discount: quote.discount,
+    specialDiscount: quote.special_discount ?? 0,
+    additionalServicesCost: quote.additional_services_cost,
+    totalPrice: quote.total_price,
+    taxValue: quote.tax_value,
+    finalPrice: quote.final_price,
+    originalFinalPrice: quote.original_final_price ?? quote.final_price,
+    newFinalPrice: quote.new_final_price,
+    differenceAmount: quote.difference_amount,
+  };
+}
+
 function toOrderListItem(order: OrderListItemDto): OrderListItem {
   return {
     id: String(order.id),
@@ -681,6 +775,8 @@ export function mapOrderResponse(value: unknown): Order {
         ? null
         : String(data.pending_extension_id),
     hasModifyRequest: data.has_modify_request,
+    modifyRequestPendingPayment: data.modify_request_pending_payment ?? false,
+    modifyRequestPaymentAmount: data.modify_request_payment_amount ?? null,
     ...(data.has_driver === undefined ? {} : { hasDriver: data.has_driver }),
     isRated: data.is_rated,
     myRating: {
@@ -891,6 +987,28 @@ async function payOrder(
   }
 }
 
+/** E12 uses the same wallet/gateway body and response as the draft payment. */
+async function payModification(
+  request: PayModificationRequest,
+): Promise<Result<PayOrderResult>> {
+  try {
+    const form = toPayFormData(request);
+    const path = "/booking/modification-requests-pay";
+    logBookingData("request", {
+      method: "POST",
+      path,
+      body: Object.fromEntries(form.entries()),
+    });
+    const response = await serverHttp.post(path, form);
+    logBookingData("response", { method: "POST", path, data: response });
+    logBookingData("modification payment response before validation", response);
+    const message = isApiEnvelope(response) ? response.message : undefined;
+    return ok(mapPayResponse(response), message);
+  } catch (error) {
+    return fail(error);
+  }
+}
+
 /** Debug output for local API integration work; never emitted by production builds. Removed in O12. */
 function logBookingData(label: string, value: unknown): void {
   if (process.env.NODE_ENV === "development") {
@@ -931,6 +1049,43 @@ async function cancelBooking(id: string): Promise<string | undefined> {
   return isApiEnvelope(response) ? response.message : undefined;
 }
 
+export function toModificationFormData(request: ModificationRequest): FormData {
+  const form = new FormData();
+  form.set("type", request.type);
+  form.set("store", request.store ? "1" : "0");
+  if (request.count !== undefined) form.set("count", String(request.count));
+  if (request.pickupTime) form.set("pickup_time", request.pickupTime);
+  return form;
+}
+
+async function requestModification(
+  id: string,
+  request: ModificationRequest,
+): Promise<ModificationQuote> {
+  const path = `/booking/${id}/modification-requests`;
+  const form = toModificationFormData(request);
+  logBookingData("request", {
+    method: "POST",
+    path,
+    body: Object.fromEntries(form.entries()),
+  });
+  try {
+    const response = await serverHttp.post(path, form);
+    logBookingData("response", { method: "POST", path, data: response });
+    return mapModificationQuoteResponse(response);
+  } catch (error) {
+    const appError = error instanceof AppError ? error : undefined;
+    logBookingData("response error", {
+      method: "POST",
+      path,
+      status: appError?.status,
+      kind: appError?.kind,
+      message: appError?.serverMessage,
+    });
+    throw error;
+  }
+}
+
 /**
  * O3 makes the list and details live. O7 also replaces the cancel mock with
  * the quote and cancellation endpoints; the remaining writes stay mocked.
@@ -943,6 +1098,7 @@ export const bookingsApi: BookingsApi = {
   extendBooking: (...args) => bookingsMock.extendBooking(...args),
   // O10 replaces modification requests.
   requestBookingEdit: (...args) => bookingsMock.requestBookingEdit(...args),
+  requestModification,
   getCancelQuote,
   cancelBooking,
   // O11 replaces reviews.
@@ -950,4 +1106,5 @@ export const bookingsApi: BookingsApi = {
   createDraft,
   getPaymentOptions,
   payOrder,
+  payModification,
 };

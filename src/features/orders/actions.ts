@@ -17,6 +17,8 @@ import type {
   AvailabilityRequest,
   CancelQuote,
   BookingEditRequest,
+  ModificationQuote,
+  ModificationRequest,
   BookingReviewInput,
   CreateDraftRequest,
   Order,
@@ -25,6 +27,7 @@ import type {
   PaymentOptions,
   PayOrderRequest,
   PayOrderResult,
+  PayModificationRequest,
 } from "./model";
 import type { Page } from "@/shared/lib/pagination";
 import {
@@ -34,6 +37,7 @@ import {
   createDraftSchema,
   payOrderSchema,
   extendBookingSchema,
+  modificationRequestSchema,
 } from "./validation";
 
 export async function checkAvailabilityAction(
@@ -122,6 +126,27 @@ export async function payOrderAction(
   }
 }
 
+/** E12: pays an admin-approved booking modification. */
+export async function payModificationAction(
+  request: PayModificationRequest,
+): Promise<ActionResult<PayOrderResult>> {
+  try {
+    const session = await auth();
+    if (!session?.user?.id) throw new AppError("unauthorized");
+    const result = await bookingsApi.payModification(
+      parse(payOrderSchema, request),
+    );
+    if (!result.ok) reportError(result.error, { scope: "bookings.modifyPay" });
+    return toActionResult(result);
+  } catch (error) {
+    reportError(error, {
+      scope: "bookings.modifyPay",
+      orderId: request?.orderId,
+    });
+    return toActionResult(fail(error));
+  }
+}
+
 /** Creates the server-priced E2 draft; payment is handled by O6. */
 export async function createDraftAction(
   request: CreateDraftRequest,
@@ -170,6 +195,19 @@ export async function requestBookingEditAction(
   return run("bookings.requestEdit", () => {
     const values = parse(bookingEditSchema, request);
     return bookingsApi.requestBookingEdit(bookingId, values);
+  });
+}
+
+export async function requestModificationAction(
+  bookingId: string,
+  request: ModificationRequest,
+): Promise<ActionResult<ModificationQuote>> {
+  return run("bookings.modification", () => {
+    if (!ORDER_ID.test(bookingId)) throw new AppError("validation");
+    return bookingsApi.requestModification(
+      bookingId,
+      parse(modificationRequestSchema, request),
+    );
   });
 }
 

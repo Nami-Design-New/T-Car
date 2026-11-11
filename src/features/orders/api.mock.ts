@@ -150,6 +150,8 @@ export const MOCK_ORDERS: Order[] = MOCK_ORDER_LIST.map((item) => ({
   payExtension: false,
   pendingExtensionId: null,
   hasModifyRequest: false,
+  modifyRequestPendingPayment: false,
+  modifyRequestPaymentAmount: null,
   hasDriver: false,
   isRated: item.isRated,
   myRating: item.myRating,
@@ -234,6 +236,29 @@ export const bookingsMock: BookingsApi = {
         endDate: "bookings.invalidDates",
       });
     }
+  },
+
+  async requestModification(_id, request) {
+    await delay();
+    const count = request.count ?? 1;
+    return {
+      modificationRequestId: request.store ? "1" : null,
+      count,
+      carPrice: 0,
+      price: 0,
+      deliveryFee: 0,
+      serviceFee: 0,
+      completionFee: 0,
+      discount: 0,
+      specialDiscount: 0,
+      additionalServicesCost: 0,
+      totalPrice: 0,
+      taxValue: 0,
+      finalPrice: 0,
+      originalFinalPrice: 0,
+      newFinalPrice: 0,
+      differenceAmount: 0,
+    };
   },
 
   async getCancelQuote(id) {
@@ -330,5 +355,9 @@ export const bookingsMock: BookingsApi = {
       },
       "Proceed to payment now.",
     );
+  },
+
+  async payModification(request) {
+    return this.payOrder(request);
   },
 };

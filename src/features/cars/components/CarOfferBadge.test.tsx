@@ -13,10 +13,10 @@ describe("CarOfferBadge", () => {
     );
 
     expect(screen.getByText("Special offer")).toHaveClass(
-      "rtl:left-0",
-      "rtl:rotate-45",
-      "ltr:right-0",
-      "ltr:-rotate-45",
+      "absolute",
+      "top-4.5",
+      "-left-9",
+      "-rotate-45",
     );
   });
 });

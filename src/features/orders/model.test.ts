@@ -17,6 +17,8 @@ const order = {
   payExtension: false,
   pendingExtensionId: null,
   hasModifyRequest: false,
+  modifyRequestPendingPayment: false,
+  modifyRequestPaymentAmount: null,
   createdAt: "2026-11-01 12:00:00",
 } as Order;
 

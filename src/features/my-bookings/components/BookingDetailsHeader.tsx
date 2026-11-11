@@ -4,7 +4,7 @@ import { useCallback, useState } from "react";
 import { useTranslations } from "next-intl";
 import dynamic from "next/dynamic";
 import { useRouter } from "@/i18n/navigation";
-import { FiMoreHorizontal, FiEdit2, FiCalendar, FiX } from "react-icons/fi";
+import { FiMoreHorizontal } from "react-icons/fi";
 
 import { useErrorMessage } from "@/shared/hooks/useErrorMessage";
 import type { AppError } from "@/shared/lib/errors";
@@ -13,8 +13,8 @@ import {
   canCancel,
   canExtend,
   canModify,
-  type BookingEditRequest,
   type CancelQuote,
+  type ModificationRequest,
   type Order,
 } from "@/features/orders";
 import { bookingTabFor, bookingsListPath, toEditRequest } from "../model";
@@ -70,7 +70,7 @@ export default function BookingDetailsHeader({ booking }: Props) {
   const router = useRouter();
   const [flow, setFlow] = useState<HeaderFlow>({ step: "idle" });
   const [cancelQuote, setCancelQuote] = useState<CancelQuote>();
-  const { submitting, extend, requestEdit, getCancelQuote, cancel } =
+  const { submitting, extend, modify, getCancelQuote, cancel } =
     useBookingActions(booking.id);
   const errorMessage = useErrorMessage();
 
@@ -85,7 +85,7 @@ export default function BookingDetailsHeader({ booking }: Props) {
     else setCancelQuote(result.data);
   };
 
-  const allowEdit = canModify(booking);
+  const allowEdit = canModify(booking) && !booking.hasModifyRequest;
   const allowExtend = canExtend(booking);
   const allowCancel = canCancel(booking);
   const hasActions = allowEdit || allowExtend || allowCancel;
@@ -99,9 +99,12 @@ export default function BookingDetailsHeader({ booking }: Props) {
     );
   };
 
-  const handleEdit = async (request: BookingEditRequest) => {
-    const result = await requestEdit(request);
-    if (result.ok) setFlow({ step: "result", kind: "editRequested" });
+  const handleEdit = async (request: ModificationRequest) => {
+    const result = await modify(request);
+    if (result.ok && request.store) {
+      router.refresh();
+      setFlow({ step: "result", kind: "editRequested" });
+    }
     return result;
   };
 

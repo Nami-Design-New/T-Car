@@ -29,6 +29,11 @@ export interface PayOrderRequest extends PaymentChoice {
   orderId: string;
 }
 
+/** E12 input. Pays the difference after the admin approves a modification. */
+export interface PayModificationRequest extends PaymentChoice {
+  orderId: string;
+}
+
 /** E5 result: paid at once (the wallet covered it) or a gateway tab to open (R10). */
 export type PayOrderResult =
   { kind: "paid" } | { kind: "gateway"; payment: PaymentLinks };
@@ -239,6 +244,36 @@ export interface Availability {
   message: string;
 }
 
+export type ModificationType = "days_count" | "pickup_time";
+
+/** E11: preview (`store: false`) or save (`store: true`) a booking change. */
+export interface ModificationRequest {
+  type: ModificationType;
+  count?: number;
+  pickupTime?: string;
+  store: boolean;
+}
+
+/** E11 price result; the server is authoritative for every amount. */
+export interface ModificationQuote {
+  modificationRequestId: string | null;
+  count: number;
+  carPrice: number;
+  price: number;
+  deliveryFee: number;
+  serviceFee: number;
+  completionFee: number;
+  discount: number;
+  specialDiscount: number;
+  additionalServicesCost: number;
+  totalPrice: number;
+  taxValue: number;
+  finalPrice: number;
+  originalFinalPrice: number;
+  newFinalPrice: number;
+  differenceAmount: number;
+}
+
 export type OrderDeliveryType =
   "to_location" | "from_branch" | "from_airport" | "from_station";
 
@@ -308,6 +343,10 @@ export interface Order {
   payExtension: boolean;
   pendingExtensionId: string | null;
   hasModifyRequest: boolean;
+  /** The approved modification is waiting for its price difference to be paid. */
+  modifyRequestPendingPayment: boolean;
+  /** API value displayed beside the modification-payment action. */
+  modifyRequestPaymentAmount: number | null;
   hasDriver?: boolean;
   isRated: boolean;
   myRating: { companyRate: number | null; driverRate: number | null };

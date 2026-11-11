@@ -3,6 +3,8 @@ import BookingDetailsHeader from "./BookingDetailsHeader";
 import BookingHero from "./BookingHero";
 import BookingDatesInfo from "./BookingDatesInfo";
 import BookingCountdown from "./BookingCountdown";
+import BookingModificationPayment from "./BookingModificationPayment";
+import BookingModificationNotice from "./BookingModificationNotice";
 import BookingNotices from "./BookingNotices";
 import BookingOrderTime from "./BookingOrderTime";
 import BookingSidebar from "./BookingSidebar";
@@ -26,6 +28,15 @@ export default function BookingDetailsScreen({ booking }: Props) {
                   notices. */}
               {(booking.status === "coming" ||
                 booking.status === "current") && <BookingNotices />}
+              {booking.modifyRequestPendingPayment &&
+              booking.modifyRequestPaymentAmount !== null ? (
+                <BookingModificationPayment
+                  bookingId={booking.id}
+                  amount={booking.modifyRequestPaymentAmount}
+                />
+              ) : booking.hasModifyRequest ? (
+                <BookingModificationNotice />
+              ) : null}
               <BookingDatesInfo booking={booking} />
 
               {/* Only a late booking: the card counts the time overdue since

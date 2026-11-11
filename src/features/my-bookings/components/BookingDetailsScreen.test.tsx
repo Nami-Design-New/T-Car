@@ -80,6 +80,8 @@ const ORDER: Order = {
   payExtension: false,
   pendingExtensionId: null,
   hasModifyRequest: false,
+  modifyRequestPendingPayment: false,
+  modifyRequestPaymentAmount: null,
   hasDriver: false,
   isRated: false,
   myRating: { companyRate: null, driverRate: null },
@@ -147,6 +149,21 @@ describe("booking details UI", () => {
     expect(screen.queryByRole("menuitem", { name: /extend/i })).toBeNull();
   });
 
+  it("hides the edit action while a modification request is pending", async () => {
+    const user = userEvent.setup({ pointerEventsCheck: 0 });
+    renderWithIntl(
+      <BookingDetailsHeader
+        booking={{ ...ORDER, status: "coming", hasModifyRequest: true }}
+      />,
+    );
+
+    await user.click(screen.getByRole("button", { name: "Booking actions" }));
+    expect(
+      screen.queryByRole("menuitem", { name: /request edit/i }),
+    ).toBeNull();
+    expect(screen.getAllByRole("menuitem")).toHaveLength(1);
+  });
+
   it("shows the countdown card for a late booking only", () => {
     const { rerender } = renderWithIntl(
       <BookingDetailsScreen booking={{ ...ORDER, status: "late" }} />,
@@ -167,13 +184,45 @@ describe("booking details UI", () => {
     expect(screen.getAllByRole("note")).toHaveLength(2);
     expect(screen.getByText(safety)).toBeInTheDocument();
 
-    rerender(<BookingDetailsScreen booking={{ ...ORDER, status: "current" }} />);
+    rerender(
+      <BookingDetailsScreen booking={{ ...ORDER, status: "current" }} />,
+    );
     expect(screen.getAllByRole("note")).toHaveLength(2);
 
     for (const status of ["late", "complete", "cancelled"] as const) {
       rerender(<BookingDetailsScreen booking={{ ...ORDER, status }} />);
       expect(screen.queryByText(safety)).not.toBeInTheDocument();
     }
+  });
+
+  it("shows a modification-pending notice when the API reports a request", () => {
+    renderWithIntl(
+      <BookingDetailsScreen booking={{ ...ORDER, hasModifyRequest: true }} />,
+    );
+
+    expect(
+      screen.getByText(/modification request is under review/i),
+    ).toBeInTheDocument();
+  });
+
+  it("replaces the pending notice with the payment action after approval", () => {
+    renderWithIntl(
+      <BookingDetailsScreen
+        booking={{
+          ...ORDER,
+          hasModifyRequest: true,
+          modifyRequestPendingPayment: true,
+          modifyRequestPaymentAmount: 333.7,
+        }}
+      />,
+    );
+
+    expect(
+      screen.getByRole("button", { name: /pay modification difference/i }),
+    ).toHaveTextContent("333.7");
+    expect(
+      screen.queryByText(/modification request is under review/i),
+    ).not.toBeInTheDocument();
   });
 
   it("formats the API order time as returned, only with a createdAt", () => {
