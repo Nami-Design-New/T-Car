@@ -33,7 +33,14 @@ function httpLog(
 ): void {
   if (process.env.NODE_ENV !== "development") return;
   // eslint-disable-next-line no-console -- intentional local HTTP inspection.
-  console.info(`[http] ${event}`, details);
+  console.info(
+    `[http] ${event}`,
+    JSON.stringify(
+      details,
+      (_key, value) => (typeof value === "bigint" ? String(value) : value),
+      2,
+    ),
+  );
 }
 
 /** Makes request / response values safe and readable in a development log. */

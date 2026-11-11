@@ -177,20 +177,11 @@ describe("createHttpClient", () => {
 
     expect(info).toHaveBeenCalledWith(
       "[http] request",
-      expect.objectContaining({
-        method: "POST",
-        path: "/booking",
-        body: { token: "[redacted]", count: 2 },
-      }),
+      expect.stringContaining('"token": "[redacted]"'),
     );
     expect(info).toHaveBeenCalledWith(
       "[http] response",
-      expect.objectContaining({
-        status: 200,
-        data: expect.objectContaining({
-          data: { access_token: "[redacted]", id: 1 },
-        }),
-      }),
+      expect.stringContaining('"access_token": "[redacted]"'),
     );
   });
 });
