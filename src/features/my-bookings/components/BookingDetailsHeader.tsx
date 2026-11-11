@@ -21,6 +21,9 @@ import { bookingTabFor, bookingsListPath, toEditRequest } from "../model";
 import { useBookingActions } from "../hooks/useBookingActions";
 import { BackButton } from "@/shared/ui/BackButton";
 import { Menu } from "@/shared/ui/Menu";
+import { ICONS } from "@/shared/config/assets";
+import Image from "next/image";
+
 const ExtendDurationModal = dynamic(() => import("./ExtendDurationModal"), {
   ssr: false,
 });
@@ -148,22 +151,40 @@ export default function BookingDetailsHeader({ booking }: Props) {
               </button>
             </Menu.Trigger>
 
-            <Menu.Content className="min-w-[150px]">
+            <Menu.Content className="min-w-37.5">
               {allowEdit && (
-                <Menu.Item onSelect={() => open("edit")}>
-                  <FiEdit2 aria-hidden="true" />
+                <Menu.Item
+                  className="cursor-pointer"
+                  onSelect={() => open("edit")}
+                >
+                  <Image
+                    src={ICONS.edit.src}
+                    width={ICONS.edit.width}
+                    height={ICONS.edit.height}
+                    alt="edit"
+                  />
                   {t("requestEdit")}
                 </Menu.Item>
               )}
               {allowExtend && (
                 <Menu.Item onSelect={() => open("extend")}>
-                  <FiCalendar aria-hidden="true" />
+                  <Image
+                    src={ICONS.calendar.src}
+                    width={ICONS.calendar.width}
+                    height={ICONS.calendar.height}
+                    alt="extend"
+                  />
                   {t("extend")}
                 </Menu.Item>
               )}
               {allowCancel && (
                 <Menu.Item tone="danger" onSelect={() => void openCancel()}>
-                  <FiX aria-hidden="true" />
+                  <Image
+                    src={ICONS.close.src}
+                    width={ICONS.close.width}
+                    height={ICONS.close.height}
+                    alt="close"
+                  />
                   {t("cancel")}
                 </Menu.Item>
               )}
@@ -191,8 +212,8 @@ export default function BookingDetailsHeader({ booking }: Props) {
       <EditDailyBookingModal
         open={flow.step === "edit"}
         onClose={close}
-        pricePerDay={booking.carPrice}
         initialDetails={toEditRequest(booking)}
+        booking={booking}
         onSubmit={handleEdit}
         loading={submitting}
       />
@@ -220,7 +241,7 @@ export default function BookingDetailsHeader({ booking }: Props) {
           description={
             flow.error
               ? errorMessage(flow.error)
-              : flow.message ?? t(RESULT_KEYS[flow.kind].description)
+              : (flow.message ?? t(RESULT_KEYS[flow.kind].description))
           }
           onClose={close}
         />

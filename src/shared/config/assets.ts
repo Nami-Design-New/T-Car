@@ -67,6 +67,21 @@ export const ICONS = {
     width: 24,
     height: 24,
   },
+  edit: {
+    src: "/icons/edit-icon.svg",
+    width: 16,
+    height: 16,
+  },
+  close: {
+    src: "/icons/close-icon.svg",
+    width: 16,
+    height: 16,
+  },
+  calendar: {
+    src: "/icons/calendar-days.svg",
+    width: 16,
+    height: 16,
+  },
 } as const;
 
 export const POINTS_ICONS = {

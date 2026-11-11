@@ -7,6 +7,7 @@ import { useTranslations } from "next-intl";
 import { useFieldErrorMessage } from "@/shared/hooks/useErrorMessage";
 import { Button } from "@/shared/ui/Button";
 import { Dialog } from "@/shared/ui/Dialog";
+import { NumberStepper } from "@/shared/ui/NumberStepper";
 import {
   extendBookingSchema,
   type ExtendBookingFormValues,
@@ -52,12 +53,8 @@ export default function ExtendDurationModal({
     if (open) reset({ days: currentDays });
   }, [currentDays, open, reset]);
 
-  const increment = () => {
-    setValue("days", days + 1, { shouldDirty: true, shouldValidate: true });
-  };
-
-  const decrement = () => {
-    setValue("days", Math.max(1, days - 1), {
+  const changeDays = (value: number) => {
+    setValue("days", value, {
       shouldDirty: true,
       shouldValidate: true,
     });
@@ -73,50 +70,34 @@ export default function ExtendDurationModal({
       label={t("title")}
     >
       <form
-        className="flex w-full max-w-[420px] flex-col rounded-xl bg-surface-elevated p-5 max-[768px]:px-4 max-[768px]:pt-[42px] max-[768px]:pb-[18px]"
+        className="bg-surface-elevated flex w-full max-w-[420px] flex-col rounded-xl p-5 max-[768px]:px-4 max-[768px]:pt-[42px] max-[768px]:pb-[18px]"
         onSubmit={submit}
         noValidate
       >
         {/* Close */}
         {/* Header */}
         <div className="flex items-center justify-between">
-          <Dialog.Title className="py-2.5 text-[22px] text-text-primary max-[768px]:text-[17px]">
+          <Dialog.Title className="text-text-primary py-2.5 text-[22px] max-[768px]:text-[17px]">
             {t("title")}
           </Dialog.Title>
           <Dialog.Close />
         </div>
 
         {/* Duration */}
-        <div className="mb-[18px] rounded-md bg-surface-card-primary px-3.5 pt-4 pb-3 text-center">
-          <p className="mb-2 text-sm font-medium leading-normal text-text-primary">
+        <div className="bg-surface-card-primary mb-[18px] rounded-md px-3.5 pt-4 pb-3 text-center">
+          <p className="text-text-primary mb-2 text-sm leading-normal font-medium">
             {t("selectDays")}
           </p>
 
-          <div className="flex items-center justify-between gap-3 [direction:ltr]">
-            <button
-              type="button"
-              className="grid size-9 shrink-0 place-items-center rounded border-0 bg-surface-elevated text-[21px] text-text-primary"
-              onClick={increment}
-              aria-label={t("increase")}
-            >
-              +
-            </button>
+          <NumberStepper
+            value={days}
+            onChange={changeDays}
+            disabled={loading}
+            decreaseLabel={t("decrease")}
+            increaseLabel={t("increase")}
+          />
 
-            <div className="flex h-12 flex-1 items-center justify-center text-[30px] font-bold leading-none text-text-primary">
-              {days}
-            </div>
-
-            <button
-              type="button"
-              className="grid size-9 shrink-0 place-items-center rounded border-0 bg-surface-elevated text-[21px] text-text-primary"
-              onClick={decrement}
-              aria-label={t("decrease")}
-            >
-              −
-            </button>
-          </div>
-
-          <p className="mt-2 mb-0 text-[11px] leading-normal text-text-primary">
+          <p className="text-text-primary mt-2 mb-0 text-[11px] leading-normal">
             {t("quotePending")}
           </p>
           {errors.days && (
@@ -128,19 +109,19 @@ export default function ExtendDurationModal({
 
         {/* Price Details */}
         <div className="mb-[18px]">
-          <h3 className="mb-2 text-end text-sm font-bold text-text-primary">
+          <h3 className="text-text-primary mb-2 text-end text-sm font-bold">
             {t("priceDetails")}
           </h3>
 
           {/* السعر */}
-          <div className="grid min-h-[34px] grid-cols-[1fr_auto_auto] items-center gap-3 border-b border-dashed border-stroke-light px-2.5 last:border-0">
-            <span className="text-end text-sm text-text-subtle">
+          <div className="border-stroke-light grid min-h-8.5 grid-cols-[1fr_auto_auto] items-center gap-3 border-b border-dashed px-2.5 last:border-0">
+            <span className="text-text-subtle text-end text-sm">
               {t("price")}
             </span>
 
-            <span className="text-center text-sm text-text-subtle"></span>
+            <span className="text-text-subtle text-center text-sm"></span>
 
-            <strong className="whitespace-nowrap text-left text-sm font-medium text-text-primary">
+            <strong className="text-text-primary text-left text-sm font-medium whitespace-nowrap">
               {pricePerDay} {t("currency")}
             </strong>
           </div>
@@ -149,7 +130,7 @@ export default function ExtendDurationModal({
         </div>
 
         {error && (
-          <p className="text-status-error text-sm mb-2" role="alert">
+          <p className="text-status-error mb-2 text-sm" role="alert">
             {error}
           </p>
         )}
@@ -157,7 +138,7 @@ export default function ExtendDurationModal({
         {/* Confirm */}
         <Button
           type="submit"
-          className="h-12 w-full cursor-pointer rounded-sm border-0 bg-action-primary text-sm font-semibold text-white transition hover:opacity-90"
+          className="bg-action-primary h-12 w-full cursor-pointer rounded-sm border-0 text-sm font-semibold text-white transition hover:opacity-90"
           loading={loading}
         >
           {loading ? t("extending") : t("confirm")}
