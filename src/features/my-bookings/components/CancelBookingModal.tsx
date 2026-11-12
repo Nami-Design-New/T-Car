@@ -8,6 +8,7 @@ import { Price } from "@/shared/ui/Price";
 import { IMAGES } from "@/shared/config/assets";
 import { cn } from "@/shared/lib/cn";
 import { Button } from "@/shared/ui/Button";
+import { Skeleton } from "@/shared/ui/Skeleton";
 const cancelBookingImage = IMAGES.cancelBooking;
 
 export interface CancelQuote {
@@ -40,6 +41,7 @@ export default function CancelBookingModal({
   error,
 }: Props) {
   const t = useTranslations("myBookings.cancel");
+  const quoteLoading = loading && quote === undefined;
   // Keep the layout usable while the quote request is still in flight.
   const paidAmount = quote?.paidAmount ?? bookingAmount;
   const discountPercent = quote?.discountPercent ?? 0;
@@ -78,52 +80,64 @@ export default function CancelBookingModal({
           </h3>
         </div>
 
-        <div className="bg-status-error-background mb-4.5 rounded-sm px-4 py-3 text-center">
-          <p className="text-text-primary m-0 text-[12px] leading-relaxed">
-            {t("feePolicy", { percent: discountPercent })}
-          </p>
-        </div>
-
-        <div className="mb-4 w-full">
-          <h3 className="text-text-primary mb-1.5 text-base font-bold">
-            {t("amountDetails")}
-          </h3>
-
-          <div className="border-stroke-light divide-stroke-light w-full divide-y divide-dashed">
-            <AmountRow label={t("paid")} amount={paidAmount} />
-            <div className="border-stroke-light flex min-h-9 items-center justify-between gap-2 border-x-0 border-b border-dashed px-1">
-              <span className="text-text-subtle min-w-0 text-[13px]">
-                {t("discountPercent")}
-              </span>
-              <strong className="text-status-error min-w-0 text-[13px] font-medium whitespace-nowrap">
-                {discountPercent}%
-              </strong>
-            </div>
-            <AmountRow
-              label={t("cancellationFee")}
-              amount={-cancellationFee}
-              amountClassName="text-status-error"
-            />
-            <AmountRow
-              label={t("total")}
-              total={true}
-              amount={refundedAmount}
-              amountClassName="text-text-primary font-bold"
-            />
-          </div>
-
-          <div className="bg-action-primary/10 mt-4 rounded-xl px-4 py-3 text-center">
-            <p className="text-text-primary m-0 text-[13px] font-semibold">
-              {t("refundedToYou")}
+        {quoteLoading ? (
+          <Skeleton shape="rect" height="3.5rem" className="mb-4.5" />
+        ) : (
+          <div className="bg-status-error-background mb-4.5 rounded-sm px-4 py-3 text-center">
+            <p className="text-text-primary m-0 text-[12px] leading-relaxed">
+              {t("feePolicy", { percent: discountPercent })}
             </p>
-            <Price
-              amount={refundedAmount}
-              size="xl"
-              amountClassName="text-text-primary text-3xl font-bold"
-              className="mt-1 justify-center gap-2"
-            />
           </div>
-        </div>
+        )}
+
+        {quoteLoading ? (
+          <div className="mb-4 flex w-full flex-col gap-3" aria-busy="true">
+            <Skeleton width="8rem" />
+            <Skeleton shape="rect" height="11rem" />
+            <Skeleton shape="rect" height="6.5rem" />
+          </div>
+        ) : (
+          <div className="mb-4 w-full">
+            <h3 className="text-text-primary mb-1.5 text-base font-bold">
+              {t("amountDetails")}
+            </h3>
+
+            <div className="border-stroke-light divide-stroke-light w-full divide-y divide-dashed">
+              <AmountRow label={t("paid")} amount={paidAmount} />
+              <div className="border-stroke-light flex min-h-9 items-center justify-between gap-2 border-x-0 border-b border-dashed px-1">
+                <span className="text-text-subtle min-w-0 text-[13px]">
+                  {t("discountPercent")}
+                </span>
+                <strong className="text-status-error min-w-0 text-[13px] font-medium whitespace-nowrap">
+                  {discountPercent}%
+                </strong>
+              </div>
+              <AmountRow
+                label={t("cancellationFee")}
+                amount={-cancellationFee}
+                amountClassName="text-status-error"
+              />
+              <AmountRow
+                label={t("total")}
+                total={true}
+                amount={refundedAmount}
+                amountClassName="text-text-primary font-bold"
+              />
+            </div>
+
+            <div className="bg-action-primary/10 mt-4 rounded-xl px-4 py-3 text-center">
+              <p className="text-text-primary m-0 text-[13px] font-semibold">
+                {t("refundedToYou")}
+              </p>
+              <Price
+                amount={refundedAmount}
+                size="xl"
+                amountClassName="text-text-primary text-3xl font-bold"
+                className="mt-1 justify-center gap-2"
+              />
+            </div>
+          </div>
+        )}
 
         {error && (
           <p className="text-status-error mb-2 text-sm" role="alert">
@@ -139,7 +153,7 @@ export default function CancelBookingModal({
             className="grow"
             onClick={onConfirm}
             disabled={loading}
-            loading={loading}
+            loading={loading && quote !== undefined}
           >
             {t("confirm")}
           </Button>
