@@ -21,6 +21,7 @@ import type {
   ExtensionQuote,
   ModificationRequest,
   BookingReviewInput,
+  BookingReviewResult,
   CreateDraftRequest,
   Order,
   OrderListItem,
@@ -271,7 +272,7 @@ export async function getCancelQuoteAction(
 export async function submitBookingReviewAction(
   bookingId: string,
   input: BookingReviewInput,
-): Promise<ActionResult<void>> {
+): Promise<ActionResult<BookingReviewResult>> {
   return run("bookings.review", () => {
     const values = parse(bookingReviewSchema, input);
     return bookingsApi.submitReview(bookingId, values);

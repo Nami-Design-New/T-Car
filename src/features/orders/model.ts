@@ -411,7 +411,15 @@ export type BookingEditRequest = BookingDetails;
 export interface BookingReviewInput {
   /** 1 to 5 */
   showroomRating: number;
-  driverRating: number;
+  /** Sent only when the completed booking has a driver. */
+  driverRating?: number;
+}
+
+/** E13 response after creating or updating a booking rating. */
+export interface BookingReviewResult {
+  showroomRating: number;
+  driverRating: number | null;
+  hasDriver: boolean;
 }
 
 /** E8 cancel quote returned before a cancellation is confirmed. */

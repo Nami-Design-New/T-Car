@@ -9,6 +9,7 @@ vi.mock("@/services/http/server", () => ({ serverHttp: { get, post } }));
 import {
   bookingsApi,
   mapAvailabilityResponse,
+  mapBookingReviewResponse,
   mapCancelConfirmationResponse,
   mapCancelQuoteResponse,
   mapOrderResponse,
@@ -17,6 +18,7 @@ import {
   mapExtensionPayResponse,
   mapPayResponse,
   toCreateDraftFormData,
+  toBookingReviewFormData,
   toExtensionFormData,
   toPayFormData,
 } from "./api";
@@ -659,6 +661,34 @@ describe("extension payment API (E10)", () => {
         code: 200,
       }),
     ).toEqual({ kind: "paid" });
+  });
+});
+
+describe("booking review API (E13)", () => {
+  it("maps the submitted company and optional driver rating", () => {
+    expect(
+      mapBookingReviewResponse({
+        data: { company_rate: 4, driver_rate: null, has_driver: false },
+        message: "Rated successfully.",
+        code: 200,
+      }),
+    ).toEqual({ showroomRating: 4, driverRating: null, hasDriver: false });
+  });
+
+  it("sends a driver rating only for bookings that have a driver", () => {
+    const withoutDriver = toBookingReviewFormData({ showroomRating: 4 });
+    expect(Object.fromEntries(withoutDriver.entries())).toEqual({
+      company_rate: "4",
+    });
+
+    const withDriver = toBookingReviewFormData({
+      showroomRating: 4,
+      driverRating: 5,
+    });
+    expect(Object.fromEntries(withDriver.entries())).toEqual({
+      company_rate: "4",
+      driver_rate: "5",
+    });
   });
 });
 

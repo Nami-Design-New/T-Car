@@ -323,7 +323,7 @@ export const bookingsMock: BookingsApi = {
 
   async submitReview(id, { showroomRating, driverRating }) {
     await delay(600);
-    findOrder(id);
+    const order = findOrder(id);
     if (
       !Number.isInteger(showroomRating) ||
       showroomRating < 1 ||
@@ -333,15 +333,21 @@ export const bookingsMock: BookingsApi = {
         showroomRating: "bookings.ratingRequired",
       });
     }
-    if (
-      !Number.isInteger(driverRating) ||
-      driverRating < 1 ||
-      driverRating > 5
-    ) {
+    const validDriverRating =
+      Number.isInteger(driverRating) &&
+      driverRating !== undefined &&
+      driverRating >= 1 &&
+      driverRating <= 5;
+    if (order.hasDriver === true && !validDriverRating) {
       throw new AppError("validation", "bookings.ratingRequired", undefined, {
         driverRating: "bookings.ratingRequired",
       });
     }
+    return {
+      showroomRating,
+      driverRating: order.hasDriver ? (driverRating ?? null) : null,
+      hasDriver: order.hasDriver === true,
+    };
   },
 
   async createDraft({ details }) {

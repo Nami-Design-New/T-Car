@@ -41,6 +41,7 @@ export type {
   ModificationRequest,
   ModificationType,
   BookingReviewInput,
+  BookingReviewResult,
   CreateDraftRequest,
   ExtensionQuote,
   PaymentChoice,

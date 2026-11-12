@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import dynamic from "next/dynamic";
+import { useRouter } from "@/i18n/navigation";
 import { FiStar } from "react-icons/fi";
 import { canRate, type Order } from "@/features/orders";
 import { formatAmount } from "@/shared/lib/format";
@@ -11,6 +12,7 @@ import { useBookingActions } from "../hooks/useBookingActions";
 import { ICONS } from "@/shared/config/assets";
 import Image from "next/image";
 import { cn } from "@/shared/lib/cn";
+import { Button } from "@/shared/ui/Button";
 
 const BookingReviewModal = dynamic(() => import("./BookingReviewModal"), {
   ssr: false,
@@ -22,9 +24,16 @@ interface Props {
 
 export default function BookingSidebar({ booking }: Props) {
   const t = useTranslations("myBookings.sidebar");
+  const router = useRouter();
   const [showReview, setShowReview] = useState(false);
   const { submitting, review } = useBookingActions(booking.id);
   const showReviewAction = canRate(booking);
+
+  const submitReview = async (...args: Parameters<typeof review>) => {
+    const result = await review(...args);
+    if (result.ok) router.refresh();
+    return result;
+  };
 
   return (
     <aside className="border-stroke-light bg-surface-elevated sticky top-6 flex flex-col gap-4 rounded-lg border p-6 max-[860px]:static">
@@ -77,21 +86,25 @@ export default function BookingSidebar({ booking }: Props) {
 
       {showReviewAction ? (
         <div className="mt-1 flex flex-col gap-2.5">
-          <button
+          <Button
             type="button"
-            className="bg-action-primary hover:bg-action-primary/90 flex h-11 items-center justify-center gap-2 rounded-md border-0 text-sm font-bold text-white transition"
+            size="lg"
+            className="w-full"
+            icon={<FiStar size={16} />}
+            iconPosition="start"
             onClick={() => setShowReview(true)}
           >
-            <FiStar size={16} />
             {t("review")}
-          </button>
+          </Button>
         </div>
       ) : null}
 
       {showReview && (
         <BookingReviewModal
           submitting={submitting}
-          onSubmit={review}
+          hasDriver={booking.hasDriver === true}
+          initialRating={booking.myRating}
+          onSubmit={submitReview}
           onClose={() => setShowReview(false)}
         />
       )}

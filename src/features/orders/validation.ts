@@ -198,7 +198,8 @@ export const bookingReviewSchema = z.object({
     .number({ error: "bookings.ratingRequired" })
     .int({ error: "bookings.ratingRequired" })
     .min(1, { error: "bookings.ratingRequired" })
-    .max(5, { error: "bookings.ratingRequired" }),
+    .max(5, { error: "bookings.ratingRequired" })
+    .optional(),
 });
 
 /** Edit requests use the same normalized booking details as initial checkout. */

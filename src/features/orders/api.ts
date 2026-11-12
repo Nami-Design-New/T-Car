@@ -18,6 +18,7 @@ import type {
   ExtensionQuote,
   ModificationRequest,
   BookingReviewInput,
+  BookingReviewResult,
   CreateDraftRequest,
   Order,
   OrderListItem,
@@ -58,7 +59,11 @@ export interface BookingsApi {
   ): Promise<ModificationQuote>;
   /** E8 confirmation; the optional backend message is shown in the result dialog. */
   cancelBooking(id: string): Promise<string | undefined>;
-  submitReview(id: string, input: BookingReviewInput): Promise<void>;
+  /** E13: creates or updates a completed booking's rating. */
+  submitReview(
+    id: string,
+    input: BookingReviewInput,
+  ): Promise<BookingReviewResult>;
   createDraft(request: CreateDraftRequest): Promise<Order>;
   /** E3: the company's gateway methods and the wallet balance for a draft. */
   getPaymentOptions(orderId: string): Promise<PaymentOptions>;
@@ -110,6 +115,12 @@ interface ExtensionQuoteDto {
   tax_value: number;
   tax_added_value: number;
   total_amount: number;
+}
+
+interface BookingReviewResultDto {
+  company_rate: number;
+  driver_rate: number | null;
+  has_driver: boolean;
 }
 
 export interface OrderListItemDto {
@@ -653,6 +664,27 @@ export function mapExtensionPayResponse(value: unknown): PayExtensionResult {
   throw new AppError("server");
 }
 
+/** E13 rating response. The response is deliberately smaller than OrderDto. */
+export function mapBookingReviewResponse(value: unknown): BookingReviewResult {
+  const data = isRecord(value) ? value.data : undefined;
+  if (
+    !isApiEnvelope(value) ||
+    value.code !== 200 ||
+    !isRecord(data) ||
+    !isFiniteNumber(data.company_rate) ||
+    !isNullableNumber(data.driver_rate) ||
+    typeof data.has_driver !== "boolean"
+  ) {
+    throw new AppError("server");
+  }
+  const rating = data as unknown as BookingReviewResultDto;
+  return {
+    showroomRating: rating.company_rate,
+    driverRating: rating.driver_rate,
+    hasDriver: rating.has_driver,
+  };
+}
+
 export function mapAvailabilityResponse(value: unknown): Availability {
   const data = isRecord(value) ? value.data : undefined;
   if (!isApiEnvelope(value) || value.code !== 200 || !isAvailabilityDto(data)) {
@@ -1177,6 +1209,23 @@ async function cancelBooking(id: string): Promise<string | undefined> {
   return isApiEnvelope(response) ? response.message : undefined;
 }
 
+export function toBookingReviewFormData(input: BookingReviewInput): FormData {
+  const form = new FormData();
+  form.set("company_rate", String(input.showroomRating));
+  if (input.driverRating !== undefined)
+    form.set("driver_rate", String(input.driverRating));
+  return form;
+}
+
+async function submitReview(
+  id: string,
+  input: BookingReviewInput,
+): Promise<BookingReviewResult> {
+  const form = toBookingReviewFormData(input);
+  const response = await serverHttp.post(`/booking/${id}/rate`, form);
+  return mapBookingReviewResponse(response);
+}
+
 export function toModificationFormData(request: ModificationRequest): FormData {
   const form = new FormData();
   form.set("type", request.type);
@@ -1230,8 +1279,7 @@ export const bookingsApi: BookingsApi = {
   requestModification,
   getCancelQuote,
   cancelBooking,
-  // O11 replaces reviews.
-  submitReview: (...args) => bookingsMock.submitReview(...args),
+  submitReview,
   createDraft,
   getPaymentOptions,
   payOrder,

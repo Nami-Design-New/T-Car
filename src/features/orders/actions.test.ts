@@ -359,7 +359,11 @@ beforeEach(() => {
   createDraft.mockResolvedValue({ id: "226" });
   extendBooking.mockResolvedValue(undefined);
   requestBookingEdit.mockResolvedValue(undefined);
-  submitReview.mockResolvedValue(undefined);
+  submitReview.mockResolvedValue({
+    showroomRating: 4,
+    driverRating: 5,
+    hasDriver: true,
+  });
 });
 
 describe("booking action validation", () => {
@@ -383,7 +387,7 @@ describe("booking action validation", () => {
       }),
     ).resolves.toEqual({
       ok: true,
-      data: undefined,
+      data: { showroomRating: 4, driverRating: 5, hasDriver: true },
     });
     expect(submitReview).toHaveBeenCalledWith("booking-1", {
       showroomRating: 4,
