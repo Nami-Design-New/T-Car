@@ -42,10 +42,7 @@ export default function BankAccountsTab({
 
   return (
     <div className="border-stroke-light bg-surface-elevated flex flex-col gap-5 rounded-xl border p-6">
-      <div className="flex items-end justify-between gap-3.5 max-md:gap-2.5">
-        <h3 className="text-text-primary m-0 text-base leading-5.75 font-semibold">
-          {t("title")}
-        </h3>
+      <div className="flex items-center justify-end gap-3.5 max-md:gap-2.5">
         <Button type="button" className="" size="lg" onClick={onAdd}>
           {t("add")}
         </Button>

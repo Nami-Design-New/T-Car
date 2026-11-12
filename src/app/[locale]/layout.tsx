@@ -1,7 +1,8 @@
 import { auth } from "@/auth";
 import { Footer, GuestLocationRequest, Header } from "@/features/layout";
 import { getHomeContent } from "@/features/home/queries";
-import { getNotifications } from "@/features/notifications/queries";
+import { NotificationsPushListener } from "@/features/notifications";
+import { getUnreadNotificationCount } from "@/features/notifications/queries";
 import { SiteLinksSync } from "@/features/settings";
 import { getSiteSettings } from "@/features/settings/queries";
 import type { Metadata } from "next";
@@ -92,10 +93,7 @@ export default async function RootLayout({
   const dir = getDirection(locale);
   // Sessions start once the profile exists (after the register step).
   const signedIn = Boolean(session?.user);
-  const unreadCount = signedIn
-    ? (await getNotifications()).filter((notification) => !notification.read)
-        .length
-    : 0;
+  const unreadCount = signedIn ? await getUnreadNotificationCount() : 0;
   // Never throws: without the settings, the contact details and site links are hidden.
   const [site, homeContent] = await Promise.all([
     getSiteSettings(),
@@ -110,6 +108,7 @@ export default async function RootLayout({
             <SiteLinksSync links={site.links} />
             <NextTopLoader color="#1f7ffa" height={3} showSpinner={false} />
             {!signedIn && <GuestLocationRequest />}
+            {signedIn && <NotificationsPushListener locale={locale} />}
             <Header
               hasSession={signedIn}
               signedIn={signedIn}
