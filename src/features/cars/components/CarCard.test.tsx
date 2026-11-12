@@ -7,6 +7,11 @@ import type { CarListing } from "../model";
 import CarCard from "./CarCard";
 
 const routerPush = vi.hoisted(() => vi.fn());
+const loaderStart = vi.hoisted(() => vi.fn());
+
+vi.mock("nextjs-toploader", () => ({
+  useTopLoader: () => ({ start: loaderStart }),
+}));
 
 vi.mock("@/i18n/navigation", () => ({
   Link: ({
@@ -96,6 +101,7 @@ describe("CarCard details navigation", () => {
 
     await user.click(screen.getByRole("link"));
 
+    expect(loaderStart).toHaveBeenCalledOnce();
     expect(routerPush).toHaveBeenCalledWith(
       "/cars/3?region=Riyadh+Region&lat=24.7136&lng=46.6753",
     );

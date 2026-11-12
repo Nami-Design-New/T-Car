@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useLocale } from "next-intl";
+import { useTopLoader } from "nextjs-toploader";
 import { useRouter } from "@/i18n/navigation";
 import {
   CityCarBookingFlow,
@@ -82,6 +83,7 @@ export default function HomeCarefullyChosenCarsSection({
   options,
 }: Props) {
   const router = useRouter();
+  const loader = useTopLoader();
   const [location, setLocation] = useState<CityCarsLocation | null | undefined>(
     undefined,
   );
@@ -116,9 +118,10 @@ export default function HomeCarefullyChosenCarsSection({
           carId={selectedCar.id}
           options={options}
           availability={selectedCar.availability}
-          onComplete={(carId, params) =>
-            router.push(`/cars/${carId}?${params.toString()}`)
-          }
+          onComplete={(carId, params) => {
+            loader.start();
+            router.push(`/cars/${carId}?${params.toString()}`);
+          }}
         />
       )}
     </>
