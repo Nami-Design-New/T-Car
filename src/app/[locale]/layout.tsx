@@ -1,5 +1,10 @@
 import { auth } from "@/auth";
-import { Footer, GuestLocationRequest, Header } from "@/features/layout";
+import {
+  Footer,
+  GuestLocationRequest,
+  Header,
+  LocaleNavigationGate,
+} from "@/features/layout";
 import { getHomeContent } from "@/features/home/queries";
 import { NotificationsPushListener } from "@/features/notifications";
 import { getUnreadNotificationCount } from "@/features/notifications/queries";
@@ -107,19 +112,21 @@ export default async function RootLayout({
           <DirectionProvider dir={dir}>
             <SiteLinksSync links={site.links} />
             <NextTopLoader color="#1f7ffa" height={3} showSpinner={false} />
-            {!signedIn && <GuestLocationRequest />}
-            {signedIn && <NotificationsPushListener locale={locale} />}
-            <Header
-              hasSession={signedIn}
-              signedIn={signedIn}
-              unreadCount={unreadCount}
-            />
-            <main>{children}</main>
-            <Footer
-              contact={site.contact}
-              links={site.links}
-              siteText={homeContent?.footer.text}
-            />
+            <LocaleNavigationGate>
+              {!signedIn && <GuestLocationRequest />}
+              {signedIn && <NotificationsPushListener locale={locale} />}
+              <Header
+                hasSession={signedIn}
+                signedIn={signedIn}
+                unreadCount={unreadCount}
+              />
+              <main>{children}</main>
+              <Footer
+                contact={site.contact}
+                links={site.links}
+                siteText={homeContent?.footer.text}
+              />
+            </LocaleNavigationGate>
             <Toaster dir={dir} />
           </DirectionProvider>
         </NextIntlClientProvider>

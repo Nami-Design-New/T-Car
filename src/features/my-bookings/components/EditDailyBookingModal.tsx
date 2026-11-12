@@ -145,9 +145,7 @@ export default function EditDailyBookingModal({
             : {}),
         }
       : { type: "pickup_time", pickupTime: toApiTime(nextTime), store: false };
-    console.info("[booking modification] preview request", request);
     void onSubmit(request).then((result) => {
-      console.info("[booking modification] preview response", result);
       if (result.ok) setQuote(result.data);
       else {
         const message = result.error.serverMessage ?? t("failed");
@@ -185,9 +183,7 @@ export default function EditDailyBookingModal({
             : {}),
         }
       : { type: "pickup_time", pickupTime: toApiTime(time), store: true };
-    console.info("[booking modification] submit request", request);
     const result = await onSubmit(request);
-    console.info("[booking modification] submit response", result);
     if (!result.ok) {
       const message = result.error.serverMessage ?? t("failed");
       setError(message);

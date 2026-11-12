@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useSearchParams } from "next/navigation";
+import { useTopLoader } from "nextjs-toploader";
 import { useRouter } from "@/i18n/navigation";
 import type { RentalSearchOptions } from "@/features/rental-search";
 import {
@@ -22,6 +23,7 @@ interface Props {
 /** Composes grouped listing cards with the shared booking-type flow. */
 export default function CarsListingSection({ query, options }: Props) {
   const router = useRouter();
+  const loader = useTopLoader();
   const searchParams = useSearchParams();
   // The hero has already collected the user's search input. Selecting a car
   // from that result should always go straight to its details page.
@@ -35,6 +37,7 @@ export default function CarsListingSection({ query, options }: Props) {
       const params = new URLSearchParams(searchParams.toString());
       params.delete("entry");
       const query = params.toString();
+      loader.start();
       router.push(`/cars/${car.id}${query ? `?${query}` : ""}`);
       return;
     }
@@ -46,6 +49,7 @@ export default function CarsListingSection({ query, options }: Props) {
       car.availability &&
       carSupportsRentalContext(car.availability, rentalContext)
     ) {
+      loader.start();
       router.push(
         `/cars/${car.id}?${rentalContextParams(rentalContext).toString()}`,
       );
@@ -67,9 +71,10 @@ export default function CarsListingSection({ query, options }: Props) {
           carId={selectedCar.id}
           options={options}
           availability={selectedCar.availability}
-          onComplete={(carId, params) =>
-            router.push(`/cars/${carId}?${params.toString()}`)
-          }
+          onComplete={(carId, params) => {
+            loader.start();
+            router.push(`/cars/${carId}?${params.toString()}`);
+          }}
         />
       )}
     </>

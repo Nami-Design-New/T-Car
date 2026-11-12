@@ -12,6 +12,7 @@ import { ModelYearBadge } from "@/shared/ui/ModelYearBadge";
 import { Price } from "@/shared/ui/Price";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
+import { useTopLoader } from "nextjs-toploader";
 import { LuPlane } from "react-icons/lu";
 
 const star = ICONS.starFill;
@@ -36,6 +37,7 @@ export default function CarCard({
   onSelect,
 }: CarCardProps) {
   const router = useRouter();
+  const loader = useTopLoader();
   const t = useTranslations("carCard");
   const detailsHref = `/cars/${car.id}` as const;
   const { offer } = car;
@@ -57,11 +59,13 @@ export default function CarCard({
             const region = location?.region?.trim();
             if (!region || location === null) return;
             event.preventDefault();
+            event.stopPropagation();
             const params = new URLSearchParams({
               region,
               lat: String(location.lat),
               lng: String(location.lng),
             });
+            loader.start();
             router.push(`/cars/${car.id}?${params.toString()}`);
             return;
           }

@@ -8,12 +8,16 @@ import { Menu } from "@/shared/ui/Menu";
 import { cn } from "@/shared/lib/cn";
 import Image from "next/image";
 import { ICONS } from "@/shared/config/assets";
+import { useLocaleNavigationStore } from "../localeNavigationStore";
 const langSwitchIcon = ICONS.langSwitchIcon;
 
 export default function LanguageSwitcher() {
   const locale = useLocale();
   const t = useTranslations();
   const pathname = usePathname();
+  const startLocaleNavigation = useLocaleNavigationStore(
+    (state) => state.startLocaleNavigation,
+  );
 
   const current =
     SUPPORTED_LANGUAGES.find((lang) => lang.code === locale) ??
@@ -36,7 +40,7 @@ export default function LanguageSwitcher() {
     // different language, so a client-side switch would leave the map stuck
     // in the previous language. Reloading is what lets it load the new one.
     // Query string and hash are carried over; usePathname() omits both.
-    window.location.assign(
+    startLocaleNavigation(
       segments.join("/") + window.location.search + window.location.hash,
     );
   };

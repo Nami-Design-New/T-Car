@@ -451,8 +451,6 @@ async function listCarsListing(
     `/cars-listing?${search}`,
     { headers: { "Accept-Language": locale } },
   );
-  console.info(`[cars-listing params] `, search);
-  console.info(`[cars-listing] `, response);
   return toCheckedPage(response, isCompanyCarsGroup, mapCompanyCarsGroup);
 }
 
