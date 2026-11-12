@@ -9,13 +9,18 @@ import { FiMoreHorizontal } from "react-icons/fi";
 import { useErrorMessage } from "@/shared/hooks/useErrorMessage";
 import type { AppError } from "@/shared/lib/errors";
 import { ResultDialog } from "@/shared/ui/ResultDialog";
+import { PaymentMethodModal } from "@/features/booking";
+import { useNotify } from "@/shared/hooks/useNotify";
+import { usePaymentWindow } from "@/shared/hooks/usePaymentWindow";
 import {
   canCancel,
   canExtend,
   canModify,
   type CancelQuote,
+  type ExtensionQuote,
   type ModificationRequest,
   type Order,
+  type PaymentChoice,
 } from "@/features/orders";
 import { bookingTabFor, bookingsListPath, toEditRequest } from "../model";
 import { useBookingActions } from "../hooks/useBookingActions";
@@ -44,6 +49,12 @@ type ResultKind = "extended" | "editRequested" | "cancelled";
 type HeaderFlow =
   | { step: "idle" }
   | { step: "extend"; error?: AppError }
+  | {
+      step: "extendPayment";
+      count: number;
+      amount: number;
+      error?: AppError;
+    }
   | { step: "edit" }
   | { step: "cancel"; error?: AppError }
   | {
@@ -68,17 +79,31 @@ const RESULT_KEYS: Record<
 export default function BookingDetailsHeader({ booking }: Props) {
   const t = useTranslations("myBookings.details");
   const router = useRouter();
+  const notify = useNotify();
   const [flow, setFlow] = useState<HeaderFlow>({ step: "idle" });
   const [cancelQuote, setCancelQuote] = useState<CancelQuote>();
   const {
     submitting,
-    extend,
     getExtensionQuote,
+    payExtension,
     modify,
     getCancelQuote,
     cancel,
   } = useBookingActions(booking.id);
   const errorMessage = useErrorMessage();
+
+  const { watch, paying } = usePaymentWindow((outcome) => {
+    if (outcome === "success") {
+      router.refresh();
+      setFlow({ step: "result", kind: "extended" });
+    } else if (outcome === "failed") {
+      setFlow((current) =>
+        current.step === "extendPayment"
+          ? { ...current, error: undefined }
+          : current,
+      );
+    }
+  });
 
   const close = useCallback(() => setFlow({ step: "idle" }), []);
   const open = (step: "extend" | "edit" | "cancel") => setFlow({ step });
@@ -96,13 +121,37 @@ export default function BookingDetailsHeader({ booking }: Props) {
   const allowCancel = canCancel(booking);
   const hasActions = allowEdit || allowExtend || allowCancel;
 
-  const handleExtend = async (days: number) => {
-    const result = await extend(days);
-    setFlow(
-      result.ok
-        ? { step: "result", kind: "extended" }
-        : { step: "extend", error: result.error },
-    );
+  const handleExtend = (count: number, quote: ExtensionQuote) => {
+    setFlow({ step: "extendPayment", count, amount: quote.totalAmount });
+  };
+
+  const handleExtensionPayment = async (choice: PaymentChoice) => {
+    if (flow.step !== "extendPayment" || submitting || paying) return;
+    const { count, amount } = flow;
+    const tab = choice.paymentMethodId ? window.open("", "_blank") : null;
+    const result = await payExtension({ count, ...choice });
+    if (!result.ok) {
+      tab?.close();
+      if (result.error.kind === "validation" && result.error.serverMessage) {
+        notify.error(result.error.serverMessage);
+      } else {
+        setFlow({ step: "extendPayment", count, amount, error: result.error });
+      }
+      return;
+    }
+    if (result.message) notify.success(result.message);
+    if (result.data.kind === "paid") {
+      tab?.close();
+      router.refresh();
+      setFlow({ step: "result", kind: "extended" });
+      return;
+    }
+    if (!tab) {
+      window.location.assign(result.data.payment.paymentUrl);
+      return;
+    }
+    tab.location.href = result.data.payment.paymentUrl;
+    watch(tab, result.data.payment);
   };
 
   const handleEdit = async (request: ModificationRequest) => {
@@ -208,7 +257,7 @@ export default function BookingDetailsHeader({ booking }: Props) {
       <ExtendDurationModal
         open={flow.step === "extend"}
         onClose={() => {
-          if (!submitting) close();
+          if (!submitting && !paying) close();
         }}
         onConfirm={handleExtend}
         onGetQuote={getExtensionQuote}
@@ -229,6 +278,21 @@ export default function BookingDetailsHeader({ booking }: Props) {
             : undefined
         }
       />
+
+      {flow.step === "extendPayment" && (
+        <PaymentMethodModal
+          open
+          onClose={() => {
+            if (!submitting && !paying) setFlow({ step: "extend" });
+          }}
+          orderId={booking.id}
+          amount={flow.amount}
+          onConfirm={handleExtensionPayment}
+          onTopUp={() => router.push("/account/wallet")}
+          loading={submitting || paying}
+          error={flow.error ? errorMessage(flow.error) : undefined}
+        />
+      )}
 
       <EditDailyBookingModal
         open={flow.step === "edit"}

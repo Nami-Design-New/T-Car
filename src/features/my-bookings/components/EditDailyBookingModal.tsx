@@ -59,11 +59,13 @@ export default function EditDailyBookingModal({
   const [availabilityError, setAvailabilityError] = useState<string>();
   const [quote, setQuote] = useState<ModificationQuote>();
   const lastAvailabilityKey = useRef<string | undefined>(undefined);
+  const isMonthly = booking.bookingType === "monthly";
   const endDate = useMemo(() => {
     const value = new Date(initialDetails.startDate);
-    value.setDate(value.getDate() + days);
+    if (isMonthly) value.setMonth(value.getMonth() + days);
+    else value.setDate(value.getDate() + days);
     return value;
-  }, [days, initialDetails.startDate]);
+  }, [days, initialDetails.startDate, isMonthly]);
   const endDateLabel = format.dateTime(endDate, {
     day: "numeric",
     month: "long",
@@ -96,7 +98,9 @@ export default function EditDailyBookingModal({
       branchId: booking.branch.id,
       type: booking.bookingType,
       fromDay: booking.pickupAt.slice(0, 10),
-      toDay: toApiDay(endDate),
+      ...(isMonthly
+        ? { count: days }
+        : { toDay: toApiDay(endDate) }),
       ...(deliveryType ? { deliveryType } : {}),
     }).then((actionResult) => {
       if (!active) return;
@@ -126,7 +130,7 @@ export default function EditDailyBookingModal({
       if (lastAvailabilityKey.current === availabilityKey)
         lastAvailabilityKey.current = undefined;
     };
-  }, [booking.id, days, open]);
+  }, [booking.id, days, isMonthly, open]);
 
   const initialTime = toApiTime(initialDetails.time);
   const preview = (nextDays: number, nextTime: string) => {
@@ -198,13 +202,15 @@ export default function EditDailyBookingModal({
       </Dialog.Header>
       <Dialog.Body className="space-y-5">
         <section className="bg-action-primary/10 flex flex-col items-center justify-center gap-8 rounded-lg p-4 text-center">
-          <p className="text-text-primary text-sm font-semibold">{t("days")}</p>
+          <p className="text-text-primary text-sm font-semibold">
+            {t(isMonthly ? "months" : "days")}
+          </p>
           <NumberStepper
             value={days}
             onChange={changeDays}
             disabled={loading}
-            decreaseLabel={t("decreaseDays")}
-            increaseLabel={t("increaseDays")}
+            decreaseLabel={t(isMonthly ? "decreaseMonths" : "decreaseDays")}
+            increaseLabel={t(isMonthly ? "increaseMonths" : "increaseDays")}
           />
           <p className="text-text-subtle text-xs">
             {t("daysHint", { days: endDateLabel })}

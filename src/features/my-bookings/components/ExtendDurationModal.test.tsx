@@ -11,18 +11,18 @@ describe("ExtendDurationModal", () => {
     const onGetQuote = vi.fn().mockResolvedValue({
       ok: true,
       data: {
-        count: 6,
+        count: 2,
         carPrice: 90,
-        price: 540,
+        price: 180,
         additionalServicesCost: 0,
         offerDiscount: 0,
-        newDeliveryDay: "2025-01-02",
+        newDeliveryDay: "2025-01-03",
         lateFee: 0,
         lateDays: 0,
         taxType: "percent",
         taxValue: 10,
         taxAddedValue: 54,
-        totalAmount: 594,
+        totalAmount: 198,
       },
     });
 
@@ -49,13 +49,16 @@ describe("ExtendDurationModal", () => {
     expect(screen.getAllByText("500").length).toBeGreaterThan(0);
 
     await user.click(screen.getByRole("button", { name: "Increase days" }));
-    await waitFor(() => expect(onGetQuote).toHaveBeenCalledWith(6));
+    await waitFor(() => expect(onGetQuote).toHaveBeenCalledWith(2));
     await user.click(screen.getByRole("button", { name: "Confirm" }));
 
-    expect(onConfirm).toHaveBeenCalledWith(6);
+    expect(onConfirm).toHaveBeenCalledWith(
+      2,
+      expect.objectContaining({ count: 2, totalAmount: 198 }),
+    );
     expect(screen.getAllByText("90").length).toBeGreaterThan(0);
     expect(
-      screen.getByText("The booking will end on January 2, 2025"),
+      screen.getByText("The booking will end on January 3, 2025"),
     ).toBeInTheDocument();
     expect(screen.getByText("Tax")).toBeInTheDocument();
     expect(screen.queryByText("Late fee")).not.toBeInTheDocument();

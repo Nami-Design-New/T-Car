@@ -28,6 +28,8 @@ import type {
   PaymentOptions,
   PayOrderRequest,
   PayOrderResult,
+  PayExtensionRequest,
+  PayExtensionResult,
   PayModificationRequest,
 } from "./model";
 import type { Page } from "@/shared/lib/pagination";
@@ -142,6 +144,27 @@ export async function payModificationAction(
   } catch (error) {
     reportError(error, {
       scope: "bookings.modifyPay",
+      orderId: request?.orderId,
+    });
+    return toActionResult(fail(error));
+  }
+}
+
+/** E10: creates and pays the selected extension. */
+export async function payExtensionAction(
+  request: PayExtensionRequest,
+): Promise<ActionResult<PayExtensionResult>> {
+  try {
+    const session = await auth();
+    if (!session?.user?.id) throw new AppError("unauthorized");
+    const payment = parse(payOrderSchema, request);
+    const { days } = parse(extendBookingSchema, { days: request.count });
+    const result = await bookingsApi.payExtension({ ...payment, count: days });
+    if (!result.ok) reportError(result.error, { scope: "bookings.extensionPay" });
+    return toActionResult(result);
+  } catch (error) {
+    reportError(error, {
+      scope: "bookings.extensionPay",
       orderId: request?.orderId,
     });
     return toActionResult(fail(error));

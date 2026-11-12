@@ -52,7 +52,7 @@ describe("live order status groups", () => {
 });
 
 describe("booking edit request", () => {
-  it("derives the editable duration from the booking date range", () => {
+  it("uses the duration returned by the booking API", () => {
     const booking = {
       pickupAt: "2026-08-13T16:30:00",
       returnAt: "2026-08-24T16:30:00",
@@ -65,8 +65,9 @@ describe("booking edit request", () => {
       price: 5500,
       taxValue: 550,
       finalPrice: 6050,
+      count: 9,
     } as Order;
 
-    expect(toEditRequest(booking).days).toBe(11);
+    expect(toEditRequest(booking).days).toBe(9);
   });
 });

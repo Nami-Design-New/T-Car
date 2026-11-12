@@ -11,6 +11,7 @@ import { reportError } from "@/shared/lib/report";
 import {
   cancelBookingAction,
   extendBookingAction,
+  payExtensionAction,
   getExtensionQuoteAction,
   getCancelQuoteAction,
   requestModificationAction,
@@ -21,6 +22,8 @@ import {
   type CancelQuote,
   type ModificationQuote,
   type ExtensionQuote,
+  type PayExtensionRequest,
+  type PayExtensionResult,
   type ModificationRequest,
 } from "@/features/orders";
 
@@ -54,6 +57,12 @@ export function useBookingActions(bookingId: string) {
   const getExtensionQuote = useCallback(
     (count: number): Promise<Result<ExtensionQuote>> =>
       run(() => getExtensionQuoteAction(bookingId, count), false),
+    [run, bookingId],
+  );
+
+  const payExtension = useCallback(
+    (request: Omit<PayExtensionRequest, "orderId">): Promise<Result<PayExtensionResult>> =>
+      run(() => payExtensionAction({ orderId: bookingId, ...request })),
     [run, bookingId],
   );
 
@@ -96,6 +105,7 @@ export function useBookingActions(bookingId: string) {
     submitting,
     extend,
     getExtensionQuote,
+    payExtension,
     requestEdit,
     modify,
     getCancelQuote,

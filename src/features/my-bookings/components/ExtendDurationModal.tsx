@@ -23,7 +23,7 @@ import {
 interface Props {
   open: boolean;
   onClose: () => void;
-  onConfirm: (newDays: number) => void;
+  onConfirm: (days: number, quote: ExtensionQuote) => void;
   onGetQuote: (days: number) => Promise<Result<ExtensionQuote>>;
   currentDays: number;
   pricePerDay: number;
@@ -64,6 +64,7 @@ export default function ExtendDurationModal({
   const [quote, setQuote] = useState<ExtensionQuote>();
   const [quoteLoading, setQuoteLoading] = useState(false);
   const [quoteError, setQuoteError] = useState<string>();
+  const [hasRequestedQuote, setHasRequestedQuote] = useState(false);
   const {
     handleSubmit,
     reset,
@@ -74,10 +75,9 @@ export default function ExtendDurationModal({
     resolver: zodResolver(extendBookingSchema),
     mode: "onBlur",
     reValidateMode: "onChange",
-    defaultValues: { days: currentDays },
+    defaultValues: { days: 1 },
   });
   const days = watch("days");
-  const changed = days !== currentDays;
   const currentLateDays =
     status === "late" ? Math.max(1, Math.ceil((lateHours ?? 0) / 24)) : 0;
   const currentLateFee = currentLateDays * pricePerDay;
@@ -102,11 +102,14 @@ export default function ExtendDurationModal({
   });
 
   useEffect(() => {
-    if (open) reset({ days: currentDays });
-  }, [currentDays, open, reset]);
+    if (open) {
+      reset({ days: 1 });
+      setHasRequestedQuote(false);
+    }
+  }, [open, reset]);
 
   useEffect(() => {
-    if (!open || !changed) {
+    if (!open || !hasRequestedQuote) {
       setQuote(undefined);
       setQuoteError(undefined);
       setQuoteLoading(false);
@@ -126,11 +129,15 @@ export default function ExtendDurationModal({
     return () => {
       active = false;
     };
-  }, [changed, days, errorMessage, onGetQuote, open]);
+  }, [days, errorMessage, hasRequestedQuote, onGetQuote, open]);
 
-  const changeDays = (value: number) =>
+  const changeDays = (value: number) => {
+    setHasRequestedQuote(true);
     setValue("days", value, { shouldDirty: true, shouldValidate: true });
-  const submit = handleSubmit(({ days: nextDays }) => onConfirm(nextDays));
+  };
+  const submit = handleSubmit(({ days: nextDays }) => {
+    if (quote) onConfirm(nextDays, quote);
+  });
 
   return (
     <Dialog
@@ -193,8 +200,8 @@ export default function ExtendDurationModal({
                     label={t("lateFee")}
                     amount={displayed.lateFee}
                     hint={t("lateDays", { count: displayed.lateDays })}
-                    labelClassName="text-status-errorr!"
-                    hintClassName="text-status-error!"
+                    labelClassName="text-status-error"
+                    hintClassName="text-status-error"
                   />
                 )}
                 <PriceRow
@@ -223,7 +230,7 @@ export default function ExtendDurationModal({
           className="w-full"
           loading={loading}
           disabled={
-            loading || quoteLoading || (changed && (!quote || !!quoteError))
+            loading || quoteLoading || !quote || !!quoteError
           }
           onClick={() => void submit()}
         >

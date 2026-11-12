@@ -729,7 +729,7 @@ customer without a driving license gets the license upload dialog before the
 dates step. O6 is done (2026-11-10): the payment sheet reads E3 and pays with
 E5 (wallet alone when the balance covers `final_price`, a method alone, or
 both); a gateway payment opens in a new tab watched by `usePaymentWindow`,
-now in `shared/hooks` and also used by the wallet top-up. O7 (cancel) is done; next is O8. O9a is also in progress: monthly
+now in `shared/hooks` and also used by the wallet top-up. O7 (cancel) is done; O8 (extend) and O10 (modification request) are in progress. O9a is also in progress: monthly
 context now selects the feature-owned monthly modal and sends E1 `count`; its
 draft and payment wiring remains behind O5/O6. The remaining plan integrates
 checkout, cancel, extend, and rate (O4–O12).

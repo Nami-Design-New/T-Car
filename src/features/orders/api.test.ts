@@ -14,8 +14,10 @@ import {
   mapOrderResponse,
   mapOrdersResponse,
   mapPaymentOptionsResponse,
+  mapExtensionPayResponse,
   mapPayResponse,
   toCreateDraftFormData,
+  toExtensionFormData,
   toPayFormData,
 } from "./api";
 import type { CreateDraftRequest } from "./model";
@@ -614,6 +616,49 @@ describe("pay API (E5)", () => {
     expect(failed.ok ? undefined : failed.error.serverMessage).toBe(
       "This order has already been paid.",
     );
+  });
+});
+
+describe("extension payment API (E10)", () => {
+  it("keeps the extension count in the POST body with the chosen payment", () => {
+    const form = toExtensionFormData({
+      orderId: "226",
+      count: 2,
+      useWallet: true,
+      paymentMethodId: "6",
+    });
+
+    expect(Object.fromEntries(form.entries())).toEqual({
+      count: "2",
+      use_wallet: "1",
+      payment_method_id: "6",
+    });
+  });
+
+  it("maps the E10 gateway response", () => {
+    expect(mapExtensionPayResponse(gatewayResponse)).toEqual({
+      kind: "gateway",
+      payment: {
+        paymentUrl: "https://t-car.app/order/pay/226?amount=123.2&locale=en",
+        successUrl: "https://t-car.app/order/success/226",
+        failUrl: "https://t-car.app/order/fail/226",
+      },
+    });
+  });
+
+  it("accepts the partial booking returned after a wallet payment", () => {
+    expect(
+      mapExtensionPayResponse({
+        data: {
+          id: 153,
+          order_number: "ORD-CB6ADE3C",
+          status: "late",
+          price: { final_price: 1318 },
+        },
+        message: "Payment Successful",
+        code: 200,
+      }),
+    ).toEqual({ kind: "paid" });
   });
 });
 

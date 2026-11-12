@@ -26,6 +26,8 @@ import type {
   PaymentOptions,
   PayOrderRequest,
   PayOrderResult,
+  PayExtensionRequest,
+  PayExtensionResult,
   PayModificationRequest,
 } from "./model";
 
@@ -66,6 +68,10 @@ export interface BookingsApi {
   payModification(
     request: PayModificationRequest,
   ): Promise<Result<PayOrderResult>>;
+  /** E10: creates and pays an extension. */
+  payExtension(
+    request: PayExtensionRequest,
+  ): Promise<Result<PayExtensionResult>>;
 }
 
 export interface AvailabilityDto {
@@ -616,6 +622,37 @@ export function mapPayResponse(value: unknown): PayOrderResult {
   throw new AppError("server");
 }
 
+/** E10 is the same gateway shape as E5, but wallet success returns a booking summary. */
+export function mapExtensionPayResponse(value: unknown): PayExtensionResult {
+  if (!isApiEnvelope(value) || value.code !== 200)
+    throw new AppError("server");
+  const { data } = value as { data: unknown };
+  if (
+    isRecord(data) &&
+    isHttpsUrl(data.payment_url) &&
+    isHttpsUrl(data.success_url) &&
+    isHttpsUrl(data.fail_url)
+  ) {
+    return {
+      kind: "gateway",
+      payment: {
+        paymentUrl: data.payment_url,
+        successUrl: data.success_url,
+        failUrl: data.fail_url,
+      },
+    };
+  }
+  if (
+    isRecord(data) &&
+    isId(data.id) &&
+    typeof data.status === "string" &&
+    typeof data.order_number === "string"
+  ) {
+    return { kind: "paid" };
+  }
+  throw new AppError("server");
+}
+
 export function mapAvailabilityResponse(value: unknown): Availability {
   const data = isRecord(value) ? value.data : undefined;
   if (!isApiEnvelope(value) || value.code !== 200 || !isAvailabilityDto(data)) {
@@ -1067,6 +1104,29 @@ async function payModification(
   }
 }
 
+export function toExtensionFormData(request: PayExtensionRequest): FormData {
+  const form = new FormData();
+  form.set("count", String(request.count));
+  if (request.useWallet) form.set("use_wallet", "1");
+  if (request.paymentMethodId)
+    form.set("payment_method_id", request.paymentMethodId);
+  return form;
+}
+
+async function payExtension(
+  request: PayExtensionRequest,
+): Promise<Result<PayExtensionResult>> {
+  const path = `/booking/${request.orderId}/extensions`;
+  try {
+    const form = toExtensionFormData(request);
+    const response = await serverHttp.post(path, form);
+    const message = isApiEnvelope(response) ? response.message : undefined;
+    return ok(mapExtensionPayResponse(response), message);
+  } catch (error) {
+    return fail(error);
+  }
+}
+
 /** Debug output for local API integration work; never emitted by production builds. Removed in O12. */
 function logBookingData(label: string, value: unknown): void {
   if (process.env.NODE_ENV === "development") {
@@ -1176,4 +1236,5 @@ export const bookingsApi: BookingsApi = {
   getPaymentOptions,
   payOrder,
   payModification,
+  payExtension,
 };

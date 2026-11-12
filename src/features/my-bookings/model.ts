@@ -31,10 +31,8 @@ export function toEditRequest(booking: Order): BookingEditRequest {
     endDate,
     time: booking.pickupAt.slice(11, 16),
     notes: booking.note ?? "",
-    days: Math.max(
-      1,
-      Math.round((endDate.getTime() - startDate.getTime()) / 86400000),
-    ),
+    // The backend owns the booking duration; never infer it from date math.
+    days: booking.count,
     pricePerDay: booking.carPrice,
     subtotal: booking.price,
     vat: booking.taxValue,

@@ -159,8 +159,6 @@ export const MOCK_ORDERS: Order[] = MOCK_ORDER_LIST.map((item) => ({
   terms: "<p>Return the car on time.</p>",
 }));
 
-/** Mock only: extensions past this many total days fail reproducibly. */
-const MOCK_MAX_RENTAL_DAYS = 30;
 /** Mock only: page 99 fails reproducibly so the paginated error state can be exercised. */
 const MOCK_LIST_FAILURE_PAGE = 99;
 /** Mock only: this id fails reproducibly so the details error boundary can be exercised. */
@@ -224,15 +222,13 @@ export const bookingsMock: BookingsApi = {
   async extendBooking(id, days) {
     await delay(600);
     findActiveOrder(id);
-    if (days > MOCK_MAX_RENTAL_DAYS)
-      throw new AppError("conflict", "bookings.extendLimit");
   },
 
   async getExtensionQuote(id, count) {
     await delay();
     const order = findActiveOrder(id);
     const returnAt = new Date(order.returnAt);
-    returnAt.setDate(returnAt.getDate() + Math.max(0, count - order.count));
+    returnAt.setDate(returnAt.getDate() + count);
     const price = count * order.carPrice;
     const lateDays =
       order.status === "late"
@@ -254,6 +250,22 @@ export const bookingsMock: BookingsApi = {
       taxAddedValue,
       totalAmount: price + lateFee + taxAddedValue,
     };
+  },
+
+  async payExtension(request) {
+    await delay(600);
+    const order = findActiveOrder(request.orderId);
+    if (request.useWallet) {
+      return ok({ kind: "paid" }, "Payment successful.");
+    }
+    return ok({
+      kind: "gateway",
+      payment: {
+        paymentUrl: `https://t-car.app/order/pay/${order.id}`,
+        successUrl: `https://t-car.app/order/success/${order.id}`,
+        failUrl: `https://t-car.app/order/fail/${order.id}`,
+      },
+    });
   },
 
   async requestBookingEdit(id, request) {
@@ -341,8 +353,6 @@ export const bookingsMock: BookingsApi = {
         startDate: "booking.startInPast",
       });
     }
-    if (details.days > MOCK_MAX_RENTAL_DAYS)
-      throw new AppError("conflict", "booking.carUnavailable");
     return findOrder("1");
   },
 

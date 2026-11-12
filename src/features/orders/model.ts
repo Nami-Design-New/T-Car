@@ -34,9 +34,20 @@ export interface PayModificationRequest extends PaymentChoice {
   orderId: string;
 }
 
+/** E10 input. `count` is sent alongside the selected payment choice. */
+export interface PayExtensionRequest extends PaymentChoice {
+  orderId: string;
+  count: number;
+}
+
 /** E5 result: paid at once (the wallet covered it) or a gateway tab to open (R10). */
 export type PayOrderResult =
   { kind: "paid" } | { kind: "gateway"; payment: PaymentLinks };
+
+/** E10 returns a booking summary when the wallet covers the extension. */
+export type PayExtensionResult =
+  | { kind: "paid" }
+  | { kind: "gateway"; payment: PaymentLinks };
 
 /** Whether a choice is complete: at least the wallet or one method. */
 export const isPaymentChoiceComplete = (choice: PaymentChoice): boolean =>

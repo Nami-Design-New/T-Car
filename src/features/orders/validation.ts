@@ -143,7 +143,8 @@ export const availabilitySchema = z
     }),
     fromDay: apiDate,
     toDay: apiDate.optional(),
-    count: z.number().int().min(1).max(12).optional(),
+    // The API owns the monthly duration limit. Keep client validation to shape only.
+    count: z.number().int().positive().optional(),
     // Daily, monthly, and international only; airport and station send none.
     deliveryType: z.enum(["to_location", "from_branch"]).optional(),
   })
