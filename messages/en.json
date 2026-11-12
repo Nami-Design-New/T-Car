@@ -107,7 +107,13 @@
     },
     "notifications": {
       "title": "Notifications",
-      "markAllRead": "Mark all as read",
+      "markAllRead": "Read all",
+      "markRead": "Mark as read",
+      "delete": "Delete notification",
+      "deleteAll": "Delete all notifications",
+      "empty": "You have no notifications yet.",
+      "unread": "Unread notification",
+      "open": "Open",
       "unreadCount": "{count, plural, =0 {No unread notifications} one {# unread notification} other {# unread notifications}}"
     }
   },
