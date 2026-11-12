@@ -301,6 +301,25 @@ export interface ExtensionQuote {
   totalAmount: number;
 }
 
+/** A previously requested extension awaiting customer payment. */
+export interface PendingExtension {
+  id: string;
+  count: number;
+  unit: string;
+  carPrice: number;
+  price: number;
+  additionalServicesCost: number;
+  offerDiscount: number;
+  serviceFee: number;
+  originalDeliveryDay: string;
+  newDeliveryDay: string;
+  lateFee: number;
+  taxType: string;
+  taxValue: number;
+  taxAddedValue: number;
+  totalAmount: number;
+}
+
 export type OrderDeliveryType =
   "to_location" | "from_branch" | "from_airport" | "from_station";
 

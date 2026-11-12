@@ -16,6 +16,7 @@ import type {
   BookingEditRequest,
   ModificationQuote,
   ExtensionQuote,
+  PendingExtension,
   ModificationRequest,
   BookingReviewInput,
   BookingReviewResult,
@@ -23,6 +24,7 @@ import type {
   Order,
   OrderListItem,
   OrderStatus,
+  PaymentChoice,
   PaymentMethodOption,
   PaymentOptions,
   PayOrderRequest,
@@ -52,6 +54,7 @@ export interface BookingsApi {
   extendBooking(id: string, days: number): Promise<void>;
   /** E10 quote for the selected extension-day count. */
   getExtensionQuote(id: string, count: number): Promise<ExtensionQuote>;
+  getPendingExtension(id: string): Promise<PendingExtension>;
   requestBookingEdit(id: string, request: BookingEditRequest): Promise<void>;
   requestModification(
     id: string,
@@ -76,6 +79,10 @@ export interface BookingsApi {
   /** E10: creates and pays an extension. */
   payExtension(
     request: PayExtensionRequest,
+  ): Promise<Result<PayExtensionResult>>;
+  payPendingExtension(
+    id: string,
+    choice: PaymentChoice,
   ): Promise<Result<PayExtensionResult>>;
 }
 
@@ -115,6 +122,13 @@ interface ExtensionQuoteDto {
   tax_value: number;
   tax_added_value: number;
   total_amount: number;
+}
+
+interface PendingExtensionDto extends ExtensionQuoteDto {
+  id: number;
+  unit: string;
+  service_fee: number;
+  original_delivery_day: string;
 }
 
 interface BookingReviewResultDto {
@@ -794,6 +808,52 @@ export function mapExtensionQuoteResponse(value: unknown): ExtensionQuote {
   };
 }
 
+export function mapPendingExtensionResponse(value: unknown): PendingExtension {
+  const data = isRecord(value) ? value.data : undefined;
+  if (
+    !isApiEnvelope(value) ||
+    value.code !== 200 ||
+    !isRecord(data) ||
+    !isId(data.id) ||
+    typeof data.unit !== "string" ||
+    ![
+      data.count,
+      data.car_price,
+      data.price,
+      data.additional_services_cost,
+      data.offer_discount,
+      data.service_fee,
+      data.late_fee,
+      data.tax_value,
+      data.tax_added_value,
+      data.total_amount,
+    ].every(isFiniteNumber) ||
+    !isDatePart(data.original_delivery_day) ||
+    !isDatePart(data.new_delivery_day) ||
+    typeof data.tax_type !== "string"
+  )
+    throw new AppError("server");
+
+  const pending = data as unknown as PendingExtensionDto;
+  return {
+    id: String(pending.id),
+    unit: pending.unit,
+    count: pending.count,
+    carPrice: pending.car_price,
+    price: pending.price,
+    additionalServicesCost: pending.additional_services_cost,
+    offerDiscount: pending.offer_discount,
+    serviceFee: pending.service_fee,
+    originalDeliveryDay: pending.original_delivery_day,
+    newDeliveryDay: pending.new_delivery_day,
+    lateFee: pending.late_fee,
+    taxType: pending.tax_type,
+    taxValue: pending.tax_value,
+    taxAddedValue: pending.tax_added_value,
+    totalAmount: pending.total_amount,
+  };
+}
+
 function toOrderListItem(order: OrderListItemDto): OrderListItem {
   return {
     id: String(order.id),
@@ -1199,6 +1259,30 @@ async function getExtensionQuote(
   return mapExtensionQuoteResponse(response);
 }
 
+async function getPendingExtension(id: string): Promise<PendingExtension> {
+  const path = `/booking/${id}/pending-extension`;
+  const response = await serverHttp.get(path);
+  return mapPendingExtensionResponse(response);
+}
+
+async function payPendingExtension(
+  id: string,
+  choice: PaymentChoice,
+): Promise<Result<PayExtensionResult>> {
+  const path = `/booking/${id}/pending-extension/pay`;
+  try {
+    const form = toPayFormData({ orderId: id, ...choice });
+    const response = await serverHttp.post(path, form);
+    const payment = mapExtensionPayResponse(response);
+    return ok(
+      payment,
+      isApiEnvelope(response) ? response.message : undefined,
+    );
+  } catch (error) {
+    return fail(error);
+  }
+}
+
 async function cancelBooking(id: string): Promise<string | undefined> {
   const path = `/booking/${id}/cancel`;
   const query = { is_quote: 0 };
@@ -1274,6 +1358,7 @@ export const bookingsApi: BookingsApi = {
   // O8 replaces extension.
   extendBooking: (...args) => bookingsMock.extendBooking(...args),
   getExtensionQuote,
+  getPendingExtension,
   // O10 replaces modification requests.
   requestBookingEdit: (...args) => bookingsMock.requestBookingEdit(...args),
   requestModification,
@@ -1285,4 +1370,5 @@ export const bookingsApi: BookingsApi = {
   payOrder,
   payModification,
   payExtension,
+  payPendingExtension,
 };

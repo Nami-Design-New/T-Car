@@ -676,10 +676,31 @@
       "success": "The modification difference was paid successfully.",
       "failed": "The modification payment was not completed."
     },
+    "pendingExtension": {
+      "dialogLabel": "Pay extension",
+      "title": "Extend booking",
+      "pay": "Pay extension duration",
+      "daysCount": "Number of days",
+      "endsOn": "The booking will end on {date}",
+      "priceDetails": "Price details",
+      "price": "Price",
+      "subtotal": "Subtotal",
+      "serviceFee": "Service fee",
+      "services": "Additional services",
+      "discount": "Discount",
+      "lateFee": "Late fee",
+      "tax": "Tax",
+      "total": "Total",
+      "confirm": "Confirm",
+      "success": "The extension payment was completed successfully.",
+      "failed": "The extension payment was not completed."
+    },
     "countdown": {
       "title": "Late for return",
       "lateBy": "Late for return by:",
       "lateFeeHint": "The late fee keeps accruing until the booking is extended or the car is returned.",
+      "remainingTitle": "Time remaining",
+      "remainingBy": "Until return time:",
       "days": "Days",
       "hours": "Hours",
       "minutes": "Minutes"

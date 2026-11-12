@@ -252,6 +252,33 @@ export const bookingsMock: BookingsApi = {
     };
   },
 
+  async getPendingExtension(id) {
+    await delay();
+    const order = findActiveOrder(id);
+    const count = 2;
+    const price = count * order.carPrice;
+    const returnAt = new Date(order.returnAt);
+    returnAt.setDate(returnAt.getDate() + count);
+    const taxAddedValue = (price * order.taxRate) / 100;
+    return {
+      id: "19",
+      count,
+      unit: "days",
+      carPrice: order.carPrice,
+      price,
+      additionalServicesCost: 0,
+      offerDiscount: 0,
+      serviceFee: 0,
+      originalDeliveryDay: order.returnAt.slice(0, 10),
+      newDeliveryDay: returnAt.toISOString().slice(0, 10),
+      lateFee: 0,
+      taxType: order.taxRateType,
+      taxValue: order.taxRate,
+      taxAddedValue,
+      totalAmount: price + taxAddedValue,
+    };
+  },
+
   async payExtension(request) {
     await delay(600);
     const order = findActiveOrder(request.orderId);
@@ -264,6 +291,19 @@ export const bookingsMock: BookingsApi = {
         paymentUrl: `https://t-car.app/order/pay/${order.id}`,
         successUrl: `https://t-car.app/order/success/${order.id}`,
         failUrl: `https://t-car.app/order/fail/${order.id}`,
+      },
+    });
+  },
+
+  async payPendingExtension(id, _choice) {
+    await delay(600);
+    const order = findActiveOrder(id);
+    return ok({
+      kind: "gateway",
+      payment: {
+        paymentUrl: `https://t-car.app/booking-extension/pay/${order.id}`,
+        successUrl: `https://t-car.app/booking-extension/success/${order.id}`,
+        failUrl: `https://t-car.app/booking-extension/fail/${order.id}`,
       },
     });
   },

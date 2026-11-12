@@ -16,6 +16,7 @@ import {
   mapOrdersResponse,
   mapPaymentOptionsResponse,
   mapExtensionPayResponse,
+  mapPendingExtensionResponse,
   mapPayResponse,
   toCreateDraftFormData,
   toBookingReviewFormData,
@@ -74,6 +75,39 @@ describe("availability API", () => {
         to_day: "2026-11-12",
         delivery_type: "to_location",
       },
+    });
+  });
+});
+
+describe("pending extension API", () => {
+  it("maps the pending-extension response without requiring late_days", () => {
+    expect(
+      mapPendingExtensionResponse({
+        data: {
+          id: 19,
+          count: 2,
+          unit: "days",
+          car_price: 90,
+          price: 180,
+          additional_services_cost: 0,
+          offer_discount: 0,
+          service_fee: 18,
+          original_delivery_day: "2026-12-19",
+          new_delivery_day: "2026-12-21",
+          late_fee: 0,
+          tax_type: "percent",
+          tax_value: 10,
+          tax_added_value: 18,
+          total_amount: 216,
+        },
+        message: "Fetched successfully.",
+        code: 200,
+      }),
+    ).toMatchObject({
+      id: "19",
+      count: 2,
+      serviceFee: 18,
+      totalAmount: 216,
     });
   });
 });

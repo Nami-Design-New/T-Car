@@ -13,6 +13,8 @@ import {
   extendBookingAction,
   payExtensionAction,
   getExtensionQuoteAction,
+  getPendingExtensionAction,
+  payPendingExtensionAction,
   getCancelQuoteAction,
   requestModificationAction,
   requestBookingEditAction,
@@ -22,6 +24,8 @@ import {
   type CancelQuote,
   type ModificationQuote,
   type ExtensionQuote,
+  type PendingExtension,
+  type PaymentChoice,
   type PayExtensionRequest,
   type PayExtensionResult,
   type ModificationRequest,
@@ -66,6 +70,18 @@ export function useBookingActions(bookingId: string) {
     [run, bookingId],
   );
 
+  const getPendingExtension = useCallback(
+    (): Promise<Result<PendingExtension>> =>
+      run(() => getPendingExtensionAction(bookingId), false),
+    [run, bookingId],
+  );
+
+  const payPendingExtension = useCallback(
+    (choice: PaymentChoice): Promise<Result<PayExtensionResult>> =>
+      run(() => payPendingExtensionAction(bookingId, choice)),
+    [run, bookingId],
+  );
+
   const requestEdit = useCallback(
     (request: BookingEditRequest) =>
       run(() => requestBookingEditAction(bookingId, request)),
@@ -106,6 +122,8 @@ export function useBookingActions(bookingId: string) {
     extend,
     getExtensionQuote,
     payExtension,
+    getPendingExtension,
+    payPendingExtension,
     requestEdit,
     modify,
     getCancelQuote,

@@ -22,7 +22,7 @@ export default function BookingsTabs({ active }: Props) {
 
   return (
     <nav
-      className="mb-4 flex w-full items-center rounded-lg border border-stroke-light bg-surface-elevated p-1.5 shadow-sm"
+      className="bg-surface-on-background mb-4 flex w-full items-center gap-2 rounded-lg p-1.5 shadow-sm"
       aria-label={t("title")}
     >
       {TABS.map(({ id, label }) => (
@@ -30,9 +30,10 @@ export default function BookingsTabs({ active }: Props) {
           key={id}
           href={bookingsListPath(id)}
           className={cn(
-            "flex h-13.75 flex-1 items-center justify-center gap-2.5 rounded-md text-[0.95rem] font-bold text-text-primary no-underline transition hover:bg-surface-card-primary focus-visible:outline-2 focus-visible:outline-action-primary",
-            active === id &&
-              "bg-action-primary text-text-on-action hover:bg-action-primary",
+            "focus-visible:outline-action-primary flex h-13.75 flex-1 items-center justify-center gap-2.5 rounded-md text-[0.95rem] font-bold no-underline transition focus-visible:outline-2",
+            active === id
+              ? "bg-action-primary text-text-on-action"
+              : "text-text-primary bg-text-on-action hover:bg-surface-card-primary",
           )}
           aria-current={active === id ? "page" : undefined}
           // A filter of the same page: no new scroll position.

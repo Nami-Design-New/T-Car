@@ -164,13 +164,16 @@ describe("booking details UI", () => {
     expect(screen.getAllByRole("menuitem")).toHaveLength(1);
   });
 
-  it("shows the countdown card for a late booking only", () => {
+  it("shows the countdown card for current and late bookings", () => {
     const { rerender } = renderWithIntl(
       <BookingDetailsScreen booking={{ ...ORDER, status: "late" }} />,
     );
     expect(screen.getByTestId("booking-countdown")).toBeInTheDocument();
 
-    for (const status of ["current", "coming", "complete"] as const) {
+    rerender(<BookingDetailsScreen booking={{ ...ORDER, status: "current" }} />);
+    expect(screen.getByTestId("booking-countdown")).toBeInTheDocument();
+
+    for (const status of ["coming", "complete"] as const) {
       rerender(<BookingDetailsScreen booking={{ ...ORDER, status }} />);
       expect(screen.queryByTestId("booking-countdown")).not.toBeInTheDocument();
     }
@@ -245,11 +248,11 @@ describe("booking details UI", () => {
       />,
     );
 
-    // A current booking offers the extension; the countdown stays late only.
+    // A current booking offers the extension and shows the remaining-time card.
     expect(
       screen.getByRole("button", { name: "Booking actions" }),
     ).toBeInTheDocument();
-    expect(screen.queryByTestId("booking-countdown")).not.toBeInTheDocument();
+    expect(screen.getByTestId("booking-countdown")).toBeInTheDocument();
   });
 
   it("adds fee and refund rows only for a cancelled booking", () => {

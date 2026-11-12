@@ -8,6 +8,7 @@ import BookingModificationNotice from "./BookingModificationNotice";
 import BookingNotices from "./BookingNotices";
 import BookingOrderTime from "./BookingOrderTime";
 import BookingSidebar from "./BookingSidebar";
+import PendingExtensionPayment from "./PendingExtensionPayment";
 
 interface Props {
   booking: Order;
@@ -37,12 +38,22 @@ export default function BookingDetailsScreen({ booking }: Props) {
               ) : booking.hasModifyRequest ? (
                 <BookingModificationNotice />
               ) : null}
+              {booking.payExtension && booking.pendingExtensionId !== null && (
+                <PendingExtensionPayment bookingId={booking.id} />
+              )}
               <BookingDatesInfo booking={booking} />
 
-              {/* Only a late booking: the card counts the time overdue since
-                  the return time. */}
+              {booking.status === "current" && (
+                <BookingCountdown
+                  targetDateTime={booking.returnAt}
+                  mode="remaining"
+                />
+              )}
+
+              {/* A late booking counts the time overdue since the return
+                  time. */}
               {booking.status === "late" && (
-                <BookingCountdown targetDateTime={booking.returnAt} />
+                <BookingCountdown targetDateTime={booking.returnAt} mode="late" />
               )}
             </div>
 

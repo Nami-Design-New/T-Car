@@ -19,6 +19,7 @@ import type {
   BookingEditRequest,
   ModificationQuote,
   ExtensionQuote,
+  PendingExtension,
   ModificationRequest,
   BookingReviewInput,
   BookingReviewResult,
@@ -32,6 +33,7 @@ import type {
   PayExtensionRequest,
   PayExtensionResult,
   PayModificationRequest,
+  PaymentChoice,
 } from "./model";
 import type { Page } from "@/shared/lib/pagination";
 import {
@@ -172,6 +174,24 @@ export async function payExtensionAction(
   }
 }
 
+export async function payPendingExtensionAction(
+  bookingId: string,
+  choice: PaymentChoice,
+): Promise<ActionResult<PayExtensionResult>> {
+  try {
+    const session = await auth();
+    if (!session?.user?.id) throw new AppError("unauthorized");
+    if (!ORDER_ID.test(bookingId)) throw new AppError("validation");
+    const payment = parse(payOrderSchema, { orderId: bookingId, ...choice });
+    return toActionResult(
+      await bookingsApi.payPendingExtension(bookingId, payment),
+    );
+  } catch (error) {
+    reportError(error, { scope: "bookings.pendingExtensionPay", bookingId });
+    return toActionResult(fail(error));
+  }
+}
+
 /** Creates the server-priced E2 draft; payment is handled by O6. */
 export async function createDraftAction(
   request: CreateDraftRequest,
@@ -222,6 +242,15 @@ export async function getExtensionQuoteAction(
     if (!ORDER_ID.test(bookingId)) throw new AppError("validation");
     const values = parse(extendBookingSchema, { days: count });
     return bookingsApi.getExtensionQuote(bookingId, values.days);
+  });
+}
+
+export async function getPendingExtensionAction(
+  bookingId: string,
+): Promise<ActionResult<PendingExtension>> {
+  return run("bookings.pendingExtension", () => {
+    if (!ORDER_ID.test(bookingId)) throw new AppError("validation");
+    return bookingsApi.getPendingExtension(bookingId);
   });
 }
 

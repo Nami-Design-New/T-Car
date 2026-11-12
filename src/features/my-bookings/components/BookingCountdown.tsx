@@ -4,15 +4,17 @@ import { Fragment, useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 
 interface Props {
-  /** The booking's return time; the card counts the time since it. */
+  /** The booking's return time, as returned by the API. */
   targetDateTime: string;
+  mode: "late" | "remaining";
 }
 
-/** Time elapsed since the return time (a late booking is past it). */
-function getState(target: Date) {
+function getState(target: Date, mode: Props["mode"]) {
   const now = Date.now();
-
-  const diff = Math.max(0, now - target.getTime());
+  const diff = Math.max(
+    0,
+    mode === "late" ? now - target.getTime() : target.getTime() - now,
+  );
 
   const days = Math.floor(diff / 86400000);
   const hours = Math.floor((diff % 86400000) / 3600000);
@@ -27,24 +29,24 @@ function getState(target: Date) {
   };
 }
 
-export default function BookingCountdown({ targetDateTime }: Props) {
+export default function BookingCountdown({ targetDateTime, mode }: Props) {
   const t = useTranslations("myBookings.countdown");
 
   const [state, setState] = useState(() =>
-    getState(new Date(targetDateTime)),
+    getState(new Date(targetDateTime), mode),
   );
 
   useEffect(() => {
     const target = new Date(targetDateTime);
 
-    setState(getState(target));
+    setState(getState(target, mode));
 
     const interval = setInterval(() => {
-      setState(getState(target));
+      setState(getState(target, mode));
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [targetDateTime]);
+  }, [mode, targetDateTime]);
 
   const units = [
     { key: "days", value: String(state.days) },
@@ -55,10 +57,18 @@ export default function BookingCountdown({ targetDateTime }: Props) {
   return (
     <section className="bg-surface-elevated flex flex-col gap-4 rounded-lg p-5">
       <div className="flex flex-col gap-2">
-        <h3 className="text-status-error m-0 text-lg font-bold">
-          {t("title")}
+        <h3
+          className={
+            mode === "late"
+              ? "text-status-error m-0 text-lg font-bold"
+              : "text-text-primary m-0 text-lg font-bold"
+          }
+        >
+          {t(mode === "late" ? "title" : "remainingTitle")}
         </h3>
-        <p className="text-text-subtle m-0 text-base">{t("lateBy")}</p>
+        <p className="text-text-subtle m-0 text-base">
+          {t(mode === "late" ? "lateBy" : "remainingBy")}
+        </p>
       </div>
 
       <div className="flex items-center justify-center gap-3 max-[400px]:gap-1.5">
@@ -87,7 +97,9 @@ export default function BookingCountdown({ targetDateTime }: Props) {
         ))}
       </div>
 
-      <p className="text-status-error m-0 text-sm">{t("lateFeeHint")}</p>
+      {mode === "late" && (
+        <p className="text-status-error m-0 text-sm">{t("lateFeeHint")}</p>
+      )}
     </section>
   );
 }
