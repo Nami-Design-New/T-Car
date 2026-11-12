@@ -1,12 +1,20 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { useTranslations } from "next-intl";
-import { useFieldErrorMessage } from "@/shared/hooks/useErrorMessage";
+import { useFormatter, useTranslations } from "next-intl";
+import type { ExtensionQuote } from "@/features/orders";
+import {
+  useErrorMessage,
+  useFieldErrorMessage,
+} from "@/shared/hooks/useErrorMessage";
+import type { Result } from "@/shared/lib/result";
 import { Button } from "@/shared/ui/Button";
 import { Dialog } from "@/shared/ui/Dialog";
+import { NumberStepper } from "@/shared/ui/NumberStepper";
+import { PriceRow } from "@/shared/ui/PriceRow";
+import { Skeleton } from "@/shared/ui/Skeleton";
 import {
   extendBookingSchema,
   type ExtendBookingFormValues,
@@ -15,11 +23,19 @@ import {
 interface Props {
   open: boolean;
   onClose: () => void;
-  onConfirm: (newDays: number) => void;
-  currentDays?: number;
-  pricePerDay?: number;
+  onConfirm: (days: number, quote: ExtensionQuote) => void;
+  onGetQuote: (days: number) => Promise<Result<ExtensionQuote>>;
+  currentDays: number;
+  pricePerDay: number;
+  price: number;
+  returnAt: string;
+  status: "current" | "late";
+  lateHours: number | null;
+  taxRate: number;
+  taxRateType: string;
+  taxValue: number;
+  finalPrice: number;
   loading?: boolean;
-  /** Already translated; the dialog stays open and shows it after a failed submit. */
   error?: string;
 }
 
@@ -27,13 +43,28 @@ export default function ExtendDurationModal({
   open,
   onClose,
   onConfirm,
-  currentDays = 1,
-  pricePerDay = 500,
+  onGetQuote,
+  currentDays,
+  pricePerDay,
+  price,
+  returnAt,
+  status,
+  lateHours,
+  taxRate,
+  taxRateType,
+  taxValue,
+  finalPrice,
   loading = false,
   error,
 }: Props) {
   const t = useTranslations("myBookings.extend");
+  const format = useFormatter();
   const fieldError = useFieldErrorMessage();
+  const errorMessage = useErrorMessage();
+  const [quote, setQuote] = useState<ExtensionQuote>();
+  const [quoteLoading, setQuoteLoading] = useState(false);
+  const [quoteError, setQuoteError] = useState<string>();
+  const [hasRequestedQuote, setHasRequestedQuote] = useState(false);
   const {
     handleSubmit,
     reset,
@@ -44,29 +75,69 @@ export default function ExtendDurationModal({
     resolver: zodResolver(extendBookingSchema),
     mode: "onBlur",
     reValidateMode: "onChange",
-    defaultValues: { days: currentDays },
+    defaultValues: { days: 1 },
   });
   const days = watch("days");
+  const currentLateDays =
+    status === "late" ? Math.max(1, Math.ceil((lateHours ?? 0) / 24)) : 0;
+  const currentLateFee = currentLateDays * pricePerDay;
+  const displayed = quote ?? {
+    count: currentDays,
+    carPrice: pricePerDay,
+    price,
+    newDeliveryDay: returnAt.slice(0, 10),
+    lateFee: currentLateFee,
+    lateDays: currentLateDays,
+    taxType: taxRateType,
+    taxValue: taxRate,
+    taxAddedValue: taxValue,
+    totalAmount: finalPrice,
+  };
+  const extensionEnd = new Date(`${displayed.newDeliveryDay}T12:00:00`);
+  const extensionEndLabel = format.dateTime(extensionEnd, {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    timeZone: "UTC",
+  });
 
   useEffect(() => {
-    if (open) reset({ days: currentDays });
-  }, [currentDays, open, reset]);
+    if (open) {
+      reset({ days: 1 });
+      setHasRequestedQuote(false);
+    }
+  }, [open, reset]);
 
-  const increment = () => {
-    setValue("days", days + 1, { shouldDirty: true, shouldValidate: true });
-  };
-
-  const decrement = () => {
-    setValue("days", Math.max(1, days - 1), {
-      shouldDirty: true,
-      shouldValidate: true,
+  useEffect(() => {
+    if (!open || !hasRequestedQuote) {
+      setQuote(undefined);
+      setQuoteError(undefined);
+      setQuoteLoading(false);
+      return;
+    }
+    let active = true;
+    setQuoteLoading(true);
+    setQuote(undefined);
+    setQuoteError(undefined);
+    void onGetQuote(days).then((result) => {
+      if (!active) return;
+      setQuoteLoading(false);
+      if (result.ok) setQuote(result.data);
+      else
+        setQuoteError(result.error.serverMessage ?? errorMessage(result.error));
     });
-  };
+    return () => {
+      active = false;
+    };
+  }, [days, errorMessage, hasRequestedQuote, onGetQuote, open]);
 
-  const subtotal = days * pricePerDay;
-  const vat = Math.round(subtotal * 0.05);
-  const total = subtotal + vat;
-  const submit = handleSubmit(({ days: nextDays }) => onConfirm(nextDays));
+  const changeDays = (value: number) => {
+    setHasRequestedQuote(true);
+    setValue("days", value, { shouldDirty: true, shouldValidate: true });
+  };
+  const submit = handleSubmit(({ days: nextDays }) => {
+    if (quote) onConfirm(nextDays, quote);
+  });
 
   return (
     <Dialog
@@ -75,151 +146,97 @@ export default function ExtendDurationModal({
       placement="bottom-sheet"
       label={t("title")}
     >
-      <form
-        className="flex w-full max-w-[420px] flex-col rounded-xl bg-surface-elevated p-5 max-[768px]:px-4 max-[768px]:pt-[42px] max-[768px]:pb-[18px]"
-        onSubmit={submit}
-        noValidate
-      >
-        {/* Close */}
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <Dialog.Title className="py-2.5 text-[22px] text-text-primary max-[768px]:text-[17px]">
-            {t("title")}
-          </Dialog.Title>
-          <Dialog.Close />
-        </div>
-
-        {/* Duration */}
-        <div className="mb-[18px] rounded-md bg-surface-card-primary px-3.5 pt-4 pb-3 text-center">
-          <p className="mb-2 text-sm font-medium leading-normal text-text-primary">
-            {t("selectDays")}
-          </p>
-
-          <div className="flex items-center justify-between gap-3 [direction:ltr]">
-            <button
-              type="button"
-              className="grid size-9 shrink-0 place-items-center rounded border-0 bg-surface-elevated text-[21px] text-text-primary"
-              onClick={increment}
-              aria-label={t("increase")}
-            >
-              +
-            </button>
-
-            <div className="flex h-12 flex-1 items-center justify-center text-[30px] font-bold leading-none text-text-primary">
-              {days}
-            </div>
-
-            <button
-              type="button"
-              className="grid size-9 shrink-0 place-items-center rounded border-0 bg-surface-elevated text-[21px] text-text-primary"
-              onClick={decrement}
-              aria-label={t("decrease")}
-            >
-              −
-            </button>
-          </div>
-
-          <p className="mt-2 mb-0 text-[11px] leading-normal text-text-primary">
-            {t("note")}
-          </p>
-          {errors.days && (
-            <p className="form_error" role="alert">
-              {fieldError(errors.days.message)}
-            </p>
-          )}
-        </div>
-
-        {/* Price Details */}
-        <div className="mb-[18px]">
-          <h3 className="mb-2 text-end text-sm font-bold text-text-primary">
-            {t("priceDetails")}
-          </h3>
-
-          {/* السعر */}
-          <div className="grid min-h-[34px] grid-cols-[1fr_auto_auto] items-center gap-3 border-b border-dashed border-stroke-light px-2.5 last:border-0">
-            <span className="text-end text-sm text-text-subtle">
-              {t("price")}
-            </span>
-
-            <span className="text-center text-sm text-text-subtle"></span>
-
-            <strong className="whitespace-nowrap text-left text-sm font-medium text-text-primary">
-              {pricePerDay} {t("currency")}
-            </strong>
-          </div>
-
-          {/* المجموع الفرعي */}
-          <div className="grid min-h-[34px] grid-cols-[1fr_auto_auto] items-center gap-3 border-b border-dashed border-stroke-light px-2.5 last:border-0">
-            <span className="text-end text-sm text-text-subtle">
-              {t("subtotal")}
-            </span>
-
-            <span className="whitespace-nowrap text-center text-sm text-text-subtle">
-              {days} × {pricePerDay}
-            </span>
-
-            <strong className="whitespace-nowrap text-left text-sm font-medium text-text-primary">
-              {subtotal} {t("currency")}
-            </strong>
-          </div>
-
-          {/* غرامة التأخير */}
-          <div className="grid min-h-[34px] grid-cols-[1fr_auto_auto] items-center gap-3 border-b border-dashed border-stroke-light px-2.5 text-status-error last:border-0">
-            <span className="text-end text-sm">{t("lateFee")}</span>
-
-            <span className="whitespace-nowrap text-center text-sm">
-              {t("oneDay")}
-            </span>
-
-            <strong className="whitespace-nowrap text-left text-sm font-medium">
-              0 {t("currency")}
-            </strong>
-          </div>
-
-          {/* الضريبة */}
-          <div className="grid min-h-[34px] grid-cols-[1fr_auto_auto] items-center gap-3 border-b border-dashed border-stroke-light px-2.5 last:border-0">
-            <span className="text-end text-sm text-text-subtle">
-              {t("vat")}
-            </span>
-
-            <span className="whitespace-nowrap text-center text-sm text-text-subtle">
-              5%
-            </span>
-
-            <strong className="whitespace-nowrap text-left text-sm font-medium text-text-primary">
-              {vat} {t("currency")}
-            </strong>
-          </div>
-
-          {/* الإجمالي */}
-          <div className="mt-1 grid grid-cols-[1fr_auto_auto] items-center gap-3 border-0 border-t border-dashed border-stroke-light px-2.5 pt-2">
-            <span className="text-end text-sm text-text-subtle">
-              {t("total")}
-            </span>
-
-            <span className="text-center text-sm"></span>
-
-            <strong className="whitespace-nowrap text-left text-lg font-bold text-action-primary">
-              {total} {t("currency")}
-            </strong>
-          </div>
-        </div>
-
-        {error && (
-          <p className="text-status-error text-sm mb-2" role="alert">
-            {error}
-          </p>
-        )}
-
-        {/* Confirm */}
-        <Button
-          type="submit"
-          className="h-12 w-full cursor-pointer rounded-sm border-0 bg-action-primary text-sm font-semibold text-white transition hover:opacity-90"
-          loading={loading}
+      <Dialog.Header>
+        <Dialog.Title>{t("title")}</Dialog.Title>
+        <Dialog.Close />
+      </Dialog.Header>
+      <Dialog.Body>
+        <form
+          className="flex w-full flex-col gap-2"
+          onSubmit={submit}
+          noValidate
         >
-          {loading ? t("extending") : t("confirm")}
+          <div className="bg-surface-card-primary mb-4.5 rounded-md px-3.5 pt-4 pb-3 text-center">
+            <p className="text-text-primary mb-2 text-sm leading-normal font-medium">
+              {t("selectDays")}
+            </p>
+            <NumberStepper
+              value={days}
+              onChange={changeDays}
+              disabled={loading || quoteLoading}
+              decreaseLabel={t("decrease")}
+              increaseLabel={t("increase")}
+            />
+            <p className="text-text-primary mt-2 mb-0 text-xs leading-normal">
+              {t("quotePending", { date: extensionEndLabel })}
+            </p>
+            {errors.days && (
+              <p className="form_error" role="alert">
+                {fieldError(errors.days.message)}
+              </p>
+            )}
+          </div>
+          <section className="border-stroke-light mb-4.5 rounded-lg border p-4">
+            <h3 className="text-text-primary mb-2 text-end text-sm font-bold">
+              {t("priceDetails")}
+            </h3>
+            {quoteLoading ? (
+              <Skeleton shape="rect" height={180} />
+            ) : (
+              <>
+                {quoteError && (
+                  <p className="text-status-error m-0 text-sm" role="alert">
+                    {quoteError}
+                  </p>
+                )}
+                <PriceRow label={t("price")} amount={displayed.carPrice} />
+                <PriceRow
+                  label={t("subtotal")}
+                  amount={displayed.price}
+                  hint={`${displayed.count} × ${displayed.carPrice}`}
+                />
+                {status === "late" && (
+                  <PriceRow
+                    label={t("lateFee")}
+                    amount={displayed.lateFee}
+                    hint={t("lateDays", { count: displayed.lateDays })}
+                    labelClassName="text-status-error"
+                    hintClassName="text-status-error"
+                  />
+                )}
+                <PriceRow
+                  label={t("vat")}
+                  amount={displayed.taxAddedValue}
+                  hint={
+                    displayed.taxType === "percent"
+                      ? `${displayed.taxValue}%`
+                      : undefined
+                  }
+                />
+                <PriceRow
+                  label={t("total")}
+                  amount={displayed.totalAmount}
+                  total
+                />
+              </>
+            )}
+          </section>
+        </form>
+      </Dialog.Body>
+      <Dialog.Footer>
+        <Button
+          type="button"
+          size="lg"
+          className="w-full"
+          loading={loading}
+          disabled={
+            loading || quoteLoading || !quote || !!quoteError
+          }
+          onClick={() => void submit()}
+        >
+          {t("confirm")}
         </Button>
-      </form>
+      </Dialog.Footer>
     </Dialog>
   );
 }

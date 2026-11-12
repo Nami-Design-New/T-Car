@@ -420,7 +420,12 @@ describe("cityCarsApi cars-listing reads", () => {
     await cityCarsApi.listListingCompanyCars(
       "en",
       "12",
-      { source: "general", airportId: "2", brandIds: ["7"] },
+      {
+        source: "general",
+        bookingType: "airport",
+        airportId: "2",
+        brandIds: ["7"],
+      },
       2,
     );
 
@@ -434,6 +439,7 @@ describe("cityCarsApi cars-listing reads", () => {
       "brand_id[0]": "7",
       company_id: "12",
       come_from: "general",
+      booking_type: "airport",
       airport_id: "2",
     });
   });

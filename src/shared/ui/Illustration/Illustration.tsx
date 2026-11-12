@@ -4,6 +4,12 @@ import dynamic from "next/dynamic";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { cn } from "@/shared/lib/cn";
+import {
+  ErrorScene,
+  OfflineScene,
+  ResourceScene,
+  UnauthorizedScene,
+} from "./Scenes";
 
 // The player and each animation load on first use, not with the page bundle.
 const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
@@ -13,7 +19,23 @@ const ANIMATIONS = {
   success: () => import("@/assets/animations/successful_login.json"),
 } as const;
 
-export type IllustrationName = keyof typeof ANIMATIONS | "notFound";
+type AnimatedName = keyof typeof ANIMATIONS;
+
+const SCENES = {
+  error: ErrorScene,
+  offline: OfflineScene,
+  unauthorized: UnauthorizedScene,
+  resource: ResourceScene,
+} as const;
+
+/** Lottie names, the bundled not-found image, and the drawn static scenes. */
+export type IllustrationName = AnimatedName | "notFound" | keyof typeof SCENES;
+
+const isAnimated = (name: IllustrationName): name is AnimatedName =>
+  name in ANIMATIONS;
+
+const isScene = (name: IllustrationName): name is keyof typeof SCENES =>
+  name in SCENES;
 
 export interface Props {
   name: IllustrationName;
@@ -40,7 +62,7 @@ export function Illustration({ name, className }: Props) {
   const reducedMotion = usePrefersReducedMotion();
 
   useEffect(() => {
-    if (name === "notFound") return;
+    if (!isAnimated(name)) return;
     let active = true;
     ANIMATIONS[name]().then((module) => {
       if (active) setData(module.default);
@@ -61,6 +83,15 @@ export function Illustration({ name, className }: Props) {
           className="h-full w-full object-contain"
           unoptimized
         />
+      </div>
+    );
+  }
+
+  if (isScene(name)) {
+    const Scene = SCENES[name];
+    return (
+      <div className={cn("illustration", className)} aria-hidden="true">
+        <Scene />
       </div>
     );
   }

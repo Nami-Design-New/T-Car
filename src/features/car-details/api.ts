@@ -1,9 +1,9 @@
 import "server-only";
-import sanitizeHtml from "sanitize-html";
 import { isApiEnvelope, type ApiEnvelope } from "@/services/http/envelope";
 import { publicServerHttp } from "@/services/http/server";
 import { IMAGES } from "@/shared/config/assets";
 import { AppError } from "@/shared/lib/errors";
+import { sanitizeBackendHtml } from "@/shared/lib/sanitizeHtml";
 import type { CarOffer } from "@/features/cars";
 import {
   type CarPolicies,
@@ -91,6 +91,8 @@ interface DetailsDto {
   serevices: ServiceDto[];
   insurance: InsuranceDto | null;
   warranties: WarrantyDto[];
+  /** Delivery range in km around the branch for to_location (observed 60). */
+  allowed_distance?: number | null;
 }
 
 interface DetailBranchDto {
@@ -163,25 +165,6 @@ function logDetailData(label: string, value: unknown): void {
     // eslint-disable-next-line no-console -- intentional local API integration inspection.
     console.info(`[car-details] ${label}`, value);
   }
-}
-
-/**
- * Backend-authored HTML is rendered as is, so it is sanitized here on the
- * server: scripts, styles, event handlers and unsafe URLs are dropped.
- */
-function toSafeHtml(value: string): string {
-  return sanitizeHtml(value, {
-    allowedTags: [
-      ...sanitizeHtml.defaults.allowedTags,
-      "h1",
-      "h2",
-      "span",
-      "u",
-    ],
-    transformTags: {
-      a: sanitizeHtml.simpleTransform("a", { rel: "noopener noreferrer" }),
-    },
-  }).trim();
 }
 
 function isLookup(value: unknown): value is LookupDto {
@@ -349,7 +332,11 @@ function isDetailsDto(value: unknown): value is DetailsDto {
     value.serevices.every(isService) &&
     Array.isArray(value.warranties) &&
     value.warranties.every(isWarranty) &&
-    (value.insurance === null || isInsurance(value.insurance))
+    (value.insurance === null || isInsurance(value.insurance)) &&
+    (value.allowed_distance === undefined ||
+      value.allowed_distance === null ||
+      (typeof value.allowed_distance === "number" &&
+        Number.isFinite(value.allowed_distance)))
   );
 }
 
@@ -369,6 +356,12 @@ function serviceIcon(key: string | null): CarDetails["addons"][number]["icon"] {
   if (key === "travel_abroad") return "travel";
   if (key === null) return "shield";
   return "default";
+}
+
+function serviceType(key: string | null): CarDetails["addons"][number]["type"] {
+  if (key === "adding_driver") return "driver_service";
+  if (key === "travel_abroad") return "company_service";
+  return "car_service";
 }
 
 function toQuickFacts(details: CarTechnicalDetailsDto): CarQuickFact[] {
@@ -431,18 +424,25 @@ export function mapCarDetails(details: DetailsDto): CarDetails {
       : branchData.has_station
         ? "station"
         : undefined,
+    ...(typeof details.allowed_distance === "number" &&
+    details.allowed_distance > 0
+      ? { allowedDistanceKm: details.allowed_distance }
+      : {}),
+    hasAirportBranch: branchData.has_airport,
+    hasStationBranch: branchData.has_station,
     offer: toOffer(car),
     reviewsCount: 0,
     quickFacts: toQuickFacts(car.details),
     warranties: details.warranties.map((warranty, index) => ({
       id: `warranty-${index}`,
       title: warranty.title,
-      content: toSafeHtml(warranty.content),
+      content: sanitizeBackendHtml(warranty.content),
     })),
     addons: details.serevices.map((service) => ({
       id: String(service.id),
       title: service.title,
       price: service.price,
+      type: serviceType(service.key),
       icon: serviceIcon(service.key),
     })),
     insuranceOptions: details.insurance
@@ -472,7 +472,8 @@ function toSearch(query: CarDetailsQuery): URLSearchParams {
     search.set("latitude", String(query.location.latitude));
     search.set("longitude", String(query.location.longitude));
   }
-  if (query.deliveryType) search.set("delivery_type", query.deliveryType);
+  if (query.deliveryType)
+    search.set("delivery_type", query.deliveryType);
   if (query.bookingType) search.set("booking_type", query.bookingType);
   if (query.airportId) search.set("airport_id", query.airportId);
   if (query.stationId) search.set("train_station_id", query.stationId);
@@ -587,10 +588,10 @@ async function getPolicies(): Promise<CarPolicies> {
 
   return {
     clientInstructions: data.client_instructions
-      .map((policy) => toSafeHtml(policy.content))
+      .map((policy) => sanitizeBackendHtml(policy.content))
       .filter(Boolean),
     cancellationPolicies: data.cancellation_policies
-      .map((policy) => toSafeHtml(policy.content))
+      .map((policy) => sanitizeBackendHtml(policy.content))
       .filter(Boolean),
   };
 }

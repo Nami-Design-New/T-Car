@@ -4,6 +4,7 @@ import {
   CarDetailsView,
   parseCarDetailsQuery,
   serializeCarDetailsQuery,
+  toSafeCarDetailsSearchParams,
   withDefaultRentalContext,
 } from "@/features/car-details";
 import {
@@ -12,9 +13,13 @@ import {
   getCompanyRatings,
   getCarPolicies,
 } from "@/features/car-details/queries";
+import type { BookingContext } from "@/features/orders";
+import { getLicenseStatus } from "@/features/account/queries";
+import { auth } from "@/auth";
+import { redirect } from "@/i18n/navigation";
 
 interface Props {
-  params: Promise<{ carId: string }>;
+  params: Promise<{ locale: string; carId: string }>;
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }
 
@@ -39,22 +44,57 @@ export async function generateMetadata({
 }
 
 export default async function CarDetailsPage({ params, searchParams }: Props) {
-  const [{ carId }, rawSearchParams] = await Promise.all([
+  const [{ locale, carId }, rawSearchParams] = await Promise.all([
     params,
     searchParams,
   ]);
-  const queryKey = serializeCarDetailsQuery(
-    withDefaultRentalContext(parseCarDetailsQuery(rawSearchParams)),
-  );
+  const parsedQuery = parseCarDetailsQuery(rawSearchParams);
+  const safeSearchParams = toSafeCarDetailsSearchParams(rawSearchParams);
+  if (safeSearchParams) {
+    redirect({
+      href: `/cars/${carId}?${safeSearchParams.toString()}`,
+      locale,
+    });
+  }
+  const rentalQuery = withDefaultRentalContext(parsedQuery);
+  const queryKey = serializeCarDetailsQuery(rentalQuery);
   const car = await getCarDetails(carId, queryKey);
   if (!car) notFound();
 
   // Resolve the car first so an unknown ID remains a proper not-found route.
-  const [ratings, policies, branches] = await Promise.all([
-    getCompanyRatings(carId, queryKey),
-    getCarPolicies(),
-    getCarBranches(carId, queryKey),
-  ]);
+  const [ratings, policies, branches, session, licenseUploaded] =
+    await Promise.all([
+      getCompanyRatings(carId, queryKey),
+      getCarPolicies(),
+      getCarBranches(carId, queryKey),
+      auth(),
+      getLicenseStatus(),
+    ]);
+
+  const bookingType = rentalQuery.bookingType!;
+  const deliveryType = rentalQuery.deliveryType;
+  const bookingContext: BookingContext = {
+    bookingType,
+    // Airport and station have no delivery type (create-booking doc).
+    ...(deliveryType === "to_location" || deliveryType === "from_branch"
+      ? { deliveryType }
+      : {}),
+    ...(bookingType === "airport"
+      ? { pickupPointHasBranch: car.hasAirportBranch }
+      : bookingType === "station"
+        ? { pickupPointHasBranch: car.hasStationBranch }
+        : {}),
+    ...(parsedQuery.location ? { location: parsedQuery.location } : {}),
+    ...(car.pickupInfo.nearestBranch
+      ? { branch: car.pickupInfo.nearestBranch }
+      : {}),
+    ...(car.allowedDistanceKm
+      ? { allowedDistanceKm: car.allowedDistanceKm }
+      : {}),
+    ...(parsedQuery.airportId ? { airportId: parsedQuery.airportId } : {}),
+    ...(parsedQuery.stationId ? { stationId: parsedQuery.stationId } : {}),
+    ...(parsedQuery.countryId ? { countryId: parsedQuery.countryId } : {}),
+  };
 
   return (
     <CarDetailsView
@@ -62,6 +102,9 @@ export default async function CarDetailsPage({ params, searchParams }: Props) {
       ratings={ratings}
       policies={policies}
       branches={branches}
+      bookingContext={bookingContext}
+      signedIn={Boolean(session?.user)}
+      licenseUploaded={licenseUploaded}
     />
   );
 }

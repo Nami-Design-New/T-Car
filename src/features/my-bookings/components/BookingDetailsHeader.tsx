@@ -3,28 +3,32 @@
 import { useCallback, useState } from "react";
 import { useTranslations } from "next-intl";
 import dynamic from "next/dynamic";
-import { Link } from "@/i18n/navigation";
-import {
-  FiArrowRight,
-  FiMoreVertical,
-  FiEdit2,
-  FiCalendar,
-  FiX,
-} from "react-icons/fi";
+import { useRouter } from "@/i18n/navigation";
+import { FiMoreHorizontal } from "react-icons/fi";
 
 import { useErrorMessage } from "@/shared/hooks/useErrorMessage";
 import type { AppError } from "@/shared/lib/errors";
 import { ResultDialog } from "@/shared/ui/ResultDialog";
+import { PaymentMethodModal } from "@/features/booking";
+import { useNotify } from "@/shared/hooks/useNotify";
+import { usePaymentWindow } from "@/shared/hooks/usePaymentWindow";
 import {
-  bookingTabFor,
-  bookingsListPath,
-  cancellationFee,
-  isActiveBooking,
-  toEditRequest,
-  type BookingDetailsView,
-  type BookingEditRequest,
-} from "../model";
+  canCancel,
+  canExtend,
+  canModify,
+  type CancelQuote,
+  type ExtensionQuote,
+  type ModificationRequest,
+  type Order,
+  type PaymentChoice,
+} from "@/features/orders";
+import { bookingTabFor, bookingsListPath, toEditRequest } from "../model";
 import { useBookingActions } from "../hooks/useBookingActions";
+import { BackButton } from "@/shared/ui/BackButton";
+import { Menu } from "@/shared/ui/Menu";
+import { ICONS } from "@/shared/config/assets";
+import Image from "next/image";
+
 const ExtendDurationModal = dynamic(() => import("./ExtendDurationModal"), {
   ssr: false,
 });
@@ -36,7 +40,7 @@ const CancelBookingModal = dynamic(() => import("./CancelBookingModal"), {
 });
 
 interface Props {
-  booking: BookingDetailsView;
+  booking: Order;
 }
 
 type ResultKind = "extended" | "editRequested" | "cancelled";
@@ -45,9 +49,20 @@ type ResultKind = "extended" | "editRequested" | "cancelled";
 type HeaderFlow =
   | { step: "idle" }
   | { step: "extend"; error?: AppError }
+  | {
+      step: "extendPayment";
+      count: number;
+      amount: number;
+      error?: AppError;
+    }
   | { step: "edit" }
   | { step: "cancel"; error?: AppError }
-  | { step: "result"; kind: ResultKind; error?: AppError }; // no error means success
+  | {
+      step: "result";
+      kind: ResultKind;
+      message?: string;
+      error?: AppError;
+    }; // no error means success
 
 const RESULT_KEYS: Record<
   ResultKind,
@@ -63,125 +78,199 @@ const RESULT_KEYS: Record<
 
 export default function BookingDetailsHeader({ booking }: Props) {
   const t = useTranslations("myBookings.details");
-  const [showActions, setShowActions] = useState(false);
+  const router = useRouter();
+  const notify = useNotify();
   const [flow, setFlow] = useState<HeaderFlow>({ step: "idle" });
-  const { submitting, extend, requestEdit, cancel } = useBookingActions(
-    booking.id,
-  );
+  const [cancelQuote, setCancelQuote] = useState<CancelQuote>();
+  const {
+    submitting,
+    getExtensionQuote,
+    payExtension,
+    modify,
+    getCancelQuote,
+    cancel,
+  } = useBookingActions(booking.id);
   const errorMessage = useErrorMessage();
 
+  const { watch, paying } = usePaymentWindow((outcome) => {
+    if (outcome === "success") {
+      router.refresh();
+      setFlow({ step: "result", kind: "extended" });
+    } else if (outcome === "failed") {
+      setFlow((current) =>
+        current.step === "extendPayment"
+          ? { ...current, error: undefined }
+          : current,
+      );
+    }
+  });
+
   const close = useCallback(() => setFlow({ step: "idle" }), []);
-  const open = (step: "extend" | "edit" | "cancel") => {
-    setShowActions(false);
-    setFlow({ step });
+  const open = (step: "extend" | "edit" | "cancel") => setFlow({ step });
+
+  const openCancel = async () => {
+    setCancelQuote(undefined);
+    setFlow({ step: "cancel" });
+    const result = await getCancelQuote();
+    if (!result.ok) setFlow({ step: "cancel", error: result.error });
+    else setCancelQuote(result.data);
   };
 
-  const isActive = isActiveBooking(booking.status);
-  const fee = cancellationFee(booking.total, booking.cancellationPercent);
+  const allowEdit = canModify(booking) && !booking.hasModifyRequest;
+  const allowExtend = canExtend(booking);
+  const allowCancel = canCancel(booking);
+  const hasActions = allowEdit || allowExtend || allowCancel;
 
-  const handleExtend = async (days: number) => {
-    const result = await extend(days);
-    setFlow(
-      result.ok
-        ? { step: "result", kind: "extended" }
-        : { step: "extend", error: result.error },
-    );
+  const handleExtend = (count: number, quote: ExtensionQuote) => {
+    setFlow({ step: "extendPayment", count, amount: quote.totalAmount });
   };
 
-  const handleEdit = async (request: BookingEditRequest) => {
-    const result = await requestEdit(request);
-    if (result.ok) setFlow({ step: "result", kind: "editRequested" });
+  const handleExtensionPayment = async (choice: PaymentChoice) => {
+    if (flow.step !== "extendPayment" || submitting || paying) return;
+    const { count, amount } = flow;
+    const tab = choice.paymentMethodId ? window.open("", "_blank") : null;
+    const result = await payExtension({ count, ...choice });
+    if (!result.ok) {
+      tab?.close();
+      if (result.error.kind === "validation" && result.error.serverMessage) {
+        notify.error(result.error.serverMessage);
+      } else {
+        setFlow({ step: "extendPayment", count, amount, error: result.error });
+      }
+      return;
+    }
+    if (result.message) notify.success(result.message);
+    if (result.data.kind === "paid") {
+      tab?.close();
+      router.refresh();
+      setFlow({ step: "result", kind: "extended" });
+      return;
+    }
+    if (!tab) {
+      window.location.assign(result.data.payment.paymentUrl);
+      return;
+    }
+    tab.location.href = result.data.payment.paymentUrl;
+    watch(tab, result.data.payment);
+  };
+
+  const handleEdit = async (request: ModificationRequest) => {
+    const result = await modify(request);
+    if (result.ok && request.store) {
+      router.refresh();
+      setFlow({ step: "result", kind: "editRequested" });
+    }
     return result;
   };
 
   const handleCancel = async () => {
     if (submitting) return;
     const result = await cancel();
-    setFlow(
-      result.ok
-        ? { step: "result", kind: "cancelled" }
-        : { step: "cancel", error: result.error },
-    );
+    if (result.ok) {
+      router.refresh();
+      setFlow({ step: "result", kind: "cancelled", message: result.data });
+    } else {
+      setFlow({ step: "cancel", error: result.error });
+    }
   };
 
   return (
     <div className="flex items-center gap-3.5">
-      {/* Back */}
-      <Link
-        href={bookingsListPath(bookingTabFor(booking.status))}
-        className="grid size-9 shrink-0 place-items-center rounded-sm border border-stroke-light text-text-primary transition hover:border-action-primary hover:bg-action-primary hover:text-white focus-visible:outline-2 focus-visible:outline-action-primary"
+      {/* Back to the list this booking belongs to */}
+      <BackButton
         aria-label={t("back")}
-      >
-        <FiArrowRight />
-      </Link>
+        onClick={() =>
+          router.push(bookingsListPath(bookingTabFor(booking.status)))
+        }
+      />
 
       {/* Title */}
       <div className="flex min-w-0 flex-1 items-baseline gap-2.5">
-        <h1 className="m-0 text-base font-bold text-text-primary">
+        <h1 className="text-text-primary m-0 text-base font-bold">
           {t("title")}
         </h1>
-
-        <span className="text-[0.82rem] text-text-subtle">
-          #{booking.reference}
-        </span>
       </div>
 
-      {/* Actions */}
-      {isActive && (
-        <div className="relative shrink-0">
-          {/* Trigger */}
-          <button
-            type="button"
-            className="grid size-9 place-items-center rounded-sm border border-stroke-light bg-surface-elevated text-text-primary transition hover:border-action-primary hover:bg-action-primary hover:text-white focus-visible:outline-2 focus-visible:outline-action-primary"
-            onClick={() => setShowActions((prev) => !prev)}
-            aria-label={t("actions")}
-            aria-expanded={showActions}
-          >
-            <FiMoreVertical />
-          </button>
+      <div className="flex items-center gap-2.5">
+        <span className="text-text-subtle text-[0.82rem]">
+          #{booking.orderNumber}
+        </span>
 
-          {/* Menu */}
-          {showActions && (
-            <div className="absolute top-[calc(100%+8px)] start-0 z-20 min-w-[150px] rounded-sm border border-stroke-light bg-surface-elevated p-1.5 shadow-lg">
+        {/* Actions */}
+        {hasActions && (
+          <Menu.Root>
+            <Menu.Trigger asChild>
               <button
                 type="button"
-                className="flex w-full items-center gap-2 rounded-sm border-0 bg-transparent px-2.5 py-2 text-end text-xs text-text-primary transition hover:bg-surface-on-background"
-                onClick={() => open("edit")}
+                className="border-stroke-light bg-surface-elevated text-text-primary hover:border-action-primary hover:bg-action-primary focus-visible:outline-action-primary data-[state=open]:border-action-primary data-[state=open]:bg-action-primary grid size-9 shrink-0 cursor-pointer place-items-center rounded-full border transition hover:text-white focus-visible:outline-2 data-[state=open]:text-white"
+                aria-label={t("actions")}
               >
-                <FiEdit2 />
-                <span>{t("requestEdit")}</span>
+                <FiMoreHorizontal aria-hidden="true" />
               </button>
+            </Menu.Trigger>
 
-              <button
-                type="button"
-                className="flex w-full items-center gap-2 rounded-sm border-0 bg-transparent px-2.5 py-2 text-end text-xs text-text-primary transition hover:bg-surface-on-background"
-                onClick={() => open("extend")}
-              >
-                <FiCalendar />
-                <span>{t("extend")}</span>
-              </button>
-
-              <button
-                type="button"
-                className="flex w-full items-center gap-2 rounded-sm border-0 bg-transparent px-2.5 py-2 text-end text-xs text-status-error transition hover:bg-status-error-background"
-                onClick={() => open("cancel")}
-              >
-                <FiX />
-                <span>{t("cancel")}</span>
-              </button>
-            </div>
-          )}
-        </div>
-      )}
+            <Menu.Content className="min-w-37.5">
+              {allowEdit && (
+                <Menu.Item
+                  className="cursor-pointer"
+                  onSelect={() => open("edit")}
+                >
+                  <Image
+                    src={ICONS.edit.src}
+                    width={ICONS.edit.width}
+                    height={ICONS.edit.height}
+                    alt="edit"
+                  />
+                  {t("requestEdit")}
+                </Menu.Item>
+              )}
+              {allowExtend && (
+                <Menu.Item
+                  className="cursor-pointer"
+                  onSelect={() => open("extend")}
+                >
+                  <Image
+                    src={ICONS.calendar.src}
+                    width={ICONS.calendar.width}
+                    height={ICONS.calendar.height}
+                    alt="extend"
+                  />
+                  {t("extend")}
+                </Menu.Item>
+              )}
+              {allowCancel && (
+                <Menu.Item tone="danger" onSelect={() => void openCancel()}>
+                  <Image
+                    src={ICONS.close.src}
+                    width={ICONS.close.width}
+                    height={ICONS.close.height}
+                    alt="close"
+                  />
+                  {t("cancel")}
+                </Menu.Item>
+              )}
+            </Menu.Content>
+          </Menu.Root>
+        )}
+      </div>
 
       <ExtendDurationModal
         open={flow.step === "extend"}
         onClose={() => {
-          if (!submitting) close();
+          if (!submitting && !paying) close();
         }}
         onConfirm={handleExtend}
-        currentDays={booking.days}
-        pricePerDay={booking.pricePerDay}
+        onGetQuote={getExtensionQuote}
+        currentDays={booking.count}
+        pricePerDay={booking.carPrice}
+        price={booking.price}
+        returnAt={booking.returnAt}
+        status={booking.status === "late" ? "late" : "current"}
+        lateHours={booking.lateHours}
+        taxRate={booking.taxRate}
+        taxRateType={booking.taxRateType}
+        taxValue={booking.taxValue}
+        finalPrice={booking.finalPrice}
         loading={submitting}
         error={
           flow.step === "extend" && flow.error
@@ -190,11 +279,26 @@ export default function BookingDetailsHeader({ booking }: Props) {
         }
       />
 
+      {flow.step === "extendPayment" && (
+        <PaymentMethodModal
+          open
+          onClose={() => {
+            if (!submitting && !paying) setFlow({ step: "extend" });
+          }}
+          orderId={booking.id}
+          amount={flow.amount}
+          onConfirm={handleExtensionPayment}
+          onTopUp={() => router.push("/account/wallet")}
+          loading={submitting || paying}
+          error={flow.error ? errorMessage(flow.error) : undefined}
+        />
+      )}
+
       <EditDailyBookingModal
         open={flow.step === "edit"}
         onClose={close}
-        pricePerDay={booking.pricePerDay}
         initialDetails={toEditRequest(booking)}
+        booking={booking}
         onSubmit={handleEdit}
         loading={submitting}
       />
@@ -205,9 +309,8 @@ export default function BookingDetailsHeader({ booking }: Props) {
           if (!submitting) close();
         }}
         onConfirm={handleCancel}
-        bookingAmount={booking.total}
-        cancellationPercent={booking.cancellationPercent}
-        cancellationFee={fee}
+        bookingAmount={booking.finalPrice}
+        quote={cancelQuote}
         loading={submitting}
         error={
           flow.step === "cancel" && flow.error
@@ -223,7 +326,7 @@ export default function BookingDetailsHeader({ booking }: Props) {
           description={
             flow.error
               ? errorMessage(flow.error)
-              : t(RESULT_KEYS[flow.kind].description)
+              : (flow.message ?? t(RESULT_KEYS[flow.kind].description))
           }
           onClose={close}
         />

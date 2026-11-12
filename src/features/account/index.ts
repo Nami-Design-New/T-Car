@@ -1,4 +1,5 @@
 export { default as AccountLayout } from "./components/AccountLayout";
 export { default as ProfileTab } from "./components/ProfileTab";
+export { default as LazyLicenseUploadDialog } from "./components/LazyLicenseUploadDialog";
 export { accountSectionPath, isAccountTab } from "./model";
 export type { AccountTab, LicenseUpload, UserProfile } from "./model";

@@ -1,131 +1,102 @@
-import { FiCalendar, FiMapPin, FiInfo } from "react-icons/fi";
-import { useTranslations } from "next-intl";
+"use client";
 
+import { FiCalendar, FiInfo, FiMapPin } from "react-icons/fi";
+import { useLocale, useTranslations } from "next-intl";
+import type { Order } from "@/features/orders";
+import { ICONS } from "@/shared/config/assets";
+import Image from "next/image";
+import { cn } from "@/shared/lib/cn";
+import BookingOrderTime from "./BookingOrderTime";
+
+const timeline = ICONS.timeline;
 interface Props {
-  pickupLocation: string;
-  dropoffLocation: string;
-
-  pickupDateTime: string;
-  dropoffDateTime: string;
-
-  warrantyNote: string;
+  booking: Order;
 }
 
-function formatDateTime(iso: string) {
-  const d = new Date(iso);
-
-  const date = d.toLocaleDateString("ar-SA", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
-
-  const time = d.toLocaleTimeString("ar-SA", {
-    hour: "numeric",
-    minute: "2-digit",
-  });
-
-  return `${date} - ${time}`;
+function formatDateTime(value: string, locale: string) {
+  return new Intl.DateTimeFormat(locale, {
+    dateStyle: "long",
+    timeStyle: "short",
+  }).format(new Date(value));
 }
 
-export default function BookingDatesInfo({
-  pickupLocation,
-  dropoffLocation,
-  pickupDateTime,
-  dropoffDateTime,
-  warrantyNote,
-}: Props) {
+export default function BookingDatesInfo({ booking }: Props) {
   const t = useTranslations("myBookings.dates");
+  const locale = useLocale();
+  const branchAddress = `${booking.branch.title} — ${booking.branch.address}`;
+  const pickupAddress =
+    booking.deliveryType === "from_branch"
+      ? branchAddress
+      : (booking.pickupLocation.address ?? t("notProvided"));
+  const dropoffAddress =
+    booking.deliveryType === "from_branch"
+      ? branchAddress
+      : (booking.deliveryLocation.address ?? t("notProvided"));
+
   return (
-    <div className="flex flex-col gap-4 rounded-lg border border-stroke-light bg-surface-elevated p-6">
-      {/* Location */}
-      <div className="flex flex-col gap-3 border-b border-stroke-light pb-4 last:border-0">
-        <h3 className="m-0 text-base font-bold text-text-primary">
-          {t("location")}
-        </h3>
-
-        <div className="flex items-start gap-3 text-sm leading-relaxed text-text-primary">
-          <span className="mt-1 shrink-0 text-action-primary">
-            <FiMapPin />
+    <div className="bg-surface-elevated flex flex-col gap-4 rounded-lg p-6">
+      <div className="flex flex-col gap-3">
+        <div className="border-stroke-light relative border-x-0 border-t-0 border-b-2 border-dashed ps-8 pb-6">
+          <span
+            className="pointer-events-none absolute inset-s-0 top-4 flex"
+            aria-hidden="true"
+          >
+            <Image src={timeline.src} alt="Timeline" width={15} height={130} />
           </span>
-
-          <div className="flex min-w-0 flex-col gap-1">
-            <span className="text-xs font-medium text-text-subtle">
-              {t("pickupAddress")}
-            </span>
-
-            <span className="text-sm font-medium text-text-primary">
-              {pickupLocation}
-            </span>
-          </div>
-        </div>
-
-        <div className="flex items-start gap-3 text-sm leading-relaxed text-text-primary">
-          <span className="mt-1 shrink-0 text-action-primary">
-            <FiMapPin />
-          </span>
-
-          <div className="flex min-w-0 flex-col gap-1">
-            <span className="text-xs font-medium text-text-subtle">
-              {t("dropoffAddress")}
-            </span>
-
-            <span className="text-sm font-medium text-text-primary">
-              {dropoffLocation}
-            </span>
-          </div>
+          {[
+            [t("pickupAddress"), pickupAddress],
+            [t("dropoffAddress"), dropoffAddress],
+          ].map(([label, value], index, rows) => (
+            <div
+              className={cn(
+                "flex min-h-14.5 items-center justify-between gap-3 py-2 text-start",
+                index < 2 &&
+                  "min-h-16.5 flex-col items-stretch justify-center gap-1",
+                index === rows.length - 1 && "min-h-10.5",
+              )}
+              key={label}
+            >
+              <span className="text-text-subtle text-sm">{label}</span>
+              <span className="text-md text-text-primary min-w-0 overflow-hidden font-medium text-ellipsis whitespace-nowrap">
+                {value}
+              </span>
+            </div>
+          ))}
         </div>
       </div>
 
-      {/* Date */}
-      <div className="flex flex-col gap-3 border-b border-stroke-light pb-4 last:border-0">
-        <h3 className="m-0 text-base font-bold text-text-primary">
-          {t("date")}
-        </h3>
+      <DateValue
+        label={t("pickupTime")}
+        value={formatDateTime(booking.pickupAt, locale)}
+      />
+      <DateValue
+        label={t("dropoffTime")}
+        value={formatDateTime(booking.returnAt, locale)}
+      />
 
-        <div className="flex items-start gap-3 text-sm leading-relaxed text-text-primary">
-          <span className="mt-1 shrink-0 text-action-primary">
-            <FiCalendar />
-          </span>
-
-          <div className="flex min-w-0 flex-col gap-1">
-            <span className="text-xs font-medium text-text-subtle">
-              {t("pickupTime")}
+      {booking.note ? (
+        <div className="bg-surface-card-primary text-text-primary flex items-start gap-3 rounded-md p-3 text-sm leading-relaxed">
+          <FiInfo aria-hidden="true" />
+          <div className="flex flex-col gap-1">
+            <span className="text-text-subtle text-xs font-medium">
+              {t("note")}
             </span>
-
-            <span className="text-sm font-medium text-text-primary">
-              {formatDateTime(pickupDateTime)}
-            </span>
+            <span>{booking.note}</span>
           </div>
         </div>
+      ) : null}
 
-        <div className="flex items-start gap-3 text-sm leading-relaxed text-text-primary">
-          <span className="mt-1 shrink-0 text-action-primary">
-            <FiCalendar />
-          </span>
+      {booking.createdAt && <BookingOrderTime createdAt={booking.createdAt} />}
+    </div>
+  );
+}
 
-          <div className="flex min-w-0 flex-col gap-1">
-            <span className="text-xs font-medium text-text-subtle">
-              {t("dropoffTime")}
-            </span>
-
-            <span className="text-sm font-medium text-text-primary">
-              {formatDateTime(dropoffDateTime)}
-            </span>
-          </div>
-        </div>
-      </div>
-
-      {/* Additional details */}
-      <div className="flex items-start gap-3 rounded-md bg-surface-card-primary p-3 text-sm leading-relaxed text-text-primary">
-        <FiInfo />
-        <div className="flex flex-col gap-1">
-          <span className="text-xs font-medium text-text-subtle">
-            {t("additionalDetails")}
-          </span>
-
-          <span>{warrantyNote}</span>
-        </div>
+function DateValue({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="text-text-primary border-stroke-light flex items-start gap-3 border-x-0 border-t-0 border-b-2 border-dashed pb-2 text-sm leading-relaxed">
+      <div className="flex min-w-0 flex-col gap-3">
+        <span className="text-text-subtle text-sm font-normal">{label}</span>
+        <span className="text-text-primary text-base font-medium">{value}</span>
       </div>
     </div>
   );

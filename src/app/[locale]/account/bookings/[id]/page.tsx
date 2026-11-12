@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { BookingDetailsScreen } from '@/features/my-bookings';
-import { getBookingDetails } from '@/features/my-bookings/queries';
+import { getBookingDetails } from '@/features/orders/queries';
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -13,7 +13,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const booking = await getBookingDetails(id);
   if (!booking) notFound();
 
-  return { title: `#${booking.reference}` };
+  return { title: `#${booking.orderNumber}` };
 }
 
 export default async function BookingDetailsPage({ params }: Props) {

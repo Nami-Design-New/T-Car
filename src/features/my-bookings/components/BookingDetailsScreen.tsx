@@ -1,12 +1,17 @@
-import { isRentalRunning, type BookingDetailsView } from "../model";
+import { type Order } from "@/features/orders";
 import BookingDetailsHeader from "./BookingDetailsHeader";
 import BookingHero from "./BookingHero";
 import BookingDatesInfo from "./BookingDatesInfo";
 import BookingCountdown from "./BookingCountdown";
+import BookingModificationPayment from "./BookingModificationPayment";
+import BookingModificationNotice from "./BookingModificationNotice";
+import BookingNotices from "./BookingNotices";
+import BookingOrderTime from "./BookingOrderTime";
 import BookingSidebar from "./BookingSidebar";
+import PendingExtensionPayment from "./PendingExtensionPayment";
 
 interface Props {
-  booking: BookingDetailsView;
+  booking: Order;
 }
 
 export default function BookingDetailsScreen({ booking }: Props) {
@@ -16,44 +21,43 @@ export default function BookingDetailsScreen({ booking }: Props) {
         <div className="mx-auto flex max-w-270 flex-col gap-6">
           <BookingDetailsHeader booking={booking} />
 
-          <BookingHero
-            carName={booking.carName}
-            carBrand={booking.carBrand}
-            carImage={booking.carImage}
-            showroom={booking.showroom}
-            pricePerDay={booking.pricePerDay}
-            originalPrice={booking.originalPrice}
-            status={booking.status}
-            statusLabel={booking.statusLabel}
-            pickupDateTime={booking.pickupDateTime}
-            dropoffDateTime={booking.dropoffDateTime}
-          />
+          <BookingHero booking={booking} />
 
           <div className="grid grid-cols-[1fr_340px] items-start gap-6 max-[860px]:grid-cols-1">
             <div className="flex min-w-0 flex-col gap-6">
-              <BookingDatesInfo
-                pickupLocation={booking.pickupLocation}
-                dropoffLocation={booking.dropoffLocation}
-                pickupDateTime={booking.pickupDateTime}
-                dropoffDateTime={booking.dropoffDateTime}
-                warrantyNote={booking.warrantyNote}
-              />
+              {/* Upcoming or running: payment-safety and direct-extension
+                  notices. */}
+              {(booking.status === "coming" ||
+                booking.status === "current") && <BookingNotices />}
+              {booking.modifyRequestPendingPayment &&
+              booking.modifyRequestPaymentAmount !== null ? (
+                <BookingModificationPayment
+                  bookingId={booking.id}
+                  amount={booking.modifyRequestPaymentAmount}
+                />
+              ) : booking.hasModifyRequest ? (
+                <BookingModificationNotice />
+              ) : null}
+              {booking.payExtension && booking.pendingExtensionId !== null && (
+                <PendingExtensionPayment bookingId={booking.id} />
+              )}
+              <BookingDatesInfo booking={booking} />
 
-              {isRentalRunning(booking.status) && (
-                <BookingCountdown targetDateTime={booking.dropoffDateTime} />
+              {booking.status === "current" && (
+                <BookingCountdown
+                  targetDateTime={booking.returnAt}
+                  mode="remaining"
+                />
+              )}
+
+              {/* A late booking counts the time overdue since the return
+                  time. */}
+              {booking.status === "late" && (
+                <BookingCountdown targetDateTime={booking.returnAt} mode="late" />
               )}
             </div>
 
-            <BookingSidebar
-              bookingId={booking.id}
-              pricePerDay={booking.pricePerDay}
-              days={booking.days}
-              subtotal={booking.subtotal}
-              vatRate={booking.vatRate}
-              vat={booking.vat}
-              pointsUsed={booking.pointsUsed}
-              total={booking.total}
-            />
+            <BookingSidebar booking={booking} />
           </div>
         </div>
       </div>

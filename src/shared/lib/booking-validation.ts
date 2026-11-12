@@ -41,6 +41,11 @@ const locationSchema = z
       .string({ error: "booking.invalidLocation" })
       .trim()
       .max(MAX_ADDRESS_LENGTH, { error: "booking.addressTooLong" }),
+    region: z
+      .string({ error: "booking.invalidLocation" })
+      .trim()
+      .max(255, { error: "booking.invalidLocation" })
+      .optional(),
   })
   .nullable()
   .optional();
@@ -49,7 +54,9 @@ export const bookingDetailsSchema = z
   .object({
     startDate: requiredDate("booking.startDateRequired"),
     endDate: requiredDate("booking.endDateRequired"),
-    time: z.enum(TIME_SLOTS, { error: "booking.timeRequired" }),
+    time: z
+      .string({ error: "booking.timeRequired" })
+      .regex(/^(?:[01]\d|2[0-3])$/, { error: "booking.timeRequired" }),
     days: z
       .number({ error: "booking.invalidDays" })
       .int({ error: "booking.invalidDays" })

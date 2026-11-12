@@ -12,6 +12,7 @@ interface Props {
   group: OfficeCarGroup;
   query: CarsListingQuery;
   onSelectCar?: (car: CarListing) => void;
+  showAirportPickup?: boolean;
 }
 
 /** A cars-listing company row that appends page 2 onward while it scrolls sideways. */
@@ -19,6 +20,7 @@ export default function CarsListingOfficeRow({
   group,
   query,
   onSelectCar,
+  showAirportPickup = false,
 }: Props) {
   const locale = useLocale();
   const fetchPage = useCallback(
@@ -45,6 +47,7 @@ export default function CarsListingOfficeRow({
       onLoadMore={cars.loadMore}
       onRetry={cars.retry}
       onSelectCar={onSelectCar}
+      showAirportPickup={showAirportPickup}
     />
   );
 }

@@ -64,10 +64,6 @@ export default async function CarsPage({ searchParams }: Props) {
             priceRange={priceRange}
           />
           <div className="office-rows flex min-w-0 flex-col gap-3">
-            {/* <SortBar
-              resultsCount={officeGroups.reduce((count, group) => count + group.cars.length, 0)}
-              value={params.sort}
-            /> */}
             <CarsListingSection
               query={toCarsListingQuery(params, listingSource)}
               options={options}

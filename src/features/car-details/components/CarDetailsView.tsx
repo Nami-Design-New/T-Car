@@ -1,4 +1,9 @@
+"use client";
+
+import { useState } from "react";
 import { CarBookingCard } from "@/features/booking";
+import type { BookingServiceSelection } from "@/features/orders";
+import type { BookingContext } from "@/features/orders";
 import type {
   CarDetails,
   CarPolicies,
@@ -19,6 +24,10 @@ interface Props {
   ratings: CompanyRatings;
   policies: CarPolicies;
   branches: PickupBranch[];
+  bookingContext: BookingContext;
+  signedIn: boolean;
+  /** `false` blocks booking until a license is uploaded; `null` = unknown. */
+  licenseUploaded: boolean | null;
 }
 
 export default function CarDetailsView({
@@ -26,7 +35,18 @@ export default function CarDetailsView({
   ratings,
   policies,
   branches,
+  bookingContext,
+  signedIn,
+  licenseUploaded,
 }: Props) {
+  const [selectedAddonIds, setSelectedAddonIds] = useState<string[]>([]);
+  const selectedServices: BookingServiceSelection[] = car.addons
+    .filter((addon) => selectedAddonIds.includes(addon.id))
+    .map(({ id, type }) => ({ id, type }));
+  const selectedAddons = car.addons.filter((addon) =>
+    selectedAddonIds.includes(addon.id),
+  );
+
   return (
     <>
       <section className="py-20 max-md:py-12">
@@ -48,7 +68,13 @@ export default function CarDetailsView({
                 />
               )}
               <WarrantiesList warranties={car.warranties} />
-              {car.addons.length > 0 && <AddonsGrid addons={car.addons} />}
+              {car.addons.length > 0 && (
+                <AddonsGrid
+                  addons={car.addons}
+                  selectedIds={selectedAddonIds}
+                  onChange={setSelectedAddonIds}
+                />
+              )}
               {car.insuranceOptions[0] && (
                 <InsuranceOptions option={car.insuranceOptions[0]} />
               )}
@@ -67,6 +93,11 @@ export default function CarDetailsView({
                 rating={car.rating}
                 lowerPrice={car.lowerPrice}
                 maxPrice={car.maxPrice}
+                bookingContext={bookingContext}
+                selectedServices={selectedServices}
+                selectedAddons={selectedAddons}
+                signedIn={signedIn}
+                licenseUploaded={licenseUploaded}
               />
 
               {ratings.count > 0 && (

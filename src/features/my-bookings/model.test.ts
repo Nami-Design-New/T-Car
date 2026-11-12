@@ -5,7 +5,11 @@ import {
   parseBookingTab,
   toEditRequest,
 } from "./model";
-import type { BookingDetailsView } from "./model";
+import {
+  orderStatusTone,
+  orderTabForStatus,
+  type Order,
+} from "@/features/orders";
 
 describe("bookings list URL", () => {
   it("reads ?status=, defaulting to the active list", () => {
@@ -23,20 +27,47 @@ describe("bookings list URL", () => {
 
   it("puts running and upcoming bookings in the active list, finished ones in past", () => {
     expect(bookingTabFor("current")).toBe("active");
-    expect(bookingTabFor("upcoming")).toBe("active");
+    expect(bookingTabFor("coming")).toBe("active");
     expect(bookingTabFor("late")).toBe("active");
-    expect(bookingTabFor("completed")).toBe("past");
+    expect(bookingTabFor("complete")).toBe("past");
     expect(bookingTabFor("cancelled")).toBe("past");
   });
 });
 
-describe("booking edit request", () => {
-  it("derives the editable duration from the booking date range", () => {
-    const booking = {
-      pickupDateTime: "2026-08-13T16:30:00",
-      dropoffDateTime: "2026-08-24T16:30:00",
-    } as BookingDetailsView;
+describe("live order status groups", () => {
+  it("matches the E6 current and past groups", () => {
+    expect(orderTabForStatus("coming")).toBe("active");
+    expect(orderTabForStatus("late")).toBe("active");
+    expect(orderTabForStatus("complete")).toBe("past");
+    expect(orderTabForStatus("cancelled")).toBe("past");
+    expect(orderTabForStatus("rejected")).toBe("past");
+  });
 
-    expect(toEditRequest(booking).days).toBe(11);
+  it("groups statuses into badge tones", () => {
+    expect(orderStatusTone("current")).toBe("primary");
+    expect(orderStatusTone("coming")).toBe("warning");
+    expect(orderStatusTone("complete")).toBe("success");
+    expect(orderStatusTone("late")).toBe("error");
+  });
+});
+
+describe("booking edit request", () => {
+  it("uses the duration returned by the booking API", () => {
+    const booking = {
+      pickupAt: "2026-08-13T16:30:00",
+      returnAt: "2026-08-24T16:30:00",
+      deliveryType: "from_location",
+      branch: { title: "Branch", address: "Address" },
+      pickupLocation: { address: "Pickup" },
+      deliveryLocation: { address: "Return" },
+      note: null,
+      carPrice: 500,
+      price: 5500,
+      taxValue: 550,
+      finalPrice: 6050,
+      count: 9,
+    } as Order;
+
+    expect(toEditRequest(booking).days).toBe(9);
   });
 });

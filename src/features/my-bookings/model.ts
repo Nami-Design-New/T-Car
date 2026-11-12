@@ -1,7 +1,9 @@
-import type { BookingDetails } from "@/features/booking";
-
-export type BookingStatus =
-  "current" | "upcoming" | "late" | "completed" | "cancelled";
+import {
+  orderTabForStatus,
+  type BookingEditRequest,
+  type Order,
+  type OrderStatus,
+} from "@/features/orders";
 
 export type BookingTab = "active" | "past";
 
@@ -14,105 +16,34 @@ export const bookingsListPath = (status: BookingTab) =>
   status === "active" ? "/account/bookings" : "/account/bookings?status=past";
 
 /** Which list a booking belongs to, e.g. for the details page's back link. */
-export const bookingTabFor = (status: BookingStatus): BookingTab =>
-  isActiveBooking(status) ? "active" : "past";
-
-export interface UserBooking {
-  id: string;
-  carName: string;
-  carBrand: string;
-  carImage: string;
-  showroom: string;
-  showroomLogo?: string;
-  year: number;
-  rating: number;
-  status: BookingStatus;
-  statusLabel: string;
-  dateLabel: string;
-}
-
-export interface BookingDetailsView {
-  id: string;
-  reference: string;
-  carName: string;
-  carBrand: string;
-  carImage: string;
-  showroom: string;
-  status: BookingStatus;
-  statusLabel: string;
-  pricePerDay: number;
-  originalPrice?: number;
-  pickupDateTime: string;
-  dropoffDateTime: string;
-  pickupLocation: string;
-  dropoffLocation: string;
-  warrantyNote: string;
-  pointsUsed: number;
-  days: number;
-  subtotal: number;
-  vatRate: number;
-  vat: number;
-  total: number;
-  /** Share of the total kept as a fee when the customer cancels. */
-  cancellationPercent: number;
-  bannerTimestamp?: string;
-}
-
-/** What the edit request form submits; the same shape the booking form uses. */
-export type BookingEditRequest = BookingDetails;
-
-export interface BookingReviewInput {
-  /** 1 to 5 */
-  showroomRating: number;
-  driverRating: number;
-}
-
-const ACTIVE_STATUSES: readonly BookingStatus[] = [
-  "current",
-  "upcoming",
-  "late",
-];
-
-/** Not finished yet: the customer can still edit, extend, or cancel it. */
-export const isActiveBooking = (status: BookingStatus) =>
-  ACTIVE_STATUSES.includes(status);
-
-/** The car is out with the customer, so the return countdown applies. */
-export const isRentalRunning = (status: BookingStatus) =>
-  status === "current" || status === "late";
-
-export function cancellationFee(amount: number, percent: number): number {
-  return Math.round((amount * percent) / 100);
-}
+export const bookingTabFor = (status: OrderStatus): BookingTab =>
+  orderTabForStatus(status);
 
 /** Pre-fills the edit request form from the booking. */
-export function toEditRequest(booking: BookingDetailsView): BookingEditRequest {
-  const startDate = new Date(booking.pickupDateTime);
-  const endDate = new Date(booking.dropoffDateTime);
+export function toEditRequest(booking: Order): BookingEditRequest {
+  const startDate = new Date(booking.pickupAt);
+  const endDate = new Date(booking.returnAt);
+  const branchAddress = `${booking.branch.title} — ${booking.branch.address}`;
+  const fromBranch = booking.deliveryType === "from_branch";
 
   return {
     startDate,
     endDate,
-    time: booking.pickupDateTime.slice(11, 16),
-    notes: "",
-    days: Math.max(
-      1,
-      Math.round((endDate.getTime() - startDate.getTime()) / 86400000),
-    ),
-    pricePerDay: booking.pricePerDay,
-    subtotal: booking.subtotal,
-    vat: booking.vat,
-    total: booking.total,
-    pickupAddress: booking.pickupLocation,
-    dropoffAddress: booking.dropoffLocation,
+    time: booking.pickupAt.slice(11, 16),
+    notes: booking.note ?? "",
+    // The backend owns the booking duration; never infer it from date math.
+    days: booking.count,
+    pricePerDay: booking.carPrice,
+    subtotal: booking.price,
+    vat: booking.taxValue,
+    total: booking.finalPrice,
+    pickupAddress: fromBranch
+      ? branchAddress
+      : (booking.pickupLocation.address ?? undefined),
+    dropoffAddress: fromBranch
+      ? branchAddress
+      : (booking.deliveryLocation.address ?? undefined),
     pickupLocation: null,
     dropoffLocation: null,
-  };
-}
-
-export function splitBookings(bookings: UserBooking[]) {
-  return {
-    active: bookings.filter((booking) => isActiveBooking(booking.status)),
-    past: bookings.filter((booking) => !isActiveBooking(booking.status)),
   };
 }

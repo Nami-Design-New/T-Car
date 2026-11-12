@@ -1,12 +1,17 @@
 "use client";
 
 import { useState, useCallback, useEffect, useRef } from "react";
+import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
-import { GoogleMap, Marker, useJsApiLoader } from "@react-google-maps/api";
+import {
+  Circle,
+  GoogleMap,
+  Marker,
+  useJsApiLoader,
+} from "@react-google-maps/api";
 import {
   FiSearch,
   FiMapPin,
-  FiNavigation,
   FiX,
   FiLoader,
 } from "react-icons/fi";
@@ -14,6 +19,8 @@ import { Dialog } from "@/shared/ui/Dialog";
 import { FormInput } from "../Form";
 import { Button } from "../Button";
 import { regionOf } from "@/shared/lib/geocode";
+import { isWithinKm } from "@/shared/lib/geo";
+import { ICONS } from "@/shared/config/assets";
 import type { LocationData } from "@/shared/lib/location";
 
 export interface MapLocationModalProps {
@@ -22,7 +29,22 @@ export interface MapLocationModalProps {
   onConfirm: (location: LocationData) => void;
   title?: string;
   initialLocation?: LocationData | null;
+  /**
+   * The area a location must be in (e.g. a branch's delivery range), drawn as a
+   * circle; the map opens fitted to it. A point outside it cannot be confirmed.
+   */
+  allowedArea?: { center: { lat: number; lng: number }; radiusKm: number };
 }
+
+// Design: #1F7FFA1A (the brand blue at 0x1A ≈ 10% opacity).
+const allowedAreaOptions = {
+  strokeColor: "#1F7FFA",
+  strokeOpacity: 0.6,
+  strokeWeight: 1,
+  fillColor: "#1F7FFA",
+  fillOpacity: 0x1a / 0xff,
+  clickable: false,
+};
 
 const containerStyle = {
   width: "100%",
@@ -43,6 +65,7 @@ export default function MapLocationModal({
   onConfirm,
   title,
   initialLocation,
+  allowedArea,
 }: MapLocationModalProps) {
   const t = useTranslations("rentalSearch.map");
   const [position, setPosition] = useState(defaultCenter);
@@ -58,6 +81,11 @@ export default function MapLocationModal({
   const [locationError, setLocationError] = useState("");
 
   const locale = useLocale();
+  // A point outside the allowed area cannot be confirmed (create-booking 422
+  // validation.booking_location_outside_branch otherwise).
+  const outsideAllowedArea =
+    allowedArea !== undefined &&
+    !isWithinKm(allowedArea.center, position, allowedArea.radiusKm);
   const displayTitle = title ?? t("title");
 
   // The Maps script is injected once per page session, and useJsApiLoader
@@ -82,24 +110,29 @@ export default function MapLocationModal({
     libraries: ["places"],
   });
 
-  useEffect(() => {
-    if (!open || !initialLocation) return;
-    setPosition({ lat: initialLocation.lat, lng: initialLocation.lng });
-    setAddress(initialLocation.address);
-    setRegion(initialLocation.region);
-  }, [initialLocation, open]);
-
-  const onMapLoad = useCallback((map: google.maps.Map) => {
-    mapRef.current = map;
-  }, []);
+  const onMapLoad = useCallback(
+    (map: google.maps.Map) => {
+      mapRef.current = map;
+      // Show the whole allowed area first; the marker stays where it is.
+      if (allowedArea && window.google) {
+        const bounds = new window.google.maps.Circle({
+          center: allowedArea.center,
+          radius: allowedArea.radiusKm * 1000,
+        }).getBounds();
+        if (bounds) map.fitBounds(bounds);
+      }
+    },
+    [allowedArea],
+  );
 
   // أي تغيير في position يحرك الخريطة فعليًا بسلاسة (panTo)
   useEffect(() => {
     if (mapRef.current) {
       mapRef.current.panTo(position);
-      mapRef.current.setZoom(16);
+      // With an allowed area, keep the zoom that shows it.
+      if (!allowedArea) mapRef.current.setZoom(16);
     }
-  }, [position]);
+  }, [allowedArea, position]);
 
   const reverseGeocode = useCallback((lat: number, lng: number) => {
     if (!window.google) return;
@@ -109,13 +142,87 @@ export default function MapLocationModal({
     geocoder.geocode(
       { location: { lat, lng }, language: "ar" },
       (results, status) => {
-      if (status === "OK" && results?.[0]) {
-        setAddress(results[0].formatted_address);
-        setRegion(regionOf(results[0]));
-      }
+        if (status === "OK" && results?.[0]) {
+          setAddress(results[0].formatted_address);
+          setRegion(regionOf(results[0]));
+        }
       },
     );
   }, []);
+
+  const isAllowed = useCallback(
+    (point: { lat: number; lng: number }) =>
+      !allowedArea ||
+      isWithinKm(allowedArea.center, point, allowedArea.radiusKm),
+    [allowedArea],
+  );
+
+  // The last point inside the allowed area, where the pin returns to.
+  const lastAllowed = useRef<{
+    position: { lat: number; lng: number };
+    address: string;
+    region?: string;
+  } | null>(null);
+  // True after a point outside the area was rejected, until the next valid one.
+  const [snappedBack, setSnappedBack] = useState(false);
+
+  useEffect(() => {
+    if (isAllowed(position))
+      lastAllowed.current = { position, address, region };
+  }, [address, isAllowed, position, region]);
+
+  /**
+   * Moves the pin. Outside the allowed area the pin goes back to the last point
+   * inside it (or the area's centre) and the limit message is shown. Returns
+   * whether the point was accepted.
+   */
+  const moveTo = useCallback(
+    (point: { lat: number; lng: number }): boolean => {
+      if (isAllowed(point)) {
+        setSnappedBack(false);
+        setPosition(point);
+        return true;
+      }
+      setSnappedBack(true);
+      const back = lastAllowed.current;
+      if (back) {
+        // A new object, so a dragged marker is moved back too.
+        setPosition({ ...back.position });
+        setAddress(back.address);
+        setRegion(back.region);
+      } else if (allowedArea) {
+        setPosition({ ...allowedArea.center });
+        setAddress("");
+        setRegion(undefined);
+        reverseGeocode(allowedArea.center.lat, allowedArea.center.lng);
+      }
+      return false;
+    },
+    [allowedArea, isAllowed, reverseGeocode],
+  );
+
+  // Opening: the given point when it is allowed, else the area's centre.
+  useEffect(() => {
+    if (!open) return;
+    lastAllowed.current = null;
+    setSnappedBack(false);
+    if (initialLocation && isAllowed(initialLocation)) {
+      setPosition({ lat: initialLocation.lat, lng: initialLocation.lng });
+      setAddress(initialLocation.address);
+      setRegion(initialLocation.region);
+    } else if (allowedArea) {
+      setPosition({ ...allowedArea.center });
+      setAddress("");
+      setRegion(undefined);
+      reverseGeocode(allowedArea.center.lat, allowedArea.center.lng);
+    } else if (initialLocation) {
+      setPosition({ lat: initialLocation.lat, lng: initialLocation.lng });
+      setAddress(initialLocation.address);
+      setRegion(initialLocation.region);
+    }
+    // Only when the dialog opens or its inputs change, not on every pin move.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialLocation, open, allowedArea]);
 
   const handleDragEnd = (e: google.maps.MapMouseEvent) => {
     if (!e.latLng) return;
@@ -123,8 +230,7 @@ export default function MapLocationModal({
     const lat = e.latLng.lat();
     const lng = e.latLng.lng();
 
-    setPosition({ lat, lng });
-    reverseGeocode(lat, lng);
+    if (moveTo({ lat, lng })) reverseGeocode(lat, lng);
   };
 
   const useCurrentLocation = () => {
@@ -141,8 +247,7 @@ export default function MapLocationModal({
         const lat = pos.coords.latitude;
         const lng = pos.coords.longitude;
 
-        setPosition({ lat, lng });
-        reverseGeocode(lat, lng);
+        if (moveTo({ lat, lng })) reverseGeocode(lat, lng);
         setIsLocating(false);
       },
       (err) => {
@@ -199,9 +304,10 @@ export default function MapLocationModal({
         const lng = results[0].geometry.location.lng();
 
         // بيحرك الخريطة فورًا (الـ useEffect فوق بيمسك أي تغيير في position)
-        setPosition({ lat, lng });
-        setAddress(results[0].formatted_address || description || "");
-        setRegion(regionOf(results[0]));
+        if (moveTo({ lat, lng })) {
+          setAddress(results[0].formatted_address || description || "");
+          setRegion(regionOf(results[0]));
+        }
         setPredictions(null);
         setSearch("");
       }
@@ -263,7 +369,29 @@ export default function MapLocationModal({
           )}
         </div>
 
-        <div className="map_placeholder border-stroke-heavy bg-surface-on-background flex h-[420px] flex-col items-center justify-center gap-4 rounded-xl border-2 border-dashed max-md:h-[300px]">
+        <div className="map_placeholder border-stroke-heavy bg-surface-on-background relative flex h-[420px] flex-col items-center justify-center gap-4 overflow-hidden rounded-xl border-2 border-dashed max-md:h-[300px]">
+          {/* Use my current location: a floating button in the map's bottom-left corner. */}
+          <button
+            type="button"
+            onClick={useCurrentLocation}
+            disabled={isLocating}
+            aria-label={t("useCurrentLocation")}
+            aria-busy={isLocating}
+            title={t("useCurrentLocation")}
+            className="bg-surface-elevated text-action-primary absolute bottom-3 left-3 z-10 grid size-11 place-items-center rounded-full border-0 shadow-[0_4px_14px_rgba(30,30,30,0.18)] transition-opacity hover:opacity-90 disabled:cursor-wait"
+          >
+            {isLocating ? (
+              <FiLoader className="size-5 animate-spin" aria-hidden="true" />
+            ) : (
+              <Image
+                src={ICONS.gps.src}
+                width={ICONS.gps.width}
+                height={ICONS.gps.height}
+                alt=""
+                aria-hidden="true"
+              />
+            )}
+          </button>
           {isLoaded ? (
             <GoogleMap
               mapContainerStyle={containerStyle}
@@ -275,7 +403,30 @@ export default function MapLocationModal({
                 zoomControl: true,
               }}
             >
-              <Marker position={position} draggable onDragEnd={handleDragEnd} />
+              {allowedArea && (
+                <Circle
+                  center={allowedArea.center}
+                  radius={allowedArea.radiusKm * 1000}
+                  options={allowedAreaOptions}
+                />
+              )}
+              <Marker
+                position={position}
+                draggable
+                onDragEnd={handleDragEnd}
+                // The design pin; its tip (bottom centre) sits on the point.
+                icon={{
+                  url: ICONS.mapMarker.src,
+                  scaledSize: new window.google.maps.Size(
+                    ICONS.mapMarker.width,
+                    ICONS.mapMarker.height,
+                  ),
+                  anchor: new window.google.maps.Point(
+                    ICONS.mapMarker.width / 2,
+                    ICONS.mapMarker.height,
+                  ),
+                }}
+              />
             </GoogleMap>
           ) : (
             <>
@@ -287,7 +438,6 @@ export default function MapLocationModal({
           )}
         </div>
 
-        {address && <p className="mt-3">{address}</p>}
         {locationError && (
           <p className="text-status-error mt-2 mb-0 text-[13px]">
             {locationError}
@@ -295,22 +445,25 @@ export default function MapLocationModal({
         )}
       </Dialog.Body>
 
-      <Dialog.Footer>
-        <div className="mt-6 flex items-center justify-between gap-4">
+      <Dialog.Footer className={"flex flex-col"}>
+        {address && (
+          <p className="text-text-primary mt-3 mb-0 flex items-center gap-2 text-sm font-bold">
+            <Image
+              src={ICONS.locationChip.src}
+              width={ICONS.locationChip.width}
+              height={ICONS.locationChip.height}
+              alt=""
+              aria-hidden="true"
+              className="size-6 shrink-0"
+            />
+            <span className="min-w-0">{address}</span>
+          </p>
+        )}
+        <div className="flex flex-col gap-1">
           <Button
             type="button"
-            variant="outline"
-            onClick={useCurrentLocation}
-            disabled={isLocating}
-            loading={isLocating}
-            icon={<FiNavigation />}
-          >
-            {/* {isLocating ? <FiLoader className="spin" /> : <FiNavigation />} */}
-            <span>{t("useCurrentLocation")}</span>
-          </Button>
-
-          <Button
-            type="button"
+            className="w-full"
+            disabled={outsideAllowedArea}
             onClick={() =>
               onConfirm({
                 lat: position.lat,
@@ -322,6 +475,25 @@ export default function MapLocationModal({
           >
             {t("confirm")}
           </Button>
+          {allowedArea && (
+            <p
+              className={
+                outsideAllowedArea || snappedBack
+                  ? "text-status-error mt-3 mb-0 text-sm"
+                  : "text-text-primary mt-3 mb-0 text-sm"
+              }
+              role={outsideAllowedArea || snappedBack ? "alert" : undefined}
+            >
+              {t.rich("allowedDistance", {
+                distance: allowedArea.radiusKm.toLocaleString(locale),
+                strong: (chunks) => (
+                  <strong className="text-action-primary font-bold">
+                    {chunks}
+                  </strong>
+                ),
+              })}
+            </p>
+          )}
         </div>
       </Dialog.Footer>
     </Dialog>

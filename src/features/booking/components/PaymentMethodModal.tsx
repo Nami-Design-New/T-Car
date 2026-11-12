@@ -1,79 +1,129 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { RadioCards } from "@/shared/ui/RadioCards";
 import { Dialog } from "@/shared/ui/Dialog";
 import { Button } from "@/shared/ui/Button";
+import { ErrorState } from "@/shared/ui/ErrorState";
+import { Price } from "@/shared/ui/Price";
+import { Skeleton } from "@/shared/ui/Skeleton";
 import { cn } from "@/shared/lib/cn";
-import type { PaymentMethod } from "../model";
-import { ICONS, PAYMENT_ICONS } from "@/shared/config/assets";
-const walletIcon = PAYMENT_ICONS.wallet;
-const cardIcon = PAYMENT_ICONS.card;
-const tabyIcon = PAYMENT_ICONS.tabby;
-const tamaraIcon = PAYMENT_ICONS.tamara;
-const riyalIcon = ICONS.riyal;
+import type { AppError } from "@/shared/lib/errors";
+import { fromActionResult } from "@/shared/lib/result";
+import {
+  getPaymentOptionsAction,
+  walletCoversAlone,
+  type PaymentChoice,
+  type PaymentOptions,
+} from "@/features/orders";
+import { PAYMENT_ICONS } from "@/shared/config/assets";
+import InsufficientBalanceModal from "./InsufficientBalanceModal";
 
 interface Props {
   open: boolean;
   onClose: () => void;
-  onConfirm: (method: PaymentMethod) => void;
+  /** The draft (E2) being paid. */
+  orderId: string;
+  /** The draft's `final_price`: decides whether the wallet can pay alone. */
+  amount: number;
+  onConfirm: (choice: PaymentChoice) => void;
+  /** "Top up now" in the insufficient-balance dialog. */
+  onTopUp: () => void;
+  /** A pay request is running, or a gateway tab is open. */
   loading?: boolean;
+  /** Overrides the confirm label while `loading` (e.g. waiting for the gateway tab). */
+  loadingLabel?: string;
   /** Already translated; the dialog stays open and shows it after a failed submit. */
   error?: string;
 }
 
-interface PaymentOption {
-  id: PaymentMethod;
-  title: string;
-  description: string;
-  icon: { src: string; width: number; height: number };
-  iconAlt: string;
-  iconWidth: number;
-  iconHeight: number;
-}
+type OptionsState =
+  | { status: "loading" }
+  | { status: "error"; error: AppError }
+  | { status: "ready"; options: PaymentOptions };
 
-const OPTIONS: PaymentOption[] = [
-  {
-    id: "visa",
-    title: "visa.title",
-    description: "visa.description",
-    icon: cardIcon,
-    iconAlt: "",
-    iconWidth: 24,
-    iconHeight: 24,
-  },
-  {
-    id: "tabby",
-    title: "tabby.title",
-    description: "tabby.description",
-    icon: tabyIcon,
-    iconAlt: "",
-    iconWidth: 58,
-    iconHeight: 24,
-  },
-  {
-    id: "tamara",
-    title: "tamara.title",
-    description: "tamara.description",
-    icon: tamaraIcon,
-    iconAlt: "",
-    iconWidth: 66,
-    iconHeight: 24,
-  },
-];
+/** Local icons for the E3 `type` (Q8); an unknown type gets the card icon. */
+const METHOD_ICONS: Record<string, { src: string; width: number }> = {
+  tabby: { src: PAYMENT_ICONS.tabby.src, width: 58 },
+  tamara: { src: PAYMENT_ICONS.tamara.src, width: 66 },
+};
+const DEFAULT_METHOD_ICON = { src: PAYMENT_ICONS.card.src, width: 24 };
+/** Types with a translated description under `booking.payment.options`. */
+const DESCRIBED_TYPES = new Set(["tabby", "tamara"]);
 
+const cardClass =
+  "flex min-h-14.5 items-center justify-between gap-4 rounded-sm border border-stroke-light bg-surface-elevated px-3 py-2 text-start transition-[border-color,background-color] hover:border-action-primary/50";
+const selectedClass = "!border-action-primary/50 !bg-surface-card-primary";
+
+/**
+ * Checkout step 3 (O6). Methods and the wallet balance come from E3. R14: the
+ * wallet is a card that can always be chosen together with one method (the
+ * wallet pays first); the wallet alone needs a balance that covers the total,
+ * otherwise the insufficient-balance dialog opens. No points (R13).
+ */
 export default function PaymentMethodModal({
   open,
   onClose,
+  orderId,
+  amount,
   onConfirm,
+  onTopUp,
   loading = false,
+  loadingLabel,
   error,
 }: Props) {
   const t = useTranslations("booking.payment");
-  const [method, setMethod] = useState<PaymentMethod>("wallet");
-  const [usePoints, setUsePoints] = useState(false);
+  const [state, setState] = useState<OptionsState>({ status: "loading" });
+  const [useWallet, setUseWallet] = useState(false);
+  const [methodId, setMethodId] = useState<string | null>(null);
+  const [lowBalanceOpen, setLowBalanceOpen] = useState(false);
+
+  const load = useCallback(async () => {
+    setState({ status: "loading" });
+    const result = fromActionResult(await getPaymentOptionsAction(orderId));
+    setState(
+      result.ok
+        ? { status: "ready", options: result.data }
+        : { status: "error", error: result.error },
+    );
+  }, [orderId]);
+
+  useEffect(() => {
+    if (open) void load();
+  }, [open, load]);
+
+  const options = state.status === "ready" ? state.options : null;
+  const balance = options?.walletBalance ?? 0;
+  const walletCovers = walletCoversAlone(balance, amount);
+  // When the wallet covers everything, the backend pays from it at once, so
+  // the method is not sent (no gateway tab opens for nothing).
+  const choice: PaymentChoice = {
+    useWallet,
+    paymentMethodId: useWallet && walletCovers ? null : methodId,
+  };
+  const canConfirm = options !== null && (useWallet || methodId !== null);
+
+  // The wallet is a card that combines with any method (R14). An empty
+  // wallet cannot be chosen: it asks for a top-up instead.
+  const toggleWallet = () => {
+    if (!useWallet && balance <= 0) {
+      setLowBalanceOpen(true);
+      return;
+    }
+    setUseWallet(!useWallet);
+  };
+
+  // The wallet alone must cover the total; otherwise ask for a top-up (or a method).
+  const confirm = () => {
+    if (useWallet && methodId === null && !walletCovers) {
+      setLowBalanceOpen(true);
+      return;
+    }
+    onConfirm(choice);
+  };
+
   return (
     <Dialog
       open={open}
@@ -86,117 +136,112 @@ export default function PaymentMethodModal({
         <Dialog.Close />
       </Dialog.Header>
 
-      <div className="flex flex-col gap-4">
-        <RadioCards.Root
-          value={method}
-          onValueChange={(value) => setMethod(value as PaymentMethod)}
-          aria-label={t("title")}
-          className="flex flex-col gap-4"
-        >
-          <RadioCards.Item
-            value="wallet"
+      {state.status === "loading" && (
+        <div className="flex flex-col gap-4" aria-busy="true">
+          <Skeleton shape="rect" height={58} />
+          <Skeleton shape="rect" height={58} />
+          <Skeleton shape="rect" height={58} />
+        </div>
+      )}
+
+      {state.status === "error" && (
+        <ErrorState error={state.error} onRetry={load} size="inline" />
+      )}
+
+      {options && (
+        <div className="flex flex-col gap-4">
+          <button
+            type="button"
+            role="checkbox"
+            aria-checked={useWallet}
+            aria-label={t("useWallet")}
+            disabled={loading}
+            onClick={toggleWallet}
             className={cn(
-              "flex min-h-14.5 items-center justify-between gap-4 rounded-sm border border-stroke-light bg-surface-elevated px-3 py-2 text-start transition-[border-color,background-color] hover:border-action-primary/50",
-              method === "wallet" &&
-                "!border-action-primary/50 !bg-surface-card-primary",
+              cardClass,
+              "w-full cursor-pointer disabled:cursor-not-allowed disabled:opacity-60",
+              useWallet && selectedClass,
             )}
           >
             <span className="flex min-w-0 flex-col gap-1">
-              <span className="text-lg font-bold text-text-primary">
+              <span className="text-text-primary text-lg font-bold">
                 {t("wallet")}
               </span>
-              <span className="text-base text-text-disabled">
+              <span className="text-text-disabled text-base">
                 {t("walletDescription")}
               </span>
             </span>
             <span className="flex shrink-0 items-center gap-2" dir="ltr">
-              <Image src={walletIcon} alt="" width={24} height={24} />
-              <strong className="flex items-center gap-1 text-base font-bold text-text-primary">
-                500
-                <Image
-                  src={riyalIcon}
-                  alt={t("currency")}
-                  width={14}
-                  height={14}
-                />
-              </strong>
-            </span>
-          </RadioCards.Item>
-
-          {OPTIONS.map((option) => (
-            <RadioCards.Item
-              key={option.id}
-              value={option.id}
-              className={cn(
-                "flex min-h-14.5 items-center justify-between gap-4 rounded-sm border border-stroke-light bg-surface-elevated px-3 py-2 text-start transition-[border-color,background-color] hover:border-action-primary/50",
-                method === option.id &&
-                  "!border-action-primary/50 !bg-surface-card-primary",
-              )}
-            >
-              <span className="flex min-w-0 flex-col gap-1">
-                <span className="text-lg font-bold text-text-primary">
-                  {t(`options.${option.id}.title`)}
-                </span>
-                <span className="text-base text-text-disabled">
-                  {t(`options.${option.id}.description`)}
-                </span>
-              </span>
-              <span className="flex shrink-0 items-center" dir="ltr">
-                <Image
-                  src={option.icon}
-                  alt={option.iconAlt}
-                  width={option.iconWidth}
-                  height={option.iconHeight}
-                />
-              </span>
-            </RadioCards.Item>
-          ))}
-        </RadioCards.Root>
-
-        <label className="flex min-h-14.5 cursor-pointer items-center justify-between gap-4 rounded-sm border border-stroke-light bg-surface-elevated px-3 py-2 text-start">
-          <span className="flex min-w-0 flex-col gap-1">
-            <span className="text-lg font-bold text-text-primary">
-              {t("points")}
-            </span>
-            <span className="text-base text-text-disabled">
-              {t("pointsDescription")}
-            </span>
-          </span>
-          <span className="flex shrink-0 items-center gap-4" dir="ltr">
-            <span className="relative inline-flex shrink-0">
-              <input
-                className="peer sr-only"
-                type="checkbox"
-                role="switch"
-                checked={usePoints}
-                onChange={(e) => setUsePoints(e.target.checked)}
+              <Image
+                src={PAYMENT_ICONS.wallet.src}
+                alt=""
+                width={24}
+                height={24}
               />
-              <span className="relative h-6 w-11 rounded-full bg-surface-disabled transition-colors peer-checked:bg-action-primary peer-focus-visible:outline-2 peer-focus-visible:outline-action-primary peer-focus-visible:outline-offset-2 after:absolute after:inset-s-0.5 after:top-0.5 after:size-5 after:rounded-full after:bg-white after:shadow-sm after:transition-transform peer-checked:after:translate-x-5 rtl:peer-checked:after:-translate-x-5" />
+              <Price amount={balance} size="sm" />
             </span>
-            <span className="flex flex-col items-start gap-0.5" dir="rtl">
-              <small className="text-[10px] text-text-primary">
-                {t("upTo")}{" "}
-                <strong className="font-semibold text-status-error">
-                  100 {t("pointsUnit")}
-                </strong>
-              </small>
-              <span className="flex items-center gap-1 text-base text-text-primary">
-                <span>=</span>
-                <strong className="text-lg font-bold">500</strong>
-                <Image
-                  src={riyalIcon}
-                  alt={t("currency")}
-                  width={12}
-                  height={12}
-                />
-              </span>
-            </span>
-          </span>
-        </label>
-      </div>
+          </button>
+
+          {useWallet && (
+            <p className="text-text-subtle m-0 text-sm" role="status">
+              {walletCovers ? t("walletCovers") : t("walletPartial")}
+            </p>
+          )}
+
+          {options.methods.length === 0 ? (
+            <p className="text-text-subtle m-0 text-sm">{t("noMethods")}</p>
+          ) : (
+            <RadioCards.Root
+              value={methodId ?? ""}
+              onValueChange={setMethodId}
+              aria-label={t("methodsTitle")}
+              className="flex flex-col gap-4"
+              disabled={loading}
+            >
+              {options.methods.map((method) => {
+                const icon = METHOD_ICONS[method.type] ?? DEFAULT_METHOD_ICON;
+                return (
+                  <RadioCards.Item
+                    key={method.id}
+                    value={method.id}
+                    // Clicking the chosen method again clears it, so the
+                    // wallet can still pay alone.
+                    onClick={() => {
+                      if (methodId === method.id) setMethodId(null);
+                    }}
+                    className={cn(
+                      cardClass,
+                      methodId === method.id && selectedClass,
+                    )}
+                  >
+                    <span className="flex min-w-0 flex-col gap-1">
+                      <span className="text-text-primary text-lg font-bold">
+                        {method.title}
+                      </span>
+                      {DESCRIBED_TYPES.has(method.type) && (
+                        <span className="text-text-disabled text-base">
+                          {t(`options.${method.type}.description`)}
+                        </span>
+                      )}
+                    </span>
+                    <span className="flex shrink-0 items-center" dir="ltr">
+                      <Image
+                        src={icon.src}
+                        alt=""
+                        width={icon.width}
+                        height={24}
+                      />
+                    </span>
+                  </RadioCards.Item>
+                );
+              })}
+            </RadioCards.Root>
+          )}
+        </div>
+      )}
 
       {error && (
-        <p className="text-status-error text-sm mt-4 mb-0" role="alert">
+        <p className="text-status-error mt-4 mb-0 text-sm" role="alert">
           {error}
         </p>
       )}
@@ -204,11 +249,21 @@ export default function PaymentMethodModal({
       <Button
         type="button"
         size="lg"
-        onClick={() => onConfirm(method)}
+        onClick={confirm}
+        disabled={!canConfirm}
         loading={loading}
       >
-        {loading ? t("confirming") : t("confirm")}
+        {loading ? (loadingLabel ?? t("confirming")) : t("confirm")}
       </Button>
+
+      <InsufficientBalanceModal
+        open={lowBalanceOpen}
+        onClose={() => setLowBalanceOpen(false)}
+        onConfirm={() => {
+          setLowBalanceOpen(false);
+          onTopUp();
+        }}
+      />
     </Dialog>
   );
 }

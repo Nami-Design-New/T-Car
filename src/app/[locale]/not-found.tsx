@@ -10,8 +10,40 @@ export default function NotFound() {
   return (
     <div className="flex min-h-[calc(100vh-100px)] items-center justify-center py-20 text-center max-md:py-[60px]">
       <div className="mx-auto flex w-full max-w-[1280px] flex-col items-center px-4">
-        <div className="mb-6 w-[min(400px,90%)] max-md:w-[min(320px,90%)]">
-          <svg viewBox="0 0 400 240" xmlns="http://www.w3.org/2000/svg">
+        <div className="mb-6 w-[min(440px,90%)] max-md:w-[min(320px,90%)]">
+          <svg
+            viewBox="0 0 400 240"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true"
+          >
+            {/* Soft backdrop depth for the road */}
+            <path
+              d="M10 184 Q 200 144 390 184"
+              stroke="var(--color-stroke-light)"
+              strokeWidth="48"
+              fill="none"
+              strokeLinecap="round"
+            />
+
+            {/* A ground haze and two drifting clouds */}
+            <g className="animate-[nfDrift_3.5s_ease-in-out_infinite] motion-reduce:animate-none">
+              <path
+                d="M28 44 h48 a16 16 0 0 1 0 32 h-48 a16 16 0 0 1 0 -32 z"
+                fill="var(--color-surface-card-primary)"
+              />
+              <circle cx="70" cy="42" r="10" fill="var(--color-surface-card-primary)" />
+            </g>
+            <g
+              className="animate-[nfDrift_4.2s_ease-in-out_infinite_0.8s] motion-reduce:animate-none"
+              opacity="0.8"
+            >
+              <path
+                d="M292 28 h40 a14 14 0 0 1 0 28 h-40 a14 14 0 0 1 0 -28 z"
+                fill="var(--color-surface-card-primary)"
+              />
+              <circle cx="326" cy="26" r="8" fill="var(--color-surface-card-primary)" />
+            </g>
+
             <path
               d="M0 180 Q 200 140 400 180"
               stroke="var(--color-stroke-heavy)"
@@ -144,7 +176,7 @@ export default function NotFound() {
         <div className="flex flex-wrap items-center justify-center gap-4 max-md:w-full max-md:flex-col">
           <Link
             href="/"
-            className="border-action-primary bg-action-primary text-text-on-action inline-flex h-[38px] items-center justify-center rounded-md border px-5 font-semibold hover:opacity-90 max-md:w-full"
+            className="border-action-primary bg-action-primary text-text-on-action inline-flex h-[38px] items-center justify-center rounded-md border px-5 font-semibold hover:opacity-90 focus-visible:outline-2 focus-visible:outline-action-primary max-md:w-full"
           >
             <span>
               <FiHome className="me-2" />
@@ -154,7 +186,7 @@ export default function NotFound() {
 
           <Link
             href="/cities"
-            className="border-stroke-light text-text-primary inline-flex h-[38px] items-center justify-center rounded-md border bg-transparent px-5 font-semibold hover:bg-neutral-100 max-md:w-full"
+            className="border-stroke-light text-text-primary inline-flex h-[38px] items-center justify-center rounded-md border bg-transparent px-5 font-semibold hover:bg-neutral-100 focus-visible:outline-2 focus-visible:outline-action-primary max-md:w-full"
           >
             <span>
               <FiSearch className="me-2" />

@@ -1,11 +1,12 @@
 import { BookingsTab, parseBookingTab } from '@/features/my-bookings';
-import { getMyBookings } from '@/features/my-bookings/queries';
+import { getMyBookings } from '@/features/orders/queries';
 
 interface Props {
   searchParams: Promise<{ status?: string | string[] }>;
 }
 
 export default async function BookingsPage({ searchParams }: Props) {
-  const [{ status }, bookings] = await Promise.all([searchParams, getMyBookings()]);
-  return <BookingsTab bookings={bookings} status={parseBookingTab(status)} />;
+  const tab = parseBookingTab((await searchParams).status);
+  const initialPage = await getMyBookings(tab);
+  return <BookingsTab initialPage={initialPage} status={tab} />;
 }

@@ -27,6 +27,7 @@ interface CarOfficeRowProps {
   onLoadMore?: () => void;
   onRetry?: () => void;
   onSelectCar?: (car: CarListing) => void;
+  showAirportPickup?: boolean;
 }
 
 interface NavState {
@@ -50,6 +51,7 @@ export default function CarOfficeRow({
   onLoadMore,
   onRetry,
   onSelectCar,
+  showAirportPickup = false,
 }: CarOfficeRowProps) {
   const t = useTranslations("officeRow");
   const titleId = useId();
@@ -141,6 +143,7 @@ export default function CarOfficeRow({
           <SwiperSlide key={car.id} className="h-auto!">
             <CarCard
               car={car}
+              showAirportPickup={showAirportPickup}
               onSelect={
                 onSelectCar
                   ? (selectedCar) => {

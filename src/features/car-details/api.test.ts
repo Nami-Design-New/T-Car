@@ -9,7 +9,11 @@ vi.mock("@/services/http/server", () => ({
 }));
 
 import { carDetailsApi, mapCarDetails } from "./api";
-import { parseCarDetailsQuery, withDefaultRentalContext } from "./model";
+import {
+  parseCarDetailsQuery,
+  toSafeCarDetailsSearchParams,
+  withDefaultRentalContext,
+} from "./model";
 
 beforeEach(() => vi.clearAllMocks());
 
@@ -147,6 +151,20 @@ describe("parseCarDetailsQuery", () => {
     });
   });
 
+  it("accepts backend-style query names", () => {
+    expect(
+      parseCarDetailsQuery({
+        booking_type: "international",
+        delivery_type: "to_location",
+        country_id: "12",
+      }),
+    ).toMatchObject({
+      bookingType: "international",
+      deliveryType: "to_location",
+      countryId: "12",
+    });
+  });
+
   it("omits an incomplete or invalid location tuple", () => {
     expect(
       parseCarDetailsQuery({ region: "Riyadh", lat: "999", lng: "46" }),
@@ -165,7 +183,7 @@ describe("withDefaultRentalContext", () => {
     });
   });
 
-  it("keeps the selected flow values and location", () => {
+  it("keeps delivery locations for airport and station reads", () => {
     const location = { region: "Riyadh", latitude: 24.7, longitude: 46.6 };
     expect(
       withDefaultRentalContext({
@@ -175,20 +193,52 @@ describe("withDefaultRentalContext", () => {
         airportId: "12",
       }),
     ).toEqual({
-      location,
       bookingType: "airport",
-      deliveryType: "to_location",
+      deliveryType: "from_airport",
       airportId: "12",
+      location,
     });
+    expect(
+      withDefaultRentalContext({ bookingType: "station", stationId: "4" }),
+    ).toEqual({
+      bookingType: "station",
+      deliveryType: "from_station",
+      stationId: "4",
+    });
+    expect(
+      withDefaultRentalContext({
+        bookingType: "daily",
+        deliveryType: "to_location",
+      }),
+    ).toEqual({ bookingType: "daily", deliveryType: "to_location" });
     expect(withDefaultRentalContext({ bookingType: "monthly" })).toEqual({
       bookingType: "monthly",
       deliveryType: "from_branch",
     });
   });
+
+  it("falls back to daily from-branch when country is removed from international context", () => {
+    expect(withDefaultRentalContext({ bookingType: "international" })).toEqual({
+      bookingType: "daily",
+      deliveryType: "from_branch",
+    });
+  });
+
+  it("rewrites an incomplete international URL to the daily context", () => {
+    const search = toSafeCarDetailsSearchParams({
+      region: "Riyadh",
+      booking_type: "international",
+      delivery_type: "to_location",
+    });
+
+    expect(search?.get("booking_type")).toBe("daily");
+    expect(search?.get("delivery_type")).toBe("from_branch");
+    expect(search?.has("country_id")).toBe(false);
+  });
 });
 
 describe("carDetailsApi.getCarDetails", () => {
-  it("maps core fields and sends selected context under backend names", async () => {
+  it("maps core fields and sends the location for airport reads", async () => {
     get.mockResolvedValue(envelope(details));
 
     await expect(
@@ -198,14 +248,14 @@ describe("carDetailsApi.getCarDetails", () => {
           latitude: 24.7136,
           longitude: 46.6753,
         },
-        deliveryType: "to_location",
+        deliveryType: "from_airport",
         bookingType: "airport",
         airportId: "12",
       }),
     ).resolves.toEqual(mapCarDetails(details));
 
     expect(get).toHaveBeenCalledWith(
-      "/cars/3?region=Riyadh+Region&latitude=24.7136&longitude=46.6753&delivery_type=to_location&booking_type=airport&airport_id=12",
+      "/cars/3?region=Riyadh+Region&latitude=24.7136&longitude=46.6753&delivery_type=from_airport&booking_type=airport&airport_id=12",
     );
   });
 
@@ -372,6 +422,8 @@ describe("carDetailsApi.getCarDetails", () => {
 
     const { clientInstructions } = await carDetailsApi.getPolicies();
     expect(clientInstructions[0]).toContain("<p>Drive safe</p>");
-    expect(clientInstructions[0]).not.toMatch(/onclick|onerror|javascript:|<style/);
+    expect(clientInstructions[0]).not.toMatch(
+      /onclick|onerror|javascript:|<style/,
+    );
   });
 });

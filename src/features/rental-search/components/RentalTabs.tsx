@@ -69,13 +69,13 @@ export default function RentalTabs({
 
   if (variant === "dialog") {
     return (
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-[repeat(auto-fit,minmax(110px,1fr))] sm:gap-5">
+      <div className="flex flex-wrap gap-3 sm:gap-5">
         {availableTabs.map((tab) => (
           <button
             key={tab.id}
             type="button"
             onClick={() => onSelect(tab.type)}
-            className="group bg-primary-100 hover:bg-primary-200 focus-visible:outline-action-primary flex min-h-35 cursor-pointer flex-col items-center justify-center gap-2 rounded-[20px] border-0 px-3 py-4 text-center transition duration-200 hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-3"
+            className="group bg-primary-100 hover:bg-primary-200 focus-visible:outline-action-primary flex min-h-35 min-w-1/3 flex-1 cursor-pointer flex-col items-center justify-center gap-2 rounded-[20px] border-0 px-3 py-4 text-center transition duration-200 hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-3"
           >
             <Image
               className="size-11 object-contain transition group-hover:scale-105"

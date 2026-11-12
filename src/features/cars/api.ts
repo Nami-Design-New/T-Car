@@ -451,7 +451,8 @@ async function listCarsListing(
     `/cars-listing?${search}`,
     { headers: { "Accept-Language": locale } },
   );
-
+  console.info(`[cars-listing params] `, search);
+  console.info(`[cars-listing] `, response);
   return toCheckedPage(response, isCompanyCarsGroup, mapCompanyCarsGroup);
 }
 
@@ -468,6 +469,7 @@ async function listListingCompanyCars(
     COMPANY_CARS_PER_PAGE,
     companyId,
   );
+
   const response = await publicServerHttp.get<ApiEnvelope<unknown>>(
     `/company-cars?${search}`,
     { headers: { "Accept-Language": locale } },

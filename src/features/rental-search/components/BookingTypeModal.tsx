@@ -22,17 +22,10 @@ export default function BookingTypeModal({
   const t = useTranslations("rentalSearch.booking");
 
   return (
-    <Dialog
-      open={open}
-      onClose={onClose}
-      size="lg"
-      className="booking-type-dialog max-w-[650px] gap-0 rounded-[20px] px-7 py-6 sm:px-10 sm:py-7"
-    >
+    <Dialog open={open} onClose={onClose} size="lg">
       <Dialog.Header className="items-center">
-        <Dialog.Title className="text-[clamp(1.4rem,3vw,1.85rem)] font-extrabold">
-          {t("title")}
-        </Dialog.Title>
-        <Dialog.Close className="size-13 border-2 border-action-primary bg-transparent text-2xl text-text-primary hover:bg-primary-100" />
+        <Dialog.Title>{t("title")}</Dialog.Title>
+        <Dialog.Close />
       </Dialog.Header>
       <Dialog.Body className="mt-6 overflow-visible">
         <RentalTabs

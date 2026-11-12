@@ -41,7 +41,10 @@ export default function Hero({
   const currentSearchParams = useSearchParams();
   const [showFilters, setShowFilters] = useState(false);
   const flow = useRentalFlow({
-    onComplete: (params) => router.push(`/cars?${params.toString()}`),
+    onComplete: (params) => {
+      params.set("entry", "hero");
+      router.push(`/cars?${params.toString()}`);
+    },
   });
 
   const navigateToCars = (params: URLSearchParams) => {

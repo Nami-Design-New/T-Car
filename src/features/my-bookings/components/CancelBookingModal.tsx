@@ -3,9 +3,20 @@
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { Dialog } from "@/shared/ui/Dialog";
+import { Price } from "@/shared/ui/Price";
 
 import { IMAGES } from "@/shared/config/assets";
+import { cn } from "@/shared/lib/cn";
+import { Button } from "@/shared/ui/Button";
+import { Skeleton } from "@/shared/ui/Skeleton";
 const cancelBookingImage = IMAGES.cancelBooking;
+
+export interface CancelQuote {
+  paidAmount: number;
+  discountPercent: number;
+  cancellationFee: number;
+  total: number;
+}
 
 interface Props {
   open: boolean;
@@ -13,8 +24,8 @@ interface Props {
   onConfirm: () => void;
 
   bookingAmount: number;
-  cancellationPercent: number;
-  cancellationFee: number;
+  /** E8 quote data loaded before the confirmation can be submitted. */
+  quote?: CancelQuote;
   loading?: boolean;
   /** Already translated; the dialog stays open and shows it after a failed submit. */
   error?: string;
@@ -25,31 +36,36 @@ export default function CancelBookingModal({
   onClose,
   onConfirm,
   bookingAmount,
-  cancellationPercent,
-  cancellationFee,
+  quote,
   loading = false,
   error,
 }: Props) {
-  const refundedAmount = bookingAmount - cancellationFee;
   const t = useTranslations("myBookings.cancel");
+  const quoteLoading = loading && quote === undefined;
+  // Keep the layout usable while the quote request is still in flight.
+  const paidAmount = quote?.paidAmount ?? bookingAmount;
+  const discountPercent = quote?.discountPercent ?? 0;
+  const cancellationFee = quote?.cancellationFee ?? 0;
+  const refundedAmount =
+    quote?.total ?? Math.max(paidAmount - cancellationFee, 0);
 
   return (
     <Dialog
       open={open}
       onClose={onClose}
-      placement="bottom-sheet"
+      placement="center"
+      size="lg"
       label={t("dialogLabel")}
     >
-      <div className="relative box-border max-h-[92vh] w-[600px] max-w-full rounded-xl bg-surface-elevated px-6 pt-10 pb-6 shadow-[0_20px_50px_rgba(30,30,30,0.15)] max-[620px]:pt-8">
-        {/* Close */}
-        <div className="mb-1 flex items-center justify-between">
-          <Dialog.Title className="py-2.5 text-[22px] text-text-primary">
-            {t("title")}
-          </Dialog.Title>
-          <Dialog.Close />
-        </div>
-
-        <div className="mb-3 flex h-[120px] w-full items-center justify-center">
+      {/* Close */}
+      <Dialog.Header>
+        <Dialog.Title className="text-text-primary py-2.5 text-[22px]">
+          {t("title")}
+        </Dialog.Title>
+        <Dialog.Close />
+      </Dialog.Header>
+      <Dialog.Body>
+        <div className="mb-3 flex h-30 w-full items-center justify-center">
           <Image
             src={cancelBookingImage}
             alt={t("title")}
@@ -59,89 +75,130 @@ export default function CancelBookingModal({
         </div>
 
         <div className="mb-3.5 text-center">
-          <h3 className="m-0 text-[15px] font-bold leading-relaxed text-text-primary">
+          <h3 className="text-text-primary m-0 text-[15px] leading-relaxed font-bold">
             {t("question")}
           </h3>
         </div>
 
-        <div className="mb-[18px] w-full rounded-sm bg-status-error-background px-4 py-3 text-center">
-          <p className="m-0 text-[11.5px] leading-relaxed text-text-subtle">
-            {t("warning", { percent: cancellationPercent })}
-          </p>
-        </div>
-
-        <div className="mb-4 w-full">
-          <h3 className="mb-1.5 text-end text-[15px] font-bold text-text-primary">
-            {t("amountDetails")}
-          </h3>
-
-          <div className="flex min-h-9 w-full flex-nowrap items-center justify-between gap-2 border-b border-dashed border-stroke-light px-1">
-            <span className="min-w-0 text-[13px] text-text-subtle">
-              {t("paid")}
-            </span>
-            <strong className="min-w-0 whitespace-nowrap text-[13px] font-medium text-text-primary">
-              {bookingAmount} {t("currency")}
-            </strong>
+        {quoteLoading ? (
+          <Skeleton shape="rect" height="3.5rem" className="mb-4.5" />
+        ) : (
+          <div className="bg-status-error-background mb-4.5 rounded-sm px-4 py-3 text-center">
+            <p className="text-text-primary m-0 text-[12px] leading-relaxed">
+              {t("feePolicy", { percent: discountPercent })}
+            </p>
           </div>
+        )}
 
-          <div className="flex min-h-9 w-full flex-nowrap items-center justify-between gap-2 border-b border-dashed border-stroke-light px-1 text-status-error">
-            <span className="min-w-0 text-[13px]">{t("discountPercent")}</span>
-            <strong className="min-w-0 whitespace-nowrap text-[13px] font-medium">
-              {cancellationPercent}%
-            </strong>
+        {quoteLoading ? (
+          <div className="mb-4 flex w-full flex-col gap-3" aria-busy="true">
+            <Skeleton width="8rem" />
+            <Skeleton shape="rect" height="11rem" />
+            <Skeleton shape="rect" height="6.5rem" />
           </div>
+        ) : (
+          <div className="mb-4 w-full">
+            <h3 className="text-text-primary mb-1.5 text-base font-bold">
+              {t("amountDetails")}
+            </h3>
 
-          <div className="flex min-h-9 w-full flex-nowrap items-center justify-between gap-2 border-b border-dashed border-stroke-light px-1 text-status-error">
-            <span className="min-w-0 text-[13px]">{t("cancellationFee")}</span>
-            <strong className="min-w-0 whitespace-nowrap text-[13px] font-medium">
-              -{cancellationFee} {t("currency")}
-            </strong>
+            <div className="border-stroke-light divide-stroke-light w-full divide-y divide-dashed">
+              <AmountRow label={t("paid")} amount={paidAmount} />
+              <div className="border-stroke-light flex min-h-9 items-center justify-between gap-2 border-x-0 border-b border-dashed px-1">
+                <span className="text-text-subtle min-w-0 text-[13px]">
+                  {t("discountPercent")}
+                </span>
+                <strong className="text-status-error min-w-0 text-[13px] font-medium whitespace-nowrap">
+                  {discountPercent}%
+                </strong>
+              </div>
+              <AmountRow
+                label={t("cancellationFee")}
+                amount={-cancellationFee}
+                amountClassName="text-status-error"
+              />
+              <AmountRow
+                label={t("total")}
+                total={true}
+                amount={refundedAmount}
+                amountClassName="text-text-primary font-bold"
+              />
+            </div>
+
+            <div className="bg-action-primary/10 mt-4 rounded-xl px-4 py-3 text-center">
+              <p className="text-text-primary m-0 text-[13px] font-semibold">
+                {t("refundedToYou")}
+              </p>
+              <Price
+                amount={refundedAmount}
+                size="xl"
+                amountClassName="text-text-primary text-3xl font-bold"
+                className="mt-1 justify-center gap-2"
+              />
+            </div>
           </div>
-
-          <div className="flex min-h-9 w-full flex-nowrap items-center justify-between gap-2 border-b border-dashed border-stroke-light px-1 last:border-0">
-            <span className="min-w-0 text-[13px] text-text-subtle">
-              {t("refunded")}
-            </span>
-            <strong className="min-w-0 whitespace-nowrap text-[13px] font-semibold text-text-primary">
-              {refundedAmount} {t("currency")}
-            </strong>
-          </div>
-        </div>
-
-        <div className="mb-4 flex w-full flex-col items-center justify-center rounded-sm bg-surface-card-primary p-3 text-center">
-          <span className="mb-1 text-[11px] text-text-subtle">
-            {t("refundedToYou")}
-          </span>
-          <strong className="text-xl font-bold text-text-primary">
-            {refundedAmount} {t("currency")}
-          </strong>
-        </div>
+        )}
 
         {error && (
-          <p className="text-status-error text-sm mb-2" role="alert">
+          <p className="text-status-error mb-2 text-sm" role="alert">
             {error}
           </p>
         )}
-
+      </Dialog.Body>
+      <Dialog.Footer>
         <div className="flex w-full items-stretch gap-2">
-          <button
+          <Button
             type="button"
-            className="order-1 h-[46px] min-w-0 flex-1 cursor-pointer rounded-sm border-0 bg-action-primary text-[13px] font-semibold text-white transition hover:opacity-90 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
+            size="lg"
+            className="grow"
             onClick={onConfirm}
             disabled={loading}
+            loading={loading && quote !== undefined}
           >
-            {loading ? t("cancelling") : t("confirm")}
-          </button>
+            {t("confirm")}
+          </Button>
 
-          <button
+          <Button
             type="button"
-            className="order-2 h-[46px] w-20 shrink-0 cursor-pointer rounded-sm border border-stroke-heavy bg-surface-elevated text-[13px] font-semibold text-text-subtle transition hover:opacity-90 active:scale-[0.98]"
+            variant="outline"
+            size="lg"
+            className="border-stroke-heavy bg-surface-elevated text-text-subtle order-2 w-20 shrink-0"
             onClick={onClose}
           >
             {t("back")}
-          </button>
+          </Button>
         </div>
-      </div>
+      </Dialog.Footer>
     </Dialog>
+  );
+}
+
+function AmountRow({
+  label,
+  amount,
+  amountClassName,
+  total,
+}: {
+  label: string;
+  amount: number;
+  amountClassName?: string;
+  total?: boolean;
+}) {
+  return (
+    <div className="border-stroke-light flex min-h-9 items-center justify-between gap-2 border-x-0 border-t-0 border-b border-dashed px-1">
+      <span
+        className={cn(
+          "text-text-subtle min-w-0",
+          total ? "text-xl font-bold" : "text-sm",
+        )}
+      >
+        {label}
+      </span>
+      <Price
+        amount={amount}
+        size="sm"
+        amountClassName={`text-[13px] font-medium ${amountClassName ?? "text-text-primary"}`}
+      />
+    </div>
   );
 }

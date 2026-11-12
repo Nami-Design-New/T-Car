@@ -30,6 +30,9 @@ const requestSchema = z
     typeIds: optionalIds,
     serviceIds: optionalIds,
     companyIds: optionalIds,
+    bookingType: z
+      .enum(["daily", "monthly", "airport", "station", "international"])
+      .optional(),
     deliveryType: z.enum(["to_location", "from_branch"]).optional(),
     airportId: z.string().regex(/^\d+$/).optional(),
     stationId: z.string().regex(/^\d+$/).optional(),
@@ -60,6 +63,7 @@ export async function GET(request: NextRequest) {
     typeIds: idsFrom(search, "type_id"),
     serviceIds: idsFrom(search, "service_id"),
     companyIds: idsFrom(search, "company_id"),
+    bookingType: search.get("booking_type") ?? undefined,
     deliveryType: search.get("delivery_type") ?? undefined,
     airportId: search.get("airport_id") ?? undefined,
     stationId: search.get("train_station_id") ?? undefined,
@@ -76,7 +80,6 @@ export async function GET(request: NextRequest) {
       { ...query, source } as CarsListingQuery,
       page,
     );
-
     return NextResponse.json(data);
   } catch (error) {
     const status =

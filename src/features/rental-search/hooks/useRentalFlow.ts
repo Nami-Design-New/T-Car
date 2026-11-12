@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useState } from "react";
+import { readGuestLocation } from "@/shared/lib/guest-location";
 import type { LocationData } from "@/shared/lib/location";
 import type { Airport, Country, RentalType, Station } from "../model";
 
@@ -24,8 +25,9 @@ interface Options {
 }
 
 /**
- * Rental-type flow: tab → (country → pickup | airport | station | pickup)
- * → map → `/cars`. Each choice is carried into the final search params.
+ * Rental-type flow: tab → (country → pickup | pickup) → map → `/cars`.
+ * Airport and station reuse the saved guest location when it is available.
+ * Each choice is carried into the final search params.
  */
 export function useRentalFlow({ onComplete }: Options) {
   const [rentalType, setRentalType] = useState<RentalType | null>(null);
@@ -63,12 +65,36 @@ export function useRentalFlow({ onComplete }: Options) {
 
   const confirmAirport = (selected: Airport) => {
     setAirport(selected);
-    setStep("map");
+    const location = readGuestLocation();
+    const region = location?.region?.trim();
+    const params = new URLSearchParams({
+      type: "airport",
+      airportId: String(selected.id),
+    });
+    if (location && region) {
+      params.set("lat", String(location.lat));
+      params.set("lng", String(location.lng));
+      params.set("region", region);
+    }
+    setStep(null);
+    onComplete(params);
   };
 
   const confirmStation = (selected: Station) => {
     setStation(selected);
-    setStep("map");
+    const location = readGuestLocation();
+    const region = location?.region?.trim();
+    const params = new URLSearchParams({
+      type: "station",
+      stationId: String(selected.id),
+    });
+    if (location && region) {
+      params.set("lat", String(location.lat));
+      params.set("lng", String(location.lng));
+      params.set("region", region);
+    }
+    setStep(null);
+    onComplete(params);
   };
 
   const confirmCountry = (selected: Country) => {

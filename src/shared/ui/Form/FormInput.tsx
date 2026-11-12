@@ -11,6 +11,9 @@ export interface FormInputProps extends InputHTMLAttributes<HTMLInputElement> {
   required?: boolean;
   /** Decorative icon at the end of the input, e.g. a calendar; hidden from assistive technology. */
   icon?: ReactNode;
+  /** Makes the trailing icon clickable, for controls such as date pickers. */
+  iconAction?: () => void;
+  iconActionLabel?: string;
   ref?: Ref<HTMLInputElement>;
 }
 
@@ -21,6 +24,8 @@ export function FormInput({
   icon,
   className,
   id,
+  iconAction,
+  iconActionLabel,
   ...props
 }: FormInputProps) {
   const field = useFieldA11y({
@@ -61,12 +66,23 @@ export function FormInput({
             {...props}
             {...field.controlProps}
           />
-          <span
-            className="text-action-primary pointer-events-none absolute inset-e-3.5 top-1/2 inline-flex -translate-y-1/2"
-            aria-hidden="true"
-          >
-            {icon}
-          </span>
+          {iconAction ? (
+            <button
+              type="button"
+              className="text-action-primary absolute inset-e-3.5 top-1/2 inline-flex -translate-y-1/2 border-0 bg-transparent p-1"
+              aria-label={iconActionLabel}
+              onClick={iconAction}
+            >
+              {icon}
+            </button>
+          ) : (
+            <span
+              className="text-action-primary pointer-events-none absolute inset-e-3.5 top-1/2 inline-flex -translate-y-1/2"
+              aria-hidden="true"
+            >
+              {icon}
+            </span>
+          )}
         </div>
       ) : (
         <input

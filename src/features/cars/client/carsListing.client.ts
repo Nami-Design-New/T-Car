@@ -26,6 +26,7 @@ async function getPage<T>(
     const response = await fetch(`/api/${path}?${search}`, {
       headers: { "Accept-Language": locale },
     });
+    // console.info(`[cars-listing] `, await response.json());
     if (!response.ok) {
       return fail(
         new AppError(response.status === 400 ? "validation" : "server"),

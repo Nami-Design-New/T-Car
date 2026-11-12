@@ -5,6 +5,10 @@ export const ICONS = {
   bankEdit: { src: "/icons/bank-edit.svg", width: 24, height: 24 },
   booking: { src: "/icons/booking.svg", width: 24, height: 24 },
   branchCar: { src: "/icons/branch-car.svg", width: 24, height: 24 },
+  caretLeft: { src: "/icons/caret-left.svg", width: 8, height: 10 },
+  caretRight: { src: "/icons/caret-right.svg", width: 8, height: 10 },
+  minus: { src: "/icons/mins.svg", width: 12, height: 12 },
+  plus: { src: "/icons/plus.svg", width: 12, height: 12 },
   deliveryCar: { src: "/icons/delivery-car.svg", width: 24, height: 24 },
   money: { src: "/icons/money.svg", width: 24, height: 24 },
   coin: { src: "/icons/coin.webp", width: 24, height: 24 },
@@ -14,7 +18,9 @@ export const ICONS = {
   whatsapp: { src: "/icons/whatsapp.svg", width: 24, height: 24 },
   chevron: { src: "/icons/chevron.svg", width: 28, height: 28 },
   timeline: { src: "/icons/timeline.svg", width: 4, height: 120 },
+  gps: { src: "/icons/gps-icon.svg", width: 24, height: 24 },
   locationChip: { src: "/icons/location-chip.svg", width: 14, height: 14 },
+  mapMarker: { src: "/icons/map-marker.svg", width: 40, height: 40 },
   starFill: { src: "/icons/star-fill.svg", width: 16, height: 16 },
   notification: { src: "/icons/notification.svg", width: 20, height: 20 },
   xIcon: { src: "/icons/x.svg", width: 14, height: 14 },
@@ -45,6 +51,12 @@ export const ICONS = {
     width: 24,
     height: 24,
   },
+  /** Warning notice icon (booking details); the file is supplied by design. */
+  info: {
+    src: "/icons/info.svg",
+    width: 24,
+    height: 24,
+  },
   filledShiled: {
     src: "/icons/fill-checked-shield.svg",
     width: 24,
@@ -54,6 +66,21 @@ export const ICONS = {
     src: "/icons/store-icon.svg",
     width: 24,
     height: 24,
+  },
+  edit: {
+    src: "/icons/edit-icon.svg",
+    width: 16,
+    height: 16,
+  },
+  close: {
+    src: "/icons/close-icon.svg",
+    width: 16,
+    height: 16,
+  },
+  calendar: {
+    src: "/icons/calendar-days.svg",
+    width: 16,
+    height: 16,
   },
 } as const;
 
@@ -81,6 +108,8 @@ export const PAYMENT_ICONS = {
   card: { src: "/icons/payment/card.svg", width: 32, height: 32 },
   tabby: { src: "/icons/payment/tabby.svg", width: 32, height: 32 },
   tamara: { src: "/icons/payment/tamara.svg", width: 32, height: 32 },
+  /** Insufficient-balance illustration (checkout wallet). */
+  lowBalance: { src: "/icons/low-balance.svg", width: 150, height: 150 },
 } as const;
 
 export const IMAGES = {
@@ -113,10 +142,20 @@ export const IMAGES = {
     width: 44,
     height: 44,
   },
+  companyLogoFallback: {
+    src: "/images/placeholders/company-logo-fallback.svg",
+    width: 48,
+    height: 48,
+  },
   cancelBooking: {
     src: "/images/illustrations/cancel-booking.svg",
     width: 140,
     height: 110,
+  },
+  bookingLoginRequired: {
+    src: "/images/illustrations/booking-login-required.png",
+    width: 280,
+    height: 220,
   },
 } as const;
 

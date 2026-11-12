@@ -54,7 +54,7 @@ export function FormTextarea({
       />
 
       {error && (
-        <small id={field.errorId} className="text-status-error text-[13px]">
+        <small id={field.errorId} className="text-status-error text-sm">
           {error}
         </small>
       )}

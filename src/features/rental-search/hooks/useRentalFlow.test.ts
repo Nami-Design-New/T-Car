@@ -11,10 +11,14 @@ const location = {
 };
 
 function setup() {
+  window.localStorage.setItem(
+    "tcar.guestLocation",
+    JSON.stringify({ status: "granted", savedAt: "2026-11-10", ...location }),
+  );
   const onComplete = vi.fn<(params: URLSearchParams) => void>();
   const { result } = renderHook(() => useRentalFlow({ onComplete }));
   const completedWith = () =>
-    Object.fromEntries(onComplete.mock.calls[0][0].entries());
+    Object.fromEntries(onComplete.mock.lastCall![0].entries());
   return { result, onComplete, completedWith };
 }
 
@@ -53,13 +57,27 @@ describe("useRentalFlow", () => {
     });
   });
 
-  it("carries the airport into the search params", () => {
+  it("uses the saved location after the airport selection", () => {
     const { result, completedWith } = setup();
     act(() => result.current.start("airport"));
     act(() => result.current.confirmAirport({ id: 7 } as Airport));
-    expect(result.current.step).toBe("map");
-    act(() => result.current.confirmLocation(location));
-    expect(completedWith()).toMatchObject({ type: "airport", airportId: "7" });
+    expect(result.current.step).toBeNull();
+    expect(completedWith()).toEqual({
+      type: "airport",
+      airportId: "7",
+      lat: "24.7",
+      lng: "46.6",
+      region: "Riyadh Region",
+    });
+  });
+
+  it("omits location when it is not saved", () => {
+    const { result, completedWith } = setup();
+    window.localStorage.clear();
+    act(() => result.current.start("airport"));
+    act(() => result.current.confirmAirport({ id: 7 } as Airport));
+
+    expect(completedWith()).toEqual({ type: "airport", airportId: "7" });
   });
 
   it("does not complete without a region", () => {
@@ -72,12 +90,18 @@ describe("useRentalFlow", () => {
     expect(onComplete).not.toHaveBeenCalled();
   });
 
-  it("carries the station into the search params", () => {
+  it("uses the saved location after the station selection", () => {
     const { result, completedWith } = setup();
     act(() => result.current.start("station"));
     act(() => result.current.confirmStation({ id: 3 } as Station));
-    act(() => result.current.confirmLocation(location));
-    expect(completedWith()).toMatchObject({ type: "station", stationId: "3" });
+    expect(result.current.step).toBeNull();
+    expect(completedWith()).toEqual({
+      type: "station",
+      stationId: "3",
+      lat: "24.7",
+      lng: "46.6",
+      region: "Riyadh Region",
+    });
   });
 
   it("asks for the pickup type after the country", () => {

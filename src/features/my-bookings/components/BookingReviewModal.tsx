@@ -10,8 +10,12 @@ import {
   useErrorMessage,
   useFieldErrorMessage,
 } from "@/shared/hooks/useErrorMessage";
+import { useNotify } from "@/shared/hooks/useNotify";
 import type { Result } from "@/shared/lib/result";
-import type { BookingReviewInput } from "../model";
+import type {
+  BookingReviewInput,
+  BookingReviewResult,
+} from "@/features/orders";
 import {
   bookingReviewSchema,
   type BookingReviewFormValues,
@@ -19,18 +23,23 @@ import {
 
 interface Props {
   submitting?: boolean;
-  onSubmit: (input: BookingReviewInput) => Promise<Result<void>>;
+  hasDriver: boolean;
+  initialRating: { companyRate: number | null; driverRate: number | null };
+  onSubmit: (input: BookingReviewInput) => Promise<Result<BookingReviewResult>>;
   onClose: () => void;
 }
 
 export default function BookingReviewModal({
   submitting = false,
+  hasDriver,
+  initialRating,
   onSubmit,
   onClose,
 }: Props) {
   const t = useTranslations("myBookings.review");
   const errorMessage = useErrorMessage();
   const fieldError = useFieldErrorMessage();
+  const notify = useNotify();
   const {
     handleSubmit,
     setError,
@@ -42,19 +51,27 @@ export default function BookingReviewModal({
     resolver: zodResolver(bookingReviewSchema),
     mode: "onBlur",
     reValidateMode: "onChange",
-    defaultValues: { showroomRating: 0, driverRating: 0 },
+    defaultValues: {
+      showroomRating: initialRating.companyRate ?? 0,
+      driverRating: hasDriver ? (initialRating.driverRate ?? 0) : undefined,
+    },
   });
   const showroomRating = watch("showroomRating");
-  const driverRating = watch("driverRating");
+  const driverRating = watch("driverRating") ?? 0;
 
   const submit = handleSubmit(async (values) => {
     if (submitting) return;
 
-    const result = await onSubmit(values);
+    const result = await onSubmit({
+      showroomRating: values.showroomRating,
+      ...(hasDriver ? { driverRating: values.driverRating! } : {}),
+    });
     if (result.ok) {
       onClose();
       return;
     }
+
+    notify.error(result.error.serverMessage ?? errorMessage(result.error));
 
     for (const [field, message] of Object.entries(
       result.error.fieldErrors ?? {},
@@ -62,15 +79,6 @@ export default function BookingReviewModal({
       if (field === "showroomRating" || field === "driverRating") {
         setError(field, { type: "server", message });
       }
-    }
-    if (
-      !result.error.fieldErrors ||
-      Object.keys(result.error.fieldErrors).length === 0
-    ) {
-      setError("root.server", {
-        type: "server",
-        message: errorMessage(result.error),
-      });
     }
   });
 
@@ -82,7 +90,7 @@ export default function BookingReviewModal({
       </Dialog.Header>
       <Dialog.Body>
         <form
-          className="relative flex w-full flex-col items-stretch gap-4 bg-surface-elevated"
+          className="bg-surface-elevated relative flex w-full flex-col items-stretch gap-4"
           onSubmit={submit}
           noValidate
           onClick={(e) => e.stopPropagation()}
@@ -113,41 +121,41 @@ export default function BookingReviewModal({
                 </p>
               )}
             </div>
-            <div>
-              <StarRating
-                label={t("driverRating")}
-                value={driverRating}
-                invalid={Boolean(errors.driverRating)}
-                errorId="driver-rating-error"
-                onChange={(value) => {
-                  setValue("driverRating", value, {
-                    shouldDirty: true,
-                    shouldValidate: true,
-                  });
-                  clearErrors("driverRating");
-                }}
-                starLabel={(count) => t("stars", { count })}
-              />
-              {errors.driverRating && (
-                <p id="driver-rating-error" className="form_error" role="alert">
-                  {fieldError(errors.driverRating.message)}
-                </p>
-              )}
-            </div>
+            {hasDriver && (
+              <div>
+                <StarRating
+                  label={t("driverRating")}
+                  value={driverRating}
+                  invalid={Boolean(errors.driverRating)}
+                  errorId="driver-rating-error"
+                  onChange={(value) => {
+                    setValue("driverRating", value, {
+                      shouldDirty: true,
+                      shouldValidate: true,
+                    });
+                    clearErrors("driverRating");
+                  }}
+                  starLabel={(count) => t("stars", { count })}
+                />
+                {errors.driverRating && (
+                  <p
+                    id="driver-rating-error"
+                    className="form_error"
+                    role="alert"
+                  >
+                    {fieldError(errors.driverRating.message)}
+                  </p>
+                )}
+              </div>
+            )}
           </div>
-
-          {errors.root?.server?.message && (
-            <p className="text-status-error text-sm mb-2" role="alert">
-              {errors.root.server.message}
-            </p>
-          )}
 
           <Button
             type="submit"
             size="lg"
             className="w-full"
             loading={submitting}
-            disabled={!showroomRating || !driverRating}
+            disabled={!showroomRating || (hasDriver && !driverRating)}
           >
             {submitting ? t("sending") : t("submit")}
           </Button>

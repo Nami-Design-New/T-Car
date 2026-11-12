@@ -2,8 +2,8 @@
 
 import { useTranslations } from "next-intl";
 import { Tabs } from "@/shared/ui/Tabs";
+import { HtmlContent } from "@/shared/ui/HtmlContent";
 import type { CarPolicies } from "../model";
-import HtmlContent from "./HtmlContent";
 
 interface Props {
   policies: CarPolicies;

@@ -6,6 +6,7 @@ import { Link, usePathname } from "@/i18n/navigation";
 import { useErrorMessage } from "@/shared/hooks/useErrorMessage";
 import { cn } from "@/shared/lib/cn";
 import { toAppError } from "@/shared/lib/errors";
+import { Illustration } from "@/shared/ui/Illustration";
 import { Button } from "@/shared/ui/Button";
 
 export interface Props {
@@ -40,7 +41,7 @@ export function ErrorState({
   const sizeClasses = {
     page: "error-state--page min-h-[50vh] justify-center px-4 py-10",
     section: "error-state--section px-4 py-10",
-    inline: "error-state--inline flex-row flex-wrap justify-center p-4",
+    inline: "error-state--inline  justify-center p-4",
   };
 
   return (
@@ -51,15 +52,23 @@ export function ErrorState({
       )}
       role="alert"
     >
-      <span
-        className={cn(
-          "bg-status-error-background text-status-error inline-flex size-14 items-center justify-center rounded-full text-[26px]",
-          size === "inline" && "size-8 text-base",
-        )}
-        aria-hidden="true"
-      >
-        {offline ? <FiWifiOff /> : <FiAlertTriangle />}
-      </span>
+      {size === "page" ? (
+        /* The page-size scene changes with the failure, so it stays truthful. */
+        <Illustration
+          name={offline ? "offline" : needsSignIn ? "unauthorized" : "error"}
+          className="error-state__illustration mb-2 w-80 max-md:w-64"
+        />
+      ) : (
+        <div
+          className={cn(
+            "bg-status-error-background text-status-error inline-flex size-14 items-center justify-center rounded-full text-[26px]",
+            size === "inline" && "size-8 text-base",
+          )}
+          aria-hidden="true"
+        >
+          {offline ? <FiWifiOff /> : <FiAlertTriangle />}
+        </div>
+      )}
 
       <Heading
         className={cn(

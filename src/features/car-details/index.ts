@@ -2,6 +2,7 @@ export { default as CarDetailsView } from "./components/CarDetailsView";
 export {
   parseCarDetailsQuery,
   serializeCarDetailsQuery,
+  toSafeCarDetailsSearchParams,
   withDefaultRentalContext,
 } from "./model";
 export type {
