@@ -704,6 +704,9 @@ Notifications API integration (2026-11-12): `features/notifications` now owns
 the live paginated `GET /notifications` read and uses `InfiniteList` for later
 pages. Its Server Actions cover read/read-all, delete/delete-all, and browser
 FCM token registration; the header uses only `GET /notifications/unread-count`.
+The shared account heading now reflects the active section; the notifications
+section keeps only its existing read-all action above the list, without a
+duplicated title or back button.
 Notification taps are classified by a client-safe router: booking lifecycle
 actions open their order, payment-required actions add `?focus=payment`, wallet
 and refund actions open the wallet, and malformed/unknown payloads fall back to

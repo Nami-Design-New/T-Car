@@ -14,7 +14,6 @@ import { useNotificationRouter } from "../hooks/useNotificationRouter";
 import type { Page } from "@/shared/lib/pagination";
 import { fromActionResult, type ActionResult } from "@/shared/lib/result";
 import { Button } from "@/shared/ui/Button";
-import { BackButton } from "@/shared/ui/BackButton";
 import { EmptyState } from "@/shared/ui/EmptyState";
 import { InfiniteList } from "@/shared/ui/InfiniteList";
 import {
@@ -31,7 +30,6 @@ interface Props {
 
 export default function NotificationsTab({ initialPage }: Props) {
   const t = useTranslations("account.notifications");
-  const accountT = useTranslations("account");
   const locale = useLocale();
   const router = useRouter();
   const notify = useNotify();
@@ -137,39 +135,31 @@ export default function NotificationsTab({ initialPage }: Props) {
 
   return (
     <div className="border-stroke-light bg-surface-elevated rounded-xl border p-6">
-      <div className="mb-4 flex items-center justify-between gap-3">
-        <div className="flex min-w-0 items-center gap-2.5">
-          <BackButton aria-label={accountT("back")} />
-          <h3 className="text-text-primary m-0 text-base font-bold">
-            {t("title")}
-          </h3>
-        </div>
-        <div className="flex items-center gap-1">
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            loading={pending === "read-all"}
-            disabled={!unread || pending !== null}
-            className="border-0 bg-transparent px-0 font-semibold underline underline-offset-4"
-            onClick={() => run("read-all", markAllNotificationsReadAction)}
-          >
-            {t("markAllRead")}
-          </Button>
-          {/* Delete all is intentionally hidden until product enables it. */}
-          {/* <Button
-            type="button"
-            variant="destructive"
-            size="sm"
-            loading={pending === "delete-all"}
-            disabled={notifications.items.length === 0 || pending !== null}
-            aria-label={t("deleteAll")}
-            title={t("deleteAll")}
-            onClick={() => run("delete-all", deleteAllNotificationsAction)}
-          >
-            <FiTrash2 aria-hidden="true" />
-          </Button> */}
-        </div>
+      <div className="mb-4 flex justify-end">
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          loading={pending === "read-all"}
+          disabled={!unread || pending !== null}
+          className="border-0 bg-transparent px-0 font-semibold underline underline-offset-4"
+          onClick={() => run("read-all", markAllNotificationsReadAction)}
+        >
+          {t("markAllRead")}
+        </Button>
+        {/* Delete all is intentionally hidden until product enables it. */}
+        {/* <Button
+          type="button"
+          variant="destructive"
+          size="sm"
+          loading={pending === "delete-all"}
+          disabled={notifications.items.length === 0 || pending !== null}
+          aria-label={t("deleteAll")}
+          title={t("deleteAll")}
+          onClick={() => run("delete-all", deleteAllNotificationsAction)}
+        >
+          <FiTrash2 aria-hidden="true" />
+        </Button> */}
       </div>
 
       <InfiniteList

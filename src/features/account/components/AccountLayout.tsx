@@ -3,6 +3,7 @@ import { getTranslations } from "next-intl/server";
 import { BackButton } from "@/shared/ui/BackButton";
 import { PointsSummaryCard, type PointsSummary } from "@/features/points";
 import AccountNav from "./AccountNav";
+import AccountPageTitle from "./AccountPageTitle";
 
 /** The account shell: title and section links stay while a section loads or fails. */
 export default async function AccountLayout({
@@ -19,7 +20,7 @@ export default async function AccountLayout({
       <div className="mx-auto w-full max-w-7xl px-2">
         <div className="mb-6 flex items-center gap-2.5">
           <BackButton />
-          <h1 className="m-0">{t("title")}</h1>
+          <AccountPageTitle fallback={t("title")} />
         </div>
         {/* <PointsSummaryCard summary={pointsSummary} /> */}
 
