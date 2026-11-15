@@ -1,3 +1,5 @@
+import type { SavedLocation } from "@/shared/lib/location";
+
 export const ACCOUNT_TABS = [
   "profile",
   "bookings",
@@ -16,6 +18,8 @@ export interface UserProfile {
   licenseUploaded: boolean;
   /** Stored license image reference supplied by the profile API. */
   licenseUrl?: string;
+  /** The saved location (`/assign-location`); null when the customer has none. */
+  location: SavedLocation | null;
 }
 
 export type ProfileChanges = Pick<

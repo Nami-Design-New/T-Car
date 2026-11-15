@@ -1,15 +1,21 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { FiChevronDown, FiMapPin } from "react-icons/fi";
+import { assignLocationAction } from "@/features/auth";
 import {
-  readGuestLocation,
-  saveGuestLocationRecord,
-  subscribeGuestLocation,
-} from "@/shared/lib/guest-location";
+  readCurrentLocation,
+  setUserLocation,
+  subscribeCurrentLocation,
+} from "@/features/location";
+import { useRouter } from "@/i18n/navigation";
+import { useErrorMessage } from "@/shared/hooks/useErrorMessage";
+import { useNotify } from "@/shared/hooks/useNotify";
+import { saveGuestLocationRecord } from "@/shared/lib/guest-location";
 import type { LocationData } from "@/shared/lib/location";
+import { fromActionResult } from "@/shared/lib/result";
 import { ICONS } from "@/shared/config/assets";
 import Image from "next/image";
 const locationIcon = ICONS.locationChip;
@@ -22,25 +28,34 @@ const MapLocationModal = dynamic(
   { ssr: false },
 );
 
-/** The stored guest location as the map takes it; the address may still be pending. */
-function readGuestLocationData(): LocationData | null {
-  const stored = readGuestLocation();
-  return stored && { ...stored, address: stored.address ?? "" };
+interface Props {
+  /** A signed-in pick is saved to the account; a guest's stays in this browser. */
+  signedIn: boolean;
 }
 
-export default function LocationPicker() {
+/** The current location as the map takes it; the address may still be pending. */
+function readCurrentLocationData(): LocationData | null {
+  const current = readCurrentLocation();
+  return current && { ...current, address: current.address ?? "" };
+}
+
+export default function LocationPicker({ signedIn }: Props) {
   const t = useTranslations("layout.location");
+  const router = useRouter();
+  const notify = useNotify();
+  const errorMessage = useErrorMessage();
   const [open, setOpen] = useState(false);
   const [location, setLocation] = useState<LocationData | null>(null);
+  const saving = useRef(false);
 
-  // localStorage is read after hydration, so the server and first render agree.
+  // Read after hydration, so the server and first render agree.
   useEffect(() => {
-    const sync = () => setLocation(readGuestLocationData());
+    const sync = () => setLocation(readCurrentLocationData());
     sync();
-    return subscribeGuestLocation(sync);
+    return subscribeCurrentLocation(sync);
   }, []);
 
-  const handleConfirm = (nextLocation: LocationData) => {
+  const saveForGuest = (nextLocation: LocationData) => {
     setLocation(nextLocation);
     setOpen(false);
     saveGuestLocationRecord({
@@ -48,6 +63,40 @@ export default function LocationPicker() {
       ...nextLocation,
       savedAt: new Date().toISOString(),
     });
+  };
+
+  /**
+   * Saves to the account (`/assign-location`); the browser location is left
+   * as it is. A failure keeps the map open with the pick and toasts the error.
+   */
+  const saveForCustomer = async (nextLocation: LocationData) => {
+    if (saving.current) return;
+    saving.current = true;
+    try {
+      const result = fromActionResult(await assignLocationAction(nextLocation));
+      if (!result.ok) {
+        notify.error(result.error.serverMessage ?? errorMessage(result.error));
+        return;
+      }
+      const { lat, lng, address, region } = nextLocation;
+      setUserLocation({
+        lat,
+        lng,
+        ...(address ? { address } : {}),
+        ...(region ? { region } : {}),
+      });
+      setOpen(false);
+      notify.success(result.message);
+      // The layout reads the saved location again, so server data agrees.
+      router.refresh();
+    } finally {
+      saving.current = false;
+    }
+  };
+
+  const handleConfirm = (nextLocation: LocationData) => {
+    if (signedIn) void saveForCustomer(nextLocation);
+    else saveForGuest(nextLocation);
   };
 
   return (
@@ -70,7 +119,7 @@ export default function LocationPicker() {
         />
 
         <span className="location-picker-address min-w-0 overflow-hidden text-ellipsis whitespace-nowrap text-sm font-semibold gap-ds-2 p-ds-3">
-          {location?.address || t("default")}
+          {location?.address || (signedIn ? t("choose") : t("default"))}
         </span>
         <FiChevronDown
           className="location-picker-chevron ms-auto shrink-0 text-xl text-text-subtle"

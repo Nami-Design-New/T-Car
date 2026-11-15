@@ -39,6 +39,7 @@ const profile: UserProfile = {
   birthDate: '1993-03-15',
   phone: '+966500000000',
   licenseUploaded: true,
+  location: null,
 };
 
 function renderTab(initialProfile: UserProfile = profile) {

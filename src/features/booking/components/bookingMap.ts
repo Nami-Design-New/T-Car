@@ -1,4 +1,4 @@
-import { readGuestLocation } from "@/shared/lib/guest-location";
+import { readCurrentLocation } from "@/features/location";
 import type { LocationData } from "@/shared/lib/location";
 import type { BookingContext } from "@/features/orders";
 
@@ -24,11 +24,11 @@ export function allowedAreaOf(
   };
 }
 
-/** Where a pickup / return map opens: the chosen point, else the saved browser location (like the rental flow map). */
+/** Where a pickup / return map opens: the chosen point, else the current location (like the rental flow map). */
 export function mapStartLocation(
   chosen: LocationData | null | undefined,
 ): LocationData | null {
   if (chosen) return chosen;
-  const saved = readGuestLocation();
+  const saved = readCurrentLocation();
   return saved ? { ...saved, address: saved.address ?? "" } : null;
 }

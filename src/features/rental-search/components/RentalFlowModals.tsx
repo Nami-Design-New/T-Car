@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
-import { readGuestLocation } from "@/shared/lib/guest-location";
+import { readCurrentLocation } from "@/features/location";
 import type { LocationData } from "@/shared/lib/location";
 import type { RentalFlow } from "../hooks/useRentalFlow";
 import type { RentalSearchOptions, RentalType } from "../model";
@@ -48,7 +48,7 @@ export default function RentalFlowModals({
 
   useEffect(() => {
     if (flow.step !== "map") return;
-    const saved = readGuestLocation();
+    const saved = readCurrentLocation();
     setInitialLocation(
       saved
         ? { ...saved, address: saved.address ?? "" }

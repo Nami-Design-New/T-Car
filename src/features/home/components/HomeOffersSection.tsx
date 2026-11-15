@@ -16,9 +16,9 @@ import {
 } from "@/features/cars";
 import { usePaginatedList } from "@/shared/hooks/usePaginatedList";
 import {
-  readGuestLocation,
-  subscribeGuestLocation,
-} from "@/shared/lib/guest-location";
+  readCurrentLocation,
+  subscribeCurrentLocation,
+} from "@/features/location";
 
 interface Props {
   title: string;
@@ -33,8 +33,8 @@ interface ListProps {
   onSelectCar: (car: CarListing) => void;
 }
 
-function locationFromStorage(): CityCarsLocation | null {
-  const location = readGuestLocation();
+function currentRequestLocation(): CityCarsLocation | null {
+  const location = readCurrentLocation();
   if (!location?.region) return null;
   return {
     region: location.region,
@@ -71,7 +71,7 @@ function HomeOffersList({ title, subtitle, location, onSelectCar }: ListProps) {
   );
 }
 
-/** Home offers: saved location narrows the request after hydration. */
+/** Home offers: the current location narrows the request after hydration. */
 export default function HomeOffersSection({ title, subtitle, options }: Props) {
   const router = useRouter();
   const loader = useTopLoader();
@@ -82,9 +82,9 @@ export default function HomeOffersSection({ title, subtitle, options }: Props) {
   const [selectionVersion, setSelectionVersion] = useState(0);
 
   useEffect(() => {
-    const sync = () => setLocation(locationFromStorage());
+    const sync = () => setLocation(currentRequestLocation());
     sync();
-    return subscribeGuestLocation(sync);
+    return subscribeCurrentLocation(sync);
   }, []);
 
   const selectCar = (car: CarListing) => {

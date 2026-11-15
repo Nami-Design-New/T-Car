@@ -30,7 +30,7 @@ messages and country titles follow it).
 | `/auth/request-otp` | POST | none | `RequestOtpBody` | `null` | `requestOtpAction` (send and resend) |
 | `/auth/verify-otp` | POST | none | `VerifyOtpBody` | `VerifyOtpData` | `verifyOtpAction` (then the `grant` provider, or the pending-registration cookie) |
 | `/complete-profile` | POST | Bearer (pending registration) | `CompleteProfileBody` | `ProfileStepData` | `completeProfileAction` |
-| `/assign-location` | POST | Bearer | `AssignLocationBody` | `ProfileStepData` | `assignLocationAction` (if the step is required) |
+| `/assign-location` | POST | Bearer | `AssignLocationBody` | `ProfileStepData` | `assignLocationAction`: the onboarding `location` step, and the header `LocationPicker` for a signed-in customer (updates the saved location) |
 | `/logout` | POST | Bearer | none | `null` | `signOutAction` |
 
 TEST accepts OTP `1234` for any number. Verifying a new number **creates the
@@ -117,10 +117,19 @@ TEST has 9 countries: +962, +971, +973, +965, +966, +968, +974, +961, +20.
 | Case | HTTP | `code` | `data` / `message` |
 | ---- | ---- | ------ | ------------------ |
 | OK | 200 | 200 | `{ user, current_step: "completed" }`, `Location saved successfully.` (observed 2026-10-22) |
+| OK, completed account (update) | 200 | 200 | Same response; the saved location is replaced and `current_step` stays `completed` (observed 2026-11-15) |
 | No or revoked token | 401 | 401 | `null`, `Unauthorized. Please log in.` |
 | No latitude | 200 | 422 | `The latitude is required.` |
 | Latitude out of range | 200 | 422 | `The latitude must be between -90 and 90.` |
 | No address name | 200 | 422 | `The address name field is required.` |
+| No region | 200 | 422 | `The region field is required.` (observed 2026-11-15) |
+
+The endpoint is also the update for a completed account: the header picker
+sends a signed-in customer's pick here (user-location fraction 2). `region`
+must be the geocoder's Arabic name, sent unchanged: the backend matches
+Arabic regions only. `MapLocationModal` reverse-geocodes with `language: "ar"`
+in both locales. The saved location is read back from `GET /profile`
+(Profile-API.md §4.3).
 
 ### 3.6 `POST /logout`
 

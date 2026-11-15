@@ -4,6 +4,7 @@ import { serverHttp } from "@/services/http/server";
 import { env } from "@/shared/config/env";
 import { AppError } from "@/shared/lib/errors";
 import { fail, ok, type Result } from "@/shared/lib/result";
+import type { SavedLocation } from "@/shared/lib/location";
 import type { PhoneFieldValue } from "@/shared/lib/phone";
 import type { ProfileChanges, UserProfile } from "./model";
 import { accountMock } from "./api.mock";
@@ -26,6 +27,11 @@ interface ProfileUserDto {
   phone_code: string;
   birth_date: string;
   license: Record<string, unknown> | null;
+  /** Saved location; null until the customer picks one. Read leniently. */
+  latitude?: unknown;
+  longitude?: unknown;
+  region?: unknown;
+  address_name?: unknown;
 }
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
@@ -55,6 +61,39 @@ function toUserProfile(user: ProfileUserDto): UserProfile {
     phone: `${user.phone_code}${user.phone}`,
     licenseUploaded: user.license !== null,
     ...(licenseUrl ? { licenseUrl: toLicenseUrl(licenseUrl) } : {}),
+    location: toSavedLocation(user),
+  };
+}
+
+/** `"24.71360000"` (or a number) to a coordinate within `limit`, else null. */
+function toCoordinate(value: unknown, limit: number): number | null {
+  const number =
+    typeof value === "string" && value.trim() !== ""
+      ? Number(value)
+      : typeof value === "number"
+        ? value
+        : NaN;
+  return Number.isFinite(number) && Math.abs(number) <= limit ? number : null;
+}
+
+const toOptionalText = (value: unknown) =>
+  typeof value === "string" && value.trim() !== "" ? value : undefined;
+
+/**
+ * The profile's saved location; null when the coordinates are null (no
+ * location yet) or unreadable. The Arabic region is kept as it is.
+ */
+function toSavedLocation(user: ProfileUserDto): SavedLocation | null {
+  const lat = toCoordinate(user.latitude, 90);
+  const lng = toCoordinate(user.longitude, 180);
+  if (lat === null || lng === null) return null;
+  const address = toOptionalText(user.address_name);
+  const region = toOptionalText(user.region);
+  return {
+    lat,
+    lng,
+    ...(address ? { address } : {}),
+    ...(region ? { region } : {}),
   };
 }
 

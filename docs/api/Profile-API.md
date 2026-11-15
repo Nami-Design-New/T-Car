@@ -26,7 +26,7 @@ Headers: `Accept: application/json`, `Accept-Language: en | ar`, and bearer auth
 
 | Endpoint | Method | Body | Observed success data | Existing app caller |
 | -------- | ------ | ---- | --------------------- | ------------------- |
-| `/profile` | GET | none | `{ user: ProfileUserDto }` | `features/account/queries.ts:getProfile` |
+| `/profile` | GET | none | `{ user: ProfileUserDto }` | `features/account/queries.ts`: `getProfile`, `getLicenseStatus`, and `getSavedLocation` (root layout), one read per request |
 | `/update-profile` | PUT | `name`, `email`, `birth_date` | `{ user: UpdatedProfileUserDto }`; license omitted | `saveProfileAction` |
 | `/delete-account` | DELETE | none | `null` | `deleteAccountAction` |
 | `/license` | POST | multipart file field `license` | `LicenseDto` | `uploadLicenseAction` |
@@ -256,6 +256,7 @@ The NextAuth session exposes ID, name, phone, email, and onboarding step. Fetch 
 - After verified phone change, P5 updates session phone from the confirmed returned user and refreshes the profile. No token rotation was observed.
 - After upload, refresh license state from the response or profile query. Do not claim review approval based on file presence.
 - After successful deletion, sign out locally and leave protected routes. Backend revocation of the supplied token was observed.
+- Saved location: `latitude` and `longitude` are strings with eight decimals (`"24.71360000"`), and all four location fields are `null` until the customer saves one (backend, 2026-11-15). `toSavedLocation` maps them to `UserProfile.location` (`null` when the coordinates are null or unreadable; an empty `region` or `address_name` is dropped). `region` is Arabic and kept unchanged. The root layout reads it with `getSavedLocation()` and `UserLocationSync` puts it into the `features/location` store, so public requests send it instead of the browser location. It is written with `POST /assign-location` (Auth-API.md §3.5), not `/update-profile`.
 
 `features/account/api.ts` owns the account contract. The server query now reads
 the live profile and maps its `data.user` payload to `UserProfile`; phone OTP

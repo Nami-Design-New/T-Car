@@ -3,16 +3,11 @@
  * localStorage so the endpoints that need it can send it. Browser only: the
  * server cannot read it, so a Server Action that needs it takes it as input.
  */
+import type { SavedLocation } from "./location";
+
 export const GUEST_LOCATION_KEY = "tcar.guestLocation";
 
-export interface GuestLocation {
-  lat: number;
-  lng: number;
-  /** From the reverse geocoder; missing until a lookup succeeds. */
-  address?: string;
-  /** First-level administrative area, e.g. "Riyadh Province"; the geocoder may have none. */
-  region?: string;
-}
+export type GuestLocation = SavedLocation;
 
 /** The answer to the browser prompt; `denied` stops the app from asking again. */
 export type GuestLocationRecord =

@@ -16,6 +16,12 @@ const MOCK_PROFILE: UserProfile = {
   birthDate: "1993-03-15",
   phone: "+966 45 67 89",
   licenseUploaded: false,
+  location: {
+    lat: 24.7136,
+    lng: 46.6753,
+    address: "حي الصحافة، الرياض",
+    region: "منطقة الرياض",
+  },
 };
 
 // Stateless, so it is safe to run on the server. Writes validate and return

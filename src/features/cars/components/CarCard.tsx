@@ -3,7 +3,7 @@
 import { Link, useRouter } from "@/i18n/navigation";
 import { IMAGES } from "@/shared/config/assets";
 import { ICONS } from "@/shared/config/assets";
-import { readGuestLocation } from "@/shared/lib/guest-location";
+import { readCurrentLocation } from "@/features/location";
 import type { CarListing } from "../model";
 import CarOfferBadge from "./CarOfferBadge";
 
@@ -53,9 +53,9 @@ export default function CarCard({
         href={detailsHref}
         onClickCapture={(event) => {
           // A listing without availability cannot start the rental flow, so it
-          // navigates with the browser's saved region when it is available.
+          // navigates with the current location's region when it is available.
           if (!onSelect || !car.availability) {
-            const location = readGuestLocation();
+            const location = readCurrentLocation();
             const region = location?.region?.trim();
             if (!region || location === null) return;
             event.preventDefault();

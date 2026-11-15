@@ -122,8 +122,80 @@ describe("accountApi.getProfile", () => {
       phone: "+966500000000",
       licenseUploaded: true,
       licenseUrl: expect.stringContaining("/licenses/license.png"),
+      location: null,
     });
     expect(get).toHaveBeenCalledWith("/profile");
+  });
+
+  it("maps the saved location, keeping the Arabic region as it is", async () => {
+    get.mockResolvedValue(
+      envelope({
+        user: {
+          name: "Ahmed Abdullah",
+          email: "ahmed@domain.com",
+          phone: "500000000",
+          phone_code: "+966",
+          birth_date: "1993-03-15",
+          license: null,
+          latitude: "24.71360000",
+          longitude: "46.67530000",
+          region: "منطقة الرياض",
+          address_name: "حي الصحافة، الرياض",
+        },
+      }),
+    );
+
+    await expect(accountApi.getProfile()).resolves.toMatchObject({
+      location: {
+        lat: 24.7136,
+        lng: 46.6753,
+        region: "منطقة الرياض",
+        address: "حي الصحافة، الرياض",
+      },
+    });
+  });
+
+  it("maps null or unreadable coordinates to no location", async () => {
+    const user = {
+      name: "Ahmed Abdullah",
+      email: "ahmed@domain.com",
+      phone: "500000000",
+      phone_code: "+966",
+      birth_date: "1993-03-15",
+      license: null,
+      region: null,
+      address_name: null,
+    };
+    get
+      .mockResolvedValueOnce(envelope({ user: { ...user, latitude: null, longitude: null } }))
+      .mockResolvedValueOnce(envelope({ user: { ...user, latitude: "abc", longitude: "46.6" } }))
+      .mockResolvedValueOnce(envelope({ user: { ...user, latitude: "95", longitude: "46.6" } }));
+
+    for (let call = 0; call < 3; call += 1) {
+      await expect(accountApi.getProfile()).resolves.toMatchObject({ location: null });
+    }
+  });
+
+  it("keeps coordinates without a region, which then send no location", async () => {
+    get.mockResolvedValue(
+      envelope({
+        user: {
+          name: "Ahmed Abdullah",
+          email: "ahmed@domain.com",
+          phone: "500000000",
+          phone_code: "+966",
+          birth_date: "1993-03-15",
+          license: null,
+          latitude: "24.7136",
+          longitude: "46.6753",
+          region: null,
+          address_name: null,
+        },
+      }),
+    );
+
+    const profile = await accountApi.getProfile();
+    expect(profile.location).toEqual({ lat: 24.7136, lng: 46.6753 });
   });
 
   it("maps a missing license to false", async () => {
