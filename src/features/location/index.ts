@@ -4,6 +4,7 @@
 export { UserLocationSync } from "./components/UserLocationSync";
 export {
   readCurrentLocation,
+  setUserLocation,
   subscribeCurrentLocation,
   useLocationSourceStore,
 } from "./currentLocation";

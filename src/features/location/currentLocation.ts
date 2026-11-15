@@ -16,14 +16,36 @@ interface LocationSourceState {
   setSource: (source: LocationSource) => void;
 }
 
+const sameLocation = (a: SavedLocation | null, b: SavedLocation | null) =>
+  a === b ||
+  (a !== null &&
+    b !== null &&
+    a.lat === b.lat &&
+    a.lng === b.lng &&
+    a.address === b.address &&
+    a.region === b.region);
+
+const sameSource = (a: LocationSource, b: LocationSource) =>
+  a.kind === "guest"
+    ? b.kind === "guest"
+    : b.kind === "user" && sameLocation(a.location, b.location);
+
 /**
- * Written only in the browser (`UserLocationSync`, in an effect), so the module
- * store on the server stays at `guest` and is never shared between requests.
+ * Written only in the browser (`UserLocationSync` in an effect, and the header
+ * picker after a save), so the module store on the server stays at `guest` and
+ * is never shared between requests. An equal source is ignored, so the
+ * layout's refreshed copy of a just-saved location triggers no second request.
  */
 export const useLocationSourceStore = create<LocationSourceState>()((set) => ({
   source: { kind: "guest" },
-  setSource: (source) => set({ source }),
+  setSource: (source) =>
+    set((state) => (sameSource(state.source, source) ? state : { source })),
 }));
+
+/** The signed-in customer's location after a save (`/assign-location` succeeded). */
+export function setUserLocation(location: SavedLocation): void {
+  useLocationSourceStore.getState().setSource({ kind: "user", location });
+}
 
 /**
  * The location public requests send: the signed-in customer's saved location

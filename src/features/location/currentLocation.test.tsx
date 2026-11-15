@@ -5,6 +5,7 @@ import type { SavedLocation } from "@/shared/lib/location";
 import { UserLocationSync } from "./components/UserLocationSync";
 import {
   readCurrentLocation,
+  setUserLocation,
   subscribeCurrentLocation,
   useLocationSourceStore,
 } from "./currentLocation";
@@ -75,6 +76,16 @@ describe("current location", () => {
     rerender(<UserLocationSync signedIn location={{ ...saved, lat: 24.8 }} />);
     expect(onChange).toHaveBeenCalledTimes(2);
     expect(readCurrentLocation()?.lat).toBe(24.8);
+    stop();
+  });
+
+  it("ignores the layout's refreshed copy of a just-saved location", () => {
+    setUserLocation(saved);
+    const onChange = vi.fn();
+    const stop = subscribeCurrentLocation(onChange);
+
+    render(<UserLocationSync signedIn location={{ ...saved }} />);
+    expect(onChange).not.toHaveBeenCalled();
     stop();
   });
 
