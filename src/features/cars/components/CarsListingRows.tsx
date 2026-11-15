@@ -3,9 +3,9 @@
 import { useCallback, useEffect, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import {
-  readGuestLocation,
-  subscribeGuestLocation,
-} from "@/shared/lib/guest-location";
+  readCurrentLocation,
+  subscribeCurrentLocation,
+} from "@/features/location";
 import { usePaginatedList } from "@/shared/hooks/usePaginatedList";
 import { EmptyState } from "@/shared/ui/EmptyState";
 import { InfiniteList } from "@/shared/ui/InfiniteList";
@@ -28,8 +28,8 @@ interface ListProps extends Props {
   onSelectCar: (car: CarListing) => void;
 }
 
-function locationFromStorage(): CityCarsLocation | null {
-  const location = readGuestLocation();
+function currentRequestLocation(): CityCarsLocation | null {
+  const location = readCurrentLocation();
   return location?.region
     ? {
         region: location.region,
@@ -82,7 +82,7 @@ function Rows({ query, onSelectCar, showAirportPickup }: ListProps) {
   );
 }
 
-/** Adds the guest's browser-only saved location before requesting listing rows. */
+/** Adds the current location (the customer's saved one, else the browser's) before requesting listing rows. */
 export default function CarsListingRows({
   query,
   onSelectCar,
@@ -92,9 +92,9 @@ export default function CarsListingRows({
     undefined,
   );
   useEffect(() => {
-    const sync = () => setLocation(locationFromStorage());
+    const sync = () => setLocation(currentRequestLocation());
     sync();
-    return subscribeGuestLocation(sync);
+    return subscribeCurrentLocation(sync);
   }, []);
   if (location === undefined) return <CarOfficeRowSkeleton />;
   const locationQuery = {

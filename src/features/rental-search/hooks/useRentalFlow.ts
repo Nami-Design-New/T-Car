@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useState } from "react";
-import { readGuestLocation } from "@/shared/lib/guest-location";
+import { readCurrentLocation } from "@/features/location";
 import type { LocationData } from "@/shared/lib/location";
 import type { Airport, Country, RentalType, Station } from "../model";
 
@@ -26,7 +26,7 @@ interface Options {
 
 /**
  * Rental-type flow: tab → (country → pickup | pickup) → map → `/cars`.
- * Airport and station reuse the saved guest location when it is available.
+ * Airport and station reuse the current location when it is available.
  * Each choice is carried into the final search params.
  */
 export function useRentalFlow({ onComplete }: Options) {
@@ -65,7 +65,7 @@ export function useRentalFlow({ onComplete }: Options) {
 
   const confirmAirport = (selected: Airport) => {
     setAirport(selected);
-    const location = readGuestLocation();
+    const location = readCurrentLocation();
     const region = location?.region?.trim();
     const params = new URLSearchParams({
       type: "airport",
@@ -82,7 +82,7 @@ export function useRentalFlow({ onComplete }: Options) {
 
   const confirmStation = (selected: Station) => {
     setStation(selected);
-    const location = readGuestLocation();
+    const location = readCurrentLocation();
     const region = location?.region?.trim();
     const params = new URLSearchParams({
       type: "station",

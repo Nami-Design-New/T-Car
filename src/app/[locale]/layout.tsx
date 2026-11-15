@@ -5,7 +5,9 @@ import {
   Header,
   LocaleNavigationGate,
 } from "@/features/layout";
+import { getSavedLocation } from "@/features/account/queries";
 import { getHomeContent } from "@/features/home/queries";
+import { UserLocationSync } from "@/features/location";
 import { NotificationsPushListener } from "@/features/notifications";
 import { getUnreadNotificationCount } from "@/features/notifications/queries";
 import { SiteLinksSync } from "@/features/settings";
@@ -98,9 +100,11 @@ export default async function RootLayout({
   const dir = getDirection(locale);
   // Sessions start once the profile exists (after the register step).
   const signedIn = Boolean(session?.user);
-  const unreadCount = signedIn ? await getUnreadNotificationCount() : 0;
   // Never throws: without the settings, the contact details and site links are hidden.
-  const [site, homeContent] = await Promise.all([
+  // The saved location is null for a guest or when the profile cannot be read.
+  const [unreadCount, savedLocation, site, homeContent] = await Promise.all([
+    signedIn ? getUnreadNotificationCount() : 0,
+    signedIn ? getSavedLocation() : null,
     getSiteSettings(),
     getHomeContent().catch(() => null),
   ]);
@@ -111,6 +115,7 @@ export default async function RootLayout({
         <NextIntlClientProvider>
           <DirectionProvider dir={dir}>
             <SiteLinksSync links={site.links} />
+            <UserLocationSync signedIn={signedIn} location={savedLocation} />
             <NextTopLoader color="#1f7ffa" height={3} showSpinner={false} />
             <LocaleNavigationGate>
               {!signedIn && <GuestLocationRequest />}

@@ -3,9 +3,9 @@
 import { useCallback, useEffect, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import {
-  readGuestLocation,
-  subscribeGuestLocation,
-} from "@/shared/lib/guest-location";
+  readCurrentLocation,
+  subscribeCurrentLocation,
+} from "@/features/location";
 import { usePaginatedList } from "@/shared/hooks/usePaginatedList";
 import { EmptyState } from "@/shared/ui/EmptyState";
 import { InfiniteList } from "@/shared/ui/InfiniteList";
@@ -20,7 +20,7 @@ import CarOfficeRowSkeleton from "./CarOfficeRowSkeleton";
 import CityCarOfficeRow from "./CityCarOfficeRow";
 
 interface Props {
-  /** Server-safe filters; saved browser location is added after hydration. */
+  /** Server-safe filters; the current location is added after hydration. */
   query: CityCarsQuery;
   cityName: string;
   onSelectCar?: (car: CarListing) => void;
@@ -77,7 +77,7 @@ function CityCarRowsList({ query, cityName, onSelectCar }: ListProps) {
 }
 
 /**
- * Browser location is deliberately read after hydration. This keeps it out of
+ * The current location is deliberately read after hydration. This keeps it out of
  * server HTML and shows the city-row skeleton while the first request loads.
  */
 export default function CityCarRows({ query, cityName, onSelectCar }: Props) {
@@ -87,7 +87,7 @@ export default function CityCarRows({ query, cityName, onSelectCar }: Props) {
 
   useEffect(() => {
     const sync = () => {
-      const saved = readGuestLocation();
+      const saved = readCurrentLocation();
       setLocation(
         saved && saved.region
           ? {
@@ -99,7 +99,7 @@ export default function CityCarRows({ query, cityName, onSelectCar }: Props) {
       );
     };
     sync();
-    return subscribeGuestLocation(sync);
+    return subscribeCurrentLocation(sync);
   }, []);
 
   if (location === undefined) return <CarOfficeRowSkeleton />;
