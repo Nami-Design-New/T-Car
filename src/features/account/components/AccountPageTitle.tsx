@@ -14,6 +14,7 @@ const sectionLabels: Record<AccountTab, string> = {
   wallet: "wallet",
   "bank-accounts": "bankAccounts",
   notifications: "notifications",
+  referrals: "referrals",
 };
 
 /** Keeps the shared account header aligned with the active account route. */

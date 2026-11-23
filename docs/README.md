@@ -781,6 +781,22 @@ Mock rules that make failures reproducible (top-ups over 10,000, extensions over
 30 days, and so on) are documented in each `services/mocks/*.ts`; the account
 mock keeps its own OTP code `1234` for the phone change.
 
+**Referrals fraction R1 (2026-11-23, branch `feature/referrals`), done:** New
+`features/referrals` and the `/account/referrals` section ("Invite a friend",
+Figma section 10 adapted for the web): invite code with copy, a share dialog
+(WhatsApp link, copy message, and the Web Share sheet where the browser has
+one), the three reward steps, and the terms dialog. Data is read through
+`features/referrals/queries.ts` from `services/referrals.api.ts`, still on its
+stateless mock (failure rule: user id `referrals-failure`); no backend endpoint
+exists yet. A failed load shows the design's card (Figma `Ref/NetworkError`):
+the new `shared/ui/StateCard` (line icon from `STATE_ICONS`, title, help text,
+action below the card) through `SectionLoadError` in the account sections'
+private `_components`. Production hides server error details from the
+browser, so it always shows the design's "check your connection and try again"
+copy, with a retry.
+Next: R2 invite history (list and empty state); the referral code
+field at sign-up waits for a backend contract.
+
 ### What remains
 
 - Form validation ([doc 9](09-form-validation.md)), 8 of 8 fractions done, one

@@ -40,7 +40,60 @@
       "bookings": "My bookings",
       "wallet": "Wallet",
       "bankAccounts": "Bank accounts",
-      "notifications": "Notifications"
+      "notifications": "Notifications",
+      "referrals": "Invite a friend"
+    },
+    "loadError": {
+      "description": "Check your internet connection and try again.",
+      "retry": "Try again"
+    },
+    "referrals": {
+      "heroTitle": "A trip that starts with a friend, and a reward for you",
+      "unavailableTitle": "Your invite code could not be loaded",
+      "heroReward": "Earn {points} points",
+      "heroDescription": "When your friend completes their first booking with your invite code.",
+      "codeLabel": "Your invite code",
+      "copy": "Copy",
+      "copied": "Copied",
+      "codeCopied": "Invite code copied",
+      "copyFailed": "Copying is not available in this browser. Select the code and copy it.",
+      "share": "Share invite",
+      "howTitle": "How do you get the reward?",
+      "steps": {
+        "share": {
+          "title": "Share your code",
+          "description": "Send the invite to a friend who has not signed up before."
+        },
+        "signUp": {
+          "title": "Your friend signs up",
+          "description": "They enter the code when creating their account."
+        },
+        "earn": {
+          "title": "Your points are added",
+          "description": "{points} points after their first eligible booking."
+        }
+      },
+      "termsLink": "Invite reward terms",
+      "shareDialog": {
+        "title": "Share the invite",
+        "description": "Send the code to your friend to use when creating their account.",
+        "message": "Try T-Car for your next trip! Enter my invite code when you create your account:",
+        "whatsapp": "WhatsApp",
+        "copyMessage": "Copy invite message",
+        "messageCopied": "Invite message copied",
+        "copyFailed": "Copying is not available in this browser. Select the message and copy it.",
+        "moreOptions": "More sharing options"
+      },
+      "termsDialog": {
+        "title": "Invite reward terms",
+        "items": {
+          "reward": "{points} points are added to your balance after your friend completes their first eligible booking.",
+          "newUser": "Your friend must be a new user and enter the invite code before creating their account.",
+          "oneCode": "An account can be linked to one invite code only, and you cannot use your own code.",
+          "eligibleBooking": "Signing up alone or a cancelled booking does not earn a reward."
+        },
+        "confirm": "Got it"
+      }
     },
     "points": {
       "title": "Loyalty points",
@@ -503,6 +556,9 @@
     "rate_limited": "Too many attempts. Wait a moment and try again.",
     "server": "Something went wrong on our side. Try again shortly.",
     "unknown": "An unexpected error occurred.",
+    "referrals": {
+      "unavailable": "Your invite code could not be loaded. Check your internet connection and try again."
+    },
     "points": {
       "unavailable": "Your points are temporarily unavailable. Try again shortly."
     },
