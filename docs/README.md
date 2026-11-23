@@ -805,6 +805,19 @@ inviting, and a failed load has its own `error.tsx`. Read through
 invites). Next: R3, the invite code at sign-up and the `?ref=` invite link;
 the UI is built now, and the code is sent once `/complete-profile` accepts it.
 
+**Points history redesign P1 (2026-11-23), done:** `/account/points` follows
+Figma `rewards/points-history` (node 7717:29113), on `feature/referrals` by
+decision: three balances (tier points, available to redeem, last redemption),
+a segmented All / Earned / Used filter (Used includes expired points), the three
+newest movements under "Latest activity" and the rest by month, and a source
+title per movement (booking balance, invite, discount-card redemption,
+expiry); booking and invite rows link to the booking and the invite history.
+Times and month groups use Saudi time (`POINTS_TIME_ZONE`). Empty filters and
+a failed load use `StateCard`. The points model changed (`PointsSummary` lost
+`expiresAt`, gained `tierPoints` and `lastRedemption`; each transaction has a
+`source`); still on the mock. `POINTS_ICONS.earned/spent/expired` are no
+longer used.
+
 ### What remains
 
 - Form validation ([doc 9](09-form-validation.md)), 8 of 8 fractions done, one

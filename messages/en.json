@@ -47,13 +47,8 @@
       "description": "Check your internet connection and try again.",
       "retry": "Try again"
     },
-    "loadError": {
-      "description": "Check your internet connection and try again.",
-      "retry": "Try again"
-    },
     "referrals": {
       "heroTitle": "A trip that starts with a friend, and a reward for you",
-      "unavailableTitle": "Your invite code could not be loaded",
       "unavailableTitle": "Your invite code could not be loaded",
       "heroReward": "Earn {points} points",
       "heroDescription": "When your friend completes their first booking with your invite code.",
@@ -124,20 +119,43 @@
     "points": {
       "title": "Loyalty points",
       "historyTitle": "Points history",
+      "unavailableTitle": "Your points could not be loaded",
       "unit": "points",
       "cardDescription": "Earn loyalty points by booking more cars and use them for payment.",
-      "expiresAt": "{date} points expire",
-      "back": "Back to account",
       "filtersLabel": "Points history filters",
       "filters": {
         "all": "All",
         "earned": "Earned",
-        "spent": "Spent"
+        "spent": "Used"
       },
-      "transaction": {
-        "earned": "Earned",
-        "spent": "Used for payment",
-        "expired": "Expired points"
+      "stats": {
+        "tierPoints": "Tier points",
+        "balance": "Available to redeem",
+        "lastRedemption": "Last redemption"
+      },
+      "latest": "Latest activity",
+      "source": {
+        "booking": {
+          "redeemable": "Booking #{id} · redeemable balance",
+          "tier": "Booking #{id} · tier points"
+        },
+        "referral": "Invited a friend: {name}",
+        "redemption": "Redeemed a {amount} SAR discount card",
+        "expiry": "Expired points"
+      },
+      "empty": {
+        "all": {
+          "title": "No points activity yet",
+          "description": "Points you earn from bookings and invites, and the points you use, will show here."
+        },
+        "earned": {
+          "title": "You have not earned points yet",
+          "description": "Complete a booking or invite a friend to start earning points."
+        },
+        "spent": {
+          "title": "You have not used points yet",
+          "description": "Points you redeem for rewards will show here."
+        }
       }
     },
     "profile": {
