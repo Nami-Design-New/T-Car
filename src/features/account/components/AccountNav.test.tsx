@@ -37,6 +37,7 @@ describe("AccountNav", () => {
       "/account/wallet",
       "/account/bank-accounts",
       "/account/notifications",
+      "/account/referrals",
     ]);
   });
 

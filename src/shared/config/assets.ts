@@ -84,6 +84,12 @@ export const ICONS = {
   },
 } as const;
 
+/** Line icons of the state cards (Figma Rw-Icon/gift, Rw-Icon/info). */
+export const STATE_ICONS = {
+  gift: { src: "/icons/states/gift.svg", width: 48, height: 48 },
+  info: { src: "/icons/states/info.svg", width: 40, height: 40 },
+} as const;
+
 export const POINTS_ICONS = {
   coins: { src: "/icons/coins.svg", width: 74, height: 74 },
   earned: { src: "/icons/gift-points-blue.svg", width: 20, height: 20 },
@@ -124,6 +130,11 @@ export const IMAGES = {
   appStore: { src: "/images/app/app-store.webp", width: 160, height: 48 },
   googlePlay: { src: "/images/app/google-play.webp", width: 160, height: 48 },
   gift: { src: "/images/illustrations/gift.webp", width: 48, height: 37 },
+  referralGift: {
+    src: "/images/illustrations/referral-gift.webp",
+    width: 320,
+    height: 320,
+  },
   /** A country without a flag image in GET /countries. */
   flagPlaceholder: {
     src: "/images/placeholders/flag.svg",

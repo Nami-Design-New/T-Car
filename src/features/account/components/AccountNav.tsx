@@ -2,7 +2,13 @@
 
 import type { IconType } from "react-icons";
 import { useTranslations } from "next-intl";
-import { FiBell, FiCalendar, FiCreditCard, FiUser } from "react-icons/fi";
+import {
+  FiBell,
+  FiCalendar,
+  FiCreditCard,
+  FiGift,
+  FiUser,
+} from "react-icons/fi";
 import { PiBank } from "react-icons/pi";
 import { Link, usePathname } from "@/i18n/navigation";
 import { cn } from "@/shared/lib/cn";
@@ -14,6 +20,7 @@ const SECTIONS: { id: AccountTab; label: string; icon: IconType }[] = [
   { id: "wallet", label: "wallet", icon: FiCreditCard },
   { id: "bank-accounts", label: "bankAccounts", icon: PiBank },
   { id: "notifications", label: "notifications", icon: FiBell },
+  { id: "referrals", label: "referrals", icon: FiGift },
 ];
 
 /** The account sections as links (doc 5): each one is its own route. */

@@ -40,25 +40,122 @@
       "bookings": "My bookings",
       "wallet": "Wallet",
       "bankAccounts": "Bank accounts",
-      "notifications": "Notifications"
+      "notifications": "Notifications",
+      "referrals": "Invite a friend"
+    },
+    "loadError": {
+      "description": "Check your internet connection and try again.",
+      "retry": "Try again"
+    },
+    "referrals": {
+      "heroTitle": "A trip that starts with a friend, and a reward for you",
+      "unavailableTitle": "Your invite code could not be loaded",
+      "heroReward": "Earn {points} points",
+      "heroDescription": "When your friend completes their first booking with your invite code.",
+      "codeLabel": "Your invite code",
+      "copy": "Copy",
+      "copied": "Copied",
+      "codeCopied": "Invite code copied",
+      "copyFailed": "Copying is not available in this browser. Select the code and copy it.",
+      "share": "Share invite",
+      "howTitle": "How do you get the reward?",
+      "steps": {
+        "share": {
+          "title": "Share your code",
+          "description": "Send the invite to a friend who has not signed up before."
+        },
+        "signUp": {
+          "title": "Your friend signs up",
+          "description": "They enter the code when creating their account."
+        },
+        "earn": {
+          "title": "Your points are added",
+          "description": "{points} points after their first eligible booking."
+        }
+      },
+      "historyLink": "My invites",
+      "history": {
+        "title": "My invites",
+        "unavailableTitle": "Your invite history could not be loaded",
+        "totalLabel": "Rewards from your invites",
+        "points": "{points} points",
+        "counts": "{invited, plural, one {# invite} other {# invites}} · {completed} completed",
+        "pointsHistory": "View points history",
+        "latest": "Latest invites",
+        "columns": {
+          "friend": "Friend",
+          "joinedAt": "Joined",
+          "firstBookingAt": "First booking",
+          "reward": "Reward"
+        },
+        "pending": "Waiting for first booking",
+        "rewarded": "+{points} points",
+        "emptyTitle": "Your first invite starts here",
+        "emptyDescription": "No friend has signed up with your code yet. Share it now and follow your rewards here.",
+        "inviteAction": "Invite a friend"
+      },
+      "termsLink": "Invite reward terms",
+      "shareDialog": {
+        "title": "Share the invite",
+        "description": "Send the code to your friend to use when creating their account.",
+        "message": "Try T-Car for your next trip! Enter my invite code when you create your account:",
+        "whatsapp": "WhatsApp",
+        "copyMessage": "Copy invite message",
+        "messageCopied": "Invite message copied",
+        "copyFailed": "Copying is not available in this browser. Select the message and copy it.",
+        "moreOptions": "More sharing options"
+      },
+      "termsDialog": {
+        "title": "Invite reward terms",
+        "items": {
+          "reward": "{points} points are added to your balance after your friend completes their first eligible booking.",
+          "newUser": "Your friend must be a new user and enter the invite code before creating their account.",
+          "oneCode": "An account can be linked to one invite code only, and you cannot use your own code.",
+          "eligibleBooking": "Signing up alone or a cancelled booking does not earn a reward."
+        },
+        "confirm": "Got it"
+      }
     },
     "points": {
       "title": "Loyalty points",
       "historyTitle": "Points history",
+      "unavailableTitle": "Your points could not be loaded",
       "unit": "points",
       "cardDescription": "Earn loyalty points by booking more cars and use them for payment.",
-      "expiresAt": "{date} points expire",
-      "back": "Back to account",
       "filtersLabel": "Points history filters",
       "filters": {
         "all": "All",
         "earned": "Earned",
-        "spent": "Spent"
+        "spent": "Used"
       },
-      "transaction": {
-        "earned": "Earned",
-        "spent": "Used for payment",
-        "expired": "Expired points"
+      "stats": {
+        "tierPoints": "Tier points",
+        "balance": "Available to redeem",
+        "lastRedemption": "Last redemption"
+      },
+      "latest": "Latest activity",
+      "source": {
+        "booking": {
+          "redeemable": "Booking #{id} · redeemable balance",
+          "tier": "Booking #{id} · tier points"
+        },
+        "referral": "Invited a friend: {name}",
+        "redemption": "Redeemed a {amount} SAR discount card",
+        "expiry": "Expired points"
+      },
+      "empty": {
+        "all": {
+          "title": "No points activity yet",
+          "description": "Points you earn from bookings and invites, and the points you use, will show here."
+        },
+        "earned": {
+          "title": "You have not earned points yet",
+          "description": "Complete a booking or invite a friend to start earning points."
+        },
+        "spent": {
+          "title": "You have not used points yet",
+          "description": "Points you redeem for rewards will show here."
+        }
       }
     },
     "profile": {
@@ -154,6 +251,28 @@
       "birthDateLabel": "Date of birth",
       "consent": "By continuing, you agree to the app's <terms>Terms and Conditions</terms> and <privacy>Privacy Policy</privacy>.",
       "submit": "Create account"
+    },
+    "referral": {
+      "label": "Invite code (optional)",
+      "placeholder": "Enter invite code",
+      "hint": {
+        "empty": "Got a code from a friend? Add it here or continue without it.",
+        "entered": "Check the code before creating your account.",
+        "checking": "Checking the invite code…",
+        "valid": "{name}'s invite is applied. Finish creating your account.",
+        "invalid": "This code is not valid. Check it and try again.",
+        "network": "We couldn't check the code. Check your connection and try again.",
+        "unchecked": "Check the code first, or continue without an invite code."
+      },
+      "actions": {
+        "check": "Check code",
+        "checking": "Checking…",
+        "change": "Change code",
+        "recheck": "Check again",
+        "retry": "Try again",
+        "skip": "Continue without an invite code"
+      },
+      "banner": "Invite from {name} · Your code is ready: <code></code>"
     }
   },
   "hero": {
@@ -503,6 +622,9 @@
     "rate_limited": "Too many attempts. Wait a moment and try again.",
     "server": "Something went wrong on our side. Try again shortly.",
     "unknown": "An unexpected error occurred.",
+    "referrals": {
+      "unavailable": "Your invite code could not be loaded. Check your internet connection and try again."
+    },
     "points": {
       "unavailable": "Your points are temporarily unavailable. Try again shortly."
     },

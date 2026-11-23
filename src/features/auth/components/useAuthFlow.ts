@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { resetReferralCode } from "@/features/referrals";
 import { useRouter } from "@/i18n/navigation";
 import { useErrorMessage } from "@/shared/hooks/useErrorMessage";
 import { useNotify } from "@/shared/hooks/useNotify";
@@ -143,6 +144,7 @@ export function useAuthFlow({
       }
       if (!result.ok) return formError(result.error);
       notify.success(result.message);
+      resetReferralCode();
       onRegistrationSuccess?.(result.data.onboardingStep === "location");
       reset();
       onDone();

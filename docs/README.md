@@ -781,6 +781,61 @@ Mock rules that make failures reproducible (top-ups over 10,000, extensions over
 30 days, and so on) are documented in each `services/mocks/*.ts`; the account
 mock keeps its own OTP code `1234` for the phone change.
 
+**Referrals fraction R1 (2026-11-23, branch `feature/referrals`), done:** New
+`features/referrals` and the `/account/referrals` section ("Invite a friend",
+Figma section 10 adapted for the web): invite code with copy, a share dialog
+(WhatsApp link, copy message, and the Web Share sheet where the browser has
+one), the three reward steps, and the terms dialog. Data is read through
+`features/referrals/queries.ts` from `services/referrals.api.ts`, still on its
+stateless mock (failure rule: user id `referrals-failure`); no backend endpoint
+exists yet. A failed load shows the design's card (Figma `Ref/NetworkError`):
+the new `shared/ui/StateCard` (line icon from `STATE_ICONS`, title, help text,
+action below the card) through `SectionLoadError` in the account sections'
+private `_components`. Production hides server error details from the
+browser, so it always shows the design's "check your connection and try again"
+copy, with a retry.
+
+**Referrals fraction R2 (2026-11-23), done:** "My invites" at
+`/account/referrals/history` (Figma `referrals/history` and `history-empty`):
+the points earned from invites, invited/completed counts, and each friend's
+join date, first booking, and reward status, as columns on desktop and labelled
+cards on mobile; the empty state (`StateCard`, gift icon) links back to
+inviting, and a failed load has its own `error.tsx`. Read through
+`getReferralHistory()` on the same mock (`referrals-empty` user id returns no
+invites). Next: R3, the invite code at sign-up and the `?ref=` invite link;
+the UI is built now, and the code is sent once `/complete-profile` accepts it.
+
+**Points history redesign P1 (2026-11-23), done:** `/account/points` follows
+Figma `rewards/points-history` (node 7717:29113), on `feature/referrals` by
+decision: three balances (tier points, available to redeem, last redemption),
+a segmented All / Earned / Used filter (Used includes expired points), the three
+newest movements under "Latest activity" and the rest by month, and a source
+title per movement (booking balance, invite, discount-card redemption,
+expiry); booking and invite rows link to the booking and the invite history.
+Times and month groups use Saudi time (`POINTS_TIME_ZONE`). Empty filters and
+a failed load use `StateCard`. The points model changed (`PointsSummary` lost
+`expiresAt`, gained `tierPoints` and `lastRedemption`; each transaction has a
+`source`); still on the mock. `POINTS_ICONS.earned/spent/expired` are no
+longer used.
+
+**Account page titles (2026-11-23), done:** the account header (`AccountPageTitle`)
+shows a sub-page's own title instead of the section or "My account": "Points
+history" on `/account/points` and "My invites" on `/account/referrals/history`.
+Those pages dropped their duplicate h2, and their group headings moved up to h2.
+
+**Referrals fraction R3 (2026-11-23), UI done, not sent yet:** the sign-up
+profile has an optional invite code field (`ReferralCodeField`, Figma
+`Auth/Referral-*`): empty, entered, checking, valid (names the friend; "Change
+code"), invalid, and no-connection states, plus "Continue without an invite
+code". A typed code must be checked or dropped before the account is created.
+An invite link (`/<locale>?auth=login&ref=CODE`, now in the share message)
+opens sign-in with the code checked and filled in, and a valid code shows
+"Invite from … · Your code is ready" on the phone and OTP steps. The code lives
+in `features/referrals/referralCodeStore.ts` (Zustand, browser only) and is
+checked by `checkReferralCodeAction` → `referralsApi.checkCode` (mock:
+`TCAR-A7K9` is valid, `TCAR-FAIL` is unreachable). It is **not** sent to
+`/complete-profile` until the backend takes it (Auth-API.md Q12).
+
 ### What remains
 
 - Form validation ([doc 9](09-form-validation.md)), 8 of 8 fractions done, one

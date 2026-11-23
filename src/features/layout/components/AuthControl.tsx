@@ -9,6 +9,7 @@ import {
   LazyAuthModal,
   signOutAction,
 } from "@/features/auth";
+import { ReferralInviteCapture } from "@/features/referrals";
 import { useRouter } from "@/i18n/navigation";
 import { useErrorMessage } from "@/shared/hooks/useErrorMessage";
 import { useNotify } from "@/shared/hooks/useNotify";
@@ -151,6 +152,7 @@ export default function AuthControl({
 
       <Suspense fallback={null}>
         <AuthPrompt onOpen={openAuth} />
+        <ReferralInviteCapture />
       </Suspense>
     </>
   );
