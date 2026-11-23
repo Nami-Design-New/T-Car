@@ -794,8 +794,16 @@ action below the card) through `SectionLoadError` in the account sections'
 private `_components`. Production hides server error details from the
 browser, so it always shows the design's "check your connection and try again"
 copy, with a retry.
-Next: R2 invite history (list and empty state); the referral code
-field at sign-up waits for a backend contract.
+
+**Referrals fraction R2 (2026-11-23), done:** "My invites" at
+`/account/referrals/history` (Figma `referrals/history` and `history-empty`):
+the points earned from invites, invited/completed counts, and each friend's
+join date, first booking, and reward status, as columns on desktop and labelled
+cards on mobile; the empty state (`StateCard`, gift icon) links back to
+inviting, and a failed load has its own `error.tsx`. Read through
+`getReferralHistory()` on the same mock (`referrals-empty` user id returns no
+invites). Next: R3, the invite code at sign-up and the `?ref=` invite link;
+the UI is built now, and the code is sent once `/complete-profile` accepts it.
 
 ### What remains
 

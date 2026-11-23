@@ -47,8 +47,13 @@
       "description": "Check your internet connection and try again.",
       "retry": "Try again"
     },
+    "loadError": {
+      "description": "Check your internet connection and try again.",
+      "retry": "Try again"
+    },
     "referrals": {
       "heroTitle": "A trip that starts with a friend, and a reward for you",
+      "unavailableTitle": "Your invite code could not be loaded",
       "unavailableTitle": "Your invite code could not be loaded",
       "heroReward": "Earn {points} points",
       "heroDescription": "When your friend completes their first booking with your invite code.",
@@ -72,6 +77,27 @@
           "title": "Your points are added",
           "description": "{points} points after their first eligible booking."
         }
+      },
+      "historyLink": "My invites",
+      "history": {
+        "title": "My invites",
+        "unavailableTitle": "Your invite history could not be loaded",
+        "totalLabel": "Rewards from your invites",
+        "points": "{points} points",
+        "counts": "{invited, plural, one {# invite} other {# invites}} · {completed} completed",
+        "pointsHistory": "View points history",
+        "latest": "Latest invites",
+        "columns": {
+          "friend": "Friend",
+          "joinedAt": "Joined",
+          "firstBookingAt": "First booking",
+          "reward": "Reward"
+        },
+        "pending": "Waiting for first booking",
+        "rewarded": "+{points} points",
+        "emptyTitle": "Your first invite starts here",
+        "emptyDescription": "No friend has signed up with your code yet. Share it now and follow your rewards here.",
+        "inviteAction": "Invite a friend"
       },
       "termsLink": "Invite reward terms",
       "shareDialog": {

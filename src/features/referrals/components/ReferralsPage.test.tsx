@@ -4,6 +4,12 @@ import { describe, expect, it, vi } from "vitest";
 import { renderWithIntl } from "@/shared/test/render";
 import ReferralsPage from "./ReferralsPage";
 
+vi.mock("@/i18n/navigation", () => ({
+  Link: ({ href, ...props }: React.ComponentProps<"a"> & { href: string }) => (
+    <a href={href} {...props} />
+  ),
+}));
+
 const program = { code: "TCAR-A7K9", rewardPoints: 500 };
 
 function renderPage() {
@@ -23,6 +29,14 @@ describe("ReferralsPage", () => {
     expect(
       screen.getByText("500 points after their first eligible booking."),
     ).toBeInTheDocument();
+  });
+
+  it("links to the invite history", () => {
+    renderPage();
+    expect(screen.getByRole("link", { name: "My invites" })).toHaveAttribute(
+      "href",
+      "/account/referrals/history",
+    );
   });
 
   it("copies the code and confirms on the button", async () => {

@@ -47,8 +47,13 @@
       "description": "تحقق من اتصالك بالإنترنت ثم حاول مرة أخرى.",
       "retry": "إعادة المحاولة"
     },
+    "loadError": {
+      "description": "تحقق من اتصالك بالإنترنت ثم حاول مرة أخرى.",
+      "retry": "إعادة المحاولة"
+    },
     "referrals": {
       "heroTitle": "رحلة تبدأ بصديق، ومكافأة لك",
+      "unavailableTitle": "تعذّر تحميل كود دعوتك",
       "unavailableTitle": "تعذّر تحميل كود دعوتك",
       "heroReward": "اكسب {points} نقطة",
       "heroDescription": "عندما يُكمل صديقك أول حجز باستخدام كود دعوتك.",
@@ -72,6 +77,27 @@
           "title": "تُضاف نقاطك",
           "description": "{points} نقطة بعد إكمال أول حجز مؤهل."
         }
+      },
+      "historyLink": "سجل دعواتي",
+      "history": {
+        "title": "سجل دعواتي",
+        "unavailableTitle": "تعذّر تحميل سجل دعواتك",
+        "totalLabel": "مكافآتك من الدعوات",
+        "points": "{points} نقطة",
+        "counts": "{invited, plural, one {دعوة واحدة} two {دعوتان} few {# دعوات} many {# دعوة} other {# دعوة}} · {completed} مكتملة",
+        "pointsHistory": "عرض سجل النقاط",
+        "latest": "آخر الدعوات",
+        "columns": {
+          "friend": "الصديق",
+          "joinedAt": "تاريخ الانضمام",
+          "firstBookingAt": "تاريخ أول حجز",
+          "reward": "المكافأة"
+        },
+        "pending": "بانتظار أول حجز",
+        "rewarded": "+{points} نقطة",
+        "emptyTitle": "دعوتك الأولى تبدأ من هنا",
+        "emptyDescription": "لم يسجّل أي صديق بكودك بعد. شاركه الآن وتابع مكافآتك هنا.",
+        "inviteAction": "ادعُ صديقك"
       },
       "termsLink": "شروط مكافآت الدعوة",
       "shareDialog": {

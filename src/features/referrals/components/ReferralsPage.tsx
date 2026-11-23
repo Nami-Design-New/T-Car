@@ -3,7 +3,8 @@
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
-import { FiCheck, FiCopy, FiFileText, FiShare2 } from "react-icons/fi";
+import { FiCheck, FiCopy, FiFileText, FiShare2, FiUsers } from "react-icons/fi";
+import { Link } from "@/i18n/navigation";
 import { useNotify } from "@/shared/hooks/useNotify";
 import { IMAGES } from "@/shared/config/assets";
 import { Button } from "@/shared/ui/Button";
@@ -109,7 +110,15 @@ export default function ReferralsPage({ program }: Props) {
         </ol>
       </div>
 
-      <div>
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <Button
+          asChild
+          variant="outline"
+          icon={<FiUsers aria-hidden />}
+          className="max-md:w-full"
+        >
+          <Link href="/account/referrals/history">{t("historyLink")}</Link>
+        </Button>
         <button
           type="button"
           className="text-action-primary inline-flex cursor-pointer items-center gap-2 border-0 bg-transparent p-0 text-sm font-semibold underline-offset-4 hover:underline"
