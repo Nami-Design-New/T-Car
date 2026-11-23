@@ -63,4 +63,18 @@ describe("AccountPageTitle", () => {
       screen.getByRole("heading", { name: "الحسابات البنكية" }),
     ).toBeInTheDocument();
   });
+
+  it.each([
+    ["/account/points", "Points history"],
+    ["/account/referrals/history", "My invites"],
+  ])("uses the page's own title on %s", (path, title) => {
+    pathname = path;
+    render(
+      <NextIntlClientProvider locale="en" messages={messages}>
+        <AccountPageTitle fallback="My account" />
+      </NextIntlClientProvider>,
+    );
+
+    expect(screen.getByRole("heading", { name: title })).toBeInTheDocument();
+  });
 });

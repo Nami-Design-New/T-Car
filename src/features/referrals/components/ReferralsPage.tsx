@@ -1,116 +1,45 @@
 "use client";
 
-import Image from "next/image";
+import { Link } from "@/i18n/navigation";
+import { Button } from "@/shared/ui/Button";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
-import { FiCheck, FiCopy, FiFileText, FiShare2, FiUsers } from "react-icons/fi";
-import { Link } from "@/i18n/navigation";
-import { useNotify } from "@/shared/hooks/useNotify";
-import { IMAGES } from "@/shared/config/assets";
-import { Button } from "@/shared/ui/Button";
+import { FiFileText, FiShare2, FiUsers } from "react-icons/fi";
 import type { ReferralProgram } from "../model";
-import { useCopyText } from "../useCopyText";
+import CodeShare from "./CodeShare";
 import ReferralShareDialog from "./ReferralShareDialog";
 import ReferralTermsDialog from "./ReferralTermsDialog";
+import ReferalsHero from "./ReferalsHero";
+import ReferalSteps from "./ReferalSteps";
 
-interface Props {
+type ReferralsPageProps = {
   program: ReferralProgram;
-}
-
-const STEPS = ["share", "signUp", "earn"] as const;
+};
 
 /** "Invite a friend": the invite code, how to share it, and how the reward works. */
-export default function ReferralsPage({ program }: Props) {
+export default function ReferralsPage({ program }: ReferralsPageProps) {
   const t = useTranslations("account.referrals");
-  const notify = useNotify();
-  const { copied, copy } = useCopyText();
   const [dialog, setDialog] = useState<"share" | "terms" | null>(null);
-
-  const copyCode = async () => {
-    if (await copy(program.code)) notify.success(t("codeCopied"));
-    else notify.error(t("copyFailed"));
-  };
 
   return (
     <section className="flex flex-col gap-6">
-      <div className="border-stroke-light grid items-center gap-8 overflow-hidden rounded-xl border bg-[linear-gradient(214deg,#f6faff_0%,#eff6fe_100%)] p-8 max-md:gap-5 max-md:p-5 md:grid-cols-[minmax(0,1fr)_auto]">
-        <div className="flex min-w-0 flex-col gap-2 max-md:text-center">
-          <p className="m-0 text-lg font-bold">{t("heroTitle")}</p>
-          <h2 className="text-action-primary m-0 text-[clamp(1.75rem,4vw,2.5rem)] leading-[1.2] font-bold">
-            {t("heroReward", { points: program.rewardPoints })}
-          </h2>
-          <p className="text-text-subtle m-0 text-base">
-            {t("heroDescription")}
-          </p>
-
-          <div className="border-stroke-light bg-surface-elevated mt-4 flex flex-wrap items-center gap-3 rounded-lg border p-4">
-            <div className="flex min-w-40 flex-1 flex-col gap-1 max-md:items-center">
-              <span className="text-text-subtle text-sm">{t("codeLabel")}</span>
-              <strong
-                className="text-2xl font-bold tracking-[0.12em]"
-                dir="ltr"
-              >
-                {program.code}
-              </strong>
-            </div>
-            <div className="flex flex-wrap gap-3 max-md:w-full max-md:[&>*]:flex-1">
-              <Button
-                variant="outline"
-                icon={copied ? <FiCheck aria-hidden /> : <FiCopy aria-hidden />}
-                onClick={copyCode}
-              >
-                {copied ? t("copied") : t("copy")}
-              </Button>
-              <Button
-                icon={<FiShare2 aria-hidden />}
-                onClick={() => setDialog("share")}
-              >
-                {t("share")}
-              </Button>
-            </div>
-          </div>
-        </div>
-
-        <Image
-          src={IMAGES.referralGift.src}
-          width={IMAGES.referralGift.width}
-          height={IMAGES.referralGift.height}
-          alt=""
-          priority
-          className="mx-auto size-48 max-md:order-first max-md:size-28"
-        />
+      <ReferalsHero program={program} />
+      <CodeShare program={program} />
+      <div className="flex flex-wrap gap-3">
+        <Button
+          icon={<FiShare2 aria-hidden />}
+          onClick={() => setDialog("share")}
+          className="w-full"
+        >
+          {t("share")}
+        </Button>
       </div>
-
-      <div className="border-stroke-light bg-surface-elevated rounded-xl border p-6 max-md:p-5">
+      <div className="border-stroke-light bg-surface-elevated rounded-lg border p-4">
         <h2 className="m-0 mb-5 text-lg font-bold">{t("howTitle")}</h2>
-        <ol className="m-0 grid list-none gap-4 p-0 md:grid-cols-3">
-          {STEPS.map((step, index) => (
-            <li
-              key={step}
-              className="bg-surface-card-primary flex items-start gap-3 rounded-lg p-4"
-            >
-              <span
-                className="bg-action-primary text-text-on-action grid size-8 shrink-0 place-items-center rounded-full text-sm font-bold"
-                aria-hidden="true"
-              >
-                {index + 1}
-              </span>
-              <div className="flex flex-col gap-1">
-                <strong className="text-base">
-                  {t(`steps.${step}.title`)}
-                </strong>
-                <span className="text-text-subtle text-sm">
-                  {t(`steps.${step}.description`, {
-                    points: program.rewardPoints,
-                  })}
-                </span>
-              </div>
-            </li>
-          ))}
-        </ol>
+        <ReferalSteps program={program} />
       </div>
 
-      <div className="flex flex-wrap items-center justify-between gap-4">
+      <div className="flex flex-wrap items-center justify-center gap-4 md:justify-between">
         <Button
           asChild
           variant="outline"

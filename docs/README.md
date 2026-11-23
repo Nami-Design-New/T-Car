@@ -818,6 +818,11 @@ a failed load use `StateCard`. The points model changed (`PointsSummary` lost
 `source`); still on the mock. `POINTS_ICONS.earned/spent/expired` are no
 longer used.
 
+**Account page titles (2026-11-23), done:** the account header (`AccountPageTitle`)
+shows a sub-page's own title instead of the section or "My account": "Points
+history" on `/account/points` and "My invites" on `/account/referrals/history`.
+Those pages dropped their duplicate h2, and their group headings moved up to h2.
+
 ### What remains
 
 - Form validation ([doc 9](09-form-validation.md)), 8 of 8 fractions done, one

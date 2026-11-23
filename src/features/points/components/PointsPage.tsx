@@ -33,8 +33,6 @@ export default function PointsPage({ data }: Props) {
 
   return (
     <section className="flex flex-col gap-6">
-      <h2 className="m-0 text-xl font-bold">{t("historyTitle")}</h2>
-
       <dl className="m-0 grid grid-cols-3 gap-3 max-sm:gap-2">
         <Stat label={t("stats.tierPoints")} tone="tier">
           {format.number(summary.tierPoints)}
@@ -63,7 +61,7 @@ export default function PointsPage({ data }: Props) {
             className={cn(
               "text-text-subtle min-w-28 flex-1 cursor-pointer rounded-lg border-0 bg-transparent px-4 py-2.5 text-sm font-semibold transition-colors max-md:min-w-0",
               filter === item &&
-                "bg-surface-elevated text-action-primary shadow-[0_2px_6px_rgba(0,0,0,0.08)]",
+                "text-action-primary bg-white shadow-[0_2px_6px_rgba(0,0,0,0.08)]",
             )}
             onClick={() => setFilter(item)}
           >
@@ -75,7 +73,6 @@ export default function PointsPage({ data }: Props) {
       {groups.length === 0 ? (
         <StateCard
           icon="gift"
-          headingLevel={3}
           title={t(`empty.${filter}.title`)}
           description={t(`empty.${filter}.description`)}
         />
@@ -95,9 +92,9 @@ export default function PointsPage({ data }: Props) {
               key={group.kind === "latest" ? "latest" : group.month}
               className="flex flex-col gap-3"
             >
-              <h3 className="text-text-subtle m-0 text-base font-bold">
+              <h2 className="text-text-subtle m-0 text-base font-bold">
                 {title}
-              </h3>
+              </h2>
               <ul className="m-0 flex list-none flex-col gap-2 p-0">
                 {group.transactions.map((transaction) => (
                   <TransactionRow
