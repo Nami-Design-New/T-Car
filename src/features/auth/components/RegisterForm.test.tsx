@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { AppError } from '@/shared/lib/errors';
 import { renderWithIntl } from '@/shared/test/render';
+import { resetReferralCode } from '@/features/referrals';
 import { useSiteLinksStore } from '@/features/settings';
 import type { RegisterFormValues } from '../validation';
 import RegisterForm from './RegisterForm';
@@ -21,7 +22,10 @@ vi.mock('@/i18n/navigation', () => ({
 }));
 
 // The site links live in a module store: start every test without them.
-afterEach(() => useSiteLinksStore.setState({ links: {} }));
+afterEach(() => {
+  useSiteLinksStore.setState({ links: {} });
+  resetReferralCode();
+});
 
 function renderForm(overrides: Partial<React.ComponentProps<typeof RegisterForm>> = {}) {
   const onSubmit = vi.fn<(values: RegisterFormValues) => Promise<AppError | undefined>>(
@@ -84,6 +88,31 @@ describe('RegisterForm', () => {
     await fillValid(form);
     await form.user.type(form.name, '  ');
     await form.user.keyboard('{Enter}');
+
+    await waitFor(() =>
+      expect(form.onSubmit).toHaveBeenCalledWith({
+        fullName: 'Ahmed Abdullah',
+        email: 'ahmed@domain.com',
+        birthDate: '1990-05-17',
+      })
+    );
+  });
+
+  it('waits for a typed invite code to be checked, and does not send it', async () => {
+    const form = renderForm();
+    await fillValid(form);
+    const code = screen.getByRole('textbox', { name: 'Invite code (optional)' });
+    await form.user.type(code, 'TCAR-A7K9');
+    await form.user.click(form.submit);
+
+    expect(code).toHaveAccessibleDescription(
+      'Check the code first, or continue without an invite code.'
+    );
+    expect(form.onSubmit).not.toHaveBeenCalled();
+
+    await form.user.click(screen.getByRole('button', { name: 'Check code' }));
+    await screen.findByRole('button', { name: 'Change code' });
+    await form.user.click(form.submit);
 
     await waitFor(() =>
       expect(form.onSubmit).toHaveBeenCalledWith({

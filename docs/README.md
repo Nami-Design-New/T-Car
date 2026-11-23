@@ -823,6 +823,19 @@ shows a sub-page's own title instead of the section or "My account": "Points
 history" on `/account/points` and "My invites" on `/account/referrals/history`.
 Those pages dropped their duplicate h2, and their group headings moved up to h2.
 
+**Referrals fraction R3 (2026-11-23), UI done, not sent yet:** the sign-up
+profile has an optional invite code field (`ReferralCodeField`, Figma
+`Auth/Referral-*`): empty, entered, checking, valid (names the friend; "Change
+code"), invalid, and no-connection states, plus "Continue without an invite
+code". A typed code must be checked or dropped before the account is created.
+An invite link (`/<locale>?auth=login&ref=CODE`, now in the share message)
+opens sign-in with the code checked and filled in, and a valid code shows
+"Invite from … · Your code is ready" on the phone and OTP steps. The code lives
+in `features/referrals/referralCodeStore.ts` (Zustand, browser only) and is
+checked by `checkReferralCodeAction` → `referralsApi.checkCode` (mock:
+`TCAR-A7K9` is valid, `TCAR-FAIL` is unreachable). It is **not** sent to
+`/complete-profile` until the backend takes it (Auth-API.md Q12).
+
 ### What remains
 
 - Form validation ([doc 9](09-form-validation.md)), 8 of 8 fractions done, one

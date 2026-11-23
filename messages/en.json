@@ -251,6 +251,28 @@
       "birthDateLabel": "Date of birth",
       "consent": "By continuing, you agree to the app's <terms>Terms and Conditions</terms> and <privacy>Privacy Policy</privacy>.",
       "submit": "Create account"
+    },
+    "referral": {
+      "label": "Invite code (optional)",
+      "placeholder": "Enter invite code",
+      "hint": {
+        "empty": "Got a code from a friend? Add it here or continue without it.",
+        "entered": "Check the code before creating your account.",
+        "checking": "Checking the invite code…",
+        "valid": "{name}'s invite is applied. Finish creating your account.",
+        "invalid": "This code is not valid. Check it and try again.",
+        "network": "We couldn't check the code. Check your connection and try again.",
+        "unchecked": "Check the code first, or continue without an invite code."
+      },
+      "actions": {
+        "check": "Check code",
+        "checking": "Checking…",
+        "change": "Change code",
+        "recheck": "Check again",
+        "retry": "Try again",
+        "skip": "Continue without an invite code"
+      },
+      "banner": "Invite from {name} · Your code is ready: <code></code>"
     }
   },
   "hero": {

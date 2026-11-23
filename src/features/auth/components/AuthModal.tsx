@@ -1,5 +1,6 @@
 "use client";
 
+import { ReferralInviteBanner } from "@/features/referrals";
 import { formatPhoneFieldValue } from "@/shared/lib/phone";
 import { Dialog } from "@/shared/ui/Dialog";
 import LoginForm from "./LoginForm";
@@ -83,7 +84,10 @@ export default function AuthModal({
       <Dialog.Header>
         <Dialog.Close className="ms-auto" />
       </Dialog.Header>
-      <Dialog.Body>{renderStep()}</Dialog.Body>
+      <Dialog.Body>
+        {renderStep()}
+        {state.step !== "register" && <ReferralInviteBanner />}
+      </Dialog.Body>
     </Dialog>
   );
 }

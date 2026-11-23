@@ -1,13 +1,17 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useSyncExternalStore } from "react";
 import { FaWhatsapp } from "react-icons/fa";
 import { FiCopy, FiShare2 } from "react-icons/fi";
 import { useNotify } from "@/shared/hooks/useNotify";
 import { Button } from "@/shared/ui/Button";
 import { Dialog } from "@/shared/ui/Dialog";
-import { referralShareText, whatsappShareUrl } from "../model";
+import {
+  referralInviteUrl,
+  referralShareText,
+  whatsappShareUrl,
+} from "../model";
 import { useCopyText } from "../useCopyText";
 
 interface Props {
@@ -20,6 +24,7 @@ const subscribe = () => () => {};
 /** The browser's own share sheet (Web Share API); absent on most desktops. */
 const canUseNativeShare = () =>
   typeof navigator !== "undefined" && typeof navigator.share === "function";
+const siteOrigin = () => window.location.origin;
 
 /** Share the invite: WhatsApp, copy the message, or the device's share sheet. */
 export default function ReferralShareDialog({ open, onClose, code }: Props) {
@@ -31,7 +36,14 @@ export default function ReferralShareDialog({ open, onClose, code }: Props) {
     canUseNativeShare,
     () => false,
   );
-  const message = referralShareText(t("message"), code);
+  const locale = useLocale();
+  // The link needs the browser's origin; the server renders the message without it.
+  const origin = useSyncExternalStore(subscribe, siteOrigin, () => null);
+  const message = referralShareText(
+    t("message"),
+    code,
+    origin && referralInviteUrl(origin, locale, code),
+  );
 
   const copyMessage = async () => {
     if (await copy(message)) {
