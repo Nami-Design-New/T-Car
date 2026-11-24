@@ -1,8 +1,9 @@
-import type { RewardsSummary } from "@/features/rewards/model";
+import type { RewardCardsData, RewardsSummary } from "@/features/rewards/model";
 import { rewardsMock } from "./mocks/rewards";
 
 export interface RewardsApi {
   getSummary(userId: string): Promise<RewardsSummary>;
+  getCards(userId: string): Promise<RewardCardsData>;
 }
 
 // No rewards endpoint exists yet, so keep the mock behind this interface

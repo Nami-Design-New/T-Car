@@ -46,7 +46,8 @@
     },
     "rewards": {
       "allTiers": { "title": "Reward tiers" },
-      "detail": { "title": "Tier perks" }
+      "detail": { "title": "Tier perks" },
+      "cards": { "title": "My cards" }
     },
     "loadError": {
       "description": "Check your internet connection and try again.",
@@ -237,6 +238,34 @@
     "balance": {
       "label": "Available to redeem",
       "unit": "points"
+    },
+    "cards": {
+      "filtersLabel": "My cards filters",
+      "filters": {
+        "all": "All",
+        "active": "Active",
+        "used": "Used",
+        "expired": "Expired"
+      },
+      "discountTitle": "SAR {amount} discount card",
+      "discountUnit": "SAR off",
+      "status": {
+        "active": "Active",
+        "used": "Used",
+        "expired": "Expired"
+      },
+      "validUntil": "Valid until {date}",
+      "usedOn": "Used on booking #{booking} · {date}",
+      "expiredOn": "Expired on {date}",
+      "copyCode": "Copy code {code}",
+      "copied": "Code copied",
+      "copyFailed": "Copying is not available in this browser. Select the code and copy it.",
+      "empty": {
+        "all": { "title": "No cards yet", "description": "Redeem points to get a discount card." },
+        "active": { "title": "No active cards", "description": "Your active discount cards will appear here." },
+        "used": { "title": "No used cards", "description": "Cards you use on bookings will appear here." },
+        "expired": { "title": "No expired cards", "description": "Expired discount cards will appear here." }
+      }
     },
     "actions": {
       "label": "Reward actions",

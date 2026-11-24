@@ -859,6 +859,16 @@ contract. The `AccountPageTitle`
 names `/account/rewards/tiers` and `/account/rewards/tiers/[tier]` from their
 own route titles.
 
+**Rewards fraction RW3 (2026-11-24, branch `feature/rewards`), UI implemented:**
+`/account/rewards/cards` shows the points balance, history link, and discount
+tickets filtered by All / Active / Used / Expired. Only active cards allow copying
+their code. A stateless `getCards` mock returns the three Figma card states and
+the same balance as points; `features/rewards/queries.ts` keeps the read on the
+server. The clipboard hook is shared with referrals. The My cards screenshot
+captured earlier was used because the Figma MCP reached its Starter-plan call
+limit; a fresh high-fidelity design context and signed-in visual check are still
+pending. RW4 adds the catalog and RW5 adds redemption.
+
 **Referrals fraction R3 (2026-11-23), UI done, not sent yet:** the sign-up
 profile has an optional invite code field (`ReferralCodeField`, Figma
 `Auth/Referral-*`): empty, entered, checking, valid (names the friend; "Change

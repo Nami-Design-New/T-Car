@@ -1,5 +1,6 @@
 import { getLocale } from "next-intl/server";
 import type {
+  RewardCardsData,
   RewardPerk,
   RewardTier,
   RewardsSummary,
@@ -149,5 +150,38 @@ export const rewardsMock: RewardsApi = {
       balance,
       tiers: tiersFor(await getLocale()),
     } satisfies RewardsSummary;
+  },
+  async getCards(userId) {
+    await delay();
+    if (userId === MOCK_FAILURE_USER_ID) {
+      throw new AppError("network", "rewards.unavailable");
+    }
+    return {
+      balance: MOCK_POINTS_DATA.summary.balance,
+      cards: [
+        {
+          id: "card-active",
+          code: "TCAR-30S-Q9LD",
+          discountAmount: 50,
+          status: "active",
+          expiresAt: "2027-01-18T00:00:00.000Z",
+        },
+        {
+          id: "card-used",
+          code: "TCAR-962-M2PA",
+          discountAmount: 50,
+          status: "used",
+          usedAt: "2026-10-20T00:00:00.000Z",
+          bookingId: "2363",
+        },
+        {
+          id: "card-expired",
+          code: "TCAR-418-X5RB",
+          discountAmount: 50,
+          status: "expired",
+          expiresAt: "2026-09-30T00:00:00.000Z",
+        },
+      ],
+    } satisfies RewardCardsData;
   },
 };

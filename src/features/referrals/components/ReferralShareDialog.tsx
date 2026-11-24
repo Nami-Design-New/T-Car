@@ -12,7 +12,7 @@ import {
   referralShareText,
   whatsappShareUrl,
 } from "../model";
-import { useCopyText } from "../useCopyText";
+import { useCopyText } from "@/shared/hooks/useCopyText";
 
 interface Props {
   open: boolean;

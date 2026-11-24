@@ -32,6 +32,37 @@ export interface RewardsSummary {
   tiers: RewardTier[];
 }
 
+export type RewardCardStatus = "active" | "used" | "expired";
+export type RewardCardFilter = "all" | RewardCardStatus;
+export const REWARD_CARD_FILTERS: RewardCardFilter[] = [
+  "all",
+  "active",
+  "used",
+  "expired",
+];
+
+export interface RewardCard {
+  id: string;
+  code: string;
+  discountAmount: number;
+  status: RewardCardStatus;
+  expiresAt?: string;
+  usedAt?: string;
+  bookingId?: string;
+}
+
+export interface RewardCardsData {
+  balance: number;
+  cards: RewardCard[];
+}
+
+export function matchesRewardCardFilter(
+  card: RewardCard,
+  filter: RewardCardFilter,
+): boolean {
+  return filter === "all" || card.status === filter;
+}
+
 export type RewardTierState = "reached" | "current" | "locked";
 
 export interface RewardsOverview {

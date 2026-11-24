@@ -45,6 +45,7 @@
       "rewards": "المكافآت"
     },
     "rewards": {
+      "cards": { "title": "بطاقاتي" },
       "allTiers": { "title": "مستويات المكافآت" },
       "detail": { "title": "مزايا المستويات" }
     },
@@ -237,6 +238,34 @@
     "balance": {
       "label": "رصيدك المتاح للاستبدال",
       "unit": "نقطة"
+    },
+    "cards": {
+      "filtersLabel": "تصفية بطاقاتي",
+      "filters": {
+        "all": "الكل",
+        "active": "نشطة",
+        "used": "مستخدمة",
+        "expired": "منتهية"
+      },
+      "discountTitle": "بطاقة خصم {amount} ريال",
+      "discountUnit": "ريال خصم",
+      "status": {
+        "active": "نشطة",
+        "used": "مستخدمة",
+        "expired": "منتهية"
+      },
+      "validUntil": "صالحة حتى {date}",
+      "usedOn": "استُخدمت في حجز #{booking} · {date}",
+      "expiredOn": "انتهت في {date}",
+      "copyCode": "نسخ الكود {code}",
+      "copied": "تم نسخ الكود",
+      "copyFailed": "النسخ غير متاح في هذا المتصفح. حدّد الكود وانسخه.",
+      "empty": {
+        "all": { "title": "لا توجد بطاقات بعد", "description": "استبدل نقاطك لتحصل على بطاقة خصم." },
+        "active": { "title": "لا توجد بطاقات نشطة", "description": "ستظهر بطاقات الخصم النشطة هنا." },
+        "used": { "title": "لا توجد بطاقات مستخدمة", "description": "ستظهر البطاقات التي استخدمتها في الحجوزات هنا." },
+        "expired": { "title": "لا توجد بطاقات منتهية", "description": "ستظهر بطاقات الخصم المنتهية هنا." }
+      }
     },
     "actions": {
       "label": "إجراءات المكافآت",
