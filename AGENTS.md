@@ -83,6 +83,18 @@ Ask the user before: any `git commit` (and which branch it goes on); deleting `B
 - **Styles**: no new rules in `main.scss`; feature styles go in
   `features/<x>/<x>.scss`, component styles next to the component (doc 8
   step 6 plan).
+- **Figma and RTL**: Figma screens are drawn in Arabic (RTL). Components
+  match Figma exactly (sizes, spacing, colours, per-state styles, element
+  order); only page-level web adaptations (e.g. tabs that merge two mobile
+  screens) are allowed. Read element order right to left: the right-most
+  element in the Figma frame comes first in the DOM (the `start` side), so
+  Arabic matches Figma and English mirrors it. Figma's exported code is laid
+  out left to right, so do not copy its element order. Use logical properties
+  (`ms`/`me`/`ps`/`pe`/`start`/`end`/`inset-s`, `text-start`) and `rtl:`
+  variants for anything with a direction (chevrons `rtl:scale-x-[-1]`,
+  gradients `rtl:bg-gradient-to-l`, progress fills from the start edge).
+  Check icon-before/after-text order in pills, chips, links and list rows
+  against the screenshot, in both `ar` and `en`, before reporting.
 - **API integration is a later, separate phase**: every `services/*.api.ts`
   stays on its mock; note integration needs as follow-ups instead of wiring
   endpoints.
