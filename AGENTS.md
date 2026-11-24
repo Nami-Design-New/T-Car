@@ -95,11 +95,14 @@ Ask the user before: any `git commit` (and which branch it goes on); deleting `B
   throwaway probe routes normally and delete them after use.
 - `notFound()` under the root streaming `loading.tsx` returns HTTP 200; the
   404 page renders in the browser. Known, documented in doc 3.
-- Vitest sometimes fails every file at once in `vitest.setup.ts` with "failed to
-  find the current suite" ("no tests"), with jsdom setup taking most of the run.
-  Seen right after a build or a server stop; the cause is not established. It is
-  not a test failure: run `npm run test` again with nothing else running (tests
-  first, then build and start the server).
+- Vitest fails every file at once in `vitest.setup.ts` with "failed to find the
+  current suite" ("no tests") when it runs from a lowercase drive path
+  (`f:\myProjects\T-Car`, or Git Bash `/f/...`), probably because Vitest gets loaded
+  twice under two path spellings. It is not a test failure. Run tests from the uppercase path,
+  e.g. PowerShell `Set-Location F:\myProjects\T-Car; npm run test`.
+- `next dev` and `next build` share `.next` (Next 15): stop the dev server before
+  `npx next build`. With the dev server and Figma open the build workers can
+  also run out of Windows commit memory ("Zone Allocation failed").
 - `features/orders/index.ts` re-exports Server Actions, so UI tests that import
   it (directly or through another feature) reach `@/auth` (NextAuth, which
   Node cannot load under Vitest) and `server-only`. `vitest.setup.ts` mocks
