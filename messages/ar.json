@@ -41,7 +41,14 @@
       "wallet": "المحفظة",
       "bankAccounts": "الحسابات البنكية",
       "notifications": "الإشعارات",
-      "referrals": "ادعُ صديقك"
+      "referrals": "ادعُ صديقك",
+      "rewards": "المكافآت"
+    },
+    "rewards": {
+      "cards": { "title": "بطاقاتي" },
+      "catalog": { "title": "استبدال النقاط" },
+      "allTiers": { "title": "مستويات المكافآت" },
+      "detail": { "title": "مزايا المستويات" }
     },
     "loadError": {
       "description": "تحقق من اتصالك بالإنترنت ثم حاول مرة أخرى.",
@@ -213,6 +220,143 @@
       "open": "فتح",
       "unreadCount": "{count, plural, =0 {لا توجد إشعارات غير مقروءة} one {إشعار واحد غير مقروء} two {إشعاران غير مقروءين} few {# إشعارات غير مقروءة} many {# إشعارًا غير مقروء} other {# إشعار غير مقروء}}"
     }
+  },
+  "rewards": {
+    "unavailableTitle": "تعذّر تحميل مكافآتك",
+    "tiers": {
+      "bronze": "البرونزية",
+      "silver": "الفضية",
+      "gold": "الذهبية",
+      "diamond": "الماسية"
+    },
+    "hero": {
+      "currentTier": "مستواك الحالي",
+      "higherTier": "مستوى أعلى",
+      "ofTierPoints": "/ {threshold} نقطة مستوى",
+      "pointsToNext": "{points} نقطة {tier, select, bronze {للبرونزية} silver {للفضية} gold {للذهبية} diamond {للماسية} other {للمستوى التالي}}",
+      "topTier": "وصلت إلى أعلى مستوى"
+    },
+    "balance": {
+      "label": "رصيدك المتاح للاستبدال",
+      "unit": "نقطة"
+    },
+    "cards": {
+      "filtersLabel": "تصفية بطاقاتي",
+      "filters": {
+        "all": "الكل",
+        "active": "نشطة",
+        "used": "مستخدمة",
+        "expired": "منتهية"
+      },
+      "status": {
+        "active": "نشطة",
+        "used": "مستخدمة",
+        "expired": "منتهية"
+      },
+      "validUntil": "صالحة حتى {date}",
+      "usedOn": "استُخدمت في حجز #{booking} · {date}",
+      "expiredOn": "انتهت في {date}",
+      "copyCode": "نسخ الكود {code}",
+      "copied": "تم نسخ الكود",
+      "copyFailed": "النسخ غير متاح في هذا المتصفح. حدّد الكود وانسخه.",
+      "empty": {
+        "all": { "title": "لا توجد بطاقات بعد", "description": "استبدل نقاطك لتحصل على بطاقة خصم." },
+        "active": { "title": "لا توجد بطاقات نشطة", "description": "ستظهر بطاقات الخصم النشطة هنا." },
+        "used": { "title": "لا توجد بطاقات مستخدمة", "description": "ستظهر البطاقات التي استخدمتها في الحجوزات هنا." },
+        "expired": { "title": "لا توجد بطاقات منتهية", "description": "ستظهر بطاقات الخصم المنتهية هنا." }
+      }
+    },
+    "catalog": {
+      "discountTitle": "بطاقة خصم",
+      "discountTitleAccessible": "بطاقة خصم بقيمة {amount} ريال سعودي",
+      "discountUnit": "خصم",
+      "availableNow": "على أي حجز · متاحة الآن",
+      "points": "نقطة",
+      "affordable": "نقاطك تكفي للاستبدال",
+      "insufficientPoints": "نقاطك غير كافية",
+      "redeemCard": "استبدل بطاقة خصم {amount} ريال",
+      "emptyTitle": "لا توجد بطاقات متاحة",
+      "emptyDescription": "ستظهر بطاقات الخصم هنا عند توفرها."
+    },
+    "redemption": {
+      "confirmTitle": "تأكيد الاستبدال",
+      "confirmDescription": "راجع التفاصيل قبل خصم النقاط من رصيدك",
+      "new": "جديدة",
+      "validForDays": "صالحة {days} يومًا من تاريخ الاستبدال",
+      "balanceBefore": "رصيد الاستبدال قبل",
+      "cost": "تكلفة البطاقة",
+      "balanceAfter": "المتبقي بعد الاستبدال",
+      "pointsAmount": "{amount} نقطة",
+      "costAmount": "−{amount} نقطة",
+      "tierPointsNote": "يُخصم الاستبدال من الرصيد المتاح فقط. نقاط المستوى والمستوى لا يتأثران.",
+      "confirm": "تأكيد الاستبدال",
+      "cancel": "إلغاء",
+      "successTitle": "تم الاستبدال بنجاح!",
+      "successDescription": "أُضيفت البطاقة إلى «بطاقاتي». استخدم الكود في خطوة الدفع عند حجزك القادم.",
+      "balanceAfterAmount": "رصيد الاستبدال: {amount} نقطة",
+      "tierPointsUnchanged": "مستواك {tier, select, bronze {البرونزي} silver {الفضي} gold {الذهبي} diamond {الماسي} other {}} ثابت · {amount} نقطة مستوى",
+      "viewCards": "عرض بطاقاتي",
+      "backToRewards": "العودة للمكافآت"
+    },
+    "actions": {
+      "label": "إجراءات المكافآت",
+      "redeem": "استبدال النقاط",
+      "cards": "بطاقاتي",
+      "history": "سجل النقاط"
+    },
+    "road": {
+      "title": "رحلتك عبر المستويات",
+      "viewTiers": "عرض المستويات",
+      "state": {
+        "reached": "تم الوصول إليه",
+        "current": "مستواك الحالي",
+        "locked": "مقفل"
+      }
+    },
+    "convert": {
+      "title": "حوّل نقاطك إلى بطاقات",
+      "subtitle": "بطاقات خصم على حجوزاتك القادمة",
+      "action": "استبدل الآن"
+    },
+    "perks": {
+      "title": "مميزات مستواك الحالي",
+      "viewAll": "عرض الكل",
+      "emptyTitle": "توك بديت!",
+      "emptyDescription": "اجمع {threshold, number} نقطة لتفتح مزايا {tier}",
+      "topTierDescription": "فتحت جميع مزايا المستويات المتاحة."
+    },
+    "allTiers": {
+      "introTitle": "اكسب نقاطًا مع كل رحلة وارتقِ لمستوى أعلى",
+      "introDescription": "تُضاف النقاط بعد اكتمال الحجز. يرتقي مستواك حسب نقاط المستوى، والاستبدال يخصم من الرصيد المتاح فقط.",
+      "fromPoints": "من {points} نقطة",
+      "requires": "يتطلب {points}",
+      "state": { "current": "مستواك الحالي", "reached": "تم الوصول إليه" },
+      "progress": "{points} / {threshold} نقطة {tier, select, bronze {للبرونزية} silver {للفضية} gold {للذهبية} diamond {للماسية} other {للمستوى التالي}}",
+      "info": "الاستبدال يخصم من الرصيد المتاح فقط. نقاط المستوى لا تنقص، والمستوى ثابت."
+    },
+    "perkState": {
+      "locked": "مقفلة",
+      "unlocked": "متاحة"
+    },
+    "tierPage": {
+      "noPerks": "لا توجد مزايا لهذا المستوى"
+    },
+    "detail": {
+      "tierNavigation": "مستويات المكافآت",
+      "currentPerks": "مزاياك الحالية",
+      "tierPerks": "مزايا {tier, select, bronze {البرونزية} silver {الفضية} gold {الذهبية} diamond {الماسية} other {المستوى}}",
+      "unlocksAt": "تُفتح مع {tier, select, bronze {البرونزية} silver {الفضية} gold {الذهبية} diamond {الماسية} other {المستوى التالي}}",
+      "earnTitle": "كيف تكسب النقاط؟",
+      "earn": {
+        "tripTitle": "أكمل رحلة",
+        "tripDescription": "1 نقطة لكل 1 ﷼ تدفعه في الإيجار",
+        "reviewTitle": "قيّم تجربتك",
+        "reviewDescription": "+50 نقطة بعد كل رحلة مكتملة",
+        "inviteTitle": "ادعُ صديقًا",
+        "inviteDescription": "+500 نقطة عند أول حجز مكتمل لصديقك"
+      }
+    },
+    "info": "تُضاف النقاط إلى رصيد الاستبدال بعد اكتمال الحجز فقط. الصرف لا يؤثر على المستوى."
   },
   "auth": {
     "location": {
@@ -625,6 +769,11 @@
     },
     "points": {
       "unavailable": "نقاطك غير متاحة مؤقتًا. حاول مرة أخرى بعد قليل."
+    },
+    "rewards": {
+      "unavailable": "مكافآتك غير متاحة مؤقتًا. حاول مرة أخرى بعد قليل.",
+      "cardUnavailable": "بطاقة الخصم هذه لم تعد متاحة.",
+      "insufficientPoints": "نقاطك غير كافية لاستبدال هذه البطاقة."
     },
     "wallet": {
       "topUpRejected": "تم رفض عملية الشحن.",

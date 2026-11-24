@@ -2,7 +2,7 @@ import { useNotify } from "@/shared/hooks/useNotify";
 import { Button } from "@/shared/ui/Button";
 import { useTranslations } from "next-intl";
 import { ReferralProgram } from "../model";
-import { useCopyText } from "../useCopyText";
+import { useCopyText } from "@/shared/hooks/useCopyText";
 
 export default function CodeShare({ program }: { program: ReferralProgram }) {
   const t = useTranslations("account.referrals");

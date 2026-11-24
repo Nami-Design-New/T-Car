@@ -3,9 +3,11 @@
 import { useEffect, useState, type MouseEvent, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { useTranslations } from "next-intl";
-import { FiCalendar, FiHome, FiMoreHorizontal, FiUser } from "react-icons/fi";
+import Image from "next/image";
+import { FiHome, FiMoreHorizontal } from "react-icons/fi";
 import { Link, usePathname } from "@/i18n/navigation";
 import { Dialog } from "@/shared/ui/Dialog";
+import { ICONS } from "@/shared/config/assets";
 
 interface Props {
   children: ReactNode;
@@ -25,7 +27,9 @@ export default function MobileNav({
   const [isOpen, setIsOpen] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   const isBookingsActive = pathname.startsWith("/account/bookings");
-  const isAccountActive = pathname.startsWith("/account") && !isBookingsActive;
+  const isRewardsActive = pathname.startsWith("/account/rewards");
+  const isAccountActive =
+    pathname.startsWith("/account") && !isBookingsActive && !isRewardsActive;
 
   useEffect(() => {
     setIsMounted(true);
@@ -58,7 +62,7 @@ export default function MobileNav({
         createPortal(
           <nav
             aria-label={t("bottomNavigation")}
-            className={`fixed inset-x-0 bottom-0 z-100 grid ${signedIn ? "grid-cols-3" : "grid-cols-2"} items-stretch border-t border-stroke-light bg-surface-elevated/[0.96] px-3 pt-2 pb-[calc(0.5rem+env(safe-area-inset-bottom))] shadow-[0_-8px_24px_rgba(12,12,12,0.08)] backdrop-blur-xl lg:hidden`}
+            className={`fixed inset-x-0 bottom-0 z-100 grid ${signedIn ? "grid-cols-4" : "grid-cols-2"} items-stretch border-t border-stroke-light bg-surface-elevated/[0.96] px-3 pt-2 pb-[calc(0.5rem+env(safe-area-inset-bottom))] shadow-[0_-8px_24px_rgba(12,12,12,0.08)] backdrop-blur-xl lg:hidden`}
           >
             {signedIn ? (
               <>
@@ -67,7 +71,14 @@ export default function MobileNav({
                   aria-current={isAccountActive ? "page" : undefined}
                   className={`flex min-h-14 flex-col items-center justify-center gap-1 rounded-lg text-xs font-semibold transition-colors focus-visible:outline-3 focus-visible:outline-action-primary/20 focus-visible:outline-offset-2 ${isAccountActive ? "text-action-primary" : "text-text-subtle hover:bg-surface-card-primary hover:text-text-primary"}`}
                 >
-                  <FiUser className="size-5" aria-hidden="true" />
+                  <Image
+                    src={ICONS.account.src}
+                    width={ICONS.account.width}
+                    height={ICONS.account.height}
+                    alt=""
+                    className={isAccountActive ? undefined : "grayscale"}
+                    aria-hidden="true"
+                  />
                   <span>{accountT("account")}</span>
                 </Link>
                 <Link
@@ -75,8 +86,30 @@ export default function MobileNav({
                   aria-current={isBookingsActive ? "page" : undefined}
                   className={`flex min-h-14 flex-col items-center justify-center gap-1 rounded-lg text-xs font-semibold transition-colors focus-visible:outline-3 focus-visible:outline-action-primary/20 focus-visible:outline-offset-2 ${isBookingsActive ? "text-action-primary" : "text-text-subtle hover:bg-surface-card-primary hover:text-text-primary"}`}
                 >
-                  <FiCalendar className="size-5" aria-hidden="true" />
+                  <Image
+                    src={ICONS.booking.src}
+                    width={ICONS.booking.width}
+                    height={ICONS.booking.height}
+                    alt=""
+                    className={isBookingsActive ? undefined : "grayscale"}
+                    aria-hidden="true"
+                  />
                   <span>{accountT("bookings")}</span>
+                </Link>
+                <Link
+                  href="/account/rewards"
+                  aria-current={isRewardsActive ? "page" : undefined}
+                  className={`flex min-h-14 flex-col items-center justify-center gap-1 rounded-lg text-xs font-semibold transition-colors focus-visible:outline-3 focus-visible:outline-action-primary/20 focus-visible:outline-offset-2 ${isRewardsActive ? "text-action-primary" : "text-text-subtle hover:bg-surface-card-primary hover:text-text-primary"}`}
+                >
+                  <Image
+                    src={ICONS.gift.src}
+                    width={ICONS.gift.width}
+                    height={ICONS.gift.height}
+                    alt=""
+                    className={isRewardsActive ? undefined : "grayscale"}
+                    aria-hidden="true"
+                  />
+                  <span>{accountT("rewards")}</span>
                 </Link>
               </>
             ) : (

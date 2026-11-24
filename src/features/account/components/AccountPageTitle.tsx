@@ -15,19 +15,25 @@ const sectionLabels: Record<AccountTab, string> = {
   "bank-accounts": "bankAccounts",
   notifications: "notifications",
   referrals: "referrals",
+  rewards: "rewards",
 };
 
 /** Pages inside a section that have their own title, under `account.`. */
 const pageTitles: Record<string, string> = {
   "/account/points": "points.historyTitle",
   "/account/referrals/history": "referrals.history.title",
+  "/account/rewards/tiers": "rewards.allTiers.title",
+  "/account/rewards/cards": "rewards.cards.title",
+  "/account/rewards/catalog": "rewards.catalog.title",
 };
 
 /** Keeps the shared account header aligned with the active account route. */
 export default function AccountPageTitle({ fallback }: Props) {
   const t = useTranslations("account");
   const pathname = usePathname();
-  const pageTitle = pageTitles[pathname];
+  const pageTitle = pathname.startsWith("/account/rewards/tiers/")
+    ? "rewards.detail.title"
+    : pageTitles[pathname];
   const section = ACCOUNT_TABS.find((tab) => {
     const path = accountSectionPath(tab);
     return pathname === path || pathname.startsWith(`${path}/`);

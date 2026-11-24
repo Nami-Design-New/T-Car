@@ -41,7 +41,14 @@
       "wallet": "Wallet",
       "bankAccounts": "Bank accounts",
       "notifications": "Notifications",
-      "referrals": "Invite a friend"
+      "referrals": "Invite a friend",
+      "rewards": "Rewards"
+    },
+    "rewards": {
+      "allTiers": { "title": "Reward tiers" },
+      "detail": { "title": "Tier perks" },
+      "cards": { "title": "My cards" },
+      "catalog": { "title": "Redeem points" }
     },
     "loadError": {
       "description": "Check your internet connection and try again.",
@@ -213,6 +220,143 @@
       "open": "Open",
       "unreadCount": "{count, plural, =0 {No unread notifications} one {# unread notification} other {# unread notifications}}"
     }
+  },
+  "rewards": {
+    "unavailableTitle": "Your rewards could not be loaded",
+    "tiers": {
+      "bronze": "Bronze",
+      "silver": "Silver",
+      "gold": "Gold",
+      "diamond": "Diamond"
+    },
+    "hero": {
+      "currentTier": "Your current tier",
+      "higherTier": "Higher tier",
+      "ofTierPoints": "/ {threshold} tier points",
+      "pointsToNext": "{points} points to {tier, select, bronze {Bronze} silver {Silver} gold {Gold} diamond {Diamond} other {the next tier}}",
+      "topTier": "Highest tier reached"
+    },
+    "balance": {
+      "label": "Available to redeem",
+      "unit": "points"
+    },
+    "cards": {
+      "filtersLabel": "My cards filters",
+      "filters": {
+        "all": "All",
+        "active": "Active",
+        "used": "Used",
+        "expired": "Expired"
+      },
+      "status": {
+        "active": "Active",
+        "used": "Used",
+        "expired": "Expired"
+      },
+      "validUntil": "Valid until {date}",
+      "usedOn": "Used on booking #{booking} · {date}",
+      "expiredOn": "Expired on {date}",
+      "copyCode": "Copy code {code}",
+      "copied": "Code copied",
+      "copyFailed": "Copying is not available in this browser. Select the code and copy it.",
+      "empty": {
+        "all": { "title": "No cards yet", "description": "Redeem points to get a discount card." },
+        "active": { "title": "No active cards", "description": "Your active discount cards will appear here." },
+        "used": { "title": "No used cards", "description": "Cards you use on bookings will appear here." },
+        "expired": { "title": "No expired cards", "description": "Expired discount cards will appear here." }
+      }
+    },
+    "catalog": {
+      "discountTitle": "Discount card",
+      "discountTitleAccessible": "Discount card worth {amount} Saudi riyals",
+      "discountUnit": "off",
+      "availableNow": "On any booking · Available now",
+      "points": "points",
+      "affordable": "Enough points to redeem",
+      "insufficientPoints": "Not enough points",
+      "redeemCard": "Redeem the {amount} SAR discount card",
+      "emptyTitle": "No cards available",
+      "emptyDescription": "Discount cards will appear here when available."
+    },
+    "redemption": {
+      "confirmTitle": "Confirm redemption",
+      "confirmDescription": "Review the details before points are taken from your balance",
+      "new": "New",
+      "validForDays": "Valid for {days} days from redemption",
+      "balanceBefore": "Redeemable balance before",
+      "cost": "Card cost",
+      "balanceAfter": "Remaining after redemption",
+      "pointsAmount": "{amount} points",
+      "costAmount": "−{amount} points",
+      "tierPointsNote": "Redemption only uses your redeemable balance. Your tier points and tier are not affected.",
+      "confirm": "Confirm redemption",
+      "cancel": "Cancel",
+      "successTitle": "Redeemed successfully!",
+      "successDescription": "The card was added to My cards. Use the code at checkout on your next booking.",
+      "balanceAfterAmount": "Redeemable balance: {amount} points",
+      "tierPointsUnchanged": "Your {tier, select, bronze {Bronze} silver {Silver} gold {Gold} diamond {Diamond} other {}} tier stays the same · {amount} tier points",
+      "viewCards": "View my cards",
+      "backToRewards": "Back to rewards"
+    },
+    "actions": {
+      "label": "Reward actions",
+      "redeem": "Redeem points",
+      "cards": "My cards",
+      "history": "Points history"
+    },
+    "road": {
+      "title": "Your journey through the tiers",
+      "viewTiers": "View tiers",
+      "state": {
+        "reached": "reached",
+        "current": "your tier",
+        "locked": "locked"
+      }
+    },
+    "convert": {
+      "title": "Turn your points into cards",
+      "subtitle": "Discount cards for your upcoming bookings",
+      "action": "Redeem now"
+    },
+    "perks": {
+      "title": "Your current tier benefits",
+      "viewAll": "View all",
+      "emptyTitle": "You have just started!",
+      "emptyDescription": "Collect {threshold, number} points to unlock {tier} benefits",
+      "topTierDescription": "You have unlocked every available tier benefit."
+    },
+    "allTiers": {
+      "introTitle": "Earn points on every trip and move up a tier",
+      "introDescription": "Points are added after a booking is completed. Your tier grows with tier points; redemption only reduces your available balance.",
+      "fromPoints": "From {points} points",
+      "requires": "Requires {points}",
+      "state": { "current": "Your current tier", "reached": "Tier reached" },
+      "progress": "{points} / {threshold} points to {tier, select, bronze {Bronze} silver {Silver} gold {Gold} diamond {Diamond} other {the next tier}}",
+      "info": "Redeeming points only reduces your available balance. Tier points never decrease, and your tier stays the same."
+    },
+    "perkState": {
+      "locked": "Locked",
+      "unlocked": "Unlocked"
+    },
+    "tierPage": {
+      "noPerks": "This tier has no perks"
+    },
+    "detail": {
+      "tierNavigation": "Reward tiers",
+      "currentPerks": "Your perks",
+      "tierPerks": "{tier, select, bronze {Bronze} silver {Silver} gold {Gold} diamond {Diamond} other {Tier}} perks",
+      "unlocksAt": "Unlocks at {tier, select, bronze {Bronze} silver {Silver} gold {Gold} diamond {Diamond} other {the next tier}}",
+      "earnTitle": "How to earn points",
+      "earn": {
+        "tripTitle": "Complete a trip",
+        "tripDescription": "1 point for every SAR 1 spent on a rental",
+        "reviewTitle": "Rate your experience",
+        "reviewDescription": "+50 points after each completed trip",
+        "inviteTitle": "Invite a friend",
+        "inviteDescription": "+500 points when your friend completes their first booking"
+      }
+    },
+    "info": "Points are added to your redeemable balance only after a booking is completed. Redeeming points does not affect your tier."
   },
   "auth": {
     "location": {
@@ -627,6 +771,11 @@
     },
     "points": {
       "unavailable": "Your points are temporarily unavailable. Try again shortly."
+    },
+    "rewards": {
+      "unavailable": "Your rewards are temporarily unavailable. Try again shortly.",
+      "cardUnavailable": "This discount card is no longer available.",
+      "insufficientPoints": "You do not have enough points for this card."
     },
     "wallet": {
       "topUpRejected": "The top-up was rejected.",

@@ -4,6 +4,9 @@ import { describe, expect, it, vi } from "vitest";
 import { renderWithIntl } from "@/shared/test/render";
 import ReferralsPage from "./ReferralsPage";
 
+const notify = vi.hoisted(() => ({ success: vi.fn(), error: vi.fn() }));
+vi.mock("@/shared/hooks/useNotify", () => ({ useNotify: () => notify }));
+
 vi.mock("@/i18n/navigation", () => ({
   Link: ({ href, ...props }: React.ComponentProps<"a"> & { href: string }) => (
     <a href={href} {...props} />
@@ -39,7 +42,7 @@ describe("ReferralsPage", () => {
     );
   });
 
-  it("copies the code and confirms on the button", async () => {
+  it("copies the code and confirms with a toast", async () => {
     const { user } = renderPage();
     const writeText = vi
       .spyOn(navigator.clipboard, "writeText")
@@ -48,9 +51,7 @@ describe("ReferralsPage", () => {
     await user.click(screen.getByRole("button", { name: "Copy" }));
 
     expect(writeText).toHaveBeenCalledWith("TCAR-A7K9");
-    expect(
-      await screen.findByRole("button", { name: "Copied" }),
-    ).toBeInTheDocument();
+    expect(notify.success).toHaveBeenCalledWith("Invite code copied");
   });
 
   it("keeps the copy label when the clipboard is not available", async () => {
@@ -61,6 +62,9 @@ describe("ReferralsPage", () => {
 
     await user.click(screen.getByRole("button", { name: "Copy" }));
 
+    expect(notify.error).toHaveBeenCalledWith(
+      "Copying is not available in this browser. Select the code and copy it.",
+    );
     expect(screen.getByRole("button", { name: "Copy" })).toBeInTheDocument();
   });
 

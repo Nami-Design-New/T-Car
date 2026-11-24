@@ -22,7 +22,8 @@ describe("ReferralHistoryPage", () => {
     expect(
       within(rows[0]).getByText("Waiting for first booking"),
     ).toBeInTheDocument();
-    expect(within(rows[0]).getByText("—")).toBeInTheDocument();
+    // A pending invite has no reward badge yet.
+    expect(within(rows[0]).queryByText(/\+\d+ points/)).not.toBeInTheDocument();
     expect(within(rows[1]).getByText("+500 points")).toBeInTheDocument();
     expect(within(rows[1]).getByText("October 30, 2026")).toBeInTheDocument();
   });

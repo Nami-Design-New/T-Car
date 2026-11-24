@@ -710,7 +710,7 @@ describe the guest case.
 | `home`, `rental-search`            |         Yes          |                                                  Yes (FAQs, search options)                                                   |                                               Yes (Server Action: contact form)                                               | Fraction 7 complete: pickup type, branch, airport, station, map, and country dialogs use shared `Dialog`. FAQ content comes from public `GET /faqs`; the Hero, partners, support, apps, contacts, join-us, and footer copy come from localized public `GET /home` through `features/home/queries.ts`; the partner logos come from public `GET /partners` (replacing the cars-mock offices); the Why Us copy and background come from `GET /home` (`data.why_us`) and its cards from public `GET /why-us`. Contact details still come from `/settings`; FAQ entries and car/city lists keep their dedicated sources.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | `auth`                             |         Yes          |                                                Live API (NextAuth + `authApi`)                                                |                                                     Yes (Server Actions)                                                      | Live API, A0–A8 and A11 ([Auth-API.md](api/Auth-API.md) §5): OTP request and verification, profile completion, location, and logout call the backend; the session starts after the register step; the mock (`features/auth/api.mock.ts`) is for tests only. The forms use RHF + Zod with server re-parse. A rejected token (401) clears the session and reopens sign-in with `next`. Left: verify logout revocation live (the TEST server's TLS handshake failed); the dead-token redirect on account pages is verified with a forced 401 only, because account reads are still mocks; open backend questions Q1, Q3, Q6, Q7, Q9–Q11 (HTTP status for errors, `current_step: null`, field errors, untranslated keys, OTP limits, countries, phone normalization) and the backend record of terms consent (Q8)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 | `account` (profile, notifications) |         Yes          |                                               Yes (scoped to the session user)                                                | Yes (Server Actions: save, phone change send and verify, license upload, delete, notification read/delete/token registration) | Profile reads, edits, and phone OTP requests use the live API; phone verification is unavailable until P5, and license and delete writes remain mocked. The profile tab composes separate profile, phone, license, and deletion flows with shared pending-action coordination. Routes per section with a shared layout and `AccountNav`; the loyalty points summary is shown in the account layout and `/account/points` owns the points history view. Notifications now own their live API in `features/notifications`: typed `GET /notifications` and `/notifications/unread-count`, read/read-all/delete/delete-all actions, and `POST /firebase-token`. The server layout reads only the lightweight count for the header badge. The browser registers the Firebase service worker, stores its web FCM token after permission, and refreshes on foreground messages; background delivery needs Firebase's web-push/VAPID configuration in the deployed project. Common success/failure results now use `shared/ui/Dialog`. Profile save and change/verify phone use RHF + Zod (`validation.ts`) with the schemas re-parsed in the actions (doc 9 fraction 2). License upload uses RHF + Zod (doc 9 fraction 3); left: opening the license details is still a TODO, and remaining dialogs                                                                                                                                                                                                                |
-| `layout`                           |         Yes          |                                                              n/a                                                              |                                                              n/a                                                              | The header shell and footer render on the server; mobile navigation uses a fixed bottom bar for account, bookings, and More; More opens an accessible modal side drawer with header links and language control; NAV_LINKS marks the current home-page hash with aria-current. The user menu uses `Menu`. Left: trimming the client messages (doc 2 step 7), the language switcher on `Menu`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| `layout`                           |         Yes          |                                                              n/a                                                              |                                                              n/a                                                              | The header shell and footer render on the server; mobile navigation uses a fixed bottom bar for account, bookings, rewards, and More (Figma account, booking, and gift icons); More opens an accessible modal side drawer with header links and language control; NAV_LINKS marks the current home-page hash with aria-current. The user menu uses `Menu`. Left: trimming the client messages (doc 2 step 7), the language switcher on `Menu`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 
 Notifications API integration (2026-11-12): `features/notifications` now owns
 the live paginated `GET /notifications` read and uses `InfiniteList` for later
@@ -818,10 +818,96 @@ a failed load use `StateCard`. The points model changed (`PointsSummary` lost
 `source`); still on the mock. `POINTS_ICONS.earned/spent/expired` are no
 longer used.
 
+**Rewards fraction RW1 (2026-11-23, branch `feature/rewards`), done:** New `features/rewards` and the `/account/rewards` overview
+adapt Figma `rewards/overview` for the account web layout: current tier and
+progress, separate redeemable balance, quick actions, the four-stop tier road,
+conversion banner, current-tier perks, and the points note. Reads go through
+`features/rewards/queries.ts` and `services/rewards.api.ts`, still on the
+stateless localized mock (failure rule: user id `rewards-failure`); no backend
+contract or endpoint was chosen. The mock takes the balances from the points
+mock (same customer) and localizes perks itself, so the interface has no locale
+(the real API reads `Accept-Language`). Tier rules sit in one
+`rewardsOverview()` (sorted tiers, reached/current/locked, progress against the
+next threshold, road position); below the first threshold the customer shows as
+Bronze (product to confirm). The road car marker sits midway between the current
+and next package, and the active bar ends at the car. Rewards is a direct mobile
+bottom-navigation destination; the bar uses the Figma account, bookings, and gift
+icons. The hero gradient is per tier:
+Figma's copper for bronze and silver, its gold for gold; diamond's blue is our
+own pick (no design).
+Links to `/account/rewards/{catalog,cards}` are implemented by RW3 and RW4.
+RW5 added redemption. Move points history under
+`/account/rewards/history`, and add the
+booking-complete points screen, in later fractions.
+
 **Account page titles (2026-11-23), done:** the account header (`AccountPageTitle`)
 shows a sub-page's own title instead of the section or "My account": "Points
 history" on `/account/points` and "My invites" on `/account/referrals/history`.
 Those pages dropped their duplicate h2, and their group headings moved up to h2.
+
+**Rewards fraction RW2 (2026-11-24, branch `feature/rewards`), done:**
+`/account/rewards/tiers` shows all four tier states and links to the merged
+detail/perks page at `/account/rewards/tiers/[tier]` (Figma screens 03 and 04
+are tabs on one web page). Perks follow the product owner's list rather than
+Figma's mixed screens; Bronze has a welcome perk. Perks have localized title,
+optional description, and icon data in the stateless rewards mock. Silver
+cashback and Gold delivery descriptions use the owner's "every four bookings,
+the fifth…" rule. Diamond descriptions are our own because Figma has none. The
+earning rules on locked tiers are static localized copy pending an API
+contract. The `AccountPageTitle`
+names `/account/rewards/tiers` and `/account/rewards/tiers/[tier]` from their
+own route titles.
+
+**Rewards fraction RW3 (2026-11-24, branch `feature/rewards`), done:**
+`/account/rewards/cards` shows the points balance, history link, and discount
+tickets filtered by All / Active / Used / Expired. Only active cards allow copying
+their code. A stateless `getCards` mock returns the three Figma card states and
+the same balance as points; `features/rewards/queries.ts` keeps the read on the
+server. The clipboard hook is shared with referrals. The My cards screenshot
+captured earlier was used because the Figma MCP reached its Starter-plan call
+limit; a fresh high-fidelity design context and signed-in visual check are still
+pending. RW5 added redemption (see below).
+
+**Rewards fraction RW4 (2026-11-24, branch `feature/rewards`), UI implemented:**
+`/account/rewards/catalog` lists the 50, 100 and 200 SAR discount cards for
+1,000, 1,900 and 3,800 points. The read-only page uses the same points balance
+as the overview and My cards; cards over that balance are visibly unavailable.
+The discount amount uses the existing SAR icon in the card art and title.
+The plus markers became the redeem action in RW5. The catalog comes from the
+stateless rewards mock via `services/rewards.api.ts` and a protected server
+query. The saved catalog screenshot was used because Figma's Starter-plan MCP
+call limit still prevents fresh design context; signed-in visual comparison
+remains open. RW5 added a fourth, unaffordable 300 SAR card to the mock.
+
+**Rewards fraction RW5 (2026-11-24, branch `feature/rewards`), done:** the
+plus on an affordable catalog card opens the confirmation (Figma
+`rewards/redemption-confirmation-sheet`, the shared `Dialog` as a bottom
+sheet): card preview with the item's validity, balance before, cost and
+balance after, the tier-points note, Confirm and Cancel; unaffordable cards
+stay disabled (`canAffordReward`). Confirm calls `redeemRewardAction(itemId)`
+(only the id crosses; cost, balances and the card come from the server), which
+returns an `ActionResult` via `toActionResult`; the client uses
+`fromActionResult` and `useErrorMessage()`. A failure keeps the dialog open
+with the error (`errors.rewards.cardUnavailable`, `insufficientPoints`,
+`unavailable`); Escape, backdrop and Cancel are ignored while pending, and a
+double click sends one request. Success closes the confirmation and opens a
+success dialog over the catalog (Figma `rewards/redemption-success`, user
+decision: a modal, not a page): X close (back to the catalog), CSS burst, the
+new card with its code, the balance after and the unchanged tier, and links to
+`/account/rewards/cards` and `/account/rewards`; `router.refresh()` re-reads
+server data, and focus returns to the card's plus button. One `RewardTicket`
+serves My cards, the confirmation (`variant="preview"`: no code, validity
+text) and the success dialog, with the SAR icon in the title and stub.
+`RewardCatalogItem` gained `validityDays`, `RewardRedemption` carries `tierId`.
+The mock `redeem` is stateless: it validates the item and the balance and
+returns a new card, but stores nothing, so a reload shows the old balance and
+the new card is not in My cards. Failure rules: user id `rewards-failure`
+(every read and `redeem`), item id `discount-failure` (`redeem` always fails
+with a network error; not listed, tests only), and the listed 300 SAR card for
+6,000 points, above the 4,000 mock balance, so the catalog always shows a
+disabled card and `redeem` answers it with `rewards.insufficientPoints`.
+Follow-up: a real redeem endpoint that persists the card and the balance
+together.
 
 **Referrals fraction R3 (2026-11-23), UI done, not sent yet:** the sign-up
 profile has an optional invite code field (`ReferralCodeField`, Figma
