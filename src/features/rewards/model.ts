@@ -43,7 +43,7 @@ export interface RewardsOverview {
   /** 0–100: tier points against the next tier's threshold, as Figma shows it. */
   progress: number;
   pointsToNext: number;
-  /** 0–100 along the equally spaced tier road, first stop to last. */
+  /** 0–100 along the tier road, at the car between the current and next tier. */
   roadPosition: number;
 }
 
@@ -124,21 +124,11 @@ export function rewardsOverview(summary: RewardsSummary): RewardsOverview {
     next,
     progress: next ? clampPercent((tierPoints / next.threshold) * 100) : 100,
     pointsToNext: next ? Math.max(0, next.threshold - tierPoints) : 0,
-    roadPosition: roadPosition(tierPoints, sorted),
+    roadPosition:
+      sorted.length === 1
+        ? 100
+        : (Math.min(currentIndex + 0.5, sorted.length - 1) /
+            (sorted.length - 1)) *
+          100,
   };
-}
-
-/** Each threshold is a stop; points between two stops interpolate linearly. */
-function roadPosition(tierPoints: number, sorted: RewardTier[]): number {
-  if (sorted.length <= 1) return 100;
-  if (tierPoints <= sorted[0].threshold) return 0;
-  if (tierPoints >= sorted[sorted.length - 1].threshold) return 100;
-
-  const upperIndex = sorted.findIndex((tier) => tierPoints < tier.threshold);
-  const lower = sorted[upperIndex - 1];
-  const upper = sorted[upperIndex];
-  const segment =
-    (tierPoints - lower.threshold) / (upper.threshold - lower.threshold);
-
-  return clampPercent(((upperIndex - 1 + segment) / (sorted.length - 1)) * 100);
 }

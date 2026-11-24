@@ -77,6 +77,10 @@ describe("RewardsPage", () => {
     expect(screen.getByText("(your tier)")).toBeInTheDocument();
     expect(screen.getByText("(reached)")).toBeInTheDocument();
     expect(screen.getAllByText("(locked)")).toHaveLength(2);
+    expect(screen.getByAltText("car").parentElement).toHaveStyle({
+      insetInlineStart: "50%",
+    });
+    expect(screen.getByTestId("tier-road-fill")).toHaveStyle({ width: "50%" });
     expect(screen.getAllByText("5,000").length).toBeGreaterThan(0);
     expect(
       screen.getByText("100 bonus points every month"),
@@ -123,6 +127,19 @@ describe("RewardsPage", () => {
     expect(
       screen.getByText(/Collect 5,000 points to unlock Silver benefits/),
     ).toBeInTheDocument();
+  });
+
+  it("centres the road car between the current and next packages", () => {
+    renderWithIntl(
+      <RewardsPage summary={{ tierPoints: 12000, balance: 12000, tiers }} />,
+    );
+
+    expect(screen.getByAltText("car").parentElement).toHaveStyle({
+      insetInlineStart: "75%",
+    });
+    expect(
+      parseFloat(screen.getByTestId("tier-road-fill").style.width),
+    ).toBeCloseTo(250 / 3);
   });
 
   it("shows the English Bronze welcome perk on the overview", () => {

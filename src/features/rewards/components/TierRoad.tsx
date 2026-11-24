@@ -44,11 +44,12 @@ export default function TierRoad({ tiers, roadPosition }: Props) {
             }}
           >
             <span
+              data-testid="tier-road-fill"
               className="from-primary-400 to-action-primary absolute inset-y-0 start-0 bg-gradient-to-r rtl:bg-gradient-to-l"
               style={{ width: `${roadPosition}%` }}
             />
           </div>
-          {/* Under the badges: at a threshold the current badge covers it. */}
+          {/* Centre the car between the current package and the next one. */}
           <span
             className="bg-action-primary absolute top-7 z-1 grid size-6 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border-2 border-white text-[11px] text-white shadow rtl:translate-x-0"
             style={{ insetInlineStart: `${markerStart}%` }}

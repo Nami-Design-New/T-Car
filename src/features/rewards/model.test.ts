@@ -132,13 +132,14 @@ describe("rewardsOverview", () => {
       "diamond",
     ]);
     expect(result.current.id).toBe("silver");
-    expect(result.roadPosition).toBeCloseTo(100 / 3);
+    expect(result.roadPosition).toBe(50);
   });
 
-  it("interpolates the car between equally spaced stops", () => {
-    expect(overview(0).roadPosition).toBe(0);
-    expect(overview(1000).roadPosition).toBe(0);
+  it("places the car halfway from the current tier to the next", () => {
+    expect(overview(0).roadPosition).toBeCloseTo(100 / 6);
+    expect(overview(1000).roadPosition).toBeCloseTo(100 / 6);
     expect(overview(7500).roadPosition).toBe(50);
+    expect(overview(12000).roadPosition).toBeCloseTo(250 / 3);
   });
 
   it("handles the top tier as complete with nothing left", () => {

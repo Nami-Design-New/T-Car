@@ -10,6 +10,7 @@ export const ICONS = {
   minus: { src: "/icons/mins.svg", width: 12, height: 12 },
   plus: { src: "/icons/plus.svg", width: 12, height: 12 },
   deliveryCar: { src: "/icons/delivery-car.svg", width: 24, height: 24 },
+  gift: { src: "/icons/gift.svg", width: 24, height: 24 },
   money: { src: "/icons/money.svg", width: 24, height: 24 },
   coin: { src: "/icons/coin.webp", width: 24, height: 24 },
   balance: { src: "/icons/balance.webp", width: 24, height: 24 },
