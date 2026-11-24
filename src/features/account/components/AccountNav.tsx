@@ -7,6 +7,7 @@ import {
   FiCalendar,
   FiCreditCard,
   FiGift,
+  FiAward,
   FiUser,
 } from "react-icons/fi";
 import { PiBank } from "react-icons/pi";
@@ -21,6 +22,7 @@ const SECTIONS: { id: AccountTab; label: string; icon: IconType }[] = [
   { id: "bank-accounts", label: "bankAccounts", icon: PiBank },
   { id: "notifications", label: "notifications", icon: FiBell },
   { id: "referrals", label: "referrals", icon: FiGift },
+  { id: "rewards", label: "rewards", icon: FiAward },
 ];
 
 /** The account sections as links (doc 5): each one is its own route. */

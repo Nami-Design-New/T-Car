@@ -38,6 +38,7 @@ describe("AccountNav", () => {
       "/account/bank-accounts",
       "/account/notifications",
       "/account/referrals",
+      "/account/rewards",
     ]);
   });
 

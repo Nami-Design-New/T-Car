@@ -15,6 +15,7 @@ const sectionLabels: Record<AccountTab, string> = {
   "bank-accounts": "bankAccounts",
   notifications: "notifications",
   referrals: "referrals",
+  rewards: "rewards",
 };
 
 /** Pages inside a section that have their own title, under `account.`. */

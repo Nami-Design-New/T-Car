@@ -818,6 +818,25 @@ a failed load use `StateCard`. The points model changed (`PointsSummary` lost
 `source`); still on the mock. `POINTS_ICONS.earned/spent/expired` are no
 longer used.
 
+**Rewards fraction RW1 (2026-11-23, branch `feature/rewards`), done:** New `features/rewards` and the `/account/rewards` overview
+adapt Figma `rewards/overview` for the account web layout: current tier and
+progress, separate redeemable balance, quick actions, the four-stop tier road,
+conversion banner, current-tier perks, and the points note. Reads go through
+`features/rewards/queries.ts` and `services/rewards.api.ts`, still on the
+stateless localized mock (failure rule: user id `rewards-failure`); no backend
+contract or endpoint was chosen. The mock takes the balances from the points
+mock (same customer) and localizes perks itself, so the interface has no locale
+(the real API reads `Accept-Language`). Tier rules sit in one
+`rewardsOverview()` (sorted tiers, reached/current/locked, progress against the
+next threshold, road position); below the first threshold the customer shows as
+Bronze (product to confirm). The hero gradient is per tier: Figma's copper for
+bronze and silver, its gold for gold; diamond's blue is our own pick (no design).
+Links to `/account/rewards/{tiers,catalog,cards}` 404 until RW2–RW4 land, so
+those must merge with RW1. Follow-ups: RW2 combines all tiers, tier
+detail, and tier perks for web; RW3 adds cards; RW4 adds the catalog; RW5 adds
+redemption. Move points history under `/account/rewards/history`, and add the
+booking-complete points screen, in later fractions.
+
 **Account page titles (2026-11-23), done:** the account header (`AccountPageTitle`)
 shows a sub-page's own title instead of the section or "My account": "Points
 history" on `/account/points` and "My invites" on `/account/referrals/history`.

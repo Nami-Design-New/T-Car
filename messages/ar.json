@@ -41,7 +41,8 @@
       "wallet": "المحفظة",
       "bankAccounts": "الحسابات البنكية",
       "notifications": "الإشعارات",
-      "referrals": "ادعُ صديقك"
+      "referrals": "ادعُ صديقك",
+      "rewards": "المكافآت"
     },
     "loadError": {
       "description": "تحقق من اتصالك بالإنترنت ثم حاول مرة أخرى.",
@@ -213,6 +214,53 @@
       "open": "فتح",
       "unreadCount": "{count, plural, =0 {لا توجد إشعارات غير مقروءة} one {إشعار واحد غير مقروء} two {إشعاران غير مقروءين} few {# إشعارات غير مقروءة} many {# إشعارًا غير مقروء} other {# إشعار غير مقروء}}"
     }
+  },
+  "rewards": {
+    "unavailableTitle": "تعذّر تحميل مكافآتك",
+    "tiers": {
+      "bronze": "البرونزية",
+      "silver": "الفضية",
+      "gold": "الذهبية",
+      "diamond": "الماسية"
+    },
+    "hero": {
+      "currentTier": "مستواك الحالي",
+      "ofTierPoints": "/ {threshold} نقطة مستوى",
+      "pointsToNext": "{points} نقطة {tier, select, bronze {للبرونزية} silver {للفضية} gold {للذهبية} diamond {للماسية} other {للمستوى التالي}}",
+      "topTier": "وصلت إلى أعلى مستوى"
+    },
+    "balance": {
+      "label": "رصيدك المتاح للاستبدال",
+      "unit": "نقطة"
+    },
+    "actions": {
+      "label": "إجراءات المكافآت",
+      "redeem": "استبدال النقاط",
+      "cards": "بطاقاتي",
+      "history": "سجل النقاط"
+    },
+    "road": {
+      "title": "رحلتك عبر المستويات",
+      "viewTiers": "عرض المستويات",
+      "state": {
+        "reached": "تم الوصول إليه",
+        "current": "مستواك الحالي",
+        "locked": "مقفل"
+      }
+    },
+    "convert": {
+      "title": "حوّل نقاطك إلى بطاقات",
+      "subtitle": "بطاقات خصم على حجوزاتك القادمة",
+      "action": "استبدل الآن"
+    },
+    "perks": {
+      "title": "مميزات مستواك الحالي",
+      "viewAll": "عرض الكل",
+      "emptyTitle": "توك بديت!",
+      "emptyDescription": "اجمع {threshold, number} نقطة لتفتح مزايا {tier}",
+      "topTierDescription": "فتحت جميع مزايا المستويات المتاحة."
+    },
+    "info": "تُضاف النقاط إلى رصيد الاستبدال بعد اكتمال الحجز فقط. الصرف لا يؤثر على المستوى."
   },
   "auth": {
     "location": {
@@ -625,6 +673,9 @@
     },
     "points": {
       "unavailable": "نقاطك غير متاحة مؤقتًا. حاول مرة أخرى بعد قليل."
+    },
+    "rewards": {
+      "unavailable": "مكافآتك غير متاحة مؤقتًا. حاول مرة أخرى بعد قليل."
     },
     "wallet": {
       "topUpRejected": "تم رفض عملية الشحن.",

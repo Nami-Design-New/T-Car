@@ -41,7 +41,8 @@
       "wallet": "Wallet",
       "bankAccounts": "Bank accounts",
       "notifications": "Notifications",
-      "referrals": "Invite a friend"
+      "referrals": "Invite a friend",
+      "rewards": "Rewards"
     },
     "loadError": {
       "description": "Check your internet connection and try again.",
@@ -213,6 +214,53 @@
       "open": "Open",
       "unreadCount": "{count, plural, =0 {No unread notifications} one {# unread notification} other {# unread notifications}}"
     }
+  },
+  "rewards": {
+    "unavailableTitle": "Your rewards could not be loaded",
+    "tiers": {
+      "bronze": "Bronze",
+      "silver": "Silver",
+      "gold": "Gold",
+      "diamond": "Diamond"
+    },
+    "hero": {
+      "currentTier": "Your current tier",
+      "ofTierPoints": "/ {threshold} tier points",
+      "pointsToNext": "{points} points to {tier, select, bronze {Bronze} silver {Silver} gold {Gold} diamond {Diamond} other {the next tier}}",
+      "topTier": "Highest tier reached"
+    },
+    "balance": {
+      "label": "Available to redeem",
+      "unit": "points"
+    },
+    "actions": {
+      "label": "Reward actions",
+      "redeem": "Redeem points",
+      "cards": "My cards",
+      "history": "Points history"
+    },
+    "road": {
+      "title": "Your journey through the tiers",
+      "viewTiers": "View tiers",
+      "state": {
+        "reached": "reached",
+        "current": "your tier",
+        "locked": "locked"
+      }
+    },
+    "convert": {
+      "title": "Turn your points into cards",
+      "subtitle": "Discount cards for your upcoming bookings",
+      "action": "Redeem now"
+    },
+    "perks": {
+      "title": "Your current tier benefits",
+      "viewAll": "View all",
+      "emptyTitle": "You have just started!",
+      "emptyDescription": "Collect {threshold, number} points to unlock {tier} benefits",
+      "topTierDescription": "You have unlocked every available tier benefit."
+    },
+    "info": "Points are added to your redeemable balance only after a booking is completed. Redeeming points does not affect your tier."
   },
   "auth": {
     "location": {
@@ -627,6 +675,9 @@
     },
     "points": {
       "unavailable": "Your points are temporarily unavailable. Try again shortly."
+    },
+    "rewards": {
+      "unavailable": "Your rewards are temporarily unavailable. Try again shortly."
     },
     "wallet": {
       "topUpRejected": "The top-up was rejected.",

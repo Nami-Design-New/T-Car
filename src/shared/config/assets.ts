@@ -97,6 +97,69 @@ export const POINTS_ICONS = {
   expired: { src: "/icons/gift-points-gray.svg", width: 20, height: 20 },
 } as const;
 
+export const REWARDS_ASSETS = {
+  badges: {
+    bronze: {
+      src: "/images/rewards/badge-bronze.webp",
+      width: 144,
+      height: 144,
+    },
+    silver: {
+      src: "/images/rewards/badge-silver.webp",
+      width: 144,
+      height: 144,
+    },
+    gold: { src: "/images/rewards/badge-gold.webp", width: 144, height: 144 },
+    diamond: {
+      src: "/images/rewards/badge-diamond.webp",
+      width: 144,
+      height: 144,
+    },
+  },
+  frames: {
+    bronze: { src: "/images/rewards/hex-bronze.svg", width: 88, height: 95 },
+    silverHero: {
+      src: "/images/rewards/hex-silver-hero.svg",
+      width: 88,
+      height: 95,
+    },
+    silverRoad: {
+      src: "/images/rewards/hex-silver-road.svg",
+      width: 73,
+      height: 79,
+    },
+    gold: { src: "/images/rewards/hex-gold.svg", width: 88, height: 95 },
+    diamond: {
+      src: "/images/rewards/hex-diamond.svg",
+      width: 88,
+      height: 95,
+    },
+  },
+  glowCurrent: {
+    src: "/images/rewards/glow-current.svg",
+    width: 68,
+    height: 68,
+  },
+  decor: {
+    ringOne: {
+      src: "/images/rewards/decor-ring-1.svg",
+      width: 260,
+      height: 260,
+    },
+    ringTwo: {
+      src: "/images/rewards/decor-ring-2.svg",
+      width: 180,
+      height: 180,
+    },
+    ringThree: {
+      src: "/images/rewards/decor-ring-3.svg",
+      width: 220,
+      height: 220,
+    },
+    lane: { src: "/images/rewards/decor-lane.svg", width: 240, height: 40 },
+  },
+} as const;
+
 export const RENTAL_ICONS = {
   daily: { src: "/icons/rental/daily.svg", width: 48, height: 48 },
   monthly: { src: "/icons/rental/monthly.svg", width: 48, height: 48 },
