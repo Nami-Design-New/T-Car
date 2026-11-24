@@ -248,8 +248,6 @@
         "used": "Used",
         "expired": "Expired"
       },
-      "discountTitle": "SAR {amount} discount card",
-      "discountUnit": "SAR off",
       "status": {
         "active": "Active",
         "used": "Used",
@@ -276,8 +274,29 @@
       "points": "points",
       "affordable": "Enough points to redeem",
       "insufficientPoints": "Not enough points",
+      "redeemCard": "Redeem the {amount} SAR discount card",
       "emptyTitle": "No cards available",
       "emptyDescription": "Discount cards will appear here when available."
+    },
+    "redemption": {
+      "confirmTitle": "Confirm redemption",
+      "confirmDescription": "Review the details before points are taken from your balance",
+      "new": "New",
+      "validForDays": "Valid for {days} days from redemption",
+      "balanceBefore": "Redeemable balance before",
+      "cost": "Card cost",
+      "balanceAfter": "Remaining after redemption",
+      "pointsAmount": "{amount} points",
+      "costAmount": "−{amount} points",
+      "tierPointsNote": "Redemption only uses your redeemable balance. Your tier points and tier are not affected.",
+      "confirm": "Confirm redemption",
+      "cancel": "Cancel",
+      "successTitle": "Redeemed successfully!",
+      "successDescription": "The card was added to My cards. Use the code at checkout on your next booking.",
+      "balanceAfterAmount": "Redeemable balance: {amount} points",
+      "tierPointsUnchanged": "Your {tier, select, bronze {Bronze} silver {Silver} gold {Gold} diamond {Diamond} other {}} tier stays the same · {amount} tier points",
+      "viewCards": "View my cards",
+      "backToRewards": "Back to rewards"
     },
     "actions": {
       "label": "Reward actions",
@@ -754,7 +773,9 @@
       "unavailable": "Your points are temporarily unavailable. Try again shortly."
     },
     "rewards": {
-      "unavailable": "Your rewards are temporarily unavailable. Try again shortly."
+      "unavailable": "Your rewards are temporarily unavailable. Try again shortly.",
+      "cardUnavailable": "This discount card is no longer available.",
+      "insufficientPoints": "You do not have enough points for this card."
     },
     "wallet": {
       "topUpRejected": "The top-up was rejected.",

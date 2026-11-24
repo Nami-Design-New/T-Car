@@ -8,9 +8,11 @@ import { canAffordReward, type RewardCatalogItem } from "../model";
 interface Props {
   item: RewardCatalogItem;
   balance: number;
+  /** Receives the + button so focus can return to it after the flow. */
+  onRedeem: (opener: HTMLButtonElement) => void;
 }
 
-export default function CatalogCard({ item, balance }: Props) {
+export default function CatalogCard({ item, balance, onRedeem }: Props) {
   const t = useTranslations("rewards.catalog");
   const format = useFormatter();
   const affordable = canAffordReward(balance, item);
@@ -99,15 +101,21 @@ export default function CatalogCard({ item, balance }: Props) {
             </strong>
             <span className="text-text-subtle">{t("points")}</span>
           </span>
-          <span
+          <button
+            type="button"
+            onClick={(event) => onRedeem(event.currentTarget)}
+            disabled={!affordable}
+            aria-label={t("redeemCard", {
+              amount: format.number(item.discountAmount),
+            })}
             className={cn(
               "grid size-8 shrink-0 place-items-center rounded-full text-xl text-white",
               affordable ? "bg-action-primary" : "bg-[#bdd8ff]",
+              affordable && "cursor-pointer hover:bg-[#1769db]",
             )}
-            aria-hidden="true"
           >
-            <FiPlus />
-          </span>
+            <FiPlus aria-hidden="true" />
+          </button>
         </div>
         <span className="sr-only">
           {affordable ? t("affordable") : t("insufficientPoints")}

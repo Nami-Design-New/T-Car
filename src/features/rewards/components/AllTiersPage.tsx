@@ -11,7 +11,7 @@ export default function AllTiersPage({ summary }: Props) {
   const t = useTranslations("rewards");
   const overview = rewardsOverview(summary);
   return (
-    <section className="bg-surface-card-primary mx-auto flex max-w-3xl flex-col gap-5 rounded-xl p-4 sm:p-5">
+    <section className="bg-surface-card-primary flex flex-col gap-5 rounded-xl">
       <div>
         <h2 className="m-0 text-[17px] font-bold">
           {t("allTiers.introTitle")}

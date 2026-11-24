@@ -60,11 +60,23 @@ export interface RewardCatalogItem {
   id: string;
   discountAmount: number;
   pointsCost: number;
+  /** Days the redeemed card stays valid, counted from redemption. */
+  validityDays: number;
 }
 
 export interface RewardCatalogData {
   balance: number;
   items: RewardCatalogItem[];
+}
+
+export interface RewardRedemption {
+  card: RewardCard;
+  pointsCost: number;
+  balanceBefore: number;
+  balanceAfter: number;
+  tierPoints: number;
+  /** Unchanged by redemption; shown on the success screen. */
+  tierId: RewardTierId;
 }
 
 export function canAffordReward(

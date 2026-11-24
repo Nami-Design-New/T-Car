@@ -2,11 +2,15 @@ import { getLocale } from "next-intl/server";
 import type {
   RewardCardsData,
   RewardCatalogData,
+  RewardCatalogItem,
   RewardPerk,
+  RewardRedemption,
   RewardTier,
   RewardsSummary,
 } from "@/features/rewards/model";
+import { rewardsOverview } from "@/features/rewards/model";
 import { AppError } from "@/shared/lib/errors";
+import { fail, ok } from "@/shared/lib/result";
 import type { RewardsApi } from "../rewards.api";
 import { MOCK_POINTS_DATA } from "./points";
 
@@ -134,6 +138,45 @@ const delay = (ms = 160) => new Promise((resolve) => setTimeout(resolve, ms));
 
 /** Mock only: this test id reproduces an unavailable rewards service response. */
 const MOCK_FAILURE_USER_ID = "rewards-failure";
+/**
+ * Mock only: redeeming this id always fails with a network error. It is not in
+ * the catalog (tests send it straight to `redeem`).
+ */
+const MOCK_FAILURE_ITEM_ID = "discount-failure";
+type MockCatalogItem = RewardCatalogItem & { code: string };
+// The 300 SAR card costs more than the mock balance (4,000), so the catalog
+// always shows one unaffordable card and `redeem` answers it with
+// `rewards.insufficientPoints`.
+const CATALOG_ITEMS: MockCatalogItem[] = [
+  {
+    id: "discount-50",
+    discountAmount: 50,
+    pointsCost: 1000,
+    validityDays: 90,
+    code: "TCAR-305-Q9LD",
+  },
+  {
+    id: "discount-100",
+    discountAmount: 100,
+    pointsCost: 1900,
+    validityDays: 90,
+    code: "TCAR-100-N7KL",
+  },
+  {
+    id: "discount-200",
+    discountAmount: 200,
+    pointsCost: 3800,
+    validityDays: 90,
+    code: "TCAR-200-P4RM",
+  },
+  {
+    id: "discount-300",
+    discountAmount: 300,
+    pointsCost: 6000,
+    validityDays: 90,
+    code: "TCAR-300-H6TW",
+  },
+];
 
 // Read-only and stateless: it runs on the server, so it keeps no per-user state.
 // The real API localizes perks from Accept-Language (sent by services/http);
@@ -192,11 +235,52 @@ export const rewardsMock: RewardsApi = {
     }
     return {
       balance: MOCK_POINTS_DATA.summary.balance,
-      items: [
-        { id: "discount-50", discountAmount: 50, pointsCost: 1000 },
-        { id: "discount-100", discountAmount: 100, pointsCost: 1900 },
-        { id: "discount-200", discountAmount: 200, pointsCost: 3800 },
-      ],
+      items: CATALOG_ITEMS.map(
+        ({ id, discountAmount, pointsCost, validityDays }) => ({
+          id,
+          discountAmount,
+          pointsCost,
+          validityDays,
+        }),
+      ),
     } satisfies RewardCatalogData;
+  },
+  async redeem(userId, itemId) {
+    await delay();
+    if (userId === MOCK_FAILURE_USER_ID || itemId === MOCK_FAILURE_ITEM_ID) {
+      return fail(new AppError("network", "rewards.unavailable"));
+    }
+    const item = CATALOG_ITEMS.find(({ id }) => id === itemId);
+    if (!item)
+      return fail(new AppError("not_found", "rewards.cardUnavailable"));
+    const { balance, tierPoints } = MOCK_POINTS_DATA.summary;
+    if (balance < item.pointsCost) {
+      return fail(new AppError("conflict", "rewards.insufficientPoints"));
+    }
+    // Mock only: nothing is stored, so a reload shows the old balance and My
+    // cards does not list the new card. A real API will persist the new card
+    // and the balance together.
+    const expiresAt = new Date(
+      Date.now() + item.validityDays * 24 * 60 * 60 * 1000,
+    ).toISOString();
+    const tierId = rewardsOverview({
+      tierPoints,
+      balance,
+      tiers: tiersFor("en"),
+    }).current.id;
+    return ok({
+      card: {
+        id: `redeemed-${item.id}`,
+        code: item.code,
+        discountAmount: item.discountAmount,
+        status: "active",
+        expiresAt,
+      },
+      pointsCost: item.pointsCost,
+      balanceBefore: balance,
+      balanceAfter: balance - item.pointsCost,
+      tierPoints,
+      tierId,
+    } satisfies RewardRedemption);
   },
 };

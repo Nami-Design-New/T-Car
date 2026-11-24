@@ -18,7 +18,7 @@ export default function RewardsPage({ summary }: Props) {
   const overview = rewardsOverview(summary);
 
   return (
-    <section className="bg-surface-card-primary relative mx-auto flex max-w-3xl flex-col gap-5 overflow-hidden rounded-xl p-4 sm:p-5">
+    <section className="bg-surface-card-primary relative flex flex-col gap-5 overflow-hidden rounded-xl">
       <div className="pointer-events-none absolute inset-x-0 top-0 h-56 bg-[radial-gradient(circle_at_top,#d9eaff,transparent_68%)]" />
       <div className="relative z-1 flex justify-end">
         <Link

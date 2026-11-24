@@ -248,8 +248,6 @@
         "used": "مستخدمة",
         "expired": "منتهية"
       },
-      "discountTitle": "بطاقة خصم {amount} ريال",
-      "discountUnit": "ريال خصم",
       "status": {
         "active": "نشطة",
         "used": "مستخدمة",
@@ -276,8 +274,29 @@
       "points": "نقطة",
       "affordable": "نقاطك تكفي للاستبدال",
       "insufficientPoints": "نقاطك غير كافية",
+      "redeemCard": "استبدل بطاقة خصم {amount} ريال",
       "emptyTitle": "لا توجد بطاقات متاحة",
       "emptyDescription": "ستظهر بطاقات الخصم هنا عند توفرها."
+    },
+    "redemption": {
+      "confirmTitle": "تأكيد الاستبدال",
+      "confirmDescription": "راجع التفاصيل قبل خصم النقاط من رصيدك",
+      "new": "جديدة",
+      "validForDays": "صالحة {days} يومًا من تاريخ الاستبدال",
+      "balanceBefore": "رصيد الاستبدال قبل",
+      "cost": "تكلفة البطاقة",
+      "balanceAfter": "المتبقي بعد الاستبدال",
+      "pointsAmount": "{amount} نقطة",
+      "costAmount": "−{amount} نقطة",
+      "tierPointsNote": "يُخصم الاستبدال من الرصيد المتاح فقط. نقاط المستوى والمستوى لا يتأثران.",
+      "confirm": "تأكيد الاستبدال",
+      "cancel": "إلغاء",
+      "successTitle": "تم الاستبدال بنجاح!",
+      "successDescription": "أُضيفت البطاقة إلى «بطاقاتي». استخدم الكود في خطوة الدفع عند حجزك القادم.",
+      "balanceAfterAmount": "رصيد الاستبدال: {amount} نقطة",
+      "tierPointsUnchanged": "مستواك {tier, select, bronze {البرونزي} silver {الفضي} gold {الذهبي} diamond {الماسي} other {}} ثابت · {amount} نقطة مستوى",
+      "viewCards": "عرض بطاقاتي",
+      "backToRewards": "العودة للمكافآت"
     },
     "actions": {
       "label": "إجراءات المكافآت",
@@ -752,7 +771,9 @@
       "unavailable": "نقاطك غير متاحة مؤقتًا. حاول مرة أخرى بعد قليل."
     },
     "rewards": {
-      "unavailable": "مكافآتك غير متاحة مؤقتًا. حاول مرة أخرى بعد قليل."
+      "unavailable": "مكافآتك غير متاحة مؤقتًا. حاول مرة أخرى بعد قليل.",
+      "cardUnavailable": "بطاقة الخصم هذه لم تعد متاحة.",
+      "insufficientPoints": "نقاطك غير كافية لاستبدال هذه البطاقة."
     },
     "wallet": {
       "topUpRejected": "تم رفض عملية الشحن.",

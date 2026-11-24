@@ -42,7 +42,7 @@ export default function TierDetailPage({ summary, tierId }: Props) {
   ];
   const perksSection = (
     <section className="flex flex-col gap-3">
-      <h2 className="m-0 text-[17px] font-bold">
+      <h2 className="m-0 text-base font-bold">
         {view.state === "current"
           ? t("detail.currentPerks")
           : t("detail.tierPerks", { tier: tierId })}
@@ -81,7 +81,7 @@ export default function TierDetailPage({ summary, tierId }: Props) {
     </section>
   );
   return (
-    <section className="bg-surface-card-primary mx-auto flex max-w-3xl flex-col gap-5 rounded-xl p-4 sm:p-5">
+    <section className="bg-surface-card-primary flex flex-col gap-5 rounded-xl">
       <nav
         aria-label={t("detail.tierNavigation")}
         className="grid h-11 grid-cols-4 gap-1 rounded-2xl bg-neutral-100 p-1"

@@ -836,7 +836,7 @@ icons. The hero gradient is per tier:
 Figma's copper for bronze and silver, its gold for gold; diamond's blue is our
 own pick (no design).
 Links to `/account/rewards/{catalog,cards}` are implemented by RW3 and RW4.
-RW5 adds redemption. Move points history under
+RW5 added redemption. Move points history under
 `/account/rewards/history`, and add the
 booking-complete points screen, in later fractions.
 
@@ -866,18 +866,48 @@ the same balance as points; `features/rewards/queries.ts` keeps the read on the
 server. The clipboard hook is shared with referrals. The My cards screenshot
 captured earlier was used because the Figma MCP reached its Starter-plan call
 limit; a fresh high-fidelity design context and signed-in visual check are still
-pending. RW5 adds redemption.
+pending. RW5 added redemption (see below).
 
 **Rewards fraction RW4 (2026-11-24, branch `feature/rewards`), UI implemented:**
 `/account/rewards/catalog` lists the 50, 100 and 200 SAR discount cards for
 1,000, 1,900 and 3,800 points. The read-only page uses the same points balance
 as the overview and My cards; cards over that balance are visibly unavailable.
 The discount amount uses the existing SAR icon in the card art and title.
-The plus markers follow the design but are not actions until RW5 adds the
-confirmation dialog and redemption write. The catalog comes from the stateless
-rewards mock via `services/rewards.api.ts` and a protected server query. The
-saved catalog screenshot was used because Figma's Starter-plan MCP call limit
-still prevents fresh design context; signed-in visual comparison remains open.
+The plus markers became the redeem action in RW5. The catalog comes from the
+stateless rewards mock via `services/rewards.api.ts` and a protected server
+query. The saved catalog screenshot was used because Figma's Starter-plan MCP
+call limit still prevents fresh design context; signed-in visual comparison
+remains open. RW5 added a fourth, unaffordable 300 SAR card to the mock.
+
+**Rewards fraction RW5 (2026-11-24, branch `feature/rewards`), done:** the
+plus on an affordable catalog card opens the confirmation (Figma
+`rewards/redemption-confirmation-sheet`, the shared `Dialog` as a bottom
+sheet): card preview with the item's validity, balance before, cost and
+balance after, the tier-points note, Confirm and Cancel; unaffordable cards
+stay disabled (`canAffordReward`). Confirm calls `redeemRewardAction(itemId)`
+(only the id crosses; cost, balances and the card come from the server), which
+returns an `ActionResult` via `toActionResult`; the client uses
+`fromActionResult` and `useErrorMessage()`. A failure keeps the dialog open
+with the error (`errors.rewards.cardUnavailable`, `insufficientPoints`,
+`unavailable`); Escape, backdrop and Cancel are ignored while pending, and a
+double click sends one request. Success closes the confirmation and opens a
+success dialog over the catalog (Figma `rewards/redemption-success`, user
+decision: a modal, not a page): X close (back to the catalog), CSS burst, the
+new card with its code, the balance after and the unchanged tier, and links to
+`/account/rewards/cards` and `/account/rewards`; `router.refresh()` re-reads
+server data, and focus returns to the card's plus button. One `RewardTicket`
+serves My cards, the confirmation (`variant="preview"`: no code, validity
+text) and the success dialog, with the SAR icon in the title and stub.
+`RewardCatalogItem` gained `validityDays`, `RewardRedemption` carries `tierId`.
+The mock `redeem` is stateless: it validates the item and the balance and
+returns a new card, but stores nothing, so a reload shows the old balance and
+the new card is not in My cards. Failure rules: user id `rewards-failure`
+(every read and `redeem`), item id `discount-failure` (`redeem` always fails
+with a network error; not listed, tests only), and the listed 300 SAR card for
+6,000 points, above the 4,000 mock balance, so the catalog always shows a
+disabled card and `redeem` answers it with `rewards.insufficientPoints`.
+Follow-up: a real redeem endpoint that persists the card and the balance
+together.
 
 **Referrals fraction R3 (2026-11-23), UI done, not sent yet:** the sign-up
 profile has an optional invite code field (`ReferralCodeField`, Figma

@@ -100,7 +100,12 @@ describe("rewardTierView", () => {
 });
 
 describe("canAffordReward", () => {
-  const item = { id: "discount-100", discountAmount: 100, pointsCost: 1900 };
+  const item = {
+    id: "discount-100",
+    discountAmount: 100,
+    pointsCost: 1900,
+    validityDays: 90,
+  };
 
   it("allows an exact balance and rejects a lower one", () => {
     expect(canAffordReward(1900, item)).toBe(true);
