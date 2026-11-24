@@ -56,6 +56,24 @@ export interface RewardCardsData {
   cards: RewardCard[];
 }
 
+export interface RewardCatalogItem {
+  id: string;
+  discountAmount: number;
+  pointsCost: number;
+}
+
+export interface RewardCatalogData {
+  balance: number;
+  items: RewardCatalogItem[];
+}
+
+export function canAffordReward(
+  balance: number,
+  item: RewardCatalogItem,
+): boolean {
+  return balance >= item.pointsCost;
+}
+
 export function matchesRewardCardFilter(
   card: RewardCard,
   filter: RewardCardFilter,

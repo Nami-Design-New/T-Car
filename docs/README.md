@@ -835,9 +835,8 @@ bottom-navigation destination; the bar uses the Figma account, bookings, and gif
 icons. The hero gradient is per tier:
 Figma's copper for bronze and silver, its gold for gold; diamond's blue is our
 own pick (no design).
-Links to `/account/rewards/{catalog,cards}` 404 until RW3–RW4 land, so
-those must merge with RW1 and RW2. Follow-ups: RW3 adds cards; RW4 adds the
-catalog; RW5 adds redemption. Move points history under
+Links to `/account/rewards/{catalog,cards}` are implemented by RW3 and RW4.
+RW5 adds redemption. Move points history under
 `/account/rewards/history`, and add the
 booking-complete points screen, in later fractions.
 
@@ -859,7 +858,7 @@ contract. The `AccountPageTitle`
 names `/account/rewards/tiers` and `/account/rewards/tiers/[tier]` from their
 own route titles.
 
-**Rewards fraction RW3 (2026-11-24, branch `feature/rewards`), UI implemented:**
+**Rewards fraction RW3 (2026-11-24, branch `feature/rewards`), done:**
 `/account/rewards/cards` shows the points balance, history link, and discount
 tickets filtered by All / Active / Used / Expired. Only active cards allow copying
 their code. A stateless `getCards` mock returns the three Figma card states and
@@ -867,7 +866,18 @@ the same balance as points; `features/rewards/queries.ts` keeps the read on the
 server. The clipboard hook is shared with referrals. The My cards screenshot
 captured earlier was used because the Figma MCP reached its Starter-plan call
 limit; a fresh high-fidelity design context and signed-in visual check are still
-pending. RW4 adds the catalog and RW5 adds redemption.
+pending. RW5 adds redemption.
+
+**Rewards fraction RW4 (2026-11-24, branch `feature/rewards`), UI implemented:**
+`/account/rewards/catalog` lists the 50, 100 and 200 SAR discount cards for
+1,000, 1,900 and 3,800 points. The read-only page uses the same points balance
+as the overview and My cards; cards over that balance are visibly unavailable.
+The discount amount uses the existing SAR icon in the card art and title.
+The plus markers follow the design but are not actions until RW5 adds the
+confirmation dialog and redemption write. The catalog comes from the stateless
+rewards mock via `services/rewards.api.ts` and a protected server query. The
+saved catalog screenshot was used because Figma's Starter-plan MCP call limit
+still prevents fresh design context; signed-in visual comparison remains open.
 
 **Referrals fraction R3 (2026-11-23), UI done, not sent yet:** the sign-up
 profile has an optional invite code field (`ReferralCodeField`, Figma

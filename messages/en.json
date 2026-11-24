@@ -47,7 +47,8 @@
     "rewards": {
       "allTiers": { "title": "Reward tiers" },
       "detail": { "title": "Tier perks" },
-      "cards": { "title": "My cards" }
+      "cards": { "title": "My cards" },
+      "catalog": { "title": "Redeem points" }
     },
     "loadError": {
       "description": "Check your internet connection and try again.",
@@ -266,6 +267,17 @@
         "used": { "title": "No used cards", "description": "Cards you use on bookings will appear here." },
         "expired": { "title": "No expired cards", "description": "Expired discount cards will appear here." }
       }
+    },
+    "catalog": {
+      "discountTitle": "Discount card",
+      "discountTitleAccessible": "Discount card worth {amount} Saudi riyals",
+      "discountUnit": "off",
+      "availableNow": "On any booking · Available now",
+      "points": "points",
+      "affordable": "Enough points to redeem",
+      "insufficientPoints": "Not enough points",
+      "emptyTitle": "No cards available",
+      "emptyDescription": "Discount cards will appear here when available."
     },
     "actions": {
       "label": "Reward actions",

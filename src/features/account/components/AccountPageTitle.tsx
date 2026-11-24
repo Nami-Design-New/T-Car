@@ -24,6 +24,7 @@ const pageTitles: Record<string, string> = {
   "/account/referrals/history": "referrals.history.title",
   "/account/rewards/tiers": "rewards.allTiers.title",
   "/account/rewards/cards": "rewards.cards.title",
+  "/account/rewards/catalog": "rewards.catalog.title",
 };
 
 /** Keeps the shared account header aligned with the active account route. */

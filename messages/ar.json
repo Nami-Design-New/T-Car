@@ -46,6 +46,7 @@
     },
     "rewards": {
       "cards": { "title": "بطاقاتي" },
+      "catalog": { "title": "استبدال النقاط" },
       "allTiers": { "title": "مستويات المكافآت" },
       "detail": { "title": "مزايا المستويات" }
     },
@@ -266,6 +267,17 @@
         "used": { "title": "لا توجد بطاقات مستخدمة", "description": "ستظهر البطاقات التي استخدمتها في الحجوزات هنا." },
         "expired": { "title": "لا توجد بطاقات منتهية", "description": "ستظهر بطاقات الخصم المنتهية هنا." }
       }
+    },
+    "catalog": {
+      "discountTitle": "بطاقة خصم",
+      "discountTitleAccessible": "بطاقة خصم بقيمة {amount} ريال سعودي",
+      "discountUnit": "خصم",
+      "availableNow": "على أي حجز · متاحة الآن",
+      "points": "نقطة",
+      "affordable": "نقاطك تكفي للاستبدال",
+      "insufficientPoints": "نقاطك غير كافية",
+      "emptyTitle": "لا توجد بطاقات متاحة",
+      "emptyDescription": "ستظهر بطاقات الخصم هنا عند توفرها."
     },
     "actions": {
       "label": "إجراءات المكافآت",

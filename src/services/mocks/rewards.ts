@@ -1,6 +1,7 @@
 import { getLocale } from "next-intl/server";
 import type {
   RewardCardsData,
+  RewardCatalogData,
   RewardPerk,
   RewardTier,
   RewardsSummary,
@@ -183,5 +184,19 @@ export const rewardsMock: RewardsApi = {
         },
       ],
     } satisfies RewardCardsData;
+  },
+  async getCatalog(userId) {
+    await delay();
+    if (userId === MOCK_FAILURE_USER_ID) {
+      throw new AppError("network", "rewards.unavailable");
+    }
+    return {
+      balance: MOCK_POINTS_DATA.summary.balance,
+      items: [
+        { id: "discount-50", discountAmount: 50, pointsCost: 1000 },
+        { id: "discount-100", discountAmount: 100, pointsCost: 1900 },
+        { id: "discount-200", discountAmount: 200, pointsCost: 3800 },
+      ],
+    } satisfies RewardCatalogData;
   },
 };

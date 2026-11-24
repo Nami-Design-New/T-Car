@@ -36,8 +36,8 @@ export default function RedeemableBalanceCard({
           href="/account/points"
           className="inline-flex items-center gap-1.5 rounded-lg bg-white/15 px-2.5 py-2 text-[11px] font-semibold text-white hover:bg-white/25"
         >
-          <FiRotateCcw aria-hidden="true" />
           {actionsT("history")}
+          <FiRotateCcw aria-hidden="true" />
         </Link>
       )}
     </div>
