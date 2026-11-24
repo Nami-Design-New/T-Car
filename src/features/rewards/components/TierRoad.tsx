@@ -1,8 +1,9 @@
-import { useFormatter, useTranslations } from "next-intl";
-import { FiChevronRight } from "react-icons/fi";
-import { PiCarProfile } from "react-icons/pi";
 import { Link } from "@/i18n/navigation";
+import { ICONS } from "@/shared/config/assets";
 import { cn } from "@/shared/lib/cn";
+import { useFormatter, useTranslations } from "next-intl";
+import Image from "next/image";
+import { FiChevronRight } from "react-icons/fi";
 import type { RewardsOverview } from "../model";
 import TierBadge from "./TierBadge";
 
@@ -49,11 +50,16 @@ export default function TierRoad({ tiers, roadPosition }: Props) {
           </div>
           {/* Under the badges: at a threshold the current badge covers it. */}
           <span
-            className="bg-action-primary absolute top-7 z-1 grid size-6 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border-2 border-white text-[11px] text-white shadow rtl:translate-x-1/2"
+            className="bg-action-primary absolute top-7 z-1 grid size-6 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border-2 border-white text-[11px] text-white shadow rtl:translate-x-0"
             style={{ insetInlineStart: `${markerStart}%` }}
             aria-hidden="true"
           >
-            <PiCarProfile />
+            <Image
+              src={ICONS.car.src}
+              width={ICONS.car.width}
+              height={ICONS.car.height}
+              alt="car"
+            />
           </span>
 
           <ol

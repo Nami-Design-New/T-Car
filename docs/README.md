@@ -831,16 +831,29 @@ mock (same customer) and localizes perks itself, so the interface has no locale
 next threshold, road position); below the first threshold the customer shows as
 Bronze (product to confirm). The hero gradient is per tier: Figma's copper for
 bronze and silver, its gold for gold; diamond's blue is our own pick (no design).
-Links to `/account/rewards/{tiers,catalog,cards}` 404 until RW2–RW4 land, so
-those must merge with RW1. Follow-ups: RW2 combines all tiers, tier
-detail, and tier perks for web; RW3 adds cards; RW4 adds the catalog; RW5 adds
-redemption. Move points history under `/account/rewards/history`, and add the
+Links to `/account/rewards/{catalog,cards}` 404 until RW3–RW4 land, so
+those must merge with RW1 and RW2. Follow-ups: RW3 adds cards; RW4 adds the
+catalog; RW5 adds redemption. Move points history under
+`/account/rewards/history`, and add the
 booking-complete points screen, in later fractions.
 
 **Account page titles (2026-11-23), done:** the account header (`AccountPageTitle`)
 shows a sub-page's own title instead of the section or "My account": "Points
 history" on `/account/points` and "My invites" on `/account/referrals/history`.
 Those pages dropped their duplicate h2, and their group headings moved up to h2.
+
+**Rewards fraction RW2 (2026-11-24, branch `feature/rewards`), done:**
+`/account/rewards/tiers` shows all four tier states and links to the merged
+detail/perks page at `/account/rewards/tiers/[tier]` (Figma screens 03 and 04
+are tabs on one web page). Perks follow the product owner's list rather than
+Figma's mixed screens; Bronze has a welcome perk. Perks have localized title,
+optional description, and icon data in the stateless rewards mock. Silver
+cashback and Gold delivery descriptions use the owner's "every four bookings,
+the fifth…" rule. Diamond descriptions are our own because Figma has none. The
+earning rules on locked tiers are static localized copy pending an API
+contract. The `AccountPageTitle`
+names `/account/rewards/tiers` and `/account/rewards/tiers/[tier]` from their
+own route titles.
 
 **Referrals fraction R3 (2026-11-23), UI done, not sent yet:** the sign-up
 profile has an optional invite code field (`ReferralCodeField`, Figma

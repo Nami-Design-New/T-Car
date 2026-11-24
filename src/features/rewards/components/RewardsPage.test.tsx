@@ -13,14 +13,53 @@ vi.mock("@/i18n/navigation", () => ({
 }));
 
 const tiers: RewardsSummary["tiers"] = [
-  { id: "bronze", threshold: 1000, perks: [] },
+  {
+    id: "bronze",
+    threshold: 1000,
+    perks: [
+      {
+        id: "bronze-1",
+        title: "You've just started, champ!",
+        icon: "sparkle",
+      },
+    ],
+  },
   {
     id: "silver",
     threshold: 5000,
-    perks: ["100 bonus points every month"],
+    perks: [
+      {
+        id: "silver-1",
+        title: "100 bonus points every month",
+        description: "Added automatically",
+        icon: "calendar",
+      },
+    ],
   },
-  { id: "gold", threshold: 10000, perks: ["Monthly discount code"] },
-  { id: "diamond", threshold: 20000, perks: ["24/7 VIP support"] },
+  {
+    id: "gold",
+    threshold: 10000,
+    perks: [
+      {
+        id: "gold-1",
+        title: "Monthly discount code",
+        description: "Monthly",
+        icon: "tag",
+      },
+    ],
+  },
+  {
+    id: "diamond",
+    threshold: 20000,
+    perks: [
+      {
+        id: "diamond-1",
+        title: "24/7 VIP support",
+        description: "Always",
+        icon: "support",
+      },
+    ],
+  },
 ];
 
 describe("RewardsPage", () => {
@@ -42,6 +81,11 @@ describe("RewardsPage", () => {
     expect(
       screen.getByText("100 bonus points every month"),
     ).toBeInTheDocument();
+    expect(screen.getByText("Added automatically")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "View all" })).toHaveAttribute(
+      "href",
+      "/account/rewards/tiers/silver",
+    );
     expect(screen.getByRole("link", { name: "Redeem points" })).toHaveAttribute(
       "href",
       "/account/rewards/catalog",
@@ -64,13 +108,28 @@ describe("RewardsPage", () => {
 
   it("shows the just-started state when the current tier has no perks", () => {
     renderWithIntl(
-      <RewardsPage summary={{ tierPoints: 1000, balance: 1000, tiers }} />,
+      <RewardsPage
+        summary={{
+          tierPoints: 1000,
+          balance: 1000,
+          tiers: tiers.map((tier) =>
+            tier.id === "bronze" ? { ...tier, perks: [] } : tier,
+          ),
+        }}
+      />,
     );
 
     expect(screen.getByText("You have just started!")).toBeInTheDocument();
     expect(
       screen.getByText(/Collect 5,000 points to unlock Silver benefits/),
     ).toBeInTheDocument();
+  });
+
+  it("shows the English Bronze welcome perk on the overview", () => {
+    renderWithIntl(
+      <RewardsPage summary={{ tierPoints: 1000, balance: 1000, tiers }} />,
+    );
+    expect(screen.getByText("You've just started, champ!")).toBeInTheDocument();
   });
 
   it("renders the top tier as complete without a next-tier chip", () => {

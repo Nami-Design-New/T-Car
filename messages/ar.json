@@ -44,6 +44,10 @@
       "referrals": "ادعُ صديقك",
       "rewards": "المكافآت"
     },
+    "rewards": {
+      "allTiers": { "title": "مستويات المكافآت" },
+      "detail": { "title": "مزايا المستويات" }
+    },
     "loadError": {
       "description": "تحقق من اتصالك بالإنترنت ثم حاول مرة أخرى.",
       "retry": "إعادة المحاولة"
@@ -225,6 +229,7 @@
     },
     "hero": {
       "currentTier": "مستواك الحالي",
+      "higherTier": "مستوى أعلى",
       "ofTierPoints": "/ {threshold} نقطة مستوى",
       "pointsToNext": "{points} نقطة {tier, select, bronze {للبرونزية} silver {للفضية} gold {للذهبية} diamond {للماسية} other {للمستوى التالي}}",
       "topTier": "وصلت إلى أعلى مستوى"
@@ -259,6 +264,37 @@
       "emptyTitle": "توك بديت!",
       "emptyDescription": "اجمع {threshold, number} نقطة لتفتح مزايا {tier}",
       "topTierDescription": "فتحت جميع مزايا المستويات المتاحة."
+    },
+    "allTiers": {
+      "introTitle": "اكسب نقاطًا مع كل رحلة وارتقِ لمستوى أعلى",
+      "introDescription": "تُضاف النقاط بعد اكتمال الحجز. يرتقي مستواك حسب نقاط المستوى، والاستبدال يخصم من الرصيد المتاح فقط.",
+      "fromPoints": "من {points} نقطة",
+      "requires": "يتطلب {points}",
+      "state": { "current": "مستواك الحالي", "reached": "تم الوصول إليه" },
+      "progress": "{points} / {threshold} نقطة {tier, select, bronze {للبرونزية} silver {للفضية} gold {للذهبية} diamond {للماسية} other {للمستوى التالي}}",
+      "info": "الاستبدال يخصم من الرصيد المتاح فقط. نقاط المستوى لا تنقص، والمستوى ثابت."
+    },
+    "perkState": {
+      "locked": "مقفلة",
+      "unlocked": "متاحة"
+    },
+    "tierPage": {
+      "noPerks": "لا توجد مزايا لهذا المستوى"
+    },
+    "detail": {
+      "tierNavigation": "مستويات المكافآت",
+      "currentPerks": "مزاياك الحالية",
+      "tierPerks": "مزايا {tier, select, bronze {البرونزية} silver {الفضية} gold {الذهبية} diamond {الماسية} other {المستوى}}",
+      "unlocksAt": "تُفتح مع {tier, select, bronze {البرونزية} silver {الفضية} gold {الذهبية} diamond {الماسية} other {المستوى التالي}}",
+      "earnTitle": "كيف تكسب النقاط؟",
+      "earn": {
+        "tripTitle": "أكمل رحلة",
+        "tripDescription": "1 نقطة لكل 1 ﷼ تدفعه في الإيجار",
+        "reviewTitle": "قيّم تجربتك",
+        "reviewDescription": "+50 نقطة بعد كل رحلة مكتملة",
+        "inviteTitle": "ادعُ صديقًا",
+        "inviteDescription": "+500 نقطة عند أول حجز مكتمل لصديقك"
+      }
     },
     "info": "تُضاف النقاط إلى رصيد الاستبدال بعد اكتمال الحجز فقط. الصرف لا يؤثر على المستوى."
   },

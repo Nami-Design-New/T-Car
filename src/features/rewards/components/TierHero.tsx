@@ -4,7 +4,7 @@ import { FiChevronsRight } from "react-icons/fi";
 import { Link } from "@/i18n/navigation";
 import { cn } from "@/shared/lib/cn";
 import { REWARDS_ASSETS } from "@/shared/config/assets";
-import type { RewardTier } from "../model";
+import type { RewardTier, RewardTierState } from "../model";
 import TierBadge from "./TierBadge";
 
 interface Props {
@@ -13,6 +13,8 @@ interface Props {
   nextTier: RewardTier | null;
   progress: number;
   pointsLeft: number;
+  state?: RewardTierState;
+  href?: string | null;
 }
 
 /** Figma draws bronze/silver (copper) and gold; diamond's blue is our own pick. */
@@ -34,6 +36,8 @@ export default function TierHero({
   nextTier,
   progress,
   pointsLeft,
+  state = "current",
+  href = "/account/rewards/tiers",
 }: Props) {
   const t = useTranslations("rewards");
   const format = useFormatter();
@@ -42,14 +46,12 @@ export default function TierHero({
   const dashOffset = circumference * (1 - progress / 100);
   const decorClass = "pointer-events-none absolute max-w-none opacity-45";
 
-  return (
-    <Link
-      href="/account/rewards/tiers"
-      className={cn(
-        "relative grid min-h-49 overflow-hidden rounded-xl p-5 text-white sm:grid-cols-[minmax(180px,1fr)_150px]",
-        TIER_STYLES[currentTier.id],
-      )}
-    >
+  const className = cn(
+    "relative grid min-h-49 overflow-hidden rounded-xl p-5 text-white sm:grid-cols-[minmax(180px,1fr)_150px]",
+    TIER_STYLES[currentTier.id],
+  );
+  const content = (
+    <>
       <Image
         {...ringOne}
         alt=""
@@ -77,33 +79,53 @@ export default function TierHero({
 
       <div className="relative z-1 flex min-w-0 flex-col items-start justify-center pe-2">
         <span className="text-xs font-medium text-white/75">
-          {t("hero.currentTier")}
+          {t(
+            state === "current"
+              ? "hero.currentTier"
+              : state === "locked"
+                ? "hero.higherTier"
+                : "allTiers.state.reached",
+          )}
         </span>
         <strong className="mt-0.5 text-[28px] leading-tight">
           {t(`tiers.${currentTier.id}`)}
         </strong>
-        <span className="mt-1 flex flex-wrap items-baseline gap-1">
-          <b className="text-base">{format.number(tierPoints)}</b>
-          {nextTier ? (
-            <span className="text-xs text-white/75">
-              {t("hero.ofTierPoints", {
-                threshold: format.number(nextTier.threshold),
-              })}
-            </span>
-          ) : (
-            <span className="text-xs text-white/75">{t("hero.topTier")}</span>
-          )}
-        </span>
-        {nextTier && (
+        {state === "reached" ? (
+          <span className="mt-1 text-xs text-white/75">
+            {t("allTiers.fromPoints", {
+              points: format.number(currentTier.threshold),
+            })}
+          </span>
+        ) : (
+          <span className="mt-1 flex flex-wrap items-baseline gap-1">
+            <b className="text-base">{format.number(tierPoints)}</b>
+            {state === "locked" ? (
+              <span className="text-xs text-white/75">
+                {t("hero.ofTierPoints", {
+                  threshold: format.number(currentTier.threshold),
+                })}
+              </span>
+            ) : nextTier ? (
+              <span className="text-xs text-white/75">
+                {t("hero.ofTierPoints", {
+                  threshold: format.number(nextTier.threshold),
+                })}
+              </span>
+            ) : (
+              <span className="text-xs text-white/75">{t("hero.topTier")}</span>
+            )}
+          </span>
+        )}
+        {state !== "reached" && (state === "locked" || nextTier) && (
           <span className="mt-4 inline-flex items-center gap-1.5 rounded-lg border border-white/20 bg-white/15 px-3 py-2 text-xs font-semibold backdrop-blur-sm">
+            {t("hero.pointsToNext", {
+              points: format.number(pointsLeft),
+              tier: state === "locked" ? currentTier.id : nextTier!.id,
+            })}
             <FiChevronsRight
               className="shrink-0 text-base rtl:scale-x-[-1]"
               aria-hidden="true"
             />
-            {t("hero.pointsToNext", {
-              points: format.number(pointsLeft),
-              tier: nextTier.id,
-            })}
           </span>
         )}
       </div>
@@ -142,6 +164,13 @@ export default function TierHero({
           })}
         </span>
       </div>
+    </>
+  );
+  return href ? (
+    <Link href={href} className={className}>
+      {content}
     </Link>
+  ) : (
+    <div className={className}>{content}</div>
   );
 }

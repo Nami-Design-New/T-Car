@@ -17,7 +17,7 @@ describe("PointsPage", () => {
     const stat = (label: string) =>
       screen.getByText(label).closest("div")!.textContent;
 
-    expect(stat("Tier points")).toContain("5,000");
+    expect(stat("Tier points")).toContain("12,000");
     expect(stat("Available to redeem")).toContain("4,000");
     expect(stat("Last redemption")).toContain("1,000");
   });

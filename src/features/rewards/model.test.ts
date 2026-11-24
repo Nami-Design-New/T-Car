@@ -1,15 +1,102 @@
 import { describe, expect, it } from "vitest";
-import { rewardsOverview, type RewardTier } from "./model";
+import {
+  isRewardTierId,
+  rewardTierView,
+  rewardsOverview,
+  type RewardTier,
+} from "./model";
 
 const tiers: RewardTier[] = [
   { id: "bronze", threshold: 1000, perks: [] },
-  { id: "silver", threshold: 5000, perks: ["Silver perk"] },
-  { id: "gold", threshold: 10000, perks: ["Gold perk"] },
-  { id: "diamond", threshold: 20000, perks: ["Diamond perk"] },
+  {
+    id: "silver",
+    threshold: 5000,
+    perks: [
+      {
+        id: "silver-1",
+        title: "Silver perk",
+        description: "Silver description",
+        icon: "calendar",
+      },
+    ],
+  },
+  {
+    id: "gold",
+    threshold: 10000,
+    perks: [
+      {
+        id: "gold-1",
+        title: "Gold perk",
+        description: "Gold description",
+        icon: "tag",
+      },
+    ],
+  },
+  {
+    id: "diamond",
+    threshold: 20000,
+    perks: [
+      {
+        id: "diamond-1",
+        title: "Diamond perk",
+        description: "Diamond description",
+        icon: "gift",
+      },
+    ],
+  },
 ];
 
 const overview = (tierPoints: number, list = tiers) =>
   rewardsOverview({ tierPoints, balance: 0, tiers: list });
+
+describe("rewardTierView", () => {
+  const summary = (tierPoints: number) => ({
+    tierPoints,
+    balance: 0,
+    tiers: [...tiers].reverse(),
+  });
+  it("identifies valid tier ids", () => {
+    expect(isRewardTierId("gold")).toBe(true);
+    expect(isRewardTierId("platinum")).toBe(false);
+  });
+  it("uses overview progress for current and 100% for reached", () => {
+    expect(rewardTierView(summary(5000), "silver")).toMatchObject({
+      state: "current",
+      progress: 50,
+      pointsLeft: 5000,
+      next: { id: "gold" },
+    });
+    expect(rewardTierView(summary(5000), "bronze")).toMatchObject({
+      state: "reached",
+      progress: 100,
+      pointsLeft: 0,
+    });
+  });
+  it("calculates locked progress against its own threshold", () => {
+    expect(rewardTierView(summary(5000), "gold")).toMatchObject({
+      state: "locked",
+      progress: 50,
+      pointsLeft: 5000,
+    });
+  });
+  it("keeps Bronze current and Silver locked at zero points", () => {
+    expect(rewardTierView(summary(0), "bronze")).toMatchObject({
+      state: "current",
+    });
+    expect(rewardTierView(summary(0), "silver")).toMatchObject({
+      state: "locked",
+      progress: 0,
+    });
+  });
+  it("completes the top tier and has no next tier", () => {
+    expect(rewardTierView(summary(25000), "diamond")).toMatchObject({
+      state: "current",
+      progress: 100,
+      pointsLeft: 0,
+      next: null,
+    });
+  });
+});
 
 describe("rewardsOverview", () => {
   it("uses Bronze below the first threshold and the highest reached tier", () => {

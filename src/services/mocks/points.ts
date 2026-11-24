@@ -4,7 +4,7 @@ import type { PointsApi } from "../points.api";
 
 export const MOCK_POINTS_DATA: PointsData = {
   summary: {
-    tierPoints: 5000,
+    tierPoints: 12000,
     balance: 4000,
     lastRedemption: 1000,
   },

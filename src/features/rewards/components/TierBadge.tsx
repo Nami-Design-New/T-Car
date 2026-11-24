@@ -6,7 +6,7 @@ import type { RewardTierId, RewardTierState } from "../model";
 
 interface Props {
   tier: RewardTierId;
-  size: 56 | 72;
+  size: 48 | 56 | 72;
   /** Road states: a glow when current, a check or lock mark otherwise. Omit for a plain badge. */
   state?: RewardTierState;
 }
@@ -58,7 +58,7 @@ export default function TierBadge({ tier, size, state }: Props) {
       {(state === "reached" || state === "locked") && (
         <span
           className={cn(
-            "absolute -start-0.5 -bottom-0.5 z-2 grid rounded-full text-white ring-2 ring-white",
+            "absolute -inset-s-0.5 -bottom-0.5 z-2 grid rounded-full text-white ring-2 ring-white",
             statusSize,
             state === "reached" ? "bg-status-success" : "bg-neutral-400",
           )}

@@ -82,6 +82,11 @@ export const ICONS = {
     width: 16,
     height: 16,
   },
+  car: {
+    src: "/icons/car.svg",
+    width: 14,
+    height: 14,
+  },
 } as const;
 
 /** Line icons of the state cards (Figma Rw-Icon/gift, Rw-Icon/info). */

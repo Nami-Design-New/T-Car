@@ -44,6 +44,10 @@
       "referrals": "Invite a friend",
       "rewards": "Rewards"
     },
+    "rewards": {
+      "allTiers": { "title": "Reward tiers" },
+      "detail": { "title": "Tier perks" }
+    },
     "loadError": {
       "description": "Check your internet connection and try again.",
       "retry": "Try again"
@@ -225,6 +229,7 @@
     },
     "hero": {
       "currentTier": "Your current tier",
+      "higherTier": "Higher tier",
       "ofTierPoints": "/ {threshold} tier points",
       "pointsToNext": "{points} points to {tier, select, bronze {Bronze} silver {Silver} gold {Gold} diamond {Diamond} other {the next tier}}",
       "topTier": "Highest tier reached"
@@ -259,6 +264,37 @@
       "emptyTitle": "You have just started!",
       "emptyDescription": "Collect {threshold, number} points to unlock {tier} benefits",
       "topTierDescription": "You have unlocked every available tier benefit."
+    },
+    "allTiers": {
+      "introTitle": "Earn points on every trip and move up a tier",
+      "introDescription": "Points are added after a booking is completed. Your tier grows with tier points; redemption only reduces your available balance.",
+      "fromPoints": "From {points} points",
+      "requires": "Requires {points}",
+      "state": { "current": "Your current tier", "reached": "Tier reached" },
+      "progress": "{points} / {threshold} points to {tier, select, bronze {Bronze} silver {Silver} gold {Gold} diamond {Diamond} other {the next tier}}",
+      "info": "Redeeming points only reduces your available balance. Tier points never decrease, and your tier stays the same."
+    },
+    "perkState": {
+      "locked": "Locked",
+      "unlocked": "Unlocked"
+    },
+    "tierPage": {
+      "noPerks": "This tier has no perks"
+    },
+    "detail": {
+      "tierNavigation": "Reward tiers",
+      "currentPerks": "Your perks",
+      "tierPerks": "{tier, select, bronze {Bronze} silver {Silver} gold {Gold} diamond {Diamond} other {Tier}} perks",
+      "unlocksAt": "Unlocks at {tier, select, bronze {Bronze} silver {Silver} gold {Gold} diamond {Diamond} other {the next tier}}",
+      "earnTitle": "How to earn points",
+      "earn": {
+        "tripTitle": "Complete a trip",
+        "tripDescription": "1 point for every SAR 1 spent on a rental",
+        "reviewTitle": "Rate your experience",
+        "reviewDescription": "+50 points after each completed trip",
+        "inviteTitle": "Invite a friend",
+        "inviteDescription": "+500 points when your friend completes their first booking"
+      }
     },
     "info": "Points are added to your redeemable balance only after a booking is completed. Redeeming points does not affect your tier."
   },
