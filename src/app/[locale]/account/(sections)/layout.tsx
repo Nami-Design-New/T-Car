@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { AccountLayout } from "@/features/account";
-import { getPoints } from "@/features/points/queries";
+import { getPointsSummary } from "@/features/points/queries";
 
 /**
  * The account sections share the title and the section links. Booking details
@@ -11,7 +11,7 @@ export default async function SectionsLayout({
 }: {
   children: ReactNode;
 }) {
-  const { summary } = await getPoints();
+  const summary = await getPointsSummary();
 
   return <AccountLayout pointsSummary={summary}>{children}</AccountLayout>;
 }

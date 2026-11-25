@@ -141,15 +141,6 @@
         "lastRedemption": "Last redemption"
       },
       "latest": "Latest activity",
-      "source": {
-        "booking": {
-          "redeemable": "Booking #{id} · redeemable balance",
-          "tier": "Booking #{id} · tier points"
-        },
-        "referral": "Invited a friend: {name}",
-        "redemption": "Redeemed a {amount} SAR discount card",
-        "expiry": "Expired points"
-      },
       "empty": {
         "all": {
           "title": "No points activity yet",

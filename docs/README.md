@@ -750,6 +750,16 @@ tests, and build pass; on `next start` the code check returns valid for the
 live code and invalid for unknown or malformed codes. Whether `/complete-profile`
 re-validates the code is open (backend ask B11).
 
+**Rewards API, fraction R5 (2026-11-25), done:** The points page reads live
+`GET /points` with an API filter and ten-item pages. The URL selects all,
+earned, or used activity; later pages load on scroll. Transaction titles come
+from the API, and the account shell reads balances from the same endpoint with
+`per_page=1`. The mapper treats offset-free dates as Riyadh time (backend ask
+B12). Typecheck, lint (one existing warning), all 1,103 tests, and the
+production build pass. On `next start`, unauthenticated requests for all three
+filters in `ar` and `en` redirect to sign-in with the filter preserved. A
+signed-in HTML check remains open because no authenticated session was available.
+
 Notifications API integration (2026-11-12): `features/notifications` now owns
 the live paginated `GET /notifications` read and uses `InfiniteList` for later
 pages. Its Server Actions cover read/read-all, delete/delete-all, and browser

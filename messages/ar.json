@@ -141,15 +141,6 @@
         "lastRedemption": "آخر استبدال"
       },
       "latest": "أحدث الحركات",
-      "source": {
-        "booking": {
-          "redeemable": "حجز #{id} · رصيد الاستبدال",
-          "tier": "حجز #{id} · نقاط المستوى"
-        },
-        "referral": "دعوة صديق: {name}",
-        "redemption": "استبدال بطاقة خصم {amount} ر.س",
-        "expiry": "نقاط منتهية"
-      },
       "empty": {
         "all": {
           "title": "لا توجد حركات نقاط بعد",

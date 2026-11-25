@@ -1,18 +1,20 @@
-export type PointsTransactionType = "earned" | "spent" | "expired";
+import type { Page } from "@/shared/lib/pagination";
 
-/** What a points movement came from; decides its title and where it links. */
+export type PointsTransactionType = "earned" | "used";
+
+/** What a points movement came from; decides where it links. */
 export type PointsSource =
-  /** A completed booking adds to one of the two balances. */
-  | { kind: "booking"; bookingId: string; balance: "redeemable" | "tier" }
-  | { kind: "referral"; friendName: string }
+  | { kind: "booking"; bookingId: string | null }
+  | { kind: "rating"; bookingId: string | null }
+  | { kind: "referral" }
   /** Points exchanged for a discount card worth `discountAmount` SAR. */
-  | { kind: "redemption"; discountAmount: number }
-  | { kind: "expiry" };
+  | { kind: "redemption"; discountAmount: number | null };
 
 export interface PointsTransaction {
   id: string;
   type: PointsTransactionType;
-  /** Signed: positive when earned, negative when spent or expired. */
+  title: string;
+  /** Signed: positive when earned, negative when used. */
   amount: number;
   createdAt: string;
   source: PointsSource;
@@ -30,7 +32,7 @@ export interface PointsSummary {
 export interface PointsData {
   summary: PointsSummary;
   /** Newest first. */
-  transactions: PointsTransaction[];
+  page: Page<PointsTransaction>;
 }
 
 export type PointsFilter = "all" | "earned" | "spent";
@@ -40,16 +42,6 @@ export const POINTS_FILTERS: readonly PointsFilter[] = [
   "earned",
   "spent",
 ];
-
-/** "Used" covers every deduction: redemptions and expired points. */
-export const matchesPointsFilter = (
-  transaction: PointsTransaction,
-  filter: PointsFilter,
-) =>
-  filter === "all" ||
-  (filter === "earned"
-    ? transaction.type === "earned"
-    : transaction.type !== "earned");
 
 /**
  * Points times are shown in Saudi time, so the server and the browser render
@@ -102,7 +94,8 @@ export function groupPointsTransactions(
 export function pointsSourceHref(source: PointsSource): string | null {
   switch (source.kind) {
     case "booking":
-      return `/account/bookings/${source.bookingId}`;
+    case "rating":
+      return source.bookingId ? `/account/bookings/${source.bookingId}` : null;
     case "referral":
       return "/account/referrals/history";
     default:
