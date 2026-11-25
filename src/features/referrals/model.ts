@@ -1,3 +1,5 @@
+import type { Page } from "@/shared/lib/pagination";
+
 /** The signed-in customer's invite code and what one completed invite earns. */
 export interface ReferralProgram {
   code: string;
@@ -15,33 +17,23 @@ export interface ReferralInvite {
   firstBookingAt: string | null;
   /** Points this invite earned; null while it waits for the first booking. */
   rewardPoints: number | null;
+  status: ReferralInviteStatus;
 }
 
 export interface ReferralHistory {
   /** Points earned from all invites. */
   totalPoints: number;
+  invitedCount: number;
+  completedCount: number;
   /** Newest first. */
-  invites: ReferralInvite[];
+  page: Page<ReferralInvite>;
 }
 
 export type ReferralInviteStatus = "pending" | "rewarded";
 
 export const referralInviteStatus = (
   invite: ReferralInvite,
-): ReferralInviteStatus =>
-  invite.firstBookingAt && invite.rewardPoints !== null
-    ? "rewarded"
-    : "pending";
-
-/** "3 invites · 1 completed" counts. */
-export function referralCounts(invites: ReferralInvite[]) {
-  return {
-    invited: invites.length,
-    completed: invites.filter(
-      (invite) => referralInviteStatus(invite) === "rewarded",
-    ).length,
-  };
-}
+): ReferralInviteStatus => invite.status;
 
 /** The text sent to a friend: the invite line, the code, then the invite link. */
 export const referralShareText = (

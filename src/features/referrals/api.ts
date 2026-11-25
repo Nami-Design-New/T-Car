@@ -3,16 +3,18 @@ import "server-only";
 import { isApiEnvelope, type ApiEnvelope } from "@/services/http/envelope";
 import { serverHttp } from "@/services/http/server";
 import { AppError } from "@/shared/lib/errors";
+import { isPaginationDto, toPage } from "@/shared/lib/pagination";
 import type {
   ReferralCodeCheck,
   ReferralHistory,
+  ReferralInvite,
   ReferralProgram,
 } from "./model";
 import { referralsMock } from "./api.mock";
 
 export interface ReferralsApi {
   getProgram(userId: string): Promise<ReferralProgram>;
-  getHistory(userId: string): Promise<ReferralHistory>;
+  getHistory(userId: string, page: number): Promise<ReferralHistory>;
   /** Checks a friend's code during sign-up (no session). Expects it normalized. */
   checkCode(code: string): Promise<ReferralCodeCheck>;
 }
@@ -48,6 +50,85 @@ async function getProgram(): Promise<ReferralProgram> {
   return toReferralProgram(response.data);
 }
 
-// The program reads the live endpoint; history and code checks stay mocked
-// until their integration fractions.
-export const referralsApi: ReferralsApi = { ...referralsMock, getProgram };
+interface ReferalRewordDto {
+  id: number;
+  user_name: string;
+  points: number | null;
+  status: "pending" | "applied";
+  joint_at: string;
+  first_order_at: string | null;
+}
+
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === "object" && value !== null && !Array.isArray(value);
+
+const isCount = (value: unknown): value is number =>
+  typeof value === "number" && Number.isInteger(value) && value >= 0;
+
+function isReferalRewordDto(value: unknown): value is ReferalRewordDto {
+  return (
+    isRecord(value) &&
+    isCount(value.id) &&
+    typeof value.user_name === "string" &&
+    (value.points === null || isCount(value.points)) &&
+    (value.status === "pending" || value.status === "applied") &&
+    typeof value.joint_at === "string" &&
+    (value.first_order_at === null || typeof value.first_order_at === "string")
+  );
+}
+
+function toReferralInvite(dto: ReferalRewordDto): ReferralInvite {
+  return {
+    id: String(dto.id),
+    friendName: dto.user_name,
+    joinedAt: dto.joint_at,
+    firstBookingAt: dto.first_order_at,
+    rewardPoints: dto.points,
+    status: dto.status === "applied" ? "rewarded" : "pending",
+  };
+}
+
+/** Validates the live counts, invite rows, and nested pagination. */
+export function mapReferralHistoryResponse(value: unknown): ReferralHistory {
+  if (!isApiEnvelope(value) || value.code !== 200 || !isRecord(value.data)) {
+    throw new AppError("server");
+  }
+  const data = value.data;
+  if (
+    !Array.isArray(data.referal_rewords) ||
+    !data.referal_rewords.every(isReferalRewordDto) ||
+    !isCount(data.referal_rewords_count) ||
+    !isCount(data.applied_referal_rewords_count) ||
+    !isCount(data.referal_points) ||
+    !isPaginationDto(data.pagination)
+  ) {
+    throw new AppError("server");
+  }
+  return {
+    totalPoints: data.referal_points,
+    invitedCount: data.referal_rewords_count,
+    completedCount: data.applied_referal_rewords_count,
+    page: toPage(data.referal_rewords.map(toReferralInvite), data.pagination),
+  };
+}
+
+const REFERRALS_PER_PAGE = 10;
+
+async function getHistory(
+  _userId: string,
+  page: number,
+): Promise<ReferralHistory> {
+  if (!Number.isInteger(page) || page < 1) throw new AppError("validation");
+  const response = await serverHttp.get<ApiEnvelope<unknown>>(
+    "/referal-rewords",
+    { query: { page, per_page: REFERRALS_PER_PAGE } },
+  );
+  return mapReferralHistoryResponse(response);
+}
+
+// Only sign-up code checks stay mocked until R4.
+export const referralsApi: ReferralsApi = {
+  ...referralsMock,
+  getProgram,
+  getHistory,
+};

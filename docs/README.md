@@ -735,6 +735,12 @@ before mapping them to `ReferralProgram`. Referral history and code checks
 remain mocked for R3 and R4. Typecheck, lint, tests, and build pass; the
 referrals page shows the live code and reward in `ar` and `en`.
 
+**Rewards API, fraction R3 (2026-11-25), done:** Referral history reads
+`GET /referal-rewords` with the first page on the server and later pages through
+a Server Action and `InfiniteList`. The API supplies the invite and completed
+counts and total points. Typecheck, lint, tests, and build pass; the history
+page lists the live TEST invites in `ar` and `en`.
+
 Notifications API integration (2026-11-12): `features/notifications` now owns
 the live paginated `GET /notifications` read and uses `InfiniteList` for later
 pages. Its Server Actions cover read/read-all, delete/delete-all, and browser

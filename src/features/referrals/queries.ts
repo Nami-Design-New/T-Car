@@ -15,11 +15,11 @@ export function getReferralProgram(): Promise<ReferralProgram> {
   });
 }
 
-export function getReferralHistory(): Promise<ReferralHistory> {
+export function getReferralHistory(page = 1): Promise<ReferralHistory> {
   return protectedRead(async () => {
     const session = await auth();
     if (!session?.user?.id) throw new AppError("unauthorized");
 
-    return referralsApi.getHistory(session.user.id);
+    return referralsApi.getHistory(session.user.id, page);
   });
 }

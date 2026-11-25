@@ -12,29 +12,39 @@ export const MOCK_REFERRAL_PROGRAM: ReferralProgram = {
 
 export const MOCK_REFERRAL_HISTORY: ReferralHistory = {
   totalPoints: 1000,
-  invites: [
-    {
-      id: "invite-3",
-      friendName: "أحمد م.",
-      joinedAt: "2026-10-24T00:00:00.000Z",
-      firstBookingAt: null,
-      rewardPoints: null,
-    },
-    {
-      id: "invite-2",
-      friendName: "سارة ع.",
-      joinedAt: "2026-10-20T00:00:00.000Z",
-      firstBookingAt: "2026-10-30T00:00:00.000Z",
-      rewardPoints: 500,
-    },
-    {
-      id: "invite-1",
-      friendName: "خالد س.",
-      joinedAt: "2026-09-12T00:00:00.000Z",
-      firstBookingAt: "2026-09-18T00:00:00.000Z",
-      rewardPoints: 500,
-    },
-  ],
+  invitedCount: 3,
+  completedCount: 2,
+  page: {
+    page: 1,
+    lastPage: 1,
+    total: 3,
+    items: [
+      {
+        id: "invite-3",
+        friendName: "أحمد م.",
+        joinedAt: "2026-10-24T00:00:00.000Z",
+        firstBookingAt: null,
+        rewardPoints: null,
+        status: "pending",
+      },
+      {
+        id: "invite-2",
+        friendName: "سارة ع.",
+        joinedAt: "2026-10-20T00:00:00.000Z",
+        firstBookingAt: "2026-10-30T00:00:00.000Z",
+        rewardPoints: 500,
+        status: "rewarded",
+      },
+      {
+        id: "invite-1",
+        friendName: "خالد س.",
+        joinedAt: "2026-09-12T00:00:00.000Z",
+        firstBookingAt: "2026-09-18T00:00:00.000Z",
+        rewardPoints: 500,
+        status: "rewarded",
+      },
+    ],
+  },
 };
 
 const delay = (ms = 160) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -59,18 +69,32 @@ export const referralsMock: ReferralsApi = {
     return { ...MOCK_REFERRAL_PROGRAM };
   },
 
-  async getHistory(userId) {
+  async getHistory(userId, page) {
     await delay();
     if (userId === MOCK_FAILURE_USER_ID) {
       throw new AppError("network", "referrals.unavailable");
     }
     if (userId === MOCK_EMPTY_HISTORY_USER_ID) {
-      return { totalPoints: 0, invites: [] };
+      return {
+        totalPoints: 0,
+        invitedCount: 0,
+        completedCount: 0,
+        page: { items: [], page, lastPage: 1, total: 0 },
+      };
     }
 
     return {
       totalPoints: MOCK_REFERRAL_HISTORY.totalPoints,
-      invites: MOCK_REFERRAL_HISTORY.invites.map((invite) => ({ ...invite })),
+      invitedCount: MOCK_REFERRAL_HISTORY.invitedCount,
+      completedCount: MOCK_REFERRAL_HISTORY.completedCount,
+      page: {
+        items: page === 1
+          ? MOCK_REFERRAL_HISTORY.page.items.map((invite) => ({ ...invite }))
+          : [],
+        page,
+        lastPage: 1,
+        total: MOCK_REFERRAL_HISTORY.page.total,
+      },
     };
   },
 

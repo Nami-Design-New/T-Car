@@ -65,9 +65,108 @@ describe("referralsApi.getProgram", () => {
   });
 });
 
-describe("referralsApi", () => {
-  it("keeps history and code checks on the mock", () => {
-    expect(referralsApi.getHistory).toBe(referralsMock.getHistory);
+describe("referralsApi.getHistory", () => {
+  const invite = {
+    id: 1,
+    user_name: "Ahmed",
+    points: null,
+    status: "pending",
+    joint_at: "2026-11-25 12:18:04",
+    first_order_at: null,
+  };
+  const data = {
+    referal_rewords: [invite],
+    referal_rewords_count: 3,
+    applied_referal_rewords_count: 2,
+    referal_points: 1000,
+    pagination: {
+      current_page: 2,
+      last_page: 3,
+      per_page: 10,
+      total: 21,
+      from: 11,
+      to: 20,
+    },
+  };
+
+  it("maps the observed nested page, counts, and statuses", async () => {
+    get.mockResolvedValueOnce(
+      envelope({
+        ...data,
+        referal_rewords: [
+          invite,
+          {
+            ...invite,
+            id: 2,
+            status: "applied",
+            points: 500,
+            first_order_at: "2026-11-26 10:00:00",
+          },
+        ],
+      }),
+    );
+    await expect(referralsApi.getHistory("user-1", 2)).resolves.toEqual({
+      totalPoints: 1000,
+      invitedCount: 3,
+      completedCount: 2,
+      page: {
+        items: [
+          {
+            id: "1",
+            friendName: "Ahmed",
+            rewardPoints: null,
+            status: "pending",
+            joinedAt: invite.joint_at,
+            firstBookingAt: null,
+          },
+          {
+            id: "2",
+            friendName: "Ahmed",
+            rewardPoints: 500,
+            status: "rewarded",
+            joinedAt: invite.joint_at,
+            firstBookingAt: "2026-11-26 10:00:00",
+          },
+        ],
+        page: 2,
+        lastPage: 3,
+        total: 21,
+      },
+    });
+    expect(get).toHaveBeenCalledWith("/referal-rewords", {
+      query: { page: 2, per_page: 10 },
+    });
+  });
+
+  it.each([
+    ["malformed item", { ...data, referal_rewords: [{ ...invite, id: "1" }] }],
+    [
+      "unknown status",
+      { ...data, referal_rewords: [{ ...invite, status: "other" }] },
+    ],
+    ["missing pagination", { ...data, pagination: undefined }],
+    ["bad count", { ...data, referal_rewords_count: "3" }],
+  ])("rejects %s", async (_name, payload) => {
+    get.mockResolvedValueOnce(envelope(payload));
+    await expect(referralsApi.getHistory("user-1", 1)).rejects.toEqual(
+      new AppError("server"),
+    );
+  });
+
+  it("rejects a non-success envelope", async () => {
+    get.mockResolvedValueOnce({ ...envelope(data), code: 422 });
+    await expect(referralsApi.getHistory("user-1", 1)).rejects.toEqual(
+      new AppError("server"),
+    );
+  });
+
+  it("propagates a 401 unchanged", async () => {
+    const error = new AppError("unauthorized");
+    get.mockRejectedValueOnce(error);
+    await expect(referralsApi.getHistory("user-1", 1)).rejects.toBe(error);
+  });
+
+  it("keeps code checks on the mock", () => {
     expect(referralsApi.checkCode).toBe(referralsMock.checkCode);
   });
 });

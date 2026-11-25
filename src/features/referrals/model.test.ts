@@ -2,7 +2,6 @@ import { describe, expect, it } from "vitest";
 import {
   isReferralCodeFormat,
   normalizeReferralCode,
-  referralCounts,
   referralInviteStatus,
   referralInviteUrl,
   referralShareText,
@@ -40,6 +39,7 @@ describe("referral invite status", () => {
     joinedAt: "2026-10-24T00:00:00.000Z",
     firstBookingAt: null,
     rewardPoints: null,
+    status: "pending" as const,
   };
 
   it("waits until the friend's first booking earns the reward", () => {
@@ -49,17 +49,9 @@ describe("referral invite status", () => {
         ...invite,
         firstBookingAt: "2026-10-30T00:00:00.000Z",
         rewardPoints: 500,
+        status: "rewarded",
       }),
     ).toBe("rewarded");
-  });
-
-  it("counts invited and completed friends", () => {
-    expect(
-      referralCounts([
-        invite,
-        { ...invite, id: "2", firstBookingAt: "2026-10-30", rewardPoints: 500 },
-      ]),
-    ).toEqual({ invited: 2, completed: 1 });
   });
 });
 
