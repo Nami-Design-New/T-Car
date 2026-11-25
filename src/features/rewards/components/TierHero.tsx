@@ -4,13 +4,13 @@ import { FiChevronsRight } from "react-icons/fi";
 import { Link } from "@/i18n/navigation";
 import { cn } from "@/shared/lib/cn";
 import { REWARDS_ASSETS } from "@/shared/config/assets";
-import type { RewardTier, RewardTierState } from "../model";
+import type { RewardRoadTier, RewardTierState } from "../model";
 import TierBadge from "./TierBadge";
 
 interface Props {
   tierPoints: number;
-  currentTier: RewardTier;
-  nextTier: RewardTier | null;
+  currentTier: RewardRoadTier;
+  nextTier: RewardRoadTier | null;
   progress: number;
   pointsLeft: number;
   state?: RewardTierState;

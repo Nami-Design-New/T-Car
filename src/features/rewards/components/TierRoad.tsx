@@ -4,11 +4,11 @@ import { cn } from "@/shared/lib/cn";
 import { useFormatter, useTranslations } from "next-intl";
 import Image from "next/image";
 import { FiChevronRight } from "react-icons/fi";
-import type { RewardsOverview } from "../model";
+import type { RewardRoadTier, RewardTierState } from "../model";
 import TierBadge from "./TierBadge";
 
 interface Props {
-  tiers: RewardsOverview["tiers"];
+  tiers: { tier: RewardRoadTier; state: RewardTierState }[];
   roadPosition: number;
 }
 

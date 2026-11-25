@@ -761,7 +761,7 @@ filters in `ar` and `en` redirect to sign-in with the filter preserved. A
 signed-in HTML check remains open because no authenticated session was available.
 
 **Rewards API, fraction R6 (2026-11-25, branch `feature/rewards-tiers`),
-implementation ready:** The rewards model and mock now use API-shaped packages:
+done in `43ca0d7`:** The rewards model and mock now use API-shaped packages:
 string IDs, backend-owned names and icon URLs, three colours, start/end points,
 and perks keyed by the API. Tier badges and heroes use the package icon and
 colour gradient; perk icons come from the key with a fallback for new keys.
@@ -773,6 +773,24 @@ package and an unknown-id `NEXT_NOT_FOUND` route test. The production build and
 `next start` smoke check were skipped at the user's direction after a stale
 `.next` cache blocked page-data collection; a full test suite is reserved for
 before merge.
+
+**Rewards API, fraction R7 (2026-11-25, branch `feature/rewards-tiers`),
+implementation ready:** The rewards overview reads only `GET /packages/current`:
+its full `current_package` supplies the hero and perks, while `other_packages`
+supplies the tier road. TEST includes the current tier in `other_packages`, so
+the mapper deduplicates it; a missing colour triplet uses a neutral badge
+gradient. The account section layout no longer makes an unused `/points`
+summary request; points history still reads `/points` on its own page. The
+all-tiers page reads E6 `/packages` plus E7 balances, and the
+detail page also reads E8 `/packages/{id}` (`404` → `notFound()`). The existing
+rule still shows the first tier as current below its start points. Cards,
+catalog, and redemption stay on their mocks for R8–R10. Typecheck, lint (one
+existing warning), and 65 rewards-focused tests pass, including API-shaped
+colours driving both gradients. A live TEST probe confirmed E6, E7, E8, and
+E8's 404 in `ar` and `en`; TEST package thresholds have changed since the
+design seed (backend/product ask B13).
+Production build and signed-in route smoke remain pending after the user's
+instruction to skip the build while the `.next` cache issue is unresolved.
 
 Notifications API integration (2026-11-12): `features/notifications` now owns
 the live paginated `GET /notifications` read and uses `InfiniteList` for later

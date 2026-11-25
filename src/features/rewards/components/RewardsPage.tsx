@@ -1,7 +1,7 @@
 import { useTranslations } from "next-intl";
 import { FiClock, FiInfo } from "react-icons/fi";
 import { Link } from "@/i18n/navigation";
-import { rewardsOverview, type RewardsSummary } from "../model";
+import { rewardsHomeOverview, type RewardsHomeData } from "../model";
 import ConvertPointsBanner from "./ConvertPointsBanner";
 import CurrentTierPerks from "./CurrentTierPerks";
 import QuickActions from "./QuickActions";
@@ -10,12 +10,13 @@ import TierHero from "./TierHero";
 import TierRoad from "./TierRoad";
 
 interface Props {
-  summary: RewardsSummary;
+  data: RewardsHomeData;
 }
 
-export default function RewardsPage({ summary }: Props) {
+export default function RewardsPage({ data }: Props) {
   const t = useTranslations("rewards");
-  const overview = rewardsOverview(summary);
+  const overview = rewardsHomeOverview(data);
+  const currentTier = data.currentTier ?? { ...overview.current, perks: [] };
 
   return (
     <section className="bg-surface-card-primary relative flex flex-col gap-5 overflow-hidden rounded-xl">
@@ -32,18 +33,18 @@ export default function RewardsPage({ summary }: Props) {
 
       <div className="relative z-1 flex flex-col gap-5">
         <TierHero
-          tierPoints={summary.tierPoints}
-          currentTier={overview.current}
+          tierPoints={data.tierPoints}
+          currentTier={currentTier}
           nextTier={overview.next}
           progress={overview.progress}
           pointsLeft={overview.pointsToNext}
         />
-        <RedeemableBalanceCard balance={summary.balance} />
+        <RedeemableBalanceCard balance={data.balance} />
         <QuickActions />
         <TierRoad tiers={overview.tiers} roadPosition={overview.roadPosition} />
         <ConvertPointsBanner />
         <CurrentTierPerks
-          currentTier={overview.current}
+          currentTier={currentTier}
           nextTier={overview.next}
         />
         <div className="border-stroke-light bg-surface-elevated flex items-start gap-2.5 rounded-md border px-3.5 py-3 text-[11px] leading-relaxed">

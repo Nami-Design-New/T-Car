@@ -2,10 +2,10 @@ import Image from "next/image";
 import { FiCheck, FiLock } from "react-icons/fi";
 import { cn } from "@/shared/lib/cn";
 import { REWARDS_ASSETS } from "@/shared/config/assets";
-import type { RewardTier, RewardTierState } from "../model";
+import type { RewardRoadTier, RewardTierState } from "../model";
 
 interface Props {
-  tier: RewardTier;
+  tier: RewardRoadTier;
   size: 48 | 56 | 72;
   /** Road states: a glow when current, a check or lock mark otherwise. Omit for a plain badge. */
   state?: RewardTierState;

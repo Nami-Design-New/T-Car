@@ -1,12 +1,12 @@
 import { useTranslations } from "next-intl";
 import { FiChevronRight, FiStar } from "react-icons/fi";
 import { Link } from "@/i18n/navigation";
-import type { RewardTier } from "../model";
+import type { RewardRoadTier, RewardTier } from "../model";
 import PerkIcon from "./PerkIcon";
 
 interface Props {
-  currentTier: RewardTier;
-  nextTier: RewardTier | null;
+  currentTier: Pick<RewardTier, "id" | "perks">;
+  nextTier: RewardRoadTier | null;
 }
 
 export default function CurrentTierPerks({ currentTier, nextTier }: Props) {

@@ -209,6 +209,20 @@ const CATALOG_ITEMS: MockCatalogItem[] = [
 // The real API localizes perks from Accept-Language (sent by services/http);
 // the mock reads the request locale itself so the interface stays the same.
 export const rewardsMock: RewardsApi = {
+  async getHome(userId) {
+    await delay();
+    if (userId === MOCK_FAILURE_USER_ID) {
+      throw new AppError("network", "rewards.unavailable");
+    }
+    const { tierPoints, balance } = MOCK_POINTS_SUMMARY;
+    const tiers = tiersFor(await getLocale());
+    return {
+      tierPoints,
+      balance,
+      currentTier: rewardsOverview({ tierPoints, balance, tiers }).current,
+      roadTiers: tiers,
+    };
+  },
   async getSummary(userId) {
     await delay();
     if (userId === MOCK_FAILURE_USER_ID) {
@@ -220,6 +234,13 @@ export const rewardsMock: RewardsApi = {
       balance,
       tiers: tiersFor(await getLocale()),
     } satisfies RewardsSummary;
+  },
+  async getTier(userId, id) {
+    await delay();
+    if (userId === MOCK_FAILURE_USER_ID) {
+      throw new AppError("network", "rewards.unavailable");
+    }
+    return tiersFor(await getLocale()).find((tier) => tier.id === id) ?? null;
   },
   async getCards(userId) {
     await delay();

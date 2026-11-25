@@ -4,13 +4,16 @@ export interface RewardPerk {
   code: string | null;
 }
 
-export interface RewardTier {
+export interface RewardRoadTier {
   id: string;
   name: string;
   iconUrl: string;
   colors: { high: string; medium: string; low: string };
-  /** Lifetime tier points required to enter and finish this tier. */
   startPoints: number;
+}
+
+export interface RewardTier extends RewardRoadTier {
+  /** Lifetime tier points required to enter and finish this tier. */
   endPoints: number;
   perks: RewardPerk[];
 }
@@ -21,6 +24,14 @@ export interface RewardsSummary {
   /** Spendable points; redemption never changes `tierPoints`. */
   balance: number;
   tiers: RewardTier[];
+}
+
+/** The overview uses E7's current package and road list, without E6. */
+export interface RewardsHomeData {
+  tierPoints: number;
+  balance: number;
+  currentTier: RewardTier | null;
+  roadTiers: RewardRoadTier[];
 }
 
 export type RewardCardStatus = "active" | "used" | "expired";
@@ -87,18 +98,21 @@ export function matchesRewardCardFilter(
 
 export type RewardTierState = "reached" | "current" | "locked";
 
-export interface RewardsOverview {
+export interface TierOverview<T extends RewardRoadTier> {
   /** Every tier, lowest threshold first. */
-  tiers: { tier: RewardTier; state: RewardTierState }[];
-  current: RewardTier;
+  tiers: { tier: T; state: RewardTierState }[];
+  current: T;
   /** Null at the top tier. */
-  next: RewardTier | null;
+  next: T | null;
   /** 0–100: tier points against the next tier's threshold, as Figma shows it. */
   progress: number;
   pointsToNext: number;
   /** 0–100 along the tier road, at the car between the current and next tier. */
   roadPosition: number;
 }
+
+export type RewardsOverview = TierOverview<RewardTier>;
+export type RewardsHomeOverview = TierOverview<RewardRoadTier>;
 
 export interface RewardTierView {
   tier: RewardTier;
@@ -144,13 +158,19 @@ export function rewardTierView(
  * Everything the overview shows, from one sorted copy of the tiers. A customer
  * below the first threshold is shown at the first tier.
  */
-export function rewardsOverview(summary: RewardsSummary): RewardsOverview {
-  const sorted = [...summary.tiers].sort((a, b) => a.startPoints - b.startPoints);
+function tierOverview<T extends RewardRoadTier>(
+  tiers: T[],
+  tierPoints: number,
+  currentId?: string | null,
+): TierOverview<T> {
+  const sorted = [...tiers].sort((a, b) => a.startPoints - b.startPoints);
   if (sorted.length === 0) throw new Error("Rewards require at least one tier");
 
-  const { tierPoints } = summary;
   const reached = sorted.filter((tier) => tierPoints >= tier.startPoints).length;
-  const currentIndex = Math.max(0, reached - 1);
+  const matchedIndex = currentId == null
+    ? -1
+    : sorted.findIndex((tier) => tier.id === currentId);
+  const currentIndex = matchedIndex >= 0 ? matchedIndex : Math.max(0, reached - 1);
   const current = sorted[currentIndex];
   const next = sorted[currentIndex + 1] ?? null;
 
@@ -175,4 +195,12 @@ export function rewardsOverview(summary: RewardsSummary): RewardsOverview {
             (sorted.length - 1)) *
           100,
   };
+}
+
+export function rewardsOverview(summary: RewardsSummary): RewardsOverview {
+  return tierOverview(summary.tiers, summary.tierPoints);
+}
+
+export function rewardsHomeOverview(data: RewardsHomeData): RewardsHomeOverview {
+  return tierOverview(data.roadTiers, data.tierPoints, data.currentTier?.id);
 }

@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   canAffordReward,
+  rewardsHomeOverview,
   rewardTierView,
   rewardsOverview,
   type RewardTier,
@@ -148,5 +149,23 @@ describe("rewardsOverview", () => {
     expect(result.tiers).toHaveLength(5);
     expect(result.next).toBeNull();
     expect(result.roadPosition).toBe(100);
+  });
+});
+
+describe("rewardsHomeOverview", () => {
+  it("uses E7's current package and sorts its road list", () => {
+    const result = rewardsHomeOverview({
+      tierPoints: 0,
+      balance: 0,
+      currentTier: tiers[1],
+      roadTiers: [tiers[2], tiers[1], tiers[0]],
+    });
+    expect(result.tiers.map(({ tier, state }) => [tier.id, state])).toEqual([
+      ["1", "reached"],
+      ["2", "current"],
+      ["3", "locked"],
+    ]);
+    expect(result.current.id).toBe("2");
+    expect(result.next?.id).toBe("3");
   });
 });

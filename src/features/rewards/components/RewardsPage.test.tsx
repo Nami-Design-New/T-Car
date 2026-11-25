@@ -3,7 +3,7 @@ import { NextIntlClientProvider } from "next-intl";
 import { describe, expect, it, vi } from "vitest";
 import { renderWithIntl } from "@/shared/test/render";
 import arMessages from "../../../../messages/ar.json";
-import type { RewardsSummary } from "../model";
+import { rewardsOverview, type RewardsSummary } from "../model";
 import RewardsPage from "./RewardsPage";
 
 vi.mock("@/i18n/navigation", () => ({
@@ -75,10 +75,21 @@ const tiers: RewardsSummary["tiers"] = [
   },
 ];
 
+const home = (
+  tierPoints: number,
+  balance: number,
+  roadTiers = tiers,
+) => ({
+  tierPoints,
+  balance,
+  currentTier: rewardsOverview({ tierPoints, balance, tiers: roadTiers }).current,
+  roadTiers,
+});
+
 describe("RewardsPage", () => {
   it("renders the current tier, progress, balance, perks, and destinations", () => {
     renderWithIntl(
-      <RewardsPage summary={{ tierPoints: 5000, balance: 5000, tiers }} />,
+      <RewardsPage data={home(5000, 5000)} />,
     );
 
     expect(screen.getAllByText("Silver")).toHaveLength(2);
@@ -125,13 +136,13 @@ describe("RewardsPage", () => {
   it("shows the just-started state when the current tier has no perks", () => {
     renderWithIntl(
       <RewardsPage
-        summary={{
-          tierPoints: 1000,
-          balance: 1000,
-          tiers: tiers.map((tier) =>
+        data={home(
+          1000,
+          1000,
+          tiers.map((tier) =>
             tier.id === "1" ? { ...tier, perks: [] } : tier,
           ),
-        }}
+        )}
       />,
     );
 
@@ -143,7 +154,7 @@ describe("RewardsPage", () => {
 
   it("centres the road car between the current and next packages", () => {
     renderWithIntl(
-      <RewardsPage summary={{ tierPoints: 12000, balance: 12000, tiers }} />,
+      <RewardsPage data={home(12000, 12000)} />,
     );
 
     expect(screen.getByAltText("car").parentElement).toHaveStyle({
@@ -156,14 +167,14 @@ describe("RewardsPage", () => {
 
   it("shows the English Bronze welcome perk on the overview", () => {
     renderWithIntl(
-      <RewardsPage summary={{ tierPoints: 1000, balance: 1000, tiers }} />,
+      <RewardsPage data={home(1000, 1000)} />,
     );
     expect(screen.getByText("You've just started, champ!")).toBeInTheDocument();
   });
 
   it("renders the top tier as complete without a next-tier chip", () => {
     renderWithIntl(
-      <RewardsPage summary={{ tierPoints: 25000, balance: 5000, tiers }} />,
+      <RewardsPage data={home(25000, 5000)} />,
     );
 
     expect(screen.getAllByText("Diamond")).toHaveLength(2);
@@ -183,7 +194,7 @@ describe("RewardsPage", () => {
       perks: [{ key: "future_perk", title: "A new benefit", code: null }],
     };
     const { container } = renderWithIntl(
-      <RewardsPage summary={{ tierPoints: 32000, balance: 5000, tiers: [...tiers, extra] }} />,
+      <RewardsPage data={home(32000, 5000, [...tiers, extra])} />,
     );
     expect(screen.getAllByText("Platinum")).toHaveLength(2);
     expect(screen.getByText("A new benefit")).toBeInTheDocument();
@@ -194,17 +205,36 @@ describe("RewardsPage", () => {
     expect(container.querySelector('img[src="/custom-platinum.webp"]')).toBeInTheDocument();
   });
 
+  it("uses package colours for the hero and badge gradients", () => {
+    const colors = { high: "#112233", medium: "#445566", low: "#778899" };
+    const customTiers = tiers.map((tier) =>
+      tier.id === "2" ? { ...tier, colors } : tier,
+    );
+    renderWithIntl(
+      <RewardsPage
+        data={home(5000, 5000, customTiers)}
+      />,
+    );
+    const hero = screen.getByRole("link", { name: /Your current tier\s*Silver/ });
+    expect(hero).toHaveStyle({
+      background: "linear-gradient(150deg, #112233 14%, #445566 52%, #778899 88%)",
+    });
+    expect(hero.querySelector('[style*="clip-path"]')).toHaveStyle({
+      background: "linear-gradient(150deg, #112233, #445566, #778899)",
+    });
+  });
+
   it("names the next tier with the Arabic preposition", () => {
     render(
       <NextIntlClientProvider locale="ar" messages={arMessages}>
         <RewardsPage
-          summary={{
-            tierPoints: 5000,
-            balance: 5000,
-            tiers: tiers.map((tier) =>
+          data={home(
+            5000,
+            5000,
+            tiers.map((tier) =>
               tier.id === "3" ? { ...tier, name: "الذهبية" } : tier,
             ),
-          }}
+          )}
         />
       </NextIntlClientProvider>,
     );
