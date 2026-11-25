@@ -2,7 +2,7 @@
 
 Last updated: 2026-11-25
 Base URL: `https://admin.t-car.app/api/user` (TEST, `NEXT_PUBLIC_API_URL`)
-Status: R0 (contract evidence and plan) done; R1–R12 open. Branch
+Status: R0 (contract evidence and plan) and R1 (feature-owned APIs) done; R2–R12 open. Branch
 `feature/rewards-api`.
 
 Sources: Bruno `User Application/Setting/referal and points` (12 requests),
@@ -219,7 +219,7 @@ and the user's approval before committing.
 | Fraction | Scope | Completion evidence |
 | --- | --- | --- |
 | R0 — Contract and plan **Done (2026-11-25)** | Probe E1–E13 (E12 skipped, E4 from Bruno), seed TEST from the design, record DTOs, decisions, and fractions. | This document. |
-| R1 — Feature-owned APIs | Move `services/{points,referrals,rewards}.api.ts` and their mocks into `features/<x>/api.ts` + `api.mock.ts`, no behavior change. | Queries and actions import from the feature; `services/` keeps only `http/`; tests pass. |
+| R1 — Feature-owned APIs **Done (2026-11-25)** | Moved `services/{points,referrals,rewards}.api.ts` and their mocks into `features/<x>/api.ts` + `api.mock.ts` (and the rewards mock test to `features/rewards/api.mock.test.ts`), no behavior change. The rewards mock repeats the points mock's two balances, because a feature may not import another feature's mock. | Queries, actions, and tests import from the feature; no `services/` file refers to the three features; typecheck, lint, 1,040 tests, and build pass; the nine account pages render the same mock data in `ar` and `en` with a session, redirect to sign-in without one, and an unknown tier id carries `NEXT_NOT_FOUND`. |
 | R2 — Referral program | E1 through `serverHttp` with a strict DTO guard and mapper. | Referrals page shows the live code and reward value; mapper tests (observed payload, malformed, 401). |
 | R3 — Referral history | E2 paginated (`InfiniteList` + `usePaginatedList`, as the bank-account picker); counts from the API. | History page lists live invites, loads the next page on scroll; pending invite shows no points. |
 | R4 — Referral code at sign-up | E3 behind `checkReferralCodeAction` (shows `referrerName`); E4 sends the checked `referal_code` with the profile. | Register form: valid / invalid / own-code cases; profile completion with a code; auth tests updated. |

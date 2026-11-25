@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { rewardsMock } from "./rewards";
+import { rewardsMock } from "./api.mock";
 
 describe("rewardsMock.redeem", () => {
   it("returns a receipt without mutating the server-side mock balance", async () => {

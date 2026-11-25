@@ -1,5 +1,5 @@
-import type { PointsData } from '@/features/points/model';
-import { pointsMock } from './mocks/points';
+import type { PointsData } from './model';
+import { pointsMock } from './api.mock';
 
 export interface PointsApi {
   getPoints(userId: string): Promise<PointsData>;

@@ -1,6 +1,6 @@
 import { screen, within } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
-import { MOCK_REFERRAL_HISTORY } from "@/services/mocks/referrals";
+import { MOCK_REFERRAL_HISTORY } from "../api.mock";
 import { renderWithIntl } from "@/shared/test/render";
 import ReferralHistoryPage from "./ReferralHistoryPage";
 

@@ -1,6 +1,6 @@
 "use server";
 
-import { referralsApi } from "@/services/referrals.api";
+import { referralsApi } from "./api";
 import { reportError } from "@/shared/lib/report";
 import {
   fail,

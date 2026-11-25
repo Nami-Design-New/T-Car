@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { MOCK_POINTS_DATA } from "@/services/mocks/points";
+import { MOCK_POINTS_DATA } from "./api.mock";
 import {
   groupPointsTransactions,
   matchesPointsFilter,

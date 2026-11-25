@@ -1,7 +1,7 @@
 import "server-only";
 
 import { auth } from "@/auth";
-import { rewardsApi } from "@/services/rewards.api";
+import { rewardsApi } from "./api";
 import { protectedRead } from "@/services/http/session";
 import { AppError } from "@/shared/lib/errors";
 import type { RewardCardsData, RewardCatalogData, RewardsSummary } from "./model";

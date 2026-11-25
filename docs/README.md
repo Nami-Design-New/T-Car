@@ -723,6 +723,12 @@ the referral code at sign-up and the booking-complete points are in scope.
 `replace-points` (a GET that spends points) was not called. No code changed;
 every rewards, points, and referrals read still uses its mock.
 
+**Rewards API, fraction R1 (2026-11-25), done:** The points, referrals, and
+rewards APIs and their mocks moved from `services/` into their features
+(`features/<x>/api.ts`, `features/<x>/api.mock.ts`) with no behavior change;
+every read and the redemption still use the mocks. `services/` now holds only
+`http/` and the cars API with its mocks.
+
 Notifications API integration (2026-11-12): `features/notifications` now owns
 the live paginated `GET /notifications` read and uses `InfiniteList` for later
 pages. Its Server Actions cover read/read-all, delete/delete-all, and browser

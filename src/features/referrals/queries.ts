@@ -2,7 +2,7 @@ import "server-only";
 
 import { auth } from "@/auth";
 import type { ReferralHistory, ReferralProgram } from "./model";
-import { referralsApi } from "@/services/referrals.api";
+import { referralsApi } from "./api";
 import { protectedRead } from "@/services/http/session";
 import { AppError } from "@/shared/lib/errors";
 

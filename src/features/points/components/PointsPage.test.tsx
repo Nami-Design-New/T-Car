@@ -1,7 +1,7 @@
 import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
-import { MOCK_POINTS_DATA } from "@/services/mocks/points";
+import { MOCK_POINTS_DATA } from "../api.mock";
 import { renderWithIntl } from "@/shared/test/render";
 import PointsPage from "./PointsPage";
 

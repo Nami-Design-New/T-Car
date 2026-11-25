@@ -3,9 +3,9 @@ import type {
   RewardCatalogData,
   RewardRedemption,
   RewardsSummary,
-} from "@/features/rewards/model";
+} from "./model";
 import type { Result } from "@/shared/lib/result";
-import { rewardsMock } from "./mocks/rewards";
+import { rewardsMock } from "./api.mock";
 
 export interface RewardsApi {
   getSummary(userId: string): Promise<RewardsSummary>;

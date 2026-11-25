@@ -1,9 +1,9 @@
 import type {
   ReferralHistory,
   ReferralProgram,
-} from "@/features/referrals/model";
+} from "./model";
 import { AppError } from "@/shared/lib/errors";
-import type { ReferralsApi } from "../referrals.api";
+import type { ReferralsApi } from "./api";
 
 export const MOCK_REFERRAL_PROGRAM: ReferralProgram = {
   code: "TCAR-A7K9",

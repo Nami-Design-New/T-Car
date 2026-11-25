@@ -1,7 +1,7 @@
 "use server";
 
 import { auth } from "@/auth";
-import { rewardsApi } from "@/services/rewards.api";
+import { rewardsApi } from "./api";
 import { AppError } from "@/shared/lib/errors";
 import { reportError } from "@/shared/lib/report";
 import { fail, toActionResult, type ActionResult } from "@/shared/lib/result";

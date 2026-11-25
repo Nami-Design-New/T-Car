@@ -1,6 +1,6 @@
-import type { PointsData } from "@/features/points/model";
+import type { PointsData } from "./model";
 import { AppError } from "@/shared/lib/errors";
-import type { PointsApi } from "../points.api";
+import type { PointsApi } from "./api";
 
 export const MOCK_POINTS_DATA: PointsData = {
   summary: {

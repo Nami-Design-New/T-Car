@@ -2,8 +2,8 @@ import type {
   ReferralCodeCheck,
   ReferralHistory,
   ReferralProgram,
-} from "@/features/referrals/model";
-import { referralsMock } from "./mocks/referrals";
+} from "./model";
+import { referralsMock } from "./api.mock";
 
 export interface ReferralsApi {
   getProgram(userId: string): Promise<ReferralProgram>;
