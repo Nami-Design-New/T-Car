@@ -741,6 +741,15 @@ a Server Action and `InfiniteList`. The API supplies the invite and completed
 counts and total points. Typecheck, lint, tests, and build pass; the history
 page lists the live TEST invites in `ar` and `en`.
 
+**Rewards API, fraction R4 (2026-11-25), done:** Sign-up checks an invite code
+through the public `POST /auth/verify-referal-code` without a session token.
+Invalid codes show the existing invalid state; a valid code with no referrer
+name shows a dedicated hint and banner. The profile submit sends the checked
+code as optional `referal_code` to `POST /complete-profile`. Typecheck, lint,
+tests, and build pass; on `next start` the code check returns valid for the
+live code and invalid for unknown or malformed codes. Whether `/complete-profile`
+re-validates the code is open (backend ask B11).
+
 Notifications API integration (2026-11-12): `features/notifications` now owns
 the live paginated `GET /notifications` read and uses `InfiniteList` for later
 pages. Its Server Actions cover read/read-all, delete/delete-all, and browser
@@ -938,7 +947,7 @@ disabled card and `redeem` answers it with `rewards.insufficientPoints`.
 Follow-up: a real redeem endpoint that persists the card and the balance
 together.
 
-**Referrals fraction R3 (2026-11-23), UI done, not sent yet:** the sign-up
+**Referrals fraction R3 (2026-11-23), UI done; API connected in rewards R4:** the sign-up
 profile has an optional invite code field (`ReferralCodeField`, Figma
 `Auth/Referral-*`): empty, entered, checking, valid (names the friend; "Change
 code"), invalid, and no-connection states, plus "Continue without an invite
@@ -947,9 +956,9 @@ An invite link (`/<locale>?auth=login&ref=CODE`, now in the share message)
 opens sign-in with the code checked and filled in, and a valid code shows
 "Invite from … · Your code is ready" on the phone and OTP steps. The code lives
 in `features/referrals/referralCodeStore.ts` (Zustand, browser only) and is
-checked by `checkReferralCodeAction` → `referralsApi.checkCode` (mock:
-`TCAR-A7K9` is valid, `TCAR-FAIL` is unreachable). It is **not** sent to
-`/complete-profile` until the backend takes it (Auth-API.md Q12).
+checked by `checkReferralCodeAction` → `referralsApi.checkCode` (live since
+rewards R4). A checked valid code is sent as `referal_code` to
+`/complete-profile` since rewards R4 (Auth-API.md Q12).
 
 ### What remains
 

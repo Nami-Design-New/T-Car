@@ -1,7 +1,7 @@
 import "server-only";
 
 import { isApiEnvelope, type ApiEnvelope } from "@/services/http/envelope";
-import { serverHttp } from "@/services/http/server";
+import { publicServerHttp, serverHttp } from "@/services/http/server";
 import { AppError } from "@/shared/lib/errors";
 import { isPaginationDto, toPage } from "@/shared/lib/pagination";
 import type {
@@ -10,7 +10,6 @@ import type {
   ReferralInvite,
   ReferralProgram,
 } from "./model";
-import { referralsMock } from "./api.mock";
 
 export interface ReferralsApi {
   getProgram(userId: string): Promise<ReferralProgram>;
@@ -126,9 +125,41 @@ async function getHistory(
   return mapReferralHistoryResponse(response);
 }
 
-// Only sign-up code checks stay mocked until R4.
+async function checkCode(code: string): Promise<ReferralCodeCheck> {
+  try {
+    const response = await publicServerHttp.post<ApiEnvelope<unknown>>(
+      "/auth/verify-referal-code",
+      { referal_code: code },
+    );
+    if (
+      !isApiEnvelope(response) ||
+      response.code !== 200 ||
+      !isRecord(response.data) ||
+      response.data.valid !== true ||
+      (response.data.referrer_name !== null &&
+        typeof response.data.referrer_name !== "string")
+    ) {
+      throw new AppError("server");
+    }
+    // A blank name is shown as no name (the no-name hint and banner).
+    return {
+      valid: true,
+      inviterName: response.data.referrer_name?.trim() || null,
+    };
+  } catch (error) {
+    if (
+      error instanceof AppError &&
+      error.kind === "validation" &&
+      error.status === 422
+    ) {
+      return { valid: false };
+    }
+    throw error;
+  }
+}
+
 export const referralsApi: ReferralsApi = {
-  ...referralsMock,
   getProgram,
   getHistory,
+  checkCode,
 };

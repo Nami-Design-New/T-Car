@@ -228,6 +228,29 @@ describe('completeProfileAction', () => {
     expect(completeProfile).not.toHaveBeenCalled();
   });
 
+  it.each(['BAD CODE', 'TCAR-123456789012'])('rejects malformed invite code %s', async (referralCode) => {
+    const result = await completeProfileAction({ ...profile, referralCode });
+    expect(result).toMatchObject({
+      ok: false,
+      error: { kind: 'validation', fieldErrors: { referralCode: 'auth.invalidReferralCode' } },
+    });
+    expect(completeProfile).not.toHaveBeenCalled();
+  });
+
+  it('normalizes an invite code and passes it through to the API', async () => {
+    readPendingRegistration.mockResolvedValue(pendingGrant);
+    completeProfile.mockResolvedValue({
+      user: savedUser,
+      onboardingStep: 'location',
+      message: 'Profile updated successfully.',
+    });
+    await completeProfileAction({ ...profile, referralCode: ' tcar-8nc1 ' });
+    expect(completeProfile).toHaveBeenCalledWith(
+      { fullName: 'New Customer', email: 'new@domain.com', birthDate: '1990-05-17', referralCode: 'TCAR-8NC1' },
+      'pending-token'
+    );
+  });
+
   it('is unauthorized without a pending registration', async () => {
     readPendingRegistration.mockResolvedValue(null);
     await expect(completeProfileAction(profile)).resolves.toMatchObject({

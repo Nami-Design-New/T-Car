@@ -37,9 +37,8 @@ export async function getReferralHistoryAction(
 
 /**
  * Checks an invite code while signing up (no session yet). A code in the
- * wrong shape is invalid without a request. The result is only shown: the
- * code is not sent with the profile until the backend takes it
- * (docs/api/Auth-API.md, open questions).
+ * wrong shape is invalid without a request. A valid code is sent with the
+ * profile when the customer completes sign-up.
  */
 export async function checkReferralCodeAction(
   value: string,

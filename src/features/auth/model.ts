@@ -43,6 +43,8 @@ export interface CompleteProfileInput {
   email: string;
   /** YYYY-MM-DD */
   birthDate: string;
+  /** A checked sign-up invite code, if the customer supplied one. */
+  referralCode?: string;
 }
 
 /** The customer's location, the last onboarding step (`POST /assign-location`). */

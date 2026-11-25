@@ -62,11 +62,11 @@ export const normalizeReferralCode = (value: string) =>
 
 /** A code's shape (letters, digits, dashes), checked before asking the backend. */
 export const isReferralCodeFormat = (code: string) =>
-  /^[A-Z0-9-]{4,20}$/.test(code);
+  /^[A-Z0-9-]{4,16}$/.test(code);
 
 /** What checking a sign-up invite code returns. */
 export type ReferralCodeCheck =
-  { valid: true; inviterName: string } | { valid: false };
+  { valid: true; inviterName: string | null } | { valid: false };
 
 /** wa.me opens WhatsApp (app or web) with the message filled in. */
 export const whatsappShareUrl = (text: string) =>

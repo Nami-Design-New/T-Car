@@ -1,13 +1,19 @@
 import { describe, expect, it, vi } from "vitest";
 import { AppError } from "@/shared/lib/errors";
 
-const { get } = vi.hoisted(() => ({ get: vi.fn() }));
+const { get, post, sessionPost } = vi.hoisted(() => ({
+  get: vi.fn(),
+  post: vi.fn(),
+  sessionPost: vi.fn(),
+}));
 
 vi.mock("server-only", () => ({}));
-vi.mock("@/services/http/server", () => ({ serverHttp: { get } }));
+vi.mock("@/services/http/server", () => ({
+  serverHttp: { get, post: sessionPost },
+  publicServerHttp: { post },
+}));
 
 import { referralsApi } from "./api";
-import { referralsMock } from "./api.mock";
 
 const envelope = (data: unknown) => ({ data, message: "OK", code: 200 });
 
@@ -165,8 +171,67 @@ describe("referralsApi.getHistory", () => {
     get.mockRejectedValueOnce(error);
     await expect(referralsApi.getHistory("user-1", 1)).rejects.toBe(error);
   });
+});
 
-  it("keeps code checks on the mock", () => {
-    expect(referralsApi.checkCode).toBe(referralsMock.checkCode);
+describe("referralsApi.checkCode", () => {
+  it.each(["Ahmed", null])(
+    "uses the public client and maps a valid code with name %s",
+    async (name) => {
+      post.mockResolvedValueOnce(
+        envelope({ valid: true, referrer_name: name }),
+      );
+      await expect(referralsApi.checkCode("TCAR-T2FZ")).resolves.toEqual({
+        valid: true,
+        inviterName: name,
+      });
+      expect(post).toHaveBeenCalledWith("/auth/verify-referal-code", {
+        referal_code: "TCAR-T2FZ",
+      });
+      expect(sessionPost).not.toHaveBeenCalled();
+    },
+  );
+
+  it.each(["", "   "])(
+    "maps a blank referrer name %j to no name",
+    async (name) => {
+      post.mockResolvedValueOnce(
+        envelope({ valid: true, referrer_name: name }),
+      );
+      await expect(referralsApi.checkCode("TCAR-T2FZ")).resolves.toEqual({
+        valid: true,
+        inviterName: null,
+      });
+    },
+  );
+
+  it("rethrows a validation error that is not a 422", async () => {
+    const error = new AppError("validation", undefined, 400);
+    post.mockRejectedValueOnce(error);
+    await expect(referralsApi.checkCode("TCAR-T2FZ")).rejects.toBe(error);
+  });
+
+  it("maps the transport's body-code 422 to invalid", async () => {
+    post.mockRejectedValueOnce(new AppError("validation", undefined, 422));
+    await expect(referralsApi.checkCode("TCAR-UNKNOWN")).resolves.toEqual({
+      valid: false,
+    });
+  });
+
+  it.each([
+    envelope({ valid: true }),
+    envelope({ valid: false, referrer_name: null }),
+    envelope({ valid: true, referrer_name: 3 }),
+    { data: { valid: true, referrer_name: null }, code: 200 },
+  ])("rejects a malformed success", async (response) => {
+    post.mockResolvedValueOnce(response);
+    await expect(referralsApi.checkCode("TCAR-T2FZ")).rejects.toEqual(
+      new AppError("server"),
+    );
+  });
+
+  it("propagates a network failure", async () => {
+    const error = new AppError("network");
+    post.mockRejectedValueOnce(error);
+    await expect(referralsApi.checkCode("TCAR-T2FZ")).rejects.toBe(error);
   });
 });

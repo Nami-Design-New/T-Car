@@ -1,9 +1,11 @@
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { auth } from "@/auth";
+import { AppError } from "@/shared/lib/errors";
 import { referralsApi } from "./api";
 import { checkReferralCodeAction, getReferralHistoryAction } from "./actions";
 
 vi.mock("@/auth", () => ({ auth: vi.fn() }));
+vi.mock("./api", () => ({ referralsApi: { getHistory: vi.fn(), checkCode: vi.fn() } }));
 
 describe("getReferralHistoryAction", () => {
   it("returns a page for a signed-in user", async () => {
@@ -36,14 +38,19 @@ describe("getReferralHistoryAction", () => {
 });
 
 describe("checkReferralCodeAction", () => {
+  beforeEach(() => vi.mocked(referralsApi.checkCode).mockReset());
+
   it("names the friend for a valid code, in any case", async () => {
+    vi.mocked(referralsApi.checkCode).mockResolvedValueOnce({ valid: true, inviterName: "أحمد" });
     expect(await checkReferralCodeAction(" tcar-a7k9 ")).toEqual({
       ok: true,
       data: { valid: true, inviterName: "أحمد" },
     });
+    expect(referralsApi.checkCode).toHaveBeenCalledWith("TCAR-A7K9");
   });
 
   it("rejects an unknown code", async () => {
+    vi.mocked(referralsApi.checkCode).mockResolvedValueOnce({ valid: false });
     expect(await checkReferralCodeAction("TCAR-A7K0")).toEqual({
       ok: true,
       data: { valid: false },
@@ -55,9 +62,19 @@ describe("checkReferralCodeAction", () => {
       ok: true,
       data: { valid: false },
     });
+    expect(referralsApi.checkCode).not.toHaveBeenCalled();
+  });
+
+  it("rejects a code longer than 16 characters without asking the service", async () => {
+    expect(await checkReferralCodeAction("TCAR-123456789012")).toEqual({
+      ok: true,
+      data: { valid: false },
+    });
+    expect(referralsApi.checkCode).not.toHaveBeenCalled();
   });
 
   it("returns a network error when the service is unreachable", async () => {
+    vi.mocked(referralsApi.checkCode).mockRejectedValueOnce(new AppError("network"));
     const result = await checkReferralCodeAction("TCAR-FAIL");
     expect(result.ok).toBe(false);
     if (!result.ok) expect(result.error.kind).toBe("network");

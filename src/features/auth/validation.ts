@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { profileFieldsSchema } from '@/shared/lib/validation/profile';
 import { phoneValueSchema } from '@/shared/lib/validation/phone';
+import { isReferralCodeFormat, normalizeReferralCode } from '@/features/referrals';
 
 // Auth form schemas (doc 9). Messages are `errors.*` keys, never user text.
 // The client resolves forms with them and the Server Actions parse them again.
@@ -21,7 +22,12 @@ export const otpCodeSchema = z.object({ code });
 export const verifyOtpSchema = z.object({ phone: phoneValueSchema, code });
 
 /** Registration step: the profile fields (consent is implied by continuing). */
-export const registerFormSchema = profileFieldsSchema;
+export const registerFormSchema = profileFieldsSchema.extend({
+  referralCode: z.string({ error: 'auth.invalidReferralCode' })
+    .transform(normalizeReferralCode)
+    .refine(isReferralCodeFormat, { error: 'auth.invalidReferralCode' })
+    .optional(),
+});
 
 const invalidLocation = { error: 'auth.invalidLocation' } as const;
 

@@ -404,6 +404,7 @@
         "entered": "Check the code before creating your account.",
         "checking": "Checking the invite code…",
         "valid": "{name}'s invite is applied. Finish creating your account.",
+        "validNoName": "The invite code is applied. Finish creating your account.",
         "invalid": "This code is not valid. Check it and try again.",
         "network": "We couldn't check the code. Check your connection and try again.",
         "unchecked": "Check the code first, or continue without an invite code."
@@ -416,7 +417,8 @@
         "retry": "Try again",
         "skip": "Continue without an invite code"
       },
-      "banner": "Invite from {name} · Your code is ready: <code></code>"
+      "banner": "Invite from {name} · Your code is ready: <code></code>",
+      "bannerNoName": "Your invite code is ready: <code></code>"
     }
   },
   "hero": {
@@ -874,7 +876,8 @@
       "birthDateRequired": "Date of birth is required.",
       "invalidBirthDate": "Enter a valid date of birth that is not in the future.",
       "underAge": "You must be at least 18 years old.",
-      "invalidLocation": "Choose a valid location on the map."
+      "invalidLocation": "Choose a valid location on the map.",
+      "invalidReferralCode": "Enter a valid invite code."
     }
   },
   "citiesPage": {
