@@ -7,12 +7,18 @@ import type {
   RewardRedemption,
   RewardTier,
   RewardsSummary,
-} from "@/features/rewards/model";
-import { rewardsOverview } from "@/features/rewards/model";
+} from "./model";
+import { rewardsOverview } from "./model";
 import { AppError } from "@/shared/lib/errors";
 import { fail, ok } from "@/shared/lib/result";
-import type { RewardsApi } from "../rewards.api";
-import { MOCK_POINTS_DATA } from "./points";
+import type { RewardsApi } from "./api";
+
+/**
+ * The same customer as the points mock (`features/points/api.mock.ts`), so both
+ * pages show the same balances. A feature may not import another feature's
+ * mock, so the two numbers are repeated here.
+ */
+const MOCK_POINTS_SUMMARY = { tierPoints: 12000, balance: 4000 };
 
 type PerkCopy = [
   title: string,
@@ -187,8 +193,7 @@ export const rewardsMock: RewardsApi = {
     if (userId === MOCK_FAILURE_USER_ID) {
       throw new AppError("network", "rewards.unavailable");
     }
-    // Same customer as the points mock, so both pages show the same balances.
-    const { tierPoints, balance } = MOCK_POINTS_DATA.summary;
+    const { tierPoints, balance } = MOCK_POINTS_SUMMARY;
     return {
       tierPoints,
       balance,
@@ -201,7 +206,7 @@ export const rewardsMock: RewardsApi = {
       throw new AppError("network", "rewards.unavailable");
     }
     return {
-      balance: MOCK_POINTS_DATA.summary.balance,
+      balance: MOCK_POINTS_SUMMARY.balance,
       cards: [
         {
           id: "card-active",
@@ -234,7 +239,7 @@ export const rewardsMock: RewardsApi = {
       throw new AppError("network", "rewards.unavailable");
     }
     return {
-      balance: MOCK_POINTS_DATA.summary.balance,
+      balance: MOCK_POINTS_SUMMARY.balance,
       items: CATALOG_ITEMS.map(
         ({ id, discountAmount, pointsCost, validityDays }) => ({
           id,
@@ -253,7 +258,7 @@ export const rewardsMock: RewardsApi = {
     const item = CATALOG_ITEMS.find(({ id }) => id === itemId);
     if (!item)
       return fail(new AppError("not_found", "rewards.cardUnavailable"));
-    const { balance, tierPoints } = MOCK_POINTS_DATA.summary;
+    const { balance, tierPoints } = MOCK_POINTS_SUMMARY;
     if (balance < item.pointsCost) {
       return fail(new AppError("conflict", "rewards.insufficientPoints"));
     }

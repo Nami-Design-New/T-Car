@@ -1,8 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { MOCK_POINTS_DATA } from "@/services/mocks/points";
+import { MOCK_POINTS_DATA } from "./api.mock";
 import {
   groupPointsTransactions,
-  matchesPointsFilter,
   pointsSourceHref,
   type PointsTransaction,
 } from "./model";
@@ -14,36 +13,21 @@ const tx = (
 ): PointsTransaction => ({
   id,
   type,
+  title: "Activity",
   amount: type === "earned" ? 100 : -100,
   createdAt,
-  source: { kind: "expiry" },
-});
-
-describe("points filters", () => {
-  it("counts redemptions and expired points as used", () => {
-    const [earned, spent, expired] = [
-      tx("1", "2026-09-01T00:00:00Z", "earned"),
-      tx("2", "2026-09-01T00:00:00Z", "spent"),
-      tx("3", "2026-09-01T00:00:00Z", "expired"),
-    ];
-    expect(matchesPointsFilter(earned, "earned")).toBe(true);
-    expect(matchesPointsFilter(spent, "earned")).toBe(false);
-    expect(matchesPointsFilter(spent, "spent")).toBe(true);
-    expect(matchesPointsFilter(expired, "spent")).toBe(true);
-    expect(matchesPointsFilter(expired, "all")).toBe(true);
-  });
+  source: { kind: "referral" },
 });
 
 describe("groupPointsTransactions", () => {
   it("puts the three newest under latest and the rest by month", () => {
-    const groups = groupPointsTransactions(MOCK_POINTS_DATA.transactions);
+    const groups = groupPointsTransactions(MOCK_POINTS_DATA.page.items);
     expect(
       groups.map((group) => (group.kind === "latest" ? "latest" : group.month)),
     ).toEqual(["latest", "2026-09-01", "2026-08-01"]);
     expect(groups[0].transactions).toHaveLength(3);
     expect(groups[1].transactions.map((item) => item.id)).toEqual([
-      "referral-1",
-      "redemption-1",
+      "4",
     ]);
   });
 
@@ -67,14 +51,16 @@ describe("groupPointsTransactions", () => {
 describe("pointsSourceHref", () => {
   it("links bookings and invites only", () => {
     expect(
-      pointsSourceHref({ kind: "booking", bookingId: "2363", balance: "tier" }),
+      pointsSourceHref({ kind: "booking", bookingId: "2363" }),
     ).toBe("/account/bookings/2363");
-    expect(pointsSourceHref({ kind: "referral", friendName: "Ahmed" })).toBe(
+    expect(pointsSourceHref({ kind: "rating", bookingId: "2363" })).toBe("/account/bookings/2363");
+    expect(pointsSourceHref({ kind: "booking", bookingId: null })).toBeNull();
+    expect(pointsSourceHref({ kind: "rating", bookingId: null })).toBeNull();
+    expect(pointsSourceHref({ kind: "referral" })).toBe(
       "/account/referrals/history",
     );
     expect(
       pointsSourceHref({ kind: "redemption", discountAmount: 50 }),
     ).toBeNull();
-    expect(pointsSourceHref({ kind: "expiry" })).toBeNull();
   });
 });

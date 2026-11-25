@@ -12,7 +12,7 @@ const { authMock, redeemMock, reportErrorMock } = vi.hoisted(() => ({
 vi.mock("@/shared/lib/report", () => ({ reportError: reportErrorMock }));
 
 vi.mock("@/auth", () => ({ auth: authMock }));
-vi.mock("@/services/rewards.api", () => ({
+vi.mock("./api", () => ({
   rewardsApi: { redeem: redeemMock },
 }));
 

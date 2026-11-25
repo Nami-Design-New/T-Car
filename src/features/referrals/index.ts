@@ -9,3 +9,4 @@ export {
   useReferralCodeStore,
 } from "./referralCodeStore";
 export type { ReferralHistory, ReferralInvite, ReferralProgram } from "./model";
+export { isReferralCodeFormat, normalizeReferralCode } from "./model";

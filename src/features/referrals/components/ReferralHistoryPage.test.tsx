@@ -1,6 +1,6 @@
 import { screen, within } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
-import { MOCK_REFERRAL_HISTORY } from "@/services/mocks/referrals";
+import { MOCK_REFERRAL_HISTORY } from "../api.mock";
 import { renderWithIntl } from "@/shared/test/render";
 import ReferralHistoryPage from "./ReferralHistoryPage";
 
@@ -35,9 +35,45 @@ describe("ReferralHistoryPage", () => {
     ).toHaveAttribute("href", "/account/points");
   });
 
+  it("uses API totals even when only the first invite page is loaded", () => {
+    renderWithIntl(
+      <ReferralHistoryPage
+        history={{
+          ...MOCK_REFERRAL_HISTORY,
+          totalPoints: 1500,
+          invitedCount: 12,
+          completedCount: 3,
+          page: {
+            items: [
+              {
+                ...MOCK_REFERRAL_HISTORY.page.items[0],
+                joinedAt: "2026-11-25 12:18:04",
+              },
+            ],
+            page: 1,
+            lastPage: 2,
+            total: 12,
+          },
+        }}
+      />,
+    );
+
+    expect(screen.getByText("1500 points")).toBeInTheDocument();
+    expect(screen.getByText("12 invites · 3 completed")).toBeInTheDocument();
+    expect(screen.getAllByRole("listitem")).toHaveLength(1);
+    expect(screen.getByText("November 25, 2026")).toBeInTheDocument();
+  });
+
   it("shows the empty state with a way back to inviting", () => {
     renderWithIntl(
-      <ReferralHistoryPage history={{ totalPoints: 0, invites: [] }} />,
+      <ReferralHistoryPage
+        history={{
+          totalPoints: 0,
+          invitedCount: 0,
+          completedCount: 0,
+          page: { items: [], page: 1, lastPage: 1, total: 0 },
+        }}
+      />,
     );
 
     expect(

@@ -10,6 +10,12 @@ import RegisterForm from './RegisterForm';
 
 // The settings index also exports a Server Action (server code); only the provider is used here.
 vi.mock('@/features/settings/actions', () => ({ getSettingsAction: vi.fn() }));
+vi.mock('@/features/referrals/actions', () => ({
+  checkReferralCodeAction: vi.fn(async () => ({
+    ok: true,
+    data: { valid: true, inviterName: 'Ahmed' },
+  })),
+}));
 
 // BackButton uses the locale-aware navigation, which needs the app router.
 vi.mock('@/i18n/navigation', () => ({
@@ -98,7 +104,7 @@ describe('RegisterForm', () => {
     );
   });
 
-  it('waits for a typed invite code to be checked, and does not send it', async () => {
+  it('waits for a typed invite code to be checked, then sends it', async () => {
     const form = renderForm();
     await fillValid(form);
     const code = screen.getByRole('textbox', { name: 'Invite code (optional)' });
@@ -119,8 +125,22 @@ describe('RegisterForm', () => {
         fullName: 'Ahmed Abdullah',
         email: 'ahmed@domain.com',
         birthDate: '1990-05-17',
+        referralCode: 'TCAR-A7K9',
       })
     );
+  });
+
+  it('omits a code unless the store says it is valid', async () => {
+    const form = renderForm();
+    await fillValid(form);
+    await form.user.type(screen.getByRole('textbox', { name: 'Invite code (optional)' }), 'TCAR-A7K0');
+    await form.user.click(screen.getByRole('button', { name: 'Continue without an invite code' }));
+    await form.user.click(form.submit);
+    await waitFor(() => expect(form.onSubmit).toHaveBeenCalledWith({
+      fullName: 'Ahmed Abdullah',
+      email: 'ahmed@domain.com',
+      birthDate: '1990-05-17',
+    }));
   });
 
   it('keeps the values and maps a server field error', async () => {

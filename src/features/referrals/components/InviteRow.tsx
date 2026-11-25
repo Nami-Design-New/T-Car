@@ -14,7 +14,8 @@ export default function InviteRow({ invite }: { invite: ReferralInvite }) {
   const t = useTranslations("account.referrals.history");
   const format = useFormatter();
   const status = referralInviteStatus(invite);
-  const date = (iso: string) => format.dateTime(new Date(iso), DATE_FORMAT);
+  const date = (value: string) =>
+    format.dateTime(new Date(value.replace(" ", "T")), DATE_FORMAT);
 
   return (
     <li className="bg-surface-elevated p-ds-5 flex flex-col gap-y-1.5 rounded-lg">
@@ -24,14 +25,14 @@ export default function InviteRow({ invite }: { invite: ReferralInvite }) {
         {invite.firstBookingAt ? date(invite.firstBookingAt) : t("pending")}
       </Cell>
       <span className="max-md:col-span-2">
-        {status === "rewarded" && (
+        {status === "rewarded" && invite.rewardPoints !== null && (
           <span
             className={cn(
               "inline-flex rounded-full px-3 py-1 text-sm font-semibold",
               "bg-success-100 text-success-700",
             )}
           >
-            {t("rewarded", { points: invite.rewardPoints ?? 0 })}
+            {t("rewarded", { points: invite.rewardPoints })}
           </span>
         )}
       </span>

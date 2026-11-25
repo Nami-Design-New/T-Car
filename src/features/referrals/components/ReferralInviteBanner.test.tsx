@@ -9,6 +9,14 @@ let search = "";
 vi.mock("next/navigation", () => ({
   useSearchParams: () => new URLSearchParams(search),
 }));
+vi.mock("../actions", () => ({
+  checkReferralCodeAction: vi.fn(async (code: string) => ({
+    ok: true,
+    data: code === "TCAR-A7K9"
+      ? { valid: true, inviterName: "أحمد" }
+      : { valid: false },
+  })),
+}));
 
 afterEach(() => {
   search = "";
@@ -16,6 +24,12 @@ afterEach(() => {
 });
 
 describe("invite link", () => {
+  it("shows a valid code without a referrer name", () => {
+    useReferralCodeStore.setState({ code: "TCAR-T2FZ", status: "valid", inviterName: null });
+    renderWithIntl(<ReferralInviteBanner />);
+    expect(screen.getByText(/Your invite code is ready:/)).toHaveTextContent("TCAR-T2FZ");
+  });
+
   it("checks the code from ?ref= and shows the invite", async () => {
     search = "auth=login&ref=tcar-a7k9";
     renderWithIntl(

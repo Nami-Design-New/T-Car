@@ -1,9 +1,16 @@
+"use client";
+
+import { useCallback } from "react";
 import { Link } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 
+import { usePaginatedList } from "@/shared/hooks/usePaginatedList";
+import { fromActionResult } from "@/shared/lib/result";
 import { Button } from "@/shared/ui/Button";
+import { InfiniteList } from "@/shared/ui/InfiniteList";
 import { StateCard } from "@/shared/ui/StateCard";
-import { referralCounts, type ReferralHistory } from "../model";
+import { getReferralHistoryAction } from "../actions";
+import type { ReferralHistory } from "../model";
 import InviteRow from "./InviteRow";
 
 interface Props {
@@ -13,11 +20,19 @@ interface Props {
 /** "My invites": points earned from invites and each friend's progress. */
 export default function ReferralHistoryPage({ history }: Props) {
   const t = useTranslations("account.referrals.history");
-  const counts = referralCounts(history.invites);
+  const fetchPage = useCallback(
+    async (page: number) =>
+      fromActionResult(await getReferralHistoryAction(page)),
+    [],
+  );
+  const invites = usePaginatedList(fetchPage, {
+    initialPage: history.page,
+    scope: "referrals.history",
+  });
 
   return (
     <section className="flex flex-col gap-4">
-      {history.invites.length === 0 ? (
+      {history.invitedCount === 0 ? (
         <StateCard
           icon="gift"
           title={t("emptyTitle")}
@@ -39,7 +54,10 @@ export default function ReferralHistoryPage({ history }: Props) {
                 {t("points", { points: history.totalPoints })}
               </strong>
               <span className="text-text-subtle text-xs lg:text-sm">
-                {t("counts", counts)}
+                {t("counts", {
+                  invited: history.invitedCount,
+                  completed: history.completedCount,
+                })}
               </span>
             </div>
             <Button asChild variant="outline" className="max-md:w-full">
@@ -59,11 +77,24 @@ export default function ReferralHistoryPage({ history }: Props) {
               <span>{t("columns.firstBookingAt")}</span>
               <span>{t("columns.reward")}</span>
             </div> */}
-            <ul className="m-0 flex list-none flex-col gap-2 p-0">
-              {history.invites.map((invite) => (
-                <InviteRow key={invite.id} invite={invite} />
-              ))}
-            </ul>
+            <InfiniteList
+              loading={invites.loading}
+              hasMore={invites.hasMore}
+              isEmpty={invites.items.length === 0}
+              error={invites.error ?? undefined}
+              onLoadMore={invites.loadMore}
+              onRetry={invites.retry}
+            >
+              <InfiniteList.Items className="m-0 flex list-none flex-col gap-2 p-0">
+                {invites.items.map((invite) => (
+                  <InviteRow key={invite.id} invite={invite} />
+                ))}
+              </InfiniteList.Items>
+              <InfiniteList.Loading className="mt-3">
+                <div className="bg-surface-elevated h-24 animate-pulse rounded-lg" />
+              </InfiniteList.Loading>
+              <InfiniteList.Error />
+            </InfiniteList>
           </div>
         </>
       )}

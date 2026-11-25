@@ -16,7 +16,7 @@ import { FormInput } from "@/shared/ui/Form";
 import { registerFormSchema, type RegisterFormValues } from "../validation";
 import { BackButton } from "@/shared/ui/BackButton/BackButton";
 import { useSiteLinks } from "@/features/settings";
-import { ReferralCodeField, referralCodeAllowsSubmit } from "@/features/referrals";
+import { ReferralCodeField, referralCodeAllowsSubmit, useReferralCodeStore } from "@/features/referrals";
 
 type Props = {
   onBack: () => void;
@@ -71,10 +71,13 @@ export default function RegisterForm({
 
   const submit = handleSubmit(async (values) => {
     if (loading) return;
-    // A typed code must be checked (or dropped) first. It is not sent yet: the
-    // profile API has no field for it (Auth-API.md, open questions).
+    // A typed code must be checked (or dropped) before sending the profile.
     if (!referralCodeAllowsSubmit()) return;
-    const error = await onSubmit(values);
+    const { code, status } = useReferralCodeStore.getState();
+    const error = await onSubmit({
+      ...values,
+      ...(status === "valid" ? { referralCode: code } : {}),
+    });
     if (error && !applyFieldErrors(error, setError, FIELDS)) {
       setError("root.server", {
         type: error.kind,

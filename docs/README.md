@@ -25,6 +25,7 @@ steps.
 | -   | [Account routes flow](account-routes-flow.md)            | How account layouts, pages, `children`, and route boundaries compose                                      |
 | -   | [Wallet API integration plan](api/wallet-api.md)         | Observed wallet endpoint responses, DTOs, open backend asks, and integration fractions                    |
 | -   | [Booking API integration plan](api/booking-api.md)       | Booking checkout and my-bookings endpoints: observed DTOs, errors, gaps, open questions, fractions O0–O12 |
+| -   | [Rewards API integration plan](api/rewards-api.md)       | Referral, points, tier, and discount-card endpoints: observed DTOs, decisions, backend asks, fractions R0–R12 |
 
 The existing root-level plans stay valid and are referenced where they overlap:
 
@@ -712,6 +713,53 @@ describe the guest case.
 | `account` (profile, notifications) |         Yes          |                                               Yes (scoped to the session user)                                                | Yes (Server Actions: save, phone change send and verify, license upload, delete, notification read/delete/token registration) | Profile reads, edits, and phone OTP requests use the live API; phone verification is unavailable until P5, and license and delete writes remain mocked. The profile tab composes separate profile, phone, license, and deletion flows with shared pending-action coordination. Routes per section with a shared layout and `AccountNav`; the loyalty points summary is shown in the account layout and `/account/points` owns the points history view. Notifications now own their live API in `features/notifications`: typed `GET /notifications` and `/notifications/unread-count`, read/read-all/delete/delete-all actions, and `POST /firebase-token`. The server layout reads only the lightweight count for the header badge. The browser registers the Firebase service worker, stores its web FCM token after permission, and refreshes on foreground messages; background delivery needs Firebase's web-push/VAPID configuration in the deployed project. Common success/failure results now use `shared/ui/Dialog`. Profile save and change/verify phone use RHF + Zod (`validation.ts`) with the schemas re-parsed in the actions (doc 9 fraction 2). License upload uses RHF + Zod (doc 9 fraction 3); left: opening the license details is still a TODO, and remaining dialogs                                                                                                                                                                                                                |
 | `layout`                           |         Yes          |                                                              n/a                                                              |                                                              n/a                                                              | The header shell and footer render on the server; mobile navigation uses a fixed bottom bar for account, bookings, rewards, and More (Figma account, booking, and gift icons); More opens an accessible modal side drawer with header links and language control; NAV_LINKS marks the current home-page hash with aria-current. The user menu uses `Menu`. Left: trimming the client messages (doc 2 step 7), the language switcher on `Menu`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 
+**Rewards API (branch `feature/rewards-api`), fraction R0 (2026-11-25), done:**
+The referral, points, tier (package), and discount-card endpoints are probed on
+TEST and recorded in [rewards-api.md](api/rewards-api.md) with the integration
+fractions R1–R12. TEST was seeded from the design through the admin dashboard
+(four packages, four discount cards, a 500-point referral reward). Product
+decisions: tiers become fully dynamic API packages (routes by package id), and
+the referral code at sign-up and the booking-complete points are in scope.
+`replace-points` (a GET that spends points) was not called. No code changed;
+every rewards, points, and referrals read still uses its mock.
+
+**Rewards API, fraction R1 (2026-11-25), done:** The points, referrals, and
+rewards APIs and their mocks moved from `services/` into their features
+(`features/<x>/api.ts`, `features/<x>/api.mock.ts`) with no behavior change;
+every read and the redemption still use the mocks. `services/` now holds only
+`http/` and the cars API with its mocks.
+
+**Rewards API, fraction R2 (2026-11-25), done:** The referral program reads
+live `GET /referal-info` through `serverHttp`, validating the code and reward
+before mapping them to `ReferralProgram`. Referral history and code checks
+remain mocked for R3 and R4. Typecheck, lint, tests, and build pass; the
+referrals page shows the live code and reward in `ar` and `en`.
+
+**Rewards API, fraction R3 (2026-11-25), done:** Referral history reads
+`GET /referal-rewords` with the first page on the server and later pages through
+a Server Action and `InfiniteList`. The API supplies the invite and completed
+counts and total points. Typecheck, lint, tests, and build pass; the history
+page lists the live TEST invites in `ar` and `en`.
+
+**Rewards API, fraction R4 (2026-11-25), done:** Sign-up checks an invite code
+through the public `POST /auth/verify-referal-code` without a session token.
+Invalid codes show the existing invalid state; a valid code with no referrer
+name shows a dedicated hint and banner. The profile submit sends the checked
+code as optional `referal_code` to `POST /complete-profile`. Typecheck, lint,
+tests, and build pass; on `next start` the code check returns valid for the
+live code and invalid for unknown or malformed codes. Whether `/complete-profile`
+re-validates the code is open (backend ask B11).
+
+**Rewards API, fraction R5 (2026-11-25), done:** The points page reads live
+`GET /points` with an API filter and ten-item pages. The URL selects all,
+earned, or used activity; later pages load on scroll. Transaction titles come
+from the API, and the account shell reads balances from the same endpoint with
+`per_page=1`. The mapper treats offset-free dates as Riyadh time (backend ask
+B12). Typecheck, lint (one existing warning), all 1,103 tests, and the
+production build pass. On `next start`, unauthenticated requests for all three
+filters in `ar` and `en` redirect to sign-in with the filter preserved. A
+signed-in HTML check remains open because no authenticated session was available.
+
 Notifications API integration (2026-11-12): `features/notifications` now owns
 the live paginated `GET /notifications` read and uses `InfiniteList` for later
 pages. Its Server Actions cover read/read-all, delete/delete-all, and browser
@@ -909,7 +957,7 @@ disabled card and `redeem` answers it with `rewards.insufficientPoints`.
 Follow-up: a real redeem endpoint that persists the card and the balance
 together.
 
-**Referrals fraction R3 (2026-11-23), UI done, not sent yet:** the sign-up
+**Referrals fraction R3 (2026-11-23), UI done; API connected in rewards R4:** the sign-up
 profile has an optional invite code field (`ReferralCodeField`, Figma
 `Auth/Referral-*`): empty, entered, checking, valid (names the friend; "Change
 code"), invalid, and no-connection states, plus "Continue without an invite
@@ -918,9 +966,9 @@ An invite link (`/<locale>?auth=login&ref=CODE`, now in the share message)
 opens sign-in with the code checked and filled in, and a valid code shows
 "Invite from … · Your code is ready" on the phone and OTP steps. The code lives
 in `features/referrals/referralCodeStore.ts` (Zustand, browser only) and is
-checked by `checkReferralCodeAction` → `referralsApi.checkCode` (mock:
-`TCAR-A7K9` is valid, `TCAR-FAIL` is unreachable). It is **not** sent to
-`/complete-profile` until the backend takes it (Auth-API.md Q12).
+checked by `checkReferralCodeAction` → `referralsApi.checkCode` (live since
+rewards R4). A checked valid code is sent as `referal_code` to
+`/complete-profile` since rewards R4 (Auth-API.md Q12).
 
 ### What remains
 

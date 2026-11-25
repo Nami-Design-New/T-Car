@@ -1,9 +1,19 @@
-import { screen } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { renderWithIntl } from "@/shared/test/render";
-import { resetReferralCode } from "../referralCodeStore";
+import { resetReferralCode, useReferralCodeStore } from "../referralCodeStore";
 import ReferralCodeField from "./ReferralCodeField";
+
+vi.mock("../actions", () => ({
+  checkReferralCodeAction: vi.fn(async (code: string) =>
+    code === "TCAR-FAIL"
+      ? { ok: false, error: { kind: "network" } }
+      : { ok: true, data: code === "TCAR-A7K9"
+        ? { valid: true, inviterName: "أحمد" }
+        : { valid: false } },
+  ),
+}));
 
 afterEach(resetReferralCode);
 
@@ -46,6 +56,14 @@ describe("ReferralCodeField", () => {
     await user.click(screen.getByRole("button", { name: "Change code" }));
     expect(input).not.toHaveAttribute("readonly");
     expect(input).toHaveFocus();
+  });
+
+  it("shows the no-name hint for a valid code", async () => {
+    const { input } = renderField();
+    useReferralCodeStore.setState({ code: "TCAR-T2FZ", status: "valid", inviterName: null });
+    await waitFor(() => expect(input).toHaveAccessibleDescription(
+      "The invite code is applied. Finish creating your account.",
+    ));
   });
 
   it("marks an unknown code as invalid; Enter checks it", async () => {

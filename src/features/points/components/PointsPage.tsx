@@ -1,34 +1,44 @@
 "use client";
 
 import { useFormatter, useTranslations } from "next-intl";
-import { useState, type ReactNode } from "react";
-import { FiArrowDown, FiArrowUp, FiClock } from "react-icons/fi";
-import { Link } from "@/i18n/navigation";
+import { useCallback, type ReactNode } from "react";
+import { FiArrowDown, FiArrowUp } from "react-icons/fi";
+import { Link, useRouter } from "@/i18n/navigation";
+import { usePaginatedList } from "@/shared/hooks/usePaginatedList";
 import { cn } from "@/shared/lib/cn";
+import { fromActionResult } from "@/shared/lib/result";
+import { InfiniteList } from "@/shared/ui/InfiniteList";
 import { StateCard } from "@/shared/ui/StateCard";
 import {
   POINTS_FILTERS,
   POINTS_TIME_ZONE,
   groupPointsTransactions,
-  matchesPointsFilter,
   pointsSourceHref,
   type PointsData,
   type PointsFilter,
   type PointsTransaction,
 } from "../model";
+import { getPointsPageAction } from "../actions";
 
 interface Props {
   data: PointsData;
+  filter: PointsFilter;
 }
 
 /** "Points history": the balances, a filter, and every movement by month. */
-export default function PointsPage({ data }: Props) {
+export default function PointsPage({ data, filter }: Props) {
   const t = useTranslations("account.points");
   const format = useFormatter();
-  const [filter, setFilter] = useState<PointsFilter>("all");
-  const groups = groupPointsTransactions(
-    data.transactions.filter((item) => matchesPointsFilter(item, filter)),
+  const router = useRouter();
+  const fetchPage = useCallback(
+    async (page: number) => fromActionResult(await getPointsPageAction(page, filter)),
+    [filter],
   );
+  const transactions = usePaginatedList(fetchPage, {
+    initialPage: data.page,
+    scope: "points.history",
+  });
+  const groups = groupPointsTransactions(transactions.items);
   const { summary } = data;
 
   return (
@@ -63,21 +73,27 @@ export default function PointsPage({ data }: Props) {
               filter === item &&
                 "text-action-primary bg-white shadow-[0_2px_6px_rgba(0,0,0,0.08)]",
             )}
-            onClick={() => setFilter(item)}
+            onClick={() => router.replace(
+              item === "all" ? "/account/points" : `/account/points?filter=${item}`,
+              { scroll: false },
+            )}
           >
             {t(`filters.${item}`)}
           </button>
         ))}
       </div>
 
-      {groups.length === 0 ? (
-        <StateCard
-          icon="gift"
-          title={t(`empty.${filter}.title`)}
-          description={t(`empty.${filter}.description`)}
-        />
-      ) : (
-        groups.map((group) => {
+      <InfiniteList
+        key={filter}
+        loading={transactions.loading}
+        hasMore={transactions.hasMore}
+        isEmpty={transactions.items.length === 0}
+        error={transactions.error ?? undefined}
+        onLoadMore={transactions.loadMore}
+        onRetry={transactions.retry}
+        className="flex flex-col gap-6"
+      >
+        {groups.map((group) => {
           const title =
             group.kind === "latest"
               ? t("latest")
@@ -105,8 +121,19 @@ export default function PointsPage({ data }: Props) {
               </ul>
             </section>
           );
-        })
-      )}
+        })}
+        <InfiniteList.Loading className="mt-3">
+          <div className="bg-surface-elevated h-20 animate-pulse rounded-xl" />
+        </InfiniteList.Loading>
+        <InfiniteList.Error />
+        <InfiniteList.Empty>
+          <StateCard
+            icon="gift"
+            title={t(`empty.${filter}.title`)}
+            description={t(`empty.${filter}.description`)}
+          />
+        </InfiniteList.Empty>
+      </InfiniteList>
     </section>
   );
 }
@@ -145,7 +172,6 @@ function Stat({
 }
 
 function TransactionRow({ transaction }: { transaction: PointsTransaction }) {
-  const t = useTranslations("account.points");
   const format = useFormatter();
   const { type, source } = transaction;
   const href = pointsSourceHref(source);
@@ -162,16 +188,7 @@ function TransactionRow({ transaction }: { transaction: PointsTransaction }) {
     numberingSystem: "latn",
     timeZone: POINTS_TIME_ZONE,
   })}`;
-  const title =
-    source.kind === "booking"
-      ? t(`source.booking.${source.balance}`, { id: source.bookingId })
-      : source.kind === "referral"
-        ? t("source.referral", { name: source.friendName })
-        : source.kind === "redemption"
-          ? t("source.redemption", { amount: source.discountAmount })
-          : t("source.expiry");
-  const Icon =
-    type === "earned" ? FiArrowUp : type === "spent" ? FiArrowDown : FiClock;
+  const Icon = type === "earned" ? FiArrowUp : FiArrowDown;
   // A real minus sign, and the sign before the number in both directions.
   const amount = `${transaction.amount > 0 ? "+" : "−"}${format.number(Math.abs(transaction.amount))}`;
 
@@ -181,23 +198,21 @@ function TransactionRow({ transaction }: { transaction: PointsTransaction }) {
         className={cn(
           "grid size-12 shrink-0 place-items-center rounded-full text-xl max-sm:size-10",
           type === "earned" && "bg-success-100 text-success-700",
-          type === "spent" && "bg-surface-card-primary text-action-primary",
-          type === "expired" && "text-text-subtle bg-neutral-100",
+          type === "used" && "bg-surface-card-primary text-action-primary",
         )}
         aria-hidden="true"
       >
         <Icon />
       </span>
       <span className="flex min-w-0 flex-1 flex-col gap-1">
-        <strong className="text-base">{title}</strong>
+        <strong className="text-base">{transaction.title}</strong>
         <span className="text-text-subtle text-sm">{when}</span>
       </span>
       <span
         className={cn(
           "shrink-0 text-lg font-bold",
           type === "earned" && "text-success-700",
-          type === "spent" && "text-action-primary",
-          type === "expired" && "text-text-subtle",
+          type === "used" && "text-action-primary",
         )}
         dir="ltr"
       >

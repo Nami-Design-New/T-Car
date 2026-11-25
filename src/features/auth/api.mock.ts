@@ -61,6 +61,7 @@ export const authMock: AuthApi = {
   },
 
   async completeProfile({ fullName, email, birthDate }) {
+    // AuthApi also accepts an optional referralCode; this stateless mock has no referral ledger.
     await delay();
     if (email === MOCK_REJECTED_EMAIL) throw backend422('The email has already been taken.');
     if (!isOldEnough(birthDate)) throw backend422('You must be at least 18 years old.');

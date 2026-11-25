@@ -35,7 +35,9 @@ export default function ReferralCodeField() {
   const unchecked = needsCheck && status === "entered";
   const message =
     status === "valid"
-      ? t("hint.valid", { name: inviterName ?? "" })
+      ? inviterName === null
+        ? t("hint.validNoName")
+        : t("hint.valid", { name: inviterName })
       : unchecked
         ? t("hint.unchecked")
         : t(`hint.${status}`);

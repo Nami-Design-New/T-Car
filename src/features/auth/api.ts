@@ -134,6 +134,7 @@ export interface CompleteProfileBody {
   email: string;
   /** YYYY-MM-DD; the backend requires an age of at least 18. */
   birth_date: string;
+  referal_code?: string;
 }
 
 /** `POST /assign-location` body. */
@@ -215,11 +216,12 @@ const httpAuthApi: AuthApi = {
     };
   },
 
-  async completeProfile({ fullName, email, birthDate }, accessToken) {
+  async completeProfile({ fullName, email, birthDate, referralCode }, accessToken) {
     const body: CompleteProfileBody = {
       name: fullName,
       email,
       birth_date: birthDate,
+      ...(referralCode ? { referal_code: referralCode } : {}),
     };
     return toProfileStepResult(
       await tokenServerHttp(accessToken).post<ApiEnvelope<unknown>>(
