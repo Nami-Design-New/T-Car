@@ -36,7 +36,8 @@ describe("redeemRewardAction", () => {
       balanceBefore: 4000,
       balanceAfter: 3000,
       tierPoints: 12000,
-      tierId: "gold" as const,
+      tierId: "3",
+      tierName: "Gold",
     };
     redeemMock.mockResolvedValue(ok(receipt));
 

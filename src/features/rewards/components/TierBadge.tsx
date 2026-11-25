@@ -2,23 +2,16 @@ import Image from "next/image";
 import { FiCheck, FiLock } from "react-icons/fi";
 import { cn } from "@/shared/lib/cn";
 import { REWARDS_ASSETS } from "@/shared/config/assets";
-import type { RewardTierId, RewardTierState } from "../model";
+import type { RewardTier, RewardTierState } from "../model";
 
 interface Props {
-  tier: RewardTierId;
+  tier: RewardTier;
   size: 48 | 56 | 72;
   /** Road states: a glow when current, a check or lock mark otherwise. Omit for a plain badge. */
   state?: RewardTierState;
 }
 
 export default function TierBadge({ tier, size, state }: Props) {
-  const badge = REWARDS_ASSETS.badges[tier];
-  const frame =
-    tier === "silver"
-      ? size === 72
-        ? REWARDS_ASSETS.frames.silverHero
-        : REWARDS_ASSETS.frames.silverRoad
-      : REWARDS_ASSETS.frames[tier];
   const statusSize = size === 72 ? "size-6" : "size-5";
 
   return (
@@ -34,20 +27,23 @@ export default function TierBadge({ tier, size, state }: Props) {
           aria-hidden="true"
         />
       )}
-      <Image
-        {...frame}
-        alt=""
+      <span
         className={cn(
-          "pointer-events-none absolute size-full max-w-none object-contain",
+          "pointer-events-none absolute size-full",
           state === "locked" && "opacity-65 grayscale",
         )}
+        style={{
+          background: `linear-gradient(150deg, ${tier.colors.high}, ${tier.colors.medium}, ${tier.colors.low})`,
+          clipPath: "polygon(25% 5%, 75% 5%, 100% 50%, 75% 95%, 25% 95%, 0 50%)",
+        }}
         aria-hidden="true"
       />
       <Image
-        src={badge.src}
+        src={tier.iconUrl}
         width={Math.round(size * 1.45)}
         height={Math.round(size * 1.45)}
         sizes={`${size}px`}
+        unoptimized
         alt=""
         className={cn(
           "relative z-1 size-[72%] object-contain",

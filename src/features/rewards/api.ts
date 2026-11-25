@@ -14,6 +14,5 @@ export interface RewardsApi {
   redeem(userId: string, itemId: string): Promise<Result<RewardRedemption>>;
 }
 
-// No rewards endpoint exists yet, so keep the mock behind this interface
-// until the backend contract is agreed.
+// R6 keeps the API-shaped mock; R7 connects package reads to the live API.
 export const rewardsApi: RewardsApi = rewardsMock;

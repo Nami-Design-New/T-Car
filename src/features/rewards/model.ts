@@ -1,26 +1,17 @@
-export type RewardTierId = "bronze" | "silver" | "gold" | "diamond";
-
-export type RewardPerkIcon =
-  | "calendar"
-  | "percent"
-  | "card"
-  | "tag"
-  | "car"
-  | "support"
-  | "gift"
-  | "sparkle";
 export interface RewardPerk {
-  id: string;
+  key: string;
   title: string;
-  description?: string;
-  icon: RewardPerkIcon;
+  code: string | null;
 }
 
 export interface RewardTier {
-  id: RewardTierId;
-  /** Lifetime tier points required to reach this tier. */
-  threshold: number;
-  /** Backend-owned, already-localized perk copy. */
+  id: string;
+  name: string;
+  iconUrl: string;
+  colors: { high: string; medium: string; low: string };
+  /** Lifetime tier points required to enter and finish this tier. */
+  startPoints: number;
+  endPoints: number;
   perks: RewardPerk[];
 }
 
@@ -76,7 +67,8 @@ export interface RewardRedemption {
   balanceAfter: number;
   tierPoints: number;
   /** Unchanged by redemption; shown on the success screen. */
-  tierId: RewardTierId;
+  tierId: string;
+  tierName: string;
 }
 
 export function canAffordReward(
@@ -119,18 +111,9 @@ export interface RewardTierView {
 
 const clampPercent = (value: number) => Math.min(100, Math.max(0, value));
 
-export function isRewardTierId(value: string): value is RewardTierId {
-  return (
-    value === "bronze" ||
-    value === "silver" ||
-    value === "gold" ||
-    value === "diamond"
-  );
-}
-
 export function rewardTierView(
   summary: RewardsSummary,
-  tierId: RewardTierId,
+  tierId: string,
 ): RewardTierView {
   const overview = rewardsOverview(summary);
   const index = overview.tiers.findIndex(({ tier }) => tier.id === tierId);
@@ -146,27 +129,27 @@ export function rewardTierView(
         ? overview.progress
         : state === "reached"
           ? 100
-          : clampPercent((summary.tierPoints / tier.threshold) * 100),
+          : clampPercent((summary.tierPoints / tier.startPoints) * 100),
     pointsLeft:
       state === "current"
         ? overview.pointsToNext
         : state === "reached"
           ? 0
-          : Math.max(0, tier.threshold - summary.tierPoints),
+          : Math.max(0, tier.startPoints - summary.tierPoints),
     tiers: overview.tiers,
   };
 }
 
 /**
  * Everything the overview shows, from one sorted copy of the tiers. A customer
- * below the first threshold is shown at the first tier (Bronze).
+ * below the first threshold is shown at the first tier.
  */
 export function rewardsOverview(summary: RewardsSummary): RewardsOverview {
-  const sorted = [...summary.tiers].sort((a, b) => a.threshold - b.threshold);
+  const sorted = [...summary.tiers].sort((a, b) => a.startPoints - b.startPoints);
   if (sorted.length === 0) throw new Error("Rewards require at least one tier");
 
   const { tierPoints } = summary;
-  const reached = sorted.filter((tier) => tierPoints >= tier.threshold).length;
+  const reached = sorted.filter((tier) => tierPoints >= tier.startPoints).length;
   const currentIndex = Math.max(0, reached - 1);
   const current = sorted[currentIndex];
   const next = sorted[currentIndex + 1] ?? null;
@@ -183,8 +166,8 @@ export function rewardsOverview(summary: RewardsSummary): RewardsOverview {
     })),
     current,
     next,
-    progress: next ? clampPercent((tierPoints / next.threshold) * 100) : 100,
-    pointsToNext: next ? Math.max(0, next.threshold - tierPoints) : 0,
+    progress: next ? clampPercent((tierPoints / next.startPoints) * 100) : 100,
+    pointsToNext: next ? Math.max(0, next.startPoints - tierPoints) : 0,
     roadPosition:
       sorted.length === 1
         ? 100

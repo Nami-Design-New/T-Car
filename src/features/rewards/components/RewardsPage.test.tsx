@@ -14,49 +14,62 @@ vi.mock("@/i18n/navigation", () => ({
 
 const tiers: RewardsSummary["tiers"] = [
   {
-    id: "bronze",
-    threshold: 1000,
+    id: "1",
+    name: "Bronze",
+    iconUrl: "/images/rewards/badge-bronze.webp",
+    colors: { high: "#F3C29B", medium: "#C8794A", low: "#7A3E1D" },
+    startPoints: 1000,
+    endPoints: 4999,
     perks: [
       {
-        id: "bronze-1",
+        key: "bronze_welcome",
         title: "You've just started, champ!",
-        icon: "sparkle",
+        code: null,
       },
     ],
   },
   {
-    id: "silver",
-    threshold: 5000,
+    id: "2",
+    name: "Silver",
+    iconUrl: "/images/rewards/badge-silver.webp",
+    colors: { high: "#F3C29B", medium: "#C8794A", low: "#7A3E1D" },
+    startPoints: 5000,
+    endPoints: 9999,
     perks: [
       {
-        id: "silver-1",
+        key: "monthly_points",
         title: "100 bonus points every month",
-        description: "Added automatically",
-        icon: "calendar",
+        code: null,
       },
     ],
   },
   {
-    id: "gold",
-    threshold: 10000,
+    id: "3",
+    name: "Gold",
+    iconUrl: "/images/rewards/badge-gold.webp",
+    colors: { high: "#F7DB8D", medium: "#D9A21B", low: "#8B5A09" },
+    startPoints: 10000,
+    endPoints: 19999,
     perks: [
       {
-        id: "gold-1",
+        key: "monthly_discount_code",
         title: "Monthly discount code",
-        description: "Monthly",
-        icon: "tag",
+        code: null,
       },
     ],
   },
   {
-    id: "diamond",
-    threshold: 20000,
+    id: "4",
+    name: "Diamond",
+    iconUrl: "/images/rewards/badge-diamond.webp",
+    colors: { high: "#B9DDFF", medium: "#5596DD", low: "#174A8B" },
+    startPoints: 20000,
+    endPoints: 999999,
     perks: [
       {
-        id: "diamond-1",
+        key: "vip_support_24h",
         title: "24/7 VIP support",
-        description: "Always",
-        icon: "support",
+        code: null,
       },
     ],
   },
@@ -85,10 +98,9 @@ describe("RewardsPage", () => {
     expect(
       screen.getByText("100 bonus points every month"),
     ).toBeInTheDocument();
-    expect(screen.getByText("Added automatically")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "View all" })).toHaveAttribute(
       "href",
-      "/account/rewards/tiers/silver",
+      "/account/rewards/tiers/2",
     );
     expect(screen.getByRole("link", { name: "Redeem points" })).toHaveAttribute(
       "href",
@@ -117,7 +129,7 @@ describe("RewardsPage", () => {
           tierPoints: 1000,
           balance: 1000,
           tiers: tiers.map((tier) =>
-            tier.id === "bronze" ? { ...tier, perks: [] } : tier,
+            tier.id === "1" ? { ...tier, perks: [] } : tier,
           ),
         }}
       />,
@@ -160,13 +172,43 @@ describe("RewardsPage", () => {
     expect(screen.queryByText(/points to/)).not.toBeInTheDocument();
   });
 
+  it("renders an extra API-shaped tier and unknown perk key", () => {
+    const extra = {
+      ...tiers[3],
+      id: "73",
+      name: "Platinum",
+      iconUrl: "/custom-platinum.webp",
+      startPoints: 30000,
+      endPoints: 49999,
+      perks: [{ key: "future_perk", title: "A new benefit", code: null }],
+    };
+    const { container } = renderWithIntl(
+      <RewardsPage summary={{ tierPoints: 32000, balance: 5000, tiers: [...tiers, extra] }} />,
+    );
+    expect(screen.getAllByText("Platinum")).toHaveLength(2);
+    expect(screen.getByText("A new benefit")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "View all" })).toHaveAttribute(
+      "href",
+      "/account/rewards/tiers/73",
+    );
+    expect(container.querySelector('img[src="/custom-platinum.webp"]')).toBeInTheDocument();
+  });
+
   it("names the next tier with the Arabic preposition", () => {
     render(
       <NextIntlClientProvider locale="ar" messages={arMessages}>
-        <RewardsPage summary={{ tierPoints: 5000, balance: 5000, tiers }} />
+        <RewardsPage
+          summary={{
+            tierPoints: 5000,
+            balance: 5000,
+            tiers: tiers.map((tier) =>
+              tier.id === "3" ? { ...tier, name: "الذهبية" } : tier,
+            ),
+          }}
+        />
       </NextIntlClientProvider>,
     );
 
-    expect(screen.getByText(/نقطة للذهبية$/)).toBeInTheDocument();
+    expect(screen.getByText(/نقطة للوصول إلى الذهبية/)).toBeInTheDocument();
   });
 });

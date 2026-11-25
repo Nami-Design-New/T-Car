@@ -16,49 +16,62 @@ const summary: RewardsSummary = {
   balance: 5000,
   tiers: [
     {
-      id: "bronze",
-      threshold: 1000,
+      id: "1",
+      name: "Bronze",
+      iconUrl: "/images/rewards/badge-bronze.webp",
+      colors: { high: "#F3C29B", medium: "#C8794A", low: "#7A3E1D" },
+      startPoints: 1000,
+      endPoints: 4999,
       perks: [
         {
-          id: "bronze-1",
+          key: "bronze_welcome",
           title: "توك بديت يا وحش",
-          icon: "sparkle",
+          code: null,
         },
       ],
     },
     {
-      id: "silver",
-      threshold: 5000,
+      id: "2",
+      name: "Silver",
+      iconUrl: "/images/rewards/badge-silver.webp",
+      colors: { high: "#F3C29B", medium: "#C8794A", low: "#7A3E1D" },
+      startPoints: 5000,
+      endPoints: 9999,
       perks: [
         {
-          id: "silver-1",
+          key: "monthly_points",
           title: "Silver benefit",
-          description: "Silver detail",
-          icon: "calendar",
+          code: null,
         },
       ],
     },
     {
-      id: "gold",
-      threshold: 10000,
+      id: "3",
+      name: "Gold",
+      iconUrl: "/images/rewards/badge-gold.webp",
+      colors: { high: "#F7DB8D", medium: "#D9A21B", low: "#8B5A09" },
+      startPoints: 10000,
+      endPoints: 19999,
       perks: [
         {
-          id: "gold-1",
+          key: "monthly_discount_code",
           title: "Gold benefit",
-          description: "Gold detail",
-          icon: "tag",
+          code: null,
         },
       ],
     },
     {
-      id: "diamond",
-      threshold: 20000,
+      id: "4",
+      name: "Diamond",
+      iconUrl: "/images/rewards/badge-diamond.webp",
+      colors: { high: "#B9DDFF", medium: "#5596DD", low: "#174A8B" },
+      startPoints: 20000,
+      endPoints: 999999,
       perks: [
         {
-          id: "diamond-1",
+          key: "diamond_offers",
           title: "Diamond benefit",
-          description: "Diamond detail",
-          icon: "gift",
+          code: null,
         },
       ],
     },
@@ -78,7 +91,7 @@ describe("reward tier pages", () => {
     expect(screen.getByText("Gold benefit")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Gold" })).toHaveAttribute(
       "href",
-      "/account/rewards/tiers/gold",
+      "/account/rewards/tiers/3",
     );
     const cards = screen.getAllByRole("article");
     expect(within(cards[1]).getByText("50%")).toBeInTheDocument();
@@ -88,17 +101,16 @@ describe("reward tier pages", () => {
     expect(within(cards[2]).getByText("Locked")).toBeInTheDocument();
   });
   it("shows selected tab and upcoming perks for the current tier", () => {
-    renderWithIntl(<TierDetailPage summary={summary} tierId="silver" />);
+    renderWithIntl(<TierDetailPage summary={summary} tierId="2" />);
     expect(screen.getByRole("link", { name: "Silver" })).toHaveAttribute(
       "aria-current",
       "page",
     );
     expect(screen.getByText("Unlocks at Gold")).toBeInTheDocument();
-    expect(screen.getByText("Gold detail")).toBeInTheDocument();
     expect(screen.getByText("Locked")).toBeInTheDocument();
   });
   it("shows earning guidance before locked perks", () => {
-    renderWithIntl(<TierDetailPage summary={summary} tierId="gold" />);
+    renderWithIntl(<TierDetailPage summary={summary} tierId="3" />);
     expect(screen.getByText("How to earn points")).toBeInTheDocument();
     expect(
       screen.getByRole("link", { name: /Invite a friend/ }),
@@ -116,10 +128,10 @@ describe("reward tier pages", () => {
         summary={{
           ...summary,
           tiers: summary.tiers.map((tier) =>
-            tier.id === "bronze" ? { ...tier, perks: [] } : tier,
+            tier.id === "1" ? { ...tier, perks: [] } : tier,
           ),
         }}
-        tierId="bronze"
+        tierId="1"
       />,
     );
     expect(screen.getByText("Tier reached")).toBeInTheDocument();
@@ -131,7 +143,7 @@ describe("reward tier pages", () => {
     expect(screen.queryByText("How to earn points")).not.toBeInTheDocument();
   });
   it("shows the Bronze welcome perk with an unlocked check", () => {
-    renderWithIntl(<TierDetailPage summary={summary} tierId="bronze" />);
+    renderWithIntl(<TierDetailPage summary={summary} tierId="1" />);
     expect(screen.getByText("توك بديت يا وحش")).toBeInTheDocument();
     expect(screen.getByText("Unlocked")).toBeInTheDocument();
   });
@@ -139,7 +151,7 @@ describe("reward tier pages", () => {
     renderWithIntl(
       <TierDetailPage
         summary={{ ...summary, tierPoints: 12000 }}
-        tierId="silver"
+        tierId="2"
       />,
     );
     expect(screen.getByText("Tier reached")).toBeInTheDocument();
@@ -151,7 +163,7 @@ describe("reward tier pages", () => {
     renderWithIntl(
       <TierDetailPage
         summary={{ ...summary, tierPoints: 25000 }}
-        tierId="diamond"
+        tierId="4"
       />,
     );
     expect(screen.queryByText(/Unlocks at/)).not.toBeInTheDocument();

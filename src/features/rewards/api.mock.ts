@@ -3,7 +3,6 @@ import type {
   RewardCardsData,
   RewardCatalogData,
   RewardCatalogItem,
-  RewardPerk,
   RewardRedemption,
   RewardTier,
   RewardsSummary,
@@ -23,9 +22,10 @@ const MOCK_POINTS_SUMMARY = { tierPoints: 12000, balance: 4000 };
 type PerkCopy = [
   title: string,
   description: string | undefined,
-  icon: RewardPerk["icon"],
+  oldIcon: string,
 ];
-const PERKS: Record<"ar" | "en", Record<RewardTier["id"], PerkCopy[]>> = {
+type MockTierKey = "bronze" | "silver" | "gold" | "diamond";
+const PERKS: Record<"ar" | "en", Record<MockTierKey, PerkCopy[]>> = {
   ar: {
     bronze: [["توك بديت يا وحش", undefined, "sparkle"]],
     silver: [
@@ -124,17 +124,38 @@ const PERKS: Record<"ar" | "en", Record<RewardTier["id"], PerkCopy[]>> = {
   },
 };
 
+const TIER_NAMES: Record<"ar" | "en", Record<MockTierKey, string>> = {
+  ar: { bronze: "البرونزية", silver: "الفضية", gold: "الذهبية", diamond: "الماسية" },
+  en: { bronze: "Bronze", silver: "Silver", gold: "Gold", diamond: "Diamond" },
+};
+const TIER_KEYS: Record<MockTierKey, string[]> = {
+  bronze: ["bronze_welcome"],
+  silver: ["monthly_points", "monthly_contract_discount", "booking_wallet_refund"],
+  gold: ["monthly_discount_code", "points_every_days", "free_delivery_every_bookings"],
+  diamond: ["vip_support_24h", "free_delivery_pickup_all", "diamond_offers"],
+};
+const TIER_COLORS: Record<MockTierKey, RewardTier["colors"]> = {
+  bronze: { high: "#F3C29B", medium: "#C8794A", low: "#7A3E1D" },
+  silver: { high: "#F3C29B", medium: "#C8794A", low: "#7A3E1D" },
+  gold: { high: "#F7DB8D", medium: "#D9A21B", low: "#8B5A09" },
+  diamond: { high: "#B9DDFF", medium: "#5596DD", low: "#174A8B" },
+};
+
 const tiersFor = (locale: string): RewardTier[] => {
+  const language = locale === "ar" ? "ar" : "en";
   const copy = locale === "ar" ? PERKS.ar : PERKS.en;
   return (["bronze", "silver", "gold", "diamond"] as const).map(
-    (id, index) => ({
-      id,
-      threshold: [1000, 5000, 10000, 20000][index],
-      perks: copy[id].map(([title, description, icon], perkIndex) => ({
-        id: `${id}-${perkIndex + 1}`,
+    (key, index) => ({
+      id: String(index + 1),
+      name: TIER_NAMES[language][key],
+      iconUrl: `/images/rewards/badge-${key}.webp`,
+      colors: TIER_COLORS[key],
+      startPoints: [1000, 5000, 10000, 20000][index],
+      endPoints: [4999, 9999, 19999, 999999][index],
+      perks: copy[key].map(([title], perkIndex) => ({
+        key: TIER_KEYS[key][perkIndex],
         title,
-        ...(description ? { description } : {}),
-        icon,
+        code: null,
       })),
     }),
   );
@@ -268,11 +289,11 @@ export const rewardsMock: RewardsApi = {
     const expiresAt = new Date(
       Date.now() + item.validityDays * 24 * 60 * 60 * 1000,
     ).toISOString();
-    const tierId = rewardsOverview({
+    const tier = rewardsOverview({
       tierPoints,
       balance,
       tiers: tiersFor("en"),
-    }).current.id;
+    }).current;
     return ok({
       card: {
         id: `redeemed-${item.id}`,
@@ -285,7 +306,8 @@ export const rewardsMock: RewardsApi = {
       balanceBefore: balance,
       balanceAfter: balance - item.pointsCost,
       tierPoints,
-      tierId,
+      tierId: tier.id,
+      tierName: tier.name,
     } satisfies RewardRedemption);
   },
 };

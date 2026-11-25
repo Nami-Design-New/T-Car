@@ -760,6 +760,20 @@ production build pass. On `next start`, unauthenticated requests for all three
 filters in `ar` and `en` redirect to sign-in with the filter preserved. A
 signed-in HTML check remains open because no authenticated session was available.
 
+**Rewards API, fraction R6 (2026-11-25, branch `feature/rewards-tiers`),
+implementation ready:** The rewards model and mock now use API-shaped packages:
+string IDs, backend-owned names and icon URLs, three colours, start/end points,
+and perks keyed by the API. Tier badges and heroes use the package icon and
+colour gradient; perk icons come from the key with a fallback for new keys.
+Tier links use `/account/rewards/tiers/[id]`, and the tier navigation and road
+allow more than four packages. Perk descriptions were removed because E6–E8 do
+not supply them. The rewards API remains on the mock until R7. Typecheck, lint
+(one existing warning), and 49 focused tests pass, including an arbitrary fifth
+package and an unknown-id `NEXT_NOT_FOUND` route test. The production build and
+`next start` smoke check were skipped at the user's direction after a stale
+`.next` cache blocked page-data collection; a full test suite is reserved for
+before merge.
+
 Notifications API integration (2026-11-12): `features/notifications` now owns
 the live paginated `GET /notifications` read and uses `InfiniteList` for later
 pages. Its Server Actions cover read/read-all, delete/delete-all, and browser

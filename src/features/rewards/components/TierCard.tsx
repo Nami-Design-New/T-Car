@@ -35,7 +35,7 @@ export default function TierCard({
       <div className="flex items-center gap-3">
         {/* Figma: a locked card shows the plain badge at 45% opacity. */}
         <span className={cn("inline-flex", state === "locked" && "opacity-45")}>
-          <TierBadge tier={tier.id} size={48} />
+          <TierBadge tier={tier} size={48} />
         </span>
         <div className="min-w-0 flex-1">
           <h3
@@ -48,12 +48,12 @@ export default function TierCard({
               href={`/account/rewards/tiers/${tier.id}`}
               className="after:absolute after:inset-0"
             >
-              {t(`tiers.${tier.id}`)}
+              {tier.name}
             </Link>
           </h3>
           <p className="text-text-subtle m-0 text-[11px]">
             {t("allTiers.fromPoints", {
-              points: format.number(tier.threshold),
+              points: format.number(tier.startPoints),
             })}
           </p>
         </div>
@@ -68,7 +68,7 @@ export default function TierCard({
           )}
         >
           {state === "locked"
-            ? t("allTiers.requires", { points: format.number(tier.threshold) })
+            ? t("allTiers.requires", { points: format.number(tier.startPoints) })
             : t(`allTiers.state.${state}`)}
           {state === "current" ? (
             <FiStar aria-hidden="true" />
@@ -85,8 +85,8 @@ export default function TierCard({
             <span className="text-text-subtle font-medium">
               {t("allTiers.progress", {
                 points: format.number(tierPoints),
-                threshold: format.number(next.threshold),
-                tier: next.id,
+                threshold: format.number(next.startPoints),
+                tier: next.name,
               })}
             </span>
             <span className="text-action-primary font-semibold">
@@ -114,7 +114,7 @@ export default function TierCard({
           )}
         >
           {tier.perks.map((perk) => (
-            <li key={perk.id} className="flex items-center gap-2">
+            <li key={perk.key} className="flex items-center gap-2">
               {unlocked ? (
                 <FiCheck
                   className="text-status-success size-3.5 shrink-0"

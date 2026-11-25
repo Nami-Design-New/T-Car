@@ -75,7 +75,7 @@ export default function RedemptionSuccessDialog({ receipt, onClose }: Props) {
           </strong>
           <span className="text-text-subtle text-xs">
             {t("tierPointsUnchanged", {
-              tier: receipt.tierId,
+              tier: receipt.tierName,
               amount: format.number(receipt.tierPoints),
             })}
           </span>

@@ -104,43 +104,6 @@ export const POINTS_ICONS = {
 } as const;
 
 export const REWARDS_ASSETS = {
-  badges: {
-    bronze: {
-      src: "/images/rewards/badge-bronze.webp",
-      width: 144,
-      height: 144,
-    },
-    silver: {
-      src: "/images/rewards/badge-silver.webp",
-      width: 144,
-      height: 144,
-    },
-    gold: { src: "/images/rewards/badge-gold.webp", width: 144, height: 144 },
-    diamond: {
-      src: "/images/rewards/badge-diamond.webp",
-      width: 144,
-      height: 144,
-    },
-  },
-  frames: {
-    bronze: { src: "/images/rewards/hex-bronze.svg", width: 88, height: 95 },
-    silverHero: {
-      src: "/images/rewards/hex-silver-hero.svg",
-      width: 88,
-      height: 95,
-    },
-    silverRoad: {
-      src: "/images/rewards/hex-silver-road.svg",
-      width: 73,
-      height: 79,
-    },
-    gold: { src: "/images/rewards/hex-gold.svg", width: 88, height: 95 },
-    diamond: {
-      src: "/images/rewards/hex-diamond.svg",
-      width: 88,
-      height: 95,
-    },
-  },
   glowCurrent: {
     src: "/images/rewards/glow-current.svg",
     width: 68,

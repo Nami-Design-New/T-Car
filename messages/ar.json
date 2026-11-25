@@ -224,7 +224,7 @@
       "currentTier": "مستواك الحالي",
       "higherTier": "مستوى أعلى",
       "ofTierPoints": "/ {threshold} نقطة مستوى",
-      "pointsToNext": "{points} نقطة {tier, select, bronze {للبرونزية} silver {للفضية} gold {للذهبية} diamond {للماسية} other {للمستوى التالي}}",
+      "pointsToNext": "{points} نقطة للوصول إلى {tier}",
       "topTier": "وصلت إلى أعلى مستوى"
     },
     "balance": {
@@ -285,7 +285,7 @@
       "successTitle": "تم الاستبدال بنجاح!",
       "successDescription": "أُضيفت البطاقة إلى «بطاقاتي». استخدم الكود في خطوة الدفع عند حجزك القادم.",
       "balanceAfterAmount": "رصيد الاستبدال: {amount} نقطة",
-      "tierPointsUnchanged": "مستواك {tier, select, bronze {البرونزي} silver {الفضي} gold {الذهبي} diamond {الماسي} other {}} ثابت · {amount} نقطة مستوى",
+      "tierPointsUnchanged": "مستواك {tier} ثابت · {amount} نقطة مستوى",
       "viewCards": "عرض بطاقاتي",
       "backToRewards": "العودة للمكافآت"
     },
@@ -322,7 +322,7 @@
       "fromPoints": "من {points} نقطة",
       "requires": "يتطلب {points}",
       "state": { "current": "مستواك الحالي", "reached": "تم الوصول إليه" },
-      "progress": "{points} / {threshold} نقطة {tier, select, bronze {للبرونزية} silver {للفضية} gold {للذهبية} diamond {للماسية} other {للمستوى التالي}}",
+      "progress": "{points} / {threshold} نقطة للوصول إلى {tier}",
       "info": "الاستبدال يخصم من الرصيد المتاح فقط. نقاط المستوى لا تنقص، والمستوى ثابت."
     },
     "perkState": {
@@ -335,8 +335,8 @@
     "detail": {
       "tierNavigation": "مستويات المكافآت",
       "currentPerks": "مزاياك الحالية",
-      "tierPerks": "مزايا {tier, select, bronze {البرونزية} silver {الفضية} gold {الذهبية} diamond {الماسية} other {المستوى}}",
-      "unlocksAt": "تُفتح مع {tier, select, bronze {البرونزية} silver {الفضية} gold {الذهبية} diamond {الماسية} other {المستوى التالي}}",
+      "tierPerks": "مزايا {tier}",
+      "unlocksAt": "تُفتح عند الوصول إلى {tier}",
       "earnTitle": "كيف تكسب النقاط؟",
       "earn": {
         "tripTitle": "أكمل رحلة",

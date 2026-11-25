@@ -49,7 +49,8 @@ const receipt: RewardRedemption = {
   balanceBefore: 4000,
   balanceAfter: 3000,
   tierPoints: 12000,
-  tierId: "gold",
+  tierId: "3",
+  tierName: "Gold",
 };
 
 beforeEach(() => {

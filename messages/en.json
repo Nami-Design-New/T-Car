@@ -224,7 +224,7 @@
       "currentTier": "Your current tier",
       "higherTier": "Higher tier",
       "ofTierPoints": "/ {threshold} tier points",
-      "pointsToNext": "{points} points to {tier, select, bronze {Bronze} silver {Silver} gold {Gold} diamond {Diamond} other {the next tier}}",
+      "pointsToNext": "{points} points to {tier}",
       "topTier": "Highest tier reached"
     },
     "balance": {
@@ -285,7 +285,7 @@
       "successTitle": "Redeemed successfully!",
       "successDescription": "The card was added to My cards. Use the code at checkout on your next booking.",
       "balanceAfterAmount": "Redeemable balance: {amount} points",
-      "tierPointsUnchanged": "Your {tier, select, bronze {Bronze} silver {Silver} gold {Gold} diamond {Diamond} other {}} tier stays the same · {amount} tier points",
+      "tierPointsUnchanged": "Your {tier} tier stays the same · {amount} tier points",
       "viewCards": "View my cards",
       "backToRewards": "Back to rewards"
     },
@@ -322,7 +322,7 @@
       "fromPoints": "From {points} points",
       "requires": "Requires {points}",
       "state": { "current": "Your current tier", "reached": "Tier reached" },
-      "progress": "{points} / {threshold} points to {tier, select, bronze {Bronze} silver {Silver} gold {Gold} diamond {Diamond} other {the next tier}}",
+      "progress": "{points} / {threshold} points to {tier}",
       "info": "Redeeming points only reduces your available balance. Tier points never decrease, and your tier stays the same."
     },
     "perkState": {
@@ -335,8 +335,8 @@
     "detail": {
       "tierNavigation": "Reward tiers",
       "currentPerks": "Your perks",
-      "tierPerks": "{tier, select, bronze {Bronze} silver {Silver} gold {Gold} diamond {Diamond} other {Tier}} perks",
-      "unlocksAt": "Unlocks at {tier, select, bronze {Bronze} silver {Silver} gold {Gold} diamond {Diamond} other {the next tier}}",
+      "tierPerks": "{tier} perks",
+      "unlocksAt": "Unlocks at {tier}",
       "earnTitle": "How to earn points",
       "earn": {
         "tripTitle": "Complete a trip",
