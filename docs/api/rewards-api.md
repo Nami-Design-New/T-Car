@@ -2,8 +2,8 @@
 
 Last updated: 2026-11-25
 Base URL: `https://admin.t-car.app/api/user` (TEST, `NEXT_PUBLIC_API_URL`)
-Status: R0 (contract evidence and plan) and R1 (feature-owned APIs) done; R2–R12 open. Branch
-`feature/rewards-api`.
+Status: R0 (contract evidence and plan), R1 (feature-owned APIs), and R2
+(referral program) done; R3–R12 open. Branch `feature/rewards-api`.
 
 Sources: Bruno `User Application/Setting/referal and points` (12 requests),
 `User Application/Auth/verifyReferalCode.yml`, `completeProfile.yml`, and
@@ -220,7 +220,7 @@ and the user's approval before committing.
 | --- | --- | --- |
 | R0 — Contract and plan **Done (2026-11-25)** | Probe E1–E13 (E12 skipped, E4 from Bruno), seed TEST from the design, record DTOs, decisions, and fractions. | This document. |
 | R1 — Feature-owned APIs **Done (2026-11-25)** | Moved `services/{points,referrals,rewards}.api.ts` and their mocks into `features/<x>/api.ts` + `api.mock.ts` (and the rewards mock test to `features/rewards/api.mock.test.ts`), no behavior change. The rewards mock repeats the points mock's two balances, because a feature may not import another feature's mock. | Queries, actions, and tests import from the feature; no `services/` file refers to the three features; typecheck, lint, 1,040 tests, and build pass; the nine account pages render the same mock data in `ar` and `en` with a session, redirect to sign-in without one, and an unknown tier id carries `NEXT_NOT_FOUND`. |
-| R2 — Referral program | E1 through `serverHttp` with a strict DTO guard and mapper. | Referrals page shows the live code and reward value; mapper tests (observed payload, malformed, 401). |
+| R2 — Referral program **Done (2026-11-25)** | E1 through `serverHttp` with a strict DTO guard and mapper; E2 history and E3 code checks stay on the mock. | `getProgram` requests `/referal-info` and maps the observed code and 500-point reward; tests cover the observed payload, malformed responses, unchanged 401 propagation, and mock identity for history and code checks; typecheck, lint, 1,049 tests, and build pass; with a session, `/ar` and `/en` `account/referrals` show the live code (`TCAR-T2FZ`) and the 500-point reward, history still shows the mock invites, and the page redirects to sign-in without a session. |
 | R3 — Referral history | E2 paginated (`InfiniteList` + `usePaginatedList`, as the bank-account picker); counts from the API. | History page lists live invites, loads the next page on scroll; pending invite shows no points. |
 | R4 — Referral code at sign-up | E3 behind `checkReferralCodeAction` (shows `referrerName`); E4 sends the checked `referal_code` with the profile. | Register form: valid / invalid / own-code cases; profile completion with a code; auth tests updated. |
 | R5 — Points history | E5 with server `filter` and pagination; new transaction model; account summary card reads the balances from E5 (`per_page=1`). | `/account/points` all / earned / used tabs read the API; mapper tests for each `point_type`. |

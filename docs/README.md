@@ -729,6 +729,12 @@ rewards APIs and their mocks moved from `services/` into their features
 every read and the redemption still use the mocks. `services/` now holds only
 `http/` and the cars API with its mocks.
 
+**Rewards API, fraction R2 (2026-11-25), done:** The referral program reads
+live `GET /referal-info` through `serverHttp`, validating the code and reward
+before mapping them to `ReferralProgram`. Referral history and code checks
+remain mocked for R3 and R4. Typecheck, lint, tests, and build pass; the
+referrals page shows the live code and reward in `ar` and `en`.
+
 Notifications API integration (2026-11-12): `features/notifications` now owns
 the live paginated `GET /notifications` read and uses `InfiniteList` for later
 pages. Its Server Actions cover read/read-all, delete/delete-all, and browser
