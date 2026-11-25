@@ -181,9 +181,47 @@ describe("rewardsApi live package reads", () => {
     await expect(rewardsApi.getTier("user-1", "7")).rejects.toBe(error);
   });
 
+  it("reads E9 catalog items and balance from one response", async () => {
+    get.mockResolvedValueOnce(envelope({
+      can_replaced_points: 500,
+      discount_cards: [
+        { id: 5, discount_value: 50, points_count: 1000 },
+        { id: 6, discount_value: 100, points_count: 1900 },
+      ],
+    }));
+
+    await expect(rewardsApi.getCatalog("user-1")).resolves.toEqual({
+      balance: 500,
+      items: [
+        { id: "5", discountAmount: 50, pointsCost: 1000, validityDays: 90 },
+        { id: "6", discountAmount: 100, pointsCost: 1900, validityDays: 90 },
+      ],
+    });
+    expect(get).toHaveBeenCalledOnce();
+    expect(get).toHaveBeenCalledWith("/discount-cards");
+  });
+
+  it("accepts an empty E9 catalog and rejects malformed card data", async () => {
+    get.mockResolvedValueOnce(envelope({ can_replaced_points: 0, discount_cards: [] }));
+    await expect(rewardsApi.getCatalog("user-1")).resolves.toEqual({
+      balance: 0,
+      items: [],
+    });
+    get.mockResolvedValueOnce(envelope({
+      can_replaced_points: 0,
+      discount_cards: [{ id: 5, discount_value: 50, points_count: "1000" }],
+    }));
+    await expect(rewardsApi.getCatalog("user-1")).rejects.toEqual(new AppError("server"));
+  });
+
+  it("propagates E9 transport errors unchanged", async () => {
+    const error = new AppError("unauthorized");
+    get.mockRejectedValueOnce(error);
+    await expect(rewardsApi.getCatalog("user-1")).rejects.toBe(error);
+  });
+
   it("keeps card and redemption methods on their mock for later fractions", () => {
     expect(rewardsApi.getCards).toBe(rewardsMock.getCards);
-    expect(rewardsApi.getCatalog).toBe(rewardsMock.getCatalog);
     expect(rewardsApi.redeem).toBe(rewardsMock.redeem);
   });
 });

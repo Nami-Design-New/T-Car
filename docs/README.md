@@ -775,7 +775,7 @@ package and an unknown-id `NEXT_NOT_FOUND` route test. The production build and
 before merge.
 
 **Rewards API, fraction R7 (2026-11-25, branch `feature/rewards-tiers`),
-implementation ready:** The rewards overview reads only `GET /packages/current`:
+done in `f631352`:** The rewards overview reads only `GET /packages/current`:
 its full `current_package` supplies the hero and perks, while `other_packages`
 supplies the tier road. TEST includes the current tier in `other_packages`, so
 the mapper deduplicates it; a missing colour triplet uses a neutral badge
@@ -791,6 +791,17 @@ E8's 404 in `ar` and `en`; TEST package thresholds have changed since the
 design seed (backend/product ask B13).
 Production build and signed-in route smoke remain pending after the user's
 instruction to skip the build while the `.next` cache issue is unresolved.
+
+**Rewards API, fraction R8 (2026-11-25, branch `feature/rewards-tiers`),
+implementation ready:** The catalog reads E9 `GET /discount-cards` for its
+four cards and redeemable balance in one request. IDs, discount values, and
+point costs come from the API; the documented 90-day validity remains fixed.
+The TEST response has four cards costing 1,000–6,000 points and a zero balance,
+so none is affordable for that customer. My cards and redemption remain on
+their mocks for R9–R10. Typecheck, lint (one existing warning), and 68
+rewards-focused tests pass. Production build and signed-in route smoke remain
+pending under the user's skip-build instruction; the full suite is reserved
+for before merge.
 
 Notifications API integration (2026-11-12): `features/notifications` now owns
 the live paginated `GET /notifications` read and uses `InfiniteList` for later

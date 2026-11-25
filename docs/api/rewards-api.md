@@ -2,7 +2,7 @@
 
 Last updated: 2026-11-25
 Base URL: `https://admin.t-car.app/api/user` (TEST, `NEXT_PUBLIC_API_URL`)
-Status: R0–R6 done; R7 (live tiers) implementation ready; R8–R12 open.
+Status: R0–R7 done; R8 (live catalog) implementation ready; R9–R12 open.
 Branch `feature/rewards-tiers`.
 
 Sources: Bruno `User Application/Setting/referal and points` (12 requests),
@@ -218,14 +218,15 @@ handled by `serverHttp` (signs the session out, A8).
 | Feature | Current model | Change |
 | --- | --- | --- |
 | referrals | `ReferralProgram`, `ReferralHistory` (all invites, counts on the client) | `ReferralHistory` holds `page: Page<ReferralInvite>`, `invitedCount`, `completedCount`, and `totalPoints` from the API. Invite `status: applied` maps to the existing `rewarded` state. `ReferralCodeCheck` has `inviterName: string \| null` for valid codes. |
-| points | `PointsData { summary; page: Page<PointsTransaction> }`; `type: earned \| used`; nullable booking/rating ids and redemption value | E5 supplies the balances, signed points, translated title, source from `point_type`, and nested pagination. Server page 1 uses the URL filter (`spent` → `used`); later pages load through a Server Action. The account shell reads E5 with `per_page=1`. Dates without an offset are interpreted as Riyadh time. |
+| points | `PointsData { summary; page: Page<PointsTransaction> }`; `type: earned \| used`; nullable booking/rating ids and redemption value | E5 supplies the balances, signed points, translated title, source from `point_type`, and nested pagination. Server page 1 uses the URL filter (`spent` → `used`); later pages load through a Server Action. The account shell's unused E5 summary read was removed in R7. Dates without an offset are interpreted as Riyadh time. |
 | rewards | `RewardTierId` union, `threshold`, perks with `description` and `icon` | `RewardTier { id: string; name; iconUrl; colors: { high, medium, low }; startPoints; endPoints; perks: { key; title; code }[] }`; `isRewardTierId` and `TIER_STYLES` removed; `RewardCatalogItem` validity fixed at 90; `RewardCardsData` gains pagination, balance read separately. |
 
 ## 5. Integration fractions
 
 Each fraction is its own commit, verified per `AGENTS.md` (typecheck, lint,
 tests, build, route smoke with `next start`), with `docs/README.md` updated
-and the user's approval before committing.
+and the user's approval before committing. The route and source-file mapping
+below this table identifies the pages affected by each fraction.
 
 | Fraction | Scope | Completion evidence |
 | --- | --- | --- |
@@ -236,12 +237,32 @@ and the user's approval before committing.
 | R4 — Referral code at sign-up **Done (2026-11-25)** | E3 through the public server client behind `checkReferralCodeAction`; E4 sends the checked `referal_code` with the profile. | E3 posts the normalized code without a bearer token, maps valid responses with a name or `null`, and treats body-code 422 as invalid. Format and length checks avoid a request for bad codes. A valid store code reaches `/complete-profile` as `referal_code`; absent or unchecked codes are omitted. The no-name hint and banner render in both locales. Referral and auth tests cover the transport, validation, UI, and profile body; a blank referrer name is shown as no name. Typecheck, lint, 205 referral and auth tests, and build pass. On `next start`, the code-check Server Action returns valid with the referrer name for `TCAR-T2FZ` (any case) and `{ valid: false }` for an unknown, over-long, or malformed code, in `ar` and `en`; the invite link (`?auth=login&ref=…`) renders. `/complete-profile` was not called live (it creates accounts; backend ask B11). |
 | R5 — Points history **Done (2026-11-25)** | E5 with server `filter` and pagination; new transaction model; account summary card reads the balances from E5 (`per_page=1`). | `/account/points` reads the API's first page for all / earned / used (`spent` in the URL); `InfiniteList` loads later pages through a validated Server Action. The mapper checks nested pagination, each `point_type`, signed points, and dates, and uses the API title. The account shell reads balances with `per_page=1`. Points model, mapper, action, and component tests cover the flow. Typecheck, lint (one existing warning), all 1,103 tests, and production build pass. On `next start`, unauthenticated requests for all three filters in `ar` and `en` redirect to sign-in with the filter preserved; signed-in HTML smoke remains open. |
 | R6 — Dynamic tier model **Done (2026-11-25, `43ca0d7`)** | Model, mock, and components use API-shaped tiers (§4): name, icon URL, colour gradient, perk icon by `key`; route `/rewards/tiers/[id]`. Still on the mock. | Typecheck, lint (one existing warning), and 49 focused tests pass; tests cover an arbitrary fifth package, API-shaped mock data, unknown perk keys, and an unknown tier id producing `NEXT_NOT_FOUND`. Production build and `next start` smoke were skipped at the user's direction after the existing `.next` cache blocked page-data collection. Full suite before merge. |
-| R7 — Live tiers **Implementation ready (2026-11-25)** | The overview reads E7 only: `current_package` for hero/perks and deduplicated `other_packages` for the road. The account layout's unused `/points` summary request was removed; points history still reads `/points` on its own page. All-tiers reads E6 + E7; detail also reads E8 (`404` → `notFound()`). Cards and redemption remain mocked. | DTO guards map API names, icon URLs, three colours, point ranges, perks, and E7 balances; the first tier is current below its start points. E8 supplies the selected detail and maps 404 to `null`. Typecheck, lint (one existing warning), and 65 rewards-focused tests pass, including E7-only overview, current-tier deduplication, unknown-id route, and API-colour gradients. A live TEST probe confirmed E6/E7/E8 fields in `ar` and `en` and E8 body-code 404; it found changed package thresholds (B13). Production build and signed-in route smoke remain pending under the user's skip-build instruction. |
-| R8 — Catalog | E9; balance from the same response. | Catalog shows the four live cards, all unaffordable for the test customer. |
+| R7 — Live tiers **Done (2026-11-25, `f631352`)** | The overview reads E7 only: `current_package` for hero/perks and deduplicated `other_packages` for the road. The account layout's unused `/points` summary request was removed; points history still reads `/points` on its own page. All-tiers reads E6 + E7; detail also reads E8 (`404` → `notFound()`). Cards and redemption remain mocked. | DTO guards map API names, icon URLs, three colours, point ranges, perks, and E7 balances; the first tier is current below its start points. E8 supplies the selected detail and maps 404 to `null`. Typecheck, lint (one existing warning), and 65 rewards-focused tests pass, including E7-only overview, current-tier deduplication, unknown-id route, and API-colour gradients. A live TEST probe confirmed E6/E7/E8 fields in `ar` and `en` and E8 body-code 404; it found changed package thresholds (B13). Production build and signed-in route smoke remain pending under the user's skip-build instruction. |
+| R8 — Catalog **Implementation ready (2026-11-25)** | E9 supplies four cards and the redeemable balance in one response; each item maps its numeric id, discount value, and point cost, with documented 90-day validity. My cards and redemption remain mocked for R9–R10. | A live TEST E9 probe returned card ids 5–8, discounts 50–300, costs 1,000–6,000, and zero redeemable points. Typecheck, lint (one existing warning), and 68 rewards-focused tests pass, including E9 mapping, empty catalog, malformed data, and transport errors. Production build and signed-in route smoke remain pending under the user's skip-build instruction. |
 | R9 — My cards | E10 with server filter and pagination. | My cards page reads the API per filter; empty state on TEST. |
 | R10 — Redemption | Confirm dialog reads E11; confirm calls E12 in a Server Action returning `ActionResult`; 400/422 toasted, dialog stays open. | Insufficient-points path verified live; success path verified once with the user's approval on a customer with points. |
 | R11 — Booking-complete points | E13 on the completed-booking screen (design reference needed). | Earned points shown for a completed booking; 404 handled. |
 | R12 — Remove production mocks | No production caller uses a rewards, points, or referrals mock; mocks stay for tests. | Grep shows mocks imported only from tests. |
+
+### Pages affected by each fraction
+
+Routes below omit the locale prefix; the same page files serve `/ar` and `/en`.
+
+| Fraction | Route or UI | Source in this codebase |
+| --- | --- | --- |
+| R0 | Planning only | No page changed. |
+| R1 | Shared account sections | [Account sections layout](<../../src/app/[locale]/account/(sections)/layout.tsx>) and the rewards, referrals, and points feature APIs. |
+| R2 | `/account/referrals` | [Referral program page](<../../src/app/[locale]/account/(sections)/referrals/page.tsx>) |
+| R3 | `/account/referrals/history` | [Referral history page](<../../src/app/[locale]/account/(sections)/referrals/history/page.tsx>) |
+| R4 | Sign-up modal, opened across the app; no dedicated route | [RegisterForm](../../src/features/auth/components/RegisterForm.tsx) and [ReferralCodeField](../../src/features/referrals/components/ReferralCodeField.tsx) |
+| R5 | `/account/points` | [Points history page](<../../src/app/[locale]/account/(sections)/points/page.tsx>) |
+| R6 | `/account/rewards`, `/account/rewards/tiers`, `/account/rewards/tiers/[id]` | [Rewards overview](<../../src/app/[locale]/account/(sections)/rewards/page.tsx>), [all tiers](<../../src/app/[locale]/account/(sections)/rewards/tiers/page.tsx>), [tier detail](<../../src/app/[locale]/account/(sections)/rewards/tiers/[id]/page.tsx>) |
+| R7 | `/account/rewards`, `/account/rewards/tiers`, `/account/rewards/tiers/[id]` | The same three rewards pages above, plus the [account sections layout](<../../src/app/[locale]/account/(sections)/layout.tsx>) for removal of its unused `/points` read. |
+| R8 | `/account/rewards/catalog` | [Rewards catalog page](<../../src/app/[locale]/account/(sections)/rewards/catalog/page.tsx>) → `getRewardCatalog()` → E9 `GET /discount-cards`. |
+| R9 | `/account/rewards/cards` | [My cards page](<../../src/app/[locale]/account/(sections)/rewards/cards/page.tsx>) |
+| R10 | `/account/rewards/catalog` | [Rewards catalog page](<../../src/app/[locale]/account/(sections)/rewards/catalog/page.tsx>) and its redemption dialogs/action. |
+| R11 | `/account/bookings/[id]` (planned; design reference pending) | [Booking detail page](<../../src/app/[locale]/account/bookings/[id]/page.tsx>) |
+| R12 | Rewards, referrals, and points account pages | Feature-owned APIs in `src/features/{rewards,referrals,points}/api.ts`; no new page planned. |
 
 ## 6. Backend asks
 

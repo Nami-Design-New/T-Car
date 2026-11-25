@@ -8,6 +8,7 @@ import { rewardsMock } from "./api.mock";
 import type {
   RewardCardsData,
   RewardCatalogData,
+  RewardCatalogItem,
   RewardRedemption,
   RewardRoadTier,
   RewardTier,
@@ -49,6 +50,15 @@ interface CurrentPackageDto {
     high_color?: string;
     medium_color?: string;
     low_color?: string;
+  }[];
+}
+
+interface DiscountCardsDto {
+  can_replaced_points: number;
+  discount_cards: {
+    id: number;
+    discount_value: number;
+    points_count: number;
   }[];
 }
 
@@ -117,6 +127,48 @@ function isCurrentPackageDto(value: unknown): value is CurrentPackageDto {
     Array.isArray(value.other_packages) &&
     value.other_packages.every(isOtherPackageDto)
   );
+}
+
+function isDiscountCardDto(
+  value: unknown,
+): value is DiscountCardsDto["discount_cards"][number] {
+  return (
+    isRecord(value) &&
+    isCount(value.id) &&
+    isCount(value.discount_value) &&
+    isCount(value.points_count)
+  );
+}
+
+function isDiscountCardsDto(value: unknown): value is DiscountCardsDto {
+  return (
+    isRecord(value) &&
+    isCount(value.can_replaced_points) &&
+    Array.isArray(value.discount_cards) &&
+    value.discount_cards.every(isDiscountCardDto)
+  );
+}
+
+/** E9 owns both the catalog and the customer's redeemable balance. */
+export function mapRewardCatalogResponse(response: unknown): RewardCatalogData {
+  if (
+    !isApiEnvelope(response) ||
+    response.code !== 200 ||
+    !isDiscountCardsDto(response.data)
+  ) {
+    throw new AppError("server");
+  }
+  return {
+    balance: response.data.can_replaced_points,
+    items: response.data.discount_cards.map(
+      (card): RewardCatalogItem => ({
+        id: String(card.id),
+        discountAmount: card.discount_value,
+        pointsCost: card.points_count,
+        validityDays: 90,
+      }),
+    ),
+  };
 }
 
 function toRewardTier(dto: PackageDto): RewardTier {
@@ -219,6 +271,11 @@ async function getHome(_userId: string): Promise<RewardsHomeData> {
   return mapRewardsHomeResponse(current);
 }
 
+async function getCatalog(_userId: string): Promise<RewardCatalogData> {
+  const response = await serverHttp.get<ApiEnvelope<unknown>>("/discount-cards");
+  return mapRewardCatalogResponse(response);
+}
+
 /** E8 returns one full package; a body-code 404 is handled by serverHttp. */
 export function mapRewardTierResponse(response: unknown): RewardTier {
   if (
@@ -260,6 +317,6 @@ export const rewardsApi: RewardsApi = {
   getSummary,
   getTier,
   getCards: rewardsMock.getCards,
-  getCatalog: rewardsMock.getCatalog,
+  getCatalog,
   redeem: rewardsMock.redeem,
 };
