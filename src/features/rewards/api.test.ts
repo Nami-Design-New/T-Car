@@ -87,6 +87,24 @@ describe("rewardsApi live package reads", () => {
     expect(home.roadTiers[0].colors.high).toBe("#e5e7eb");
   });
 
+  it("maps live package features without carrying a code field", async () => {
+    get.mockResolvedValueOnce(
+      envelope({
+        ...currentDto,
+        current_package: {
+          ...packageDto,
+          current_package: true,
+          features: [{ key: "vip_support_24h", title: "VIP support" }],
+        },
+      }),
+    );
+
+    const home = await rewardsApi.getHome("user-1");
+    expect(home.currentTier?.perks).toEqual([
+      { key: "vip_support_24h", title: "VIP support" },
+    ]);
+  });
+
   it("combines E6 packages and E7 balances below the first tier", async () => {
     get.mockImplementation((path: string) =>
       Promise.resolve(
@@ -110,8 +128,8 @@ describe("rewardsApi live package reads", () => {
           startPoints: 1000,
           endPoints: 4999,
           perks: [
-            { key: "bronze_welcome", title: "Welcome", code: null },
-            { key: "new_perk", title: "New perk", code: "WELCOME" },
+            { key: "bronze_welcome", title: "Welcome" },
+            { key: "new_perk", title: "New perk" },
           ],
         },
       ],
@@ -124,7 +142,7 @@ describe("rewardsApi live package reads", () => {
     await expect(rewardsApi.getTier("user-1", "7")).resolves.toMatchObject({
       id: "7",
       name: packageDto.name,
-      perks: [{ key: "bronze_welcome" }, { code: "WELCOME" }],
+      perks: [{ key: "bronze_welcome" }, { key: "new_perk" }],
     });
     expect(get).toHaveBeenCalledWith("/packages/7");
   });

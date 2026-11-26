@@ -36,7 +36,7 @@ thresholds; whether this change was intentional is a backend/product follow-up
 | Tiers | **Fully dynamic** (product decision 2026-11-25). A tier is an API package: numeric id (as a string), name, `icon_url`, three colours, start/end points, perks. Routes become `/rewards/tiers/{id}`. The fixed `bronze/silver/gold/diamond` ids, `TIER_STYLES`, and local badge images are removed from the model. |
 | Tier name | Shown as the API returns it. The admin has one untranslated name field (backend ask B3). |
 | Tier colours | `high_color`, `medium_color`, `low_color` build the badge/hero gradient (light → mid → dark), replacing the per-tier Tailwind gradients. |
-| Perks | API `features[]`: `key` + translated `title` (+ `code`). `key` picks the perk icon (10 known keys, fallback icon for unknown keys). The API has no perk description, so the description line is dropped. |
+| Perks | API `features[]`: `key` + translated `title`. `key` picks the perk icon (10 known keys, fallback icon for unknown keys). The API has no perk description, so the description line is dropped. The app ignores any feature `code`. |
 | Below the first tier | `current_package` is `null` below the first `start_points`. The app keeps its current rule and shows the first tier as current (backend ask B4). |
 | Balances | `level_points` = tier points (`tierPoints`); `can_replaced_points` = spendable balance (`balance`). Redemption changes only the balance. |
 | Envelope | HTTP 200 for every outcome except 401; the real status is the body `code`. Reads throw `AppError`; `404` → `null` → `notFound()`. Writes return `Result`; backend 422/400 messages are toasted with `useNotify()` and keep the dialog open. |
@@ -144,7 +144,7 @@ interface PackageDto {
   medium_color: string;
   low_color: string;
   current_package: boolean;
-  features: { key: string; title: string; code: string | null }[];
+  features: { key: string; title: string }[]; // ignore any API `code`
 }
 
 interface CurrentPackageDto {
@@ -234,7 +234,7 @@ handled by `serverHttp` (signs the session out, A8).
 | --- | --- | --- |
 | referrals | `ReferralProgram`, `ReferralHistory` (all invites, counts on the client) | `ReferralHistory` holds `page: Page<ReferralInvite>`, `invitedCount`, `completedCount`, and `totalPoints` from the API. Invite `status: applied` maps to the existing `rewarded` state. `ReferralCodeCheck` has `inviterName: string \| null` for valid codes. |
 | points | `PointsData { summary; page: Page<PointsTransaction> }`; `type: earned \| used`; nullable booking/rating ids and redemption value | E5 supplies the balances, signed points, translated title, source from `point_type`, and nested pagination. Server page 1 uses the URL filter (`spent` → `used`); later pages load through a Server Action. The account shell's unused E5 summary read was removed in R7. Dates without an offset are interpreted as Riyadh time. |
-| rewards | `RewardTierId` union, `threshold`, perks with `description` and `icon` | `RewardTier { id: string; name; iconUrl; colors: { high, medium, low }; startPoints; endPoints; perks: { key; title; code }[] }`; `isRewardTierId` and `TIER_STYLES` removed; `RewardCatalogItem` validity fixed at 90; `RewardCardsData` gains pagination, balance read separately. |
+| rewards | `RewardTierId` union, `threshold`, perks with `description` and `icon` | `RewardTier { id: string; name; iconUrl; colors: { high, medium, low }; startPoints; endPoints; perks: { key; title }[] }`; `isRewardTierId` and `TIER_STYLES` removed; `RewardCatalogItem` validity fixed at 90; `RewardCardsData` gains pagination, balance read separately. |
 
 ## 5. Integration fractions
 
@@ -288,7 +288,6 @@ Routes below omit the locale prefix; the same page files serve `/ar` and `/en`.
 | B3 | Package names have one untranslated field; the English API returns the Arabic name. Add `name_ar` / `name_en` (or translate `name` from `Accept-Language`). |
 | B4 | Below the first package `current_package` is `null`. Either start the first package at 0 or confirm the app should show the first package as current. |
 | B5 | Perks have no description or icon; the design shows both. Add a description, or confirm the app maps `key` to an icon and drops the description. |
-| B6 | The Gold perk's `code` is stored in the admin (`TCARGOLD`) but `/packages` returns `code: null`. Confirm whether it is hidden until the customer reaches that package. |
 | B7 | Admin dashboard: editing a package sends POST without `_method=PUT` and gets 405. |
 | B8 | `verify-referal-code` returns the same "invalid" message for the customer's own code; a distinct message if the design has one. `referrer_name` is `null` for a referrer without a name; R4 handles this with no-name hint and banner variants in the UI. |
 | B9 | Field names keep typos (`referal`, `rewords`, `joint_at`). Fix before integration or keep them as the contract (the app maps them in one place). |

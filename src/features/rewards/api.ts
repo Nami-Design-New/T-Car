@@ -51,7 +51,7 @@ interface PackageDto {
   medium_color: string;
   low_color: string;
   current_package: boolean;
-  features: { key: string; title: string; code: string | null }[];
+  features: { key: string; title: string }[];
 }
 
 interface CurrentPackageDto {
@@ -108,8 +108,7 @@ function isFeatureDto(value: unknown): value is PackageDto["features"][number] {
   return (
     isRecord(value) &&
     isText(value.key) &&
-    isText(value.title) &&
-    (value.code === null || typeof value.code === "string")
+    isText(value.title)
   );
 }
 
@@ -344,7 +343,7 @@ function toRewardTier(dto: PackageDto): RewardTier {
     },
     startPoints: dto.start_points,
     endPoints: dto.end_points,
-    perks: dto.features.map(({ key, title, code }) => ({ key, title, code })),
+    perks: dto.features.map(({ key, title }) => ({ key, title })),
   };
 }
 

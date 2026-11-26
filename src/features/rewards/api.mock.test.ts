@@ -13,7 +13,7 @@ describe("rewardsMock.getSummary", () => {
       colors: { high: "#F3C29B", medium: "#C8794A", low: "#7A3E1D" },
       startPoints: 1000,
       endPoints: 4999,
-      perks: [{ key: "bronze_welcome", code: null }],
+      perks: [{ key: "bronze_welcome", title: "You've just started, champ!" }],
     });
     expect(summary.tiers[0].perks[0]).not.toHaveProperty("description");
   });

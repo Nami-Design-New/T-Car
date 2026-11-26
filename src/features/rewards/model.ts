@@ -3,7 +3,6 @@ import type { Page } from "@/shared/lib/pagination";
 export interface RewardPerk {
   key: string;
   title: string;
-  code: string | null;
 }
 
 export interface RewardRoadTier {

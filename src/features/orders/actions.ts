@@ -24,6 +24,7 @@ import type {
   BookingReviewInput,
   BookingReviewResult,
   CreateDraftRequest,
+  CouponPricing,
   Order,
   OrderListItem,
   OrderListTab,
@@ -41,6 +42,7 @@ import {
   bookingEditSchema,
   bookingReviewSchema,
   createDraftSchema,
+  applyCouponSchema,
   payOrderSchema,
   extendBookingSchema,
   modificationRequestSchema,
@@ -163,7 +165,8 @@ export async function payExtensionAction(
     const payment = parse(payOrderSchema, request);
     const { days } = parse(extendBookingSchema, { days: request.count });
     const result = await bookingsApi.payExtension({ ...payment, count: days });
-    if (!result.ok) reportError(result.error, { scope: "bookings.extensionPay" });
+    if (!result.ok)
+      reportError(result.error, { scope: "bookings.extensionPay" });
     return toActionResult(result);
   } catch (error) {
     reportError(error, {
@@ -205,6 +208,24 @@ export async function createDraftAction(
     return toActionResult(ok(draft));
   } catch (error) {
     reportError(error, { scope: "booking.draft", carId: request.carId });
+    return toActionResult(fail(error));
+  }
+}
+
+/** E4: the backend returns the repriced draft after applying a coupon. */
+export async function applyCouponAction(
+  orderId: string,
+  code: string,
+): Promise<ActionResult<CouponPricing>> {
+  try {
+    const session = await auth();
+    if (!session?.user?.id) throw new AppError("unauthorized");
+    const values = parse(applyCouponSchema, { orderId, code });
+    return toActionResult(
+      await bookingsApi.applyCoupon(values.orderId, values.code),
+    );
+  } catch (error) {
+    reportError(error, { scope: "booking.coupon", orderId });
     return toActionResult(fail(error));
   }
 }

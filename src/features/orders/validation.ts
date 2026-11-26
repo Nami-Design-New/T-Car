@@ -12,12 +12,18 @@ const positiveId = z
   .trim()
   .regex(/^[1-9]\d*$/);
 
+export const applyCouponSchema = z.object({
+  orderId: positiveId,
+  code: z.string().trim().min(1, { error: "booking.couponRequired" }).max(50),
+});
+
 /** E5 input (R14): the wallet, one method, or both; never points (R13). */
 export const payOrderSchema = z
   .object({
     orderId: positiveId,
     useWallet: z.boolean(),
     paymentMethodId: positiveId.nullable(),
+    code: z.string().trim().min(1).max(50).optional(),
   })
   .refine((value) => value.useWallet || value.paymentMethodId !== null, {
     error: "booking.paymentMethodRequired",

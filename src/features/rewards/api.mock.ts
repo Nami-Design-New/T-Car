@@ -170,7 +170,6 @@ const tiersFor = (locale: string): RewardTier[] => {
       perks: copy[key].map(([title], perkIndex) => ({
         key: TIER_KEYS[key][perkIndex],
         title,
-        code: null,
       })),
     }),
   );

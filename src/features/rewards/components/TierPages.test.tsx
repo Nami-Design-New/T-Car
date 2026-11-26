@@ -27,7 +27,6 @@ const summary: RewardsSummary = {
         {
           key: "bronze_welcome",
           title: "توك بديت يا وحش",
-          code: null,
         },
       ],
     },
@@ -42,7 +41,6 @@ const summary: RewardsSummary = {
         {
           key: "monthly_points",
           title: "Silver benefit",
-          code: null,
         },
       ],
     },
@@ -57,7 +55,6 @@ const summary: RewardsSummary = {
         {
           key: "monthly_discount_code",
           title: "Gold benefit",
-          code: null,
         },
       ],
     },
@@ -72,7 +69,6 @@ const summary: RewardsSummary = {
         {
           key: "diamond_offers",
           title: "Diamond benefit",
-          code: null,
         },
       ],
     },

@@ -819,6 +819,7 @@
       "paymentMethodRequired": "Choose a payment method",
       "carRequired": "Choose a car",
       "termsRequired": "Accept the terms and conditions to continue",
+      "couponRequired": "Enter a discount code.",
       "carUnavailable": "This car is not available for that long. Choose a shorter rental or another car."
     },
     "cities": {
@@ -1213,6 +1214,12 @@
       "orderTime": "Order time",
       "priceDetails": "Price details",
       "dailyPrice": "Daily price",
+      "couponPlaceholder": "Have a discount code?",
+      "checkCoupon": "Verify code",
+      "checkingCoupon": "Checking...",
+      "couponApplied": "Applied",
+      "couponAppliedMessage": "Discount code applied to this booking.",
+      "couponRequired": "Enter a discount code.",
       "days": "Number of days",
       "day": "days",
       "subtotal": "Subtotal",

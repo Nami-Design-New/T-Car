@@ -21,6 +21,7 @@ import type {
   BookingReviewInput,
   BookingReviewResult,
   CreateDraftRequest,
+  CouponPricing,
   Order,
   OrderListItem,
   OrderStatus,
@@ -68,6 +69,8 @@ export interface BookingsApi {
     input: BookingReviewInput,
   ): Promise<BookingReviewResult>;
   createDraft(request: CreateDraftRequest): Promise<Order>;
+  /** E4: applies a code to an unpaid draft and returns server-priced totals. */
+  applyCoupon(orderId: string, code: string): Promise<Result<CouponPricing>>;
   /** E3: the company's gateway methods and the wallet balance for a draft. */
   getPaymentOptions(orderId: string): Promise<PaymentOptions>;
   /** E5: pays the draft; a 422 comes back as a failed Result (R5). */
@@ -946,6 +949,8 @@ export function mapOrderResponse(value: unknown): Order {
     serviceFee: data.service_fee,
     completionFee: data.completion_fee,
     discount: data.discount,
+    couponCode: data.coupon_code,
+    couponDiscount: data.coupon_discount,
     additionalServicesCost: data.additional_services_cost,
     totalPrice: data.total_price,
     taxValue: data.tax_value,
@@ -1133,6 +1138,80 @@ async function createDraft(request: CreateDraftRequest): Promise<Order> {
   return order;
 }
 
+export function mapCouponResponse(
+  value: unknown,
+  orderId: string,
+): CouponPricing {
+  const data = isApiEnvelope(value) ? value.data : undefined;
+  if (
+    !isApiEnvelope(value) ||
+    value.code !== 200 ||
+    !isRecord(data) ||
+    !isId(data.id) ||
+    String(data.id) !== orderId ||
+    !isNullableString(data.coupon_code) ||
+    typeof data.tax_rate_type !== "string" ||
+    typeof data.service_fee_rate_type !== "string" ||
+    !isNonnegativeInteger(data.count) ||
+    ![
+      data.car_price,
+      data.price,
+      data.delivery_fee,
+      data.service_fee,
+      data.completion_fee,
+      data.discount,
+      data.coupon_discount,
+      data.additional_services_cost,
+      data.total_price,
+      data.tax_value,
+      data.final_price,
+      data.tax_rate,
+      data.service_fee_rate,
+    ].every(isFiniteNumber)
+  ) {
+    throw new AppError("server");
+  }
+  return {
+    carPrice: data.car_price as number,
+    price: data.price as number,
+    count: data.count,
+    deliveryFee: data.delivery_fee as number,
+    serviceFee: data.service_fee as number,
+    completionFee: data.completion_fee as number,
+    discount: data.discount as number,
+    couponCode: data.coupon_code,
+    couponDiscount: data.coupon_discount as number,
+    additionalServicesCost: data.additional_services_cost as number,
+    totalPrice: data.total_price as number,
+    taxValue: data.tax_value as number,
+    finalPrice: data.final_price as number,
+    taxRate: data.tax_rate as number,
+    taxRateType: data.tax_rate_type,
+    serviceFeeRate: data.service_fee_rate as number,
+    serviceFeeRateType: data.service_fee_rate_type,
+  };
+}
+
+async function applyCoupon(
+  orderId: string,
+  code: string,
+): Promise<Result<CouponPricing>> {
+  try {
+    const form = new FormData();
+    form.set("code", code);
+    const response = await serverHttp.post(
+      `/booking/${orderId}/apply-coupon`,
+      form,
+    );
+    return ok(
+      mapCouponResponse(response, orderId),
+      isApiEnvelope(response) ? response.message : undefined,
+    );
+  } catch (error) {
+    return fail(error);
+  }
+}
+
 async function getPaymentOptions(orderId: string): Promise<PaymentOptions> {
   const path = `/booking/${orderId}/payment-methods`;
   logBookingData("request", { method: "GET", path });
@@ -1148,6 +1227,7 @@ export function toPayFormData(request: PayOrderRequest): FormData {
   if (request.useWallet) form.set("use_wallet", "1");
   if (request.paymentMethodId)
     form.set("payment_method_id", request.paymentMethodId);
+  if (request.code) form.set("code", request.code);
   return form;
 }
 
@@ -1366,6 +1446,7 @@ export const bookingsApi: BookingsApi = {
   cancelBooking,
   submitReview,
   createDraft,
+  applyCoupon,
   getPaymentOptions,
   payOrder,
   payModification,

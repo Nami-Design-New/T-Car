@@ -24,7 +24,6 @@ const tiers: RewardsSummary["tiers"] = [
       {
         key: "bronze_welcome",
         title: "You've just started, champ!",
-        code: null,
       },
     ],
   },
@@ -39,7 +38,6 @@ const tiers: RewardsSummary["tiers"] = [
       {
         key: "monthly_points",
         title: "100 bonus points every month",
-        code: null,
       },
     ],
   },
@@ -54,7 +52,6 @@ const tiers: RewardsSummary["tiers"] = [
       {
         key: "monthly_discount_code",
         title: "Monthly discount code",
-        code: null,
       },
     ],
   },
@@ -69,7 +66,6 @@ const tiers: RewardsSummary["tiers"] = [
       {
         key: "vip_support_24h",
         title: "24/7 VIP support",
-        code: null,
       },
     ],
   },
@@ -191,7 +187,7 @@ describe("RewardsPage", () => {
       iconUrl: "/custom-platinum.webp",
       startPoints: 30000,
       endPoints: 49999,
-      perks: [{ key: "future_perk", title: "A new benefit", code: null }],
+      perks: [{ key: "future_perk", title: "A new benefit" }],
     };
     const { container } = renderWithIntl(
       <RewardsPage data={home(32000, 5000, [...tiers, extra])} />,

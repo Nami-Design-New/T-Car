@@ -817,6 +817,7 @@
       "paymentMethodRequired": "اختر طريقة دفع",
       "carRequired": "اختر سيارة",
       "termsRequired": "وافق على الشروط والأحكام للمتابعة",
+      "couponRequired": "أدخل كود الخصم.",
       "carUnavailable": "السيارة غير متاحة لهذه المدة. اختر مدة أقصر أو سيارة أخرى."
     },
     "cities": {
@@ -1211,6 +1212,12 @@
       "orderTime": "وقت الطلب",
       "priceDetails": "تفاصيل السعر",
       "dailyPrice": "السعر اليومي",
+      "couponPlaceholder": "لديك كود خصم",
+      "checkCoupon": "تحقق من الكود",
+      "checkingCoupon": "جارٍ التحقق...",
+      "couponApplied": "تم التحقق",
+      "couponAppliedMessage": "تم تطبيق كود الخصم على هذا الحجز.",
+      "couponRequired": "أدخل كود الخصم.",
       "days": "عدد الأيام",
       "day": "يوم",
       "subtotal": "المجموع الفرعي",
