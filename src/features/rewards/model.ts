@@ -1,3 +1,5 @@
+import type { Page } from "@/shared/lib/pagination";
+
 export interface RewardPerk {
   key: string;
   title: string;
@@ -43,6 +45,13 @@ export const REWARD_CARD_FILTERS: RewardCardFilter[] = [
   "expired",
 ];
 
+export function parseRewardCardFilter(value: unknown): RewardCardFilter {
+  return typeof value === "string" &&
+    REWARD_CARD_FILTERS.includes(value as RewardCardFilter)
+    ? (value as RewardCardFilter)
+    : "all";
+}
+
 export interface RewardCard {
   id: string;
   code: string;
@@ -55,13 +64,15 @@ export interface RewardCard {
 
 export interface RewardCardsData {
   balance: number;
-  cards: RewardCard[];
+  page: Page<RewardCard>;
 }
 
 export interface RewardCatalogItem {
   id: string;
   discountAmount: number;
   pointsCost: number;
+  /** The E9 per-card eligibility decision controls the redeem button. */
+  canReplace: boolean;
   /** Days the redeemed card stays valid, counted from redemption. */
   validityDays: number;
 }
@@ -80,20 +91,6 @@ export interface RewardRedemption {
   /** Unchanged by redemption; shown on the success screen. */
   tierId: string;
   tierName: string;
-}
-
-export function canAffordReward(
-  balance: number,
-  item: RewardCatalogItem,
-): boolean {
-  return balance >= item.pointsCost;
-}
-
-export function matchesRewardCardFilter(
-  card: RewardCard,
-  filter: RewardCardFilter,
-): boolean {
-  return filter === "all" || card.status === filter;
 }
 
 export type RewardTierState = "reached" | "current" | "locked";
@@ -166,11 +163,13 @@ function tierOverview<T extends RewardRoadTier>(
   const sorted = [...tiers].sort((a, b) => a.startPoints - b.startPoints);
   if (sorted.length === 0) throw new Error("Rewards require at least one tier");
 
-  const reached = sorted.filter((tier) => tierPoints >= tier.startPoints).length;
-  const matchedIndex = currentId == null
-    ? -1
-    : sorted.findIndex((tier) => tier.id === currentId);
-  const currentIndex = matchedIndex >= 0 ? matchedIndex : Math.max(0, reached - 1);
+  const reached = sorted.filter(
+    (tier) => tierPoints >= tier.startPoints,
+  ).length;
+  const matchedIndex =
+    currentId == null ? -1 : sorted.findIndex((tier) => tier.id === currentId);
+  const currentIndex =
+    matchedIndex >= 0 ? matchedIndex : Math.max(0, reached - 1);
   const current = sorted[currentIndex];
   const next = sorted[currentIndex + 1] ?? null;
 
@@ -201,6 +200,8 @@ export function rewardsOverview(summary: RewardsSummary): RewardsOverview {
   return tierOverview(summary.tiers, summary.tierPoints);
 }
 
-export function rewardsHomeOverview(data: RewardsHomeData): RewardsHomeOverview {
+export function rewardsHomeOverview(
+  data: RewardsHomeData,
+): RewardsHomeOverview {
   return tierOverview(data.roadTiers, data.tierPoints, data.currentTier?.id);
 }

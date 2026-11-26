@@ -22,17 +22,25 @@ vi.mock("@/i18n/navigation", () => ({
 import CatalogPage from "./CatalogPage";
 
 const items: RewardCatalogData["items"] = [
-  { id: "discount-50", discountAmount: 50, pointsCost: 1000, validityDays: 90 },
+  {
+    id: "discount-50",
+    discountAmount: 50,
+    pointsCost: 1000,
+    canReplace: true,
+    validityDays: 90,
+  },
   {
     id: "discount-100",
     discountAmount: 100,
     pointsCost: 1900,
+    canReplace: true,
     validityDays: 90,
   },
   {
     id: "discount-200",
     discountAmount: 200,
     pointsCost: 3800,
+    canReplace: true,
     validityDays: 90,
   },
 ];
@@ -100,8 +108,13 @@ describe("CatalogPage", () => {
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
   });
 
-  it("marks cards above the balance as unavailable and disables them", () => {
-    renderWithIntl(<CatalogPage data={{ balance: 1000, items }} />);
+  it("marks the cards the API flags as unavailable and disables them", () => {
+    // The balance covers every card; only the API's per-card flag disables.
+    const flagged = items.map((item, index) => ({
+      ...item,
+      canReplace: index === 0,
+    }));
+    renderWithIntl(<CatalogPage data={{ balance: 4000, items: flagged }} />);
 
     const cards = screen.getAllByRole("article");
     expect(

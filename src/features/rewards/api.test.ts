@@ -49,8 +49,18 @@ describe("rewardsApi live package reads", () => {
         level_points: 1200,
         current_package: { ...packageDto, current_package: true },
         other_packages: [
-          { ...currentDto.other_packages[0], high_color: "#F3C29B", medium_color: "#C8794A", low_color: "#7A3E1D" },
-          { id: 8, name: "Gold", icon_url: "https://admin.t-car.app/storage/gold.png", start_points: 5000 },
+          {
+            ...currentDto.other_packages[0],
+            high_color: "#F3C29B",
+            medium_color: "#C8794A",
+            low_color: "#7A3E1D",
+          },
+          {
+            id: 8,
+            name: "Gold",
+            icon_url: "https://admin.t-car.app/storage/gold.png",
+            start_points: 5000,
+          },
         ],
       }),
     );
@@ -182,19 +192,38 @@ describe("rewardsApi live package reads", () => {
   });
 
   it("reads E9 catalog items and balance from one response", async () => {
-    get.mockResolvedValueOnce(envelope({
-      can_replaced_points: 500,
-      discount_cards: [
-        { id: 5, discount_value: 50, points_count: 1000 },
-        { id: 6, discount_value: 100, points_count: 1900 },
-      ],
-    }));
+    get.mockResolvedValueOnce(
+      envelope({
+        can_replaced_points: 500,
+        discount_cards: [
+          { id: 5, discount_value: 50, points_count: 1000, can_replace: true },
+          {
+            id: 6,
+            discount_value: 100,
+            points_count: 1900,
+            can_replace: false,
+          },
+        ],
+      }),
+    );
 
     await expect(rewardsApi.getCatalog("user-1")).resolves.toEqual({
       balance: 500,
       items: [
-        { id: "5", discountAmount: 50, pointsCost: 1000, validityDays: 90 },
-        { id: "6", discountAmount: 100, pointsCost: 1900, validityDays: 90 },
+        {
+          id: "5",
+          discountAmount: 50,
+          pointsCost: 1000,
+          canReplace: true,
+          validityDays: 90,
+        },
+        {
+          id: "6",
+          discountAmount: 100,
+          pointsCost: 1900,
+          canReplace: false,
+          validityDays: 90,
+        },
       ],
     });
     expect(get).toHaveBeenCalledOnce();
@@ -202,16 +231,38 @@ describe("rewardsApi live package reads", () => {
   });
 
   it("accepts an empty E9 catalog and rejects malformed card data", async () => {
-    get.mockResolvedValueOnce(envelope({ can_replaced_points: 0, discount_cards: [] }));
+    get.mockResolvedValueOnce(
+      envelope({ can_replaced_points: 0, discount_cards: [] }),
+    );
     await expect(rewardsApi.getCatalog("user-1")).resolves.toEqual({
       balance: 0,
       items: [],
     });
-    get.mockResolvedValueOnce(envelope({
-      can_replaced_points: 0,
-      discount_cards: [{ id: 5, discount_value: 50, points_count: "1000" }],
-    }));
-    await expect(rewardsApi.getCatalog("user-1")).rejects.toEqual(new AppError("server"));
+    get.mockResolvedValueOnce(
+      envelope({
+        can_replaced_points: 0,
+        discount_cards: [
+          {
+            id: 5,
+            discount_value: 50,
+            points_count: "1000",
+            can_replace: true,
+          },
+        ],
+      }),
+    );
+    await expect(rewardsApi.getCatalog("user-1")).rejects.toEqual(
+      new AppError("server"),
+    );
+    get.mockResolvedValueOnce(
+      envelope({
+        can_replaced_points: 0,
+        discount_cards: [{ id: 5, discount_value: 50, points_count: 1000 }],
+      }),
+    );
+    await expect(rewardsApi.getCatalog("user-1")).rejects.toEqual(
+      new AppError("server"),
+    );
   });
 
   it("propagates E9 transport errors unchanged", async () => {
@@ -220,8 +271,86 @@ describe("rewardsApi live package reads", () => {
     await expect(rewardsApi.getCatalog("user-1")).rejects.toBe(error);
   });
 
-  it("keeps card and redemption methods on their mock for later fractions", () => {
-    expect(rewardsApi.getCards).toBe(rewardsMock.getCards);
+  it("reads E10 with the selected filter and maps paginated cards", async () => {
+    get.mockResolvedValueOnce({
+      ...envelope([
+        {
+          id: 42,
+          discount_card_id: 5,
+          code: "TCAR-42",
+          discount_value: 50,
+          points_count: 1000,
+          status: "used",
+          expire_at: "2027-01-18 10:00:00",
+          used_at: "2026-11-20 12:30:00",
+          order_id: 2363,
+        },
+      ]),
+      pagination: {
+        current_page: 2,
+        last_page: 3,
+        per_page: 10,
+        total: 21,
+        from: 11,
+        to: 20,
+      },
+    });
+    await expect(rewardsApi.getCardsPage("user-1", 2, "used")).resolves.toEqual(
+      {
+        items: [
+          {
+            id: "42",
+            code: "TCAR-42",
+            discountAmount: 50,
+            status: "used",
+            expiresAt: "2027-01-18T10:00:00+03:00",
+            usedAt: "2026-11-20T12:30:00+03:00",
+            bookingId: "2363",
+          },
+        ],
+        page: 2,
+        lastPage: 3,
+        total: 21,
+      },
+    );
+    expect(get).toHaveBeenCalledWith("/my-discount-cards", {
+      query: { page: 2, per_page: 10, filter: "used" },
+    });
+  });
+
+  it("reads E9 balance and the unfiltered first E10 page for My Cards", async () => {
+    get.mockImplementation((path: string) =>
+      Promise.resolve(
+        path === "/discount-cards"
+          ? envelope({ can_replaced_points: 500, discount_cards: [] })
+          : {
+              ...envelope([]),
+              pagination: { current_page: 1, last_page: 1, total: 0 },
+            },
+      ),
+    );
+    await expect(rewardsApi.getCards("user-1", "all")).resolves.toEqual({
+      balance: 500,
+      page: { items: [], page: 1, lastPage: 1, total: 0 },
+    });
+    expect(get).toHaveBeenCalledWith("/my-discount-cards", {
+      query: { page: 1, per_page: 10 },
+    });
+  });
+
+  it("rejects malformed E10 rows and pagination", async () => {
+    const pagination = { current_page: 1, last_page: 1, total: 1 };
+    get.mockResolvedValueOnce({ ...envelope([{ id: 1 }]), pagination });
+    await expect(
+      rewardsApi.getCardsPage("user-1", 1, "active"),
+    ).rejects.toEqual(new AppError("server"));
+    get.mockResolvedValueOnce({ ...envelope([]), pagination: null });
+    await expect(rewardsApi.getCardsPage("user-1", 1, "all")).rejects.toEqual(
+      new AppError("server"),
+    );
+  });
+
+  it("keeps redemption on its mock for the next fraction", () => {
     expect(rewardsApi.redeem).toBe(rewardsMock.redeem);
   });
 });

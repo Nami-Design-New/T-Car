@@ -1,6 +1,5 @@
 import { describe, expect, it } from "vitest";
 import {
-  canAffordReward,
   rewardsHomeOverview,
   rewardTierView,
   rewardsOverview,
@@ -72,20 +71,6 @@ describe("rewardTierView", () => {
       pointsLeft: 0,
       next: null,
     });
-  });
-});
-
-describe("canAffordReward", () => {
-  const item = {
-    id: "discount-100",
-    discountAmount: 100,
-    pointsCost: 1900,
-    validityDays: 90,
-  };
-
-  it("allows an exact balance and rejects a lower one", () => {
-    expect(canAffordReward(1900, item)).toBe(true);
-    expect(canAffordReward(1899, item)).toBe(false);
   });
 });
 

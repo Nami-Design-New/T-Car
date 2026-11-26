@@ -793,15 +793,30 @@ Production build and signed-in route smoke remain pending after the user's
 instruction to skip the build while the `.next` cache issue is unresolved.
 
 **Rewards API, fraction R8 (2026-11-25, branch `feature/rewards-tiers`),
-implementation ready:** The catalog reads E9 `GET /discount-cards` for its
-four cards and redeemable balance in one request. IDs, discount values, and
-point costs come from the API; the documented 90-day validity remains fixed.
+done in `df1cffe`:** The catalog reads E9 `GET /discount-cards` for its
+four cards and redeemable balance in one request. IDs, discount values, point
+costs, and the per-card `can_replace` flag come from the API (the flag controls
+the redeem button); the documented 90-day validity remains fixed.
 The TEST response has four cards costing 1,000–6,000 points and a zero balance,
-so none is affordable for that customer. My cards and redemption remain on
+so none is redeemable for that customer. My cards and redemption remain on
 their mocks for R9–R10. Typecheck, lint (one existing warning), and 68
 rewards-focused tests pass. Production build and signed-in route smoke remain
 pending under the user's skip-build instruction; the full suite is reserved
 for before merge.
+
+**Rewards API, fraction R9 (2026-11-25, branch `feature/rewards-tiers`),
+implementation ready:** My Cards reads E10 `GET /my-discount-cards` with a
+server filter and page size 10; the filter is kept in the URL and later pages
+load through a Server Action and `InfiniteList`. The page obtains the
+redeemable balance from E9, since E10 does not include it. The E10 mapper
+validates card states, dates, and top-level pagination. TEST returned an empty
+list for all, active, used, and expired filters. The populated card shape is
+still based on Bruno because that account has no redeemed cards. The same
+fraction corrected R8: a fresh E9 response carries `can_replace` per card, and
+that backend flag now decides whether each catalog card can be redeemed.
+Typecheck, lint (one existing warning), and 74 rewards-focused tests pass.
+Production build and signed-in route smoke remain pending under the user's
+skip-build instruction.
 
 Notifications API integration (2026-11-12): `features/notifications` now owns
 the live paginated `GET /notifications` read and uses `InfiniteList` for later

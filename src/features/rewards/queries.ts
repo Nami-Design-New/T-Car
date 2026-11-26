@@ -4,7 +4,7 @@ import { auth } from "@/auth";
 import { rewardsApi } from "./api";
 import { protectedRead } from "@/services/http/session";
 import { AppError } from "@/shared/lib/errors";
-import type { RewardCardsData, RewardCatalogData, RewardTier, RewardsHomeData, RewardsSummary } from "./model";
+import type { RewardCardFilter, RewardCardsData, RewardCatalogData, RewardTier, RewardsHomeData, RewardsSummary } from "./model";
 
 export function getRewardsHome(): Promise<RewardsHomeData> {
   return protectedRead(async () => {
@@ -33,12 +33,12 @@ export function getRewardTier(id: string): Promise<RewardTier | null> {
   });
 }
 
-export function getRewardCards(): Promise<RewardCardsData> {
+export function getRewardCards(filter: RewardCardFilter): Promise<RewardCardsData> {
   return protectedRead(async () => {
     const session = await auth();
     if (!session?.user?.id) throw new AppError("unauthorized");
 
-    return rewardsApi.getCards(session.user.id);
+    return rewardsApi.getCards(session.user.id, filter);
   });
 }
 

@@ -42,7 +42,7 @@ export default function RewardTicket({
         month: "long",
         year: "numeric",
         numberingSystem: "latn",
-        timeZone: "UTC",
+        timeZone: "Asia/Riyadh",
       })
     : "";
 

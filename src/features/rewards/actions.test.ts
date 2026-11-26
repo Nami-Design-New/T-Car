@@ -1,20 +1,57 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { AppError } from "@/shared/lib/errors";
 import { fail, ok } from "@/shared/lib/result";
-import { redeemRewardAction } from "./actions";
+import { getRewardCardsPageAction, redeemRewardAction } from "./actions";
 
-const { authMock, redeemMock, reportErrorMock } = vi.hoisted(() => ({
-  authMock: vi.fn(),
-  redeemMock: vi.fn(),
-  reportErrorMock: vi.fn(),
-}));
+const { authMock, redeemMock, cardsPageMock, reportErrorMock } = vi.hoisted(
+  () => ({
+    authMock: vi.fn(),
+    redeemMock: vi.fn(),
+    cardsPageMock: vi.fn(),
+    reportErrorMock: vi.fn(),
+  }),
+);
 
 vi.mock("@/shared/lib/report", () => ({ reportError: reportErrorMock }));
 
 vi.mock("@/auth", () => ({ auth: authMock }));
 vi.mock("./api", () => ({
-  rewardsApi: { redeem: redeemMock },
+  rewardsApi: { redeem: redeemMock, getCardsPage: cardsPageMock },
 }));
+
+describe("getRewardCardsPageAction", () => {
+  beforeEach(() => {
+    authMock.mockReset();
+    cardsPageMock.mockReset();
+    authMock.mockResolvedValue({ user: { id: "customer-1" } });
+  });
+
+  it("loads the selected E10 page and serializes the result", async () => {
+    const page = { items: [], page: 2, lastPage: 2, total: 10 };
+    cardsPageMock.mockResolvedValue(page);
+    await expect(getRewardCardsPageAction(2, "used")).resolves.toEqual({
+      ok: true,
+      data: page,
+    });
+    expect(cardsPageMock).toHaveBeenCalledWith("customer-1", 2, "used");
+  });
+
+  it("rejects invalid page/filter and a missing session", async () => {
+    await expect(getRewardCardsPageAction(0, "all")).resolves.toMatchObject({
+      ok: false,
+      error: { kind: "validation" },
+    });
+    await expect(
+      getRewardCardsPageAction(1, "wrong" as never),
+    ).resolves.toMatchObject({ ok: false, error: { kind: "validation" } });
+    authMock.mockResolvedValue(null);
+    await expect(getRewardCardsPageAction(1, "all")).resolves.toMatchObject({
+      ok: false,
+      error: { kind: "unauthorized" },
+    });
+    expect(cardsPageMock).not.toHaveBeenCalled();
+  });
+});
 
 describe("redeemRewardAction", () => {
   beforeEach(() => {

@@ -6,8 +6,11 @@ import type { RewardCardsData } from "../model";
 import MyCardsPage from "./MyCardsPage";
 
 const notify = vi.hoisted(() => ({ success: vi.fn(), error: vi.fn() }));
+const replace = vi.hoisted(() => vi.fn());
+vi.mock("../actions", () => ({ getRewardCardsPageAction: vi.fn() }));
 vi.mock("@/shared/hooks/useNotify", () => ({ useNotify: () => notify }));
 vi.mock("@/i18n/navigation", () => ({
+  useRouter: () => ({ replace }),
   Link: ({ href, ...props }: React.ComponentProps<"a"> & { href: string }) => (
     <a href={href} {...props} />
   ),
@@ -15,35 +18,40 @@ vi.mock("@/i18n/navigation", () => ({
 
 const data: RewardCardsData = {
   balance: 4000,
-  cards: [
-    {
-      id: "active",
-      code: "TCAR-30S-Q9LD",
-      discountAmount: 50,
-      status: "active",
-      expiresAt: "2027-01-18T00:00:00.000Z",
-    },
-    {
-      id: "used",
-      code: "TCAR-962-M2PA",
-      discountAmount: 50,
-      status: "used",
-      usedAt: "2026-10-20T00:00:00.000Z",
-      bookingId: "2363",
-    },
-    {
-      id: "expired",
-      code: "TCAR-418-X5RB",
-      discountAmount: 50,
-      status: "expired",
-      expiresAt: "2026-09-30T00:00:00.000Z",
-    },
-  ],
+  page: {
+    page: 1,
+    lastPage: 1,
+    total: 3,
+    items: [
+      {
+        id: "active",
+        code: "TCAR-30S-Q9LD",
+        discountAmount: 50,
+        status: "active",
+        expiresAt: "2027-01-18T00:00:00.000Z",
+      },
+      {
+        id: "used",
+        code: "TCAR-962-M2PA",
+        discountAmount: 50,
+        status: "used",
+        usedAt: "2026-10-20T00:00:00.000Z",
+        bookingId: "2363",
+      },
+      {
+        id: "expired",
+        code: "TCAR-418-X5RB",
+        discountAmount: 50,
+        status: "expired",
+        expiresAt: "2026-09-30T00:00:00.000Z",
+      },
+    ],
+  },
 };
 
 describe("MyCardsPage", () => {
   it("shows the balance and all three card states", () => {
-    renderWithIntl(<MyCardsPage data={data} />);
+    renderWithIntl(<MyCardsPage data={data} filter="all" />);
 
     expect(screen.getByText("4,000")).toBeInTheDocument();
     expect(
@@ -59,25 +67,31 @@ describe("MyCardsPage", () => {
     ).toBeDisabled();
   });
 
-  it("filters cards and shows an empty state", async () => {
+  it("changes the server filter through the URL", async () => {
     const user = userEvent.setup();
-    renderWithIntl(<MyCardsPage data={data} />);
+    renderWithIntl(<MyCardsPage data={data} filter="all" />);
 
     await user.click(screen.getByRole("tab", { name: "Used" }));
-    expect(screen.getByRole("tab", { name: "Used" })).toHaveAttribute(
-      "aria-selected",
-      "true",
-    );
-    expect(screen.getAllByRole("listitem")).toHaveLength(1);
-    expect(screen.getByText("TCAR-962-M2PA")).toBeInTheDocument();
+    expect(replace).toHaveBeenCalledWith("/account/rewards/cards?filter=used", {
+      scroll: false,
+    });
 
-    await user.click(screen.getByRole("tab", { name: "Active" }));
-    expect(screen.getByText("TCAR-30S-Q9LD")).toBeInTheDocument();
-    expect(screen.queryByText("TCAR-962-M2PA")).not.toBeInTheDocument();
+    await user.click(screen.getByRole("tab", { name: "All" }));
+    expect(replace).toHaveBeenCalledWith("/account/rewards/cards", {
+      scroll: false,
+    });
   });
 
   it("shows an empty state when there are no cards", () => {
-    renderWithIntl(<MyCardsPage data={{ balance: 0, cards: [] }} />);
+    renderWithIntl(
+      <MyCardsPage
+        data={{
+          balance: 0,
+          page: { items: [], page: 1, lastPage: 1, total: 0 },
+        }}
+        filter="all"
+      />,
+    );
     expect(screen.getByText("No cards yet")).toBeInTheDocument();
   });
 
@@ -86,7 +100,7 @@ describe("MyCardsPage", () => {
     const writeText = vi
       .spyOn(navigator.clipboard, "writeText")
       .mockResolvedValue();
-    renderWithIntl(<MyCardsPage data={data} />);
+    renderWithIntl(<MyCardsPage data={data} filter="all" />);
 
     await user.click(
       screen.getByRole("button", { name: "Copy code TCAR-30S-Q9LD" }),

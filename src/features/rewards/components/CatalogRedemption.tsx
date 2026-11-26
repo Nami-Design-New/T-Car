@@ -97,7 +97,6 @@ export default function CatalogRedemption({ data }: Props) {
             <CatalogCard
               key={item.id}
               item={item}
-              balance={data.balance}
               onRedeem={(opener) => open(item, opener)}
             />
           ))}

@@ -1,5 +1,6 @@
 import { getLocale } from "next-intl/server";
 import type {
+  RewardCard,
   RewardCardsData,
   RewardCatalogData,
   RewardCatalogItem,
@@ -125,13 +126,26 @@ const PERKS: Record<"ar" | "en", Record<MockTierKey, PerkCopy[]>> = {
 };
 
 const TIER_NAMES: Record<"ar" | "en", Record<MockTierKey, string>> = {
-  ar: { bronze: "البرونزية", silver: "الفضية", gold: "الذهبية", diamond: "الماسية" },
+  ar: {
+    bronze: "البرونزية",
+    silver: "الفضية",
+    gold: "الذهبية",
+    diamond: "الماسية",
+  },
   en: { bronze: "Bronze", silver: "Silver", gold: "Gold", diamond: "Diamond" },
 };
 const TIER_KEYS: Record<MockTierKey, string[]> = {
   bronze: ["bronze_welcome"],
-  silver: ["monthly_points", "monthly_contract_discount", "booking_wallet_refund"],
-  gold: ["monthly_discount_code", "points_every_days", "free_delivery_every_bookings"],
+  silver: [
+    "monthly_points",
+    "monthly_contract_discount",
+    "booking_wallet_refund",
+  ],
+  gold: [
+    "monthly_discount_code",
+    "points_every_days",
+    "free_delivery_every_bookings",
+  ],
   diamond: ["vip_support_24h", "free_delivery_pickup_all", "diamond_offers"],
 };
 const TIER_COLORS: Record<MockTierKey, RewardTier["colors"]> = {
@@ -172,13 +186,14 @@ const MOCK_FAILURE_USER_ID = "rewards-failure";
 const MOCK_FAILURE_ITEM_ID = "discount-failure";
 type MockCatalogItem = RewardCatalogItem & { code: string };
 // The 300 SAR card costs more than the mock balance (4,000), so the catalog
-// always shows one unaffordable card and `redeem` answers it with
-// `rewards.insufficientPoints`.
+// always shows one card the API flags as unaffordable and `redeem` answers it
+// with `rewards.insufficientPoints`.
 const CATALOG_ITEMS: MockCatalogItem[] = [
   {
     id: "discount-50",
     discountAmount: 50,
     pointsCost: 1000,
+    canReplace: true,
     validityDays: 90,
     code: "TCAR-305-Q9LD",
   },
@@ -186,6 +201,7 @@ const CATALOG_ITEMS: MockCatalogItem[] = [
     id: "discount-100",
     discountAmount: 100,
     pointsCost: 1900,
+    canReplace: true,
     validityDays: 90,
     code: "TCAR-100-N7KL",
   },
@@ -193,6 +209,7 @@ const CATALOG_ITEMS: MockCatalogItem[] = [
     id: "discount-200",
     discountAmount: 200,
     pointsCost: 3800,
+    canReplace: true,
     validityDays: 90,
     code: "TCAR-200-P4RM",
   },
@@ -200,6 +217,7 @@ const CATALOG_ITEMS: MockCatalogItem[] = [
     id: "discount-300",
     discountAmount: 300,
     pointsCost: 6000,
+    canReplace: false,
     validityDays: 90,
     code: "TCAR-300-H6TW",
   },
@@ -242,38 +260,50 @@ export const rewardsMock: RewardsApi = {
     }
     return tiersFor(await getLocale()).find((tier) => tier.id === id) ?? null;
   },
-  async getCards(userId) {
+  async getCards(userId, filter) {
+    return {
+      balance: MOCK_POINTS_SUMMARY.balance,
+      page: await rewardsMock.getCardsPage(userId, 1, filter),
+    } satisfies RewardCardsData;
+  },
+  async getCardsPage(userId, page, filter) {
     await delay();
     if (userId === MOCK_FAILURE_USER_ID) {
       throw new AppError("network", "rewards.unavailable");
     }
+    const cards = [
+      {
+        id: "card-active",
+        code: "TCAR-30S-Q9LD",
+        discountAmount: 50,
+        status: "active",
+        expiresAt: "2027-01-18T00:00:00.000Z",
+      },
+      {
+        id: "card-used",
+        code: "TCAR-962-M2PA",
+        discountAmount: 50,
+        status: "used",
+        usedAt: "2026-10-20T00:00:00.000Z",
+        bookingId: "2363",
+      },
+      {
+        id: "card-expired",
+        code: "TCAR-418-X5RB",
+        discountAmount: 50,
+        status: "expired",
+        expiresAt: "2026-09-30T00:00:00.000Z",
+      },
+    ] satisfies RewardCard[];
+    const filtered = cards.filter(
+      (card) => filter === "all" || card.status === filter,
+    );
     return {
-      balance: MOCK_POINTS_SUMMARY.balance,
-      cards: [
-        {
-          id: "card-active",
-          code: "TCAR-30S-Q9LD",
-          discountAmount: 50,
-          status: "active",
-          expiresAt: "2027-01-18T00:00:00.000Z",
-        },
-        {
-          id: "card-used",
-          code: "TCAR-962-M2PA",
-          discountAmount: 50,
-          status: "used",
-          usedAt: "2026-10-20T00:00:00.000Z",
-          bookingId: "2363",
-        },
-        {
-          id: "card-expired",
-          code: "TCAR-418-X5RB",
-          discountAmount: 50,
-          status: "expired",
-          expiresAt: "2026-09-30T00:00:00.000Z",
-        },
-      ],
-    } satisfies RewardCardsData;
+      items: page === 1 ? filtered : [],
+      page,
+      lastPage: 1,
+      total: filtered.length,
+    };
   },
   async getCatalog(userId) {
     await delay();
@@ -283,10 +313,11 @@ export const rewardsMock: RewardsApi = {
     return {
       balance: MOCK_POINTS_SUMMARY.balance,
       items: CATALOG_ITEMS.map(
-        ({ id, discountAmount, pointsCost, validityDays }) => ({
+        ({ id, discountAmount, pointsCost, canReplace, validityDays }) => ({
           id,
           discountAmount,
           pointsCost,
+          canReplace,
           validityDays,
         }),
       ),

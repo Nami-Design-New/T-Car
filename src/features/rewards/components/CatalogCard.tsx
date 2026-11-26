@@ -3,19 +3,18 @@ import { useFormatter, useTranslations } from "next-intl";
 import { FiPlus } from "react-icons/fi";
 import { ICONS } from "@/shared/config/assets";
 import { cn } from "@/shared/lib/cn";
-import { canAffordReward, type RewardCatalogItem } from "../model";
+import type { RewardCatalogItem } from "../model";
 
 interface Props {
   item: RewardCatalogItem;
-  balance: number;
   /** Receives the + button so focus can return to it after the flow. */
   onRedeem: (opener: HTMLButtonElement) => void;
 }
 
-export default function CatalogCard({ item, balance, onRedeem }: Props) {
+export default function CatalogCard({ item, onRedeem }: Props) {
   const t = useTranslations("rewards.catalog");
   const format = useFormatter();
-  const affordable = canAffordReward(balance, item);
+  const affordable = item.canReplace;
 
   return (
     <article className="bg-surface-elevated flex min-w-0 flex-col gap-2 rounded-2xl p-2 shadow-[0_7px_14px_rgba(31,77,153,0.08)]">

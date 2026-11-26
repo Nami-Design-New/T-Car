@@ -2,7 +2,7 @@
 
 Last updated: 2026-11-25
 Base URL: `https://admin.t-car.app/api/user` (TEST, `NEXT_PUBLIC_API_URL`)
-Status: R0–R7 done; R8 (live catalog) implementation ready; R9–R12 open.
+Status: R0–R8 done; R9 (my cards) implementation ready; R10–R12 open.
 Branch `feature/rewards-tiers`.
 
 Sources: Bruno `User Application/Setting/referal and points` (12 requests),
@@ -167,13 +167,27 @@ E8 with an unknown id: `code: 404`, "The requested resource was not found."
 ```ts
 interface DiscountCardsDto {
   can_replaced_points: number;
-  discount_cards: { id: number; discount_value: number; points_count: number }[];
+  discount_cards: {
+    id: number;
+    discount_value: number;
+    points_count: number;
+    /** Observed in a fresh R9 probe; the app uses it for the redeem button. */
+    can_replace: boolean;
+  }[];
 }
 ```
 
-Validity is a fixed 90 days (Bruno); there is no per-card field.
+Validity is a fixed 90 days (Bruno); there is no per-card field. A fresh
+response returned `can_replace` on every card (all `false` with a zero
+balance); the earlier Bruno contract omitted it.
 
 ### 3.7 E10 `GET /my-discount-cards` (envelope observed; card from Bruno)
+
+R9 probes found an empty list and top-level pagination for omitted `filter`
+and for `active`, `used`, and `expired` on TEST. The first page uses
+`per_page=10`; subsequent pages use the same filter. E10 has no balance, so
+My Cards reads `can_replaced_points` from E9. For card rows, a timestamp
+without an offset is interpreted as Riyadh time, as with E5.
 
 ```ts
 // data: MyDiscountCardDto[], pagination at the top level
@@ -238,8 +252,8 @@ below this table identifies the pages affected by each fraction.
 | R5 — Points history **Done (2026-11-25)** | E5 with server `filter` and pagination; new transaction model; account summary card reads the balances from E5 (`per_page=1`). | `/account/points` reads the API's first page for all / earned / used (`spent` in the URL); `InfiniteList` loads later pages through a validated Server Action. The mapper checks nested pagination, each `point_type`, signed points, and dates, and uses the API title. The account shell reads balances with `per_page=1`. Points model, mapper, action, and component tests cover the flow. Typecheck, lint (one existing warning), all 1,103 tests, and production build pass. On `next start`, unauthenticated requests for all three filters in `ar` and `en` redirect to sign-in with the filter preserved; signed-in HTML smoke remains open. |
 | R6 — Dynamic tier model **Done (2026-11-25, `43ca0d7`)** | Model, mock, and components use API-shaped tiers (§4): name, icon URL, colour gradient, perk icon by `key`; route `/rewards/tiers/[id]`. Still on the mock. | Typecheck, lint (one existing warning), and 49 focused tests pass; tests cover an arbitrary fifth package, API-shaped mock data, unknown perk keys, and an unknown tier id producing `NEXT_NOT_FOUND`. Production build and `next start` smoke were skipped at the user's direction after the existing `.next` cache blocked page-data collection. Full suite before merge. |
 | R7 — Live tiers **Done (2026-11-25, `f631352`)** | The overview reads E7 only: `current_package` for hero/perks and deduplicated `other_packages` for the road. The account layout's unused `/points` summary request was removed; points history still reads `/points` on its own page. All-tiers reads E6 + E7; detail also reads E8 (`404` → `notFound()`). Cards and redemption remain mocked. | DTO guards map API names, icon URLs, three colours, point ranges, perks, and E7 balances; the first tier is current below its start points. E8 supplies the selected detail and maps 404 to `null`. Typecheck, lint (one existing warning), and 65 rewards-focused tests pass, including E7-only overview, current-tier deduplication, unknown-id route, and API-colour gradients. A live TEST probe confirmed E6/E7/E8 fields in `ar` and `en` and E8 body-code 404; it found changed package thresholds (B13). Production build and signed-in route smoke remain pending under the user's skip-build instruction. |
-| R8 — Catalog **Implementation ready (2026-11-25)** | E9 supplies four cards and the redeemable balance in one response; each item maps its numeric id, discount value, and point cost, with documented 90-day validity. My cards and redemption remain mocked for R9–R10. | A live TEST E9 probe returned card ids 5–8, discounts 50–300, costs 1,000–6,000, and zero redeemable points. Typecheck, lint (one existing warning), and 68 rewards-focused tests pass, including E9 mapping, empty catalog, malformed data, and transport errors. Production build and signed-in route smoke remain pending under the user's skip-build instruction. |
-| R9 — My cards | E10 with server filter and pagination. | My cards page reads the API per filter; empty state on TEST. |
+| R8 — Catalog **Done (2026-11-25, `df1cffe`)** | E9 supplies four cards and the redeemable balance in one response; each item maps its numeric id, discount value, point cost, and `can_replace` flag (which controls the redeem button), with documented 90-day validity. My cards and redemption remain mocked for R9–R10. | A live TEST E9 probe returned card ids 5–8, discounts 50–300, costs 1,000–6,000, and zero redeemable points. Typecheck, lint (one existing warning), and 68 rewards-focused tests pass, including E9 mapping, empty catalog, malformed data, and transport errors. Production build and signed-in route smoke remain pending under the user's skip-build instruction. |
+| R9 — My cards **Implementation ready (2026-11-25)** | E10 with server filter and pagination, page size 10; E9 supplies the balance. `/account/rewards/cards?filter=active\|used\|expired` preserves the selected filter in the URL, and a Server Action loads later pages. This fraction also corrected R8 to use E9's per-card `can_replace` instead of comparing the balance. | TEST returned an empty E10 list for all four filters, with `pagination` at the response top level. The mapper validates the Bruno row shape and dates; typecheck, lint (one existing warning), and 74 rewards-focused tests pass. Route smoke remains pending; production build is skipped at the user's direction. |
 | R10 — Redemption | Confirm dialog reads E11; confirm calls E12 in a Server Action returning `ActionResult`; 400/422 toasted, dialog stays open. | Insufficient-points path verified live; success path verified once with the user's approval on a customer with points. |
 | R11 — Booking-complete points | E13 on the completed-booking screen (design reference needed). | Earned points shown for a completed booking; 404 handled. |
 | R12 — Remove production mocks | No production caller uses a rewards, points, or referrals mock; mocks stay for tests. | Grep shows mocks imported only from tests. |
