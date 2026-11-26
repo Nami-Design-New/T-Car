@@ -131,7 +131,7 @@ export function mapSettings(value: unknown): AppSettings {
       privacyUrl: link(settingsData.privacy_policy_url),
     },
     isVip: settingsData.is_vip === true,
-    vipPackages: settingsData.vip_packages ?? null,
+    vipPackages: text(settingsData.vip_packages) ?? null,
     whatsappNumber: toWhatsappNumber(settingsData.whatsapp_number),
     bookingTypes: toBookingTypes(settingsData),
     priceFilterRange: toPriceFilterRange(settingsData),

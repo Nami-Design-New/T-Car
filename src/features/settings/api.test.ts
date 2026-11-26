@@ -119,7 +119,7 @@ describe("settings mapping", () => {
   });
 
   it("keeps VIP data for the signed-in account and validates its contact number", () => {
-    const packages = [{ name: "Diamond", benefit: "24-hour support" }];
+    const packages = "الذهبية";
     const vip = mapSettings({
       ...settings,
       data: {
@@ -136,9 +136,15 @@ describe("settings mapping", () => {
     });
     const malformed = mapSettings({
       ...settings,
-      data: { ...settings.data, is_vip: "true", whatsapp_number: "invalid" },
+      data: {
+        ...settings.data,
+        is_vip: "true",
+        vip_packages: { name: "Gold" },
+        whatsapp_number: "invalid",
+      },
     });
     expect(malformed.isVip).toBe(false);
+    expect(malformed.vipPackages).toBeNull();
     expect(malformed.whatsappNumber).toBeNull();
   });
 

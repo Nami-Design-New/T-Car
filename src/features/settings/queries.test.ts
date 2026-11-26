@@ -14,7 +14,7 @@ import {
   DEFAULT_PRICE_FILTER_RANGE,
 } from "./model";
 import { MOCK_SETTINGS } from "./api.mock";
-import { getBookingTypeAvailability, getSiteSettings } from "./queries";
+import { getBookingTypeAvailability, getSiteSettings, getVipSettings } from "./queries";
 
 beforeEach(() => vi.clearAllMocks());
 
@@ -69,6 +69,34 @@ describe("getBookingTypeAvailability", () => {
     });
     expect(reportError).toHaveBeenCalledWith(expect.any(AppError), {
       scope: "settings.booking-types",
+    });
+  });
+});
+
+describe("getVipSettings", () => {
+  it("returns only the VIP fields from the settings read", async () => {
+    getSettings.mockResolvedValue({
+      ...MOCK_SETTINGS,
+      isVip: true,
+      vipPackages: "الذهبية",
+      whatsappNumber: "+955555555111",
+    });
+    await expect(getVipSettings()).resolves.toEqual({
+      isVip: true,
+      vipPackages: "الذهبية",
+      whatsappNumber: "+955555555111",
+    });
+  });
+
+  it("hides VIP when the settings read fails", async () => {
+    getSettings.mockRejectedValue(new AppError("network"));
+    await expect(getVipSettings()).resolves.toEqual({
+      isVip: false,
+      vipPackages: null,
+      whatsappNumber: null,
+    });
+    expect(reportError).toHaveBeenCalledWith(expect.any(AppError), {
+      scope: "settings.vip",
     });
   });
 });

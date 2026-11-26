@@ -32,6 +32,12 @@
     }
   },
   "account": {
+    "vip": {
+      "title": "Dedicated VIP support",
+      "packageDescription": "Exclusive to {package} members · Available 24 hours",
+      "description": "Dedicated support · Available 24 hours",
+      "contactWhatsApp": "Contact VIP support on WhatsApp"
+    },
     "title": "My account",
     "back": "Back",
     "nav": {

@@ -833,6 +833,14 @@ route or API; integration is deferred at the user's request. Typecheck, lint
 (one existing warning), two dialog tests, and production build pass. The
 unauthenticated booking route redirects to sign-in in both locales.
 
+Rewards API fraction R12: the rewards, points, and referrals production APIs
+already use their live implementations. A source audit found no production
+imports of their mocks; the rewards mock remains referenced by its tests and
+the points and referrals mocks have no callers. Signed-in route smoke remains
+open, as does the separate R11 integration. Typecheck, lint (one existing
+warning), all 1,143 tests, and production build pass; unauthenticated affected
+routes redirect to sign-in in both locales.
+
 **Rewards API, fraction R9 (2026-11-25, branch `feature/rewards-tiers`),
 implementation ready:** My Cards reads E10 `GET /my-discount-cards` with a
 server filter and page size 10; the filter is kept in the URL and later pages

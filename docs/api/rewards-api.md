@@ -2,7 +2,7 @@
 
 Last updated: 2026-11-26
 Base URL: `https://admin.t-car.app/api/user` (TEST, `NEXT_PUBLIC_API_URL`)
-Status: R0–R9 done; R10 (redemption) implementation in progress; R11–R12 open.
+Status: R0–R9 done; R10 implementation in progress; R11 design only; R12 mock audit ready.
 Branch `feature/rewards-tiers`.
 
 Sources: Bruno `User Application/Setting/referal and points` (12 requests),
@@ -257,7 +257,7 @@ below this table identifies the pages affected by each fraction.
 | R9 — My cards **Implementation ready (2026-11-25)** | E10 with server filter and pagination, page size 10; E9 supplies the balance. `/account/rewards/cards?filter=active\|used\|expired` preserves the selected filter in the URL, and a Server Action loads later pages. This fraction also corrected R8 to use E9's per-card `can_replace` instead of comparing the balance. | TEST returned an empty E10 list for all four filters, with `pagination` at the response top level. The mapper validates the Bruno row shape and dates; typecheck, lint (one existing warning), and 74 rewards-focused tests pass. Route smoke remains pending; production build is skipped at the user's direction. |
 | R10 — Redemption **Implementation in progress (2026-11-26)** | Confirm dialog reads E11; confirm calls E12 in a Server Action returning `ActionResult`; 400/422 toasted, dialog stays open. Points and referrals use B2's top-level pagination shape. | Typecheck, lint (one existing warning), 180 focused tests, and production build pass. Unauthenticated affected routes redirect to sign-in in both locales. Signed-in route smoke and live verification of the revised contracts remain pending. E11 insufficient points was observed; E12 success requires a customer with points and approval. |
 | R11 — Booking-complete points **Design only** | A standalone dialog reflects the supplied reference; it is not connected to a route or E13 at the user's request. | Integration, earned points from E13, 404 handling, and live verification remain open. |
-| R12 — Remove production mocks | No production caller uses a rewards, points, or referrals mock; mocks stay for tests. | Grep shows mocks imported only from tests. |
+| R12 — Remove production mocks **Audit ready** | No production caller uses a rewards, points, or referrals mock; the existing feature APIs already use live implementations. Mocks remain available for tests. | Source audit found no production imports: rewards mock is imported by its tests; points and referrals mocks have no callers. Typecheck, lint (one existing warning), all 1,143 tests, and production build pass. Unauthenticated affected routes redirect to sign-in in both locales; signed-in route smoke remains open. |
 
 ### Pages affected by each fraction
 

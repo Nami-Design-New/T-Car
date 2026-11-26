@@ -32,6 +32,12 @@
     }
   },
   "account": {
+    "vip": {
+      "title": "دعم VIP مميز",
+      "packageDescription": "خاص لعملاء {package} · متاح 24 ساعة",
+      "description": "دعم خاص · متاح 24 ساعة",
+      "contactWhatsApp": "تواصل مع دعم VIP عبر واتساب"
+    },
     "back": "\u0631\u062c\u0648\u0639",
     "title": "حسابي",
     "nav": {
