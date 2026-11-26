@@ -108,18 +108,19 @@ function toTransaction(dto: TransactionDto): PointsTransaction {
   };
 }
 
-/** Validates the live balances, transactions, and pagination nested in data. */
+/** Validates the live balances, transactions, and top-level pagination. */
 export function mapPointsResponse(value: unknown): PointsData {
   if (!isApiEnvelope(value) || value.code !== 200 || !isRecord(value.data))
     throw new AppError("server");
   const data = value.data;
+  const pagination = (value as { pagination?: unknown }).pagination;
   if (
     !isCount(data.level_points) ||
     !isCount(data.can_replaced_points) ||
     !isCount(data.last_replaced_points) ||
     !Array.isArray(data.transactions) ||
     !data.transactions.every(isTransactionDto) ||
-    !isPaginationDto(data.pagination)
+    !isPaginationDto(pagination)
   ) {
     throw new AppError("server");
   }
@@ -129,7 +130,7 @@ export function mapPointsResponse(value: unknown): PointsData {
       balance: data.can_replaced_points,
       lastRedemption: data.last_replaced_points || null,
     },
-    page: toPage(data.transactions.map(toTransaction), data.pagination),
+    page: toPage(data.transactions.map(toTransaction), pagination),
   };
 }
 

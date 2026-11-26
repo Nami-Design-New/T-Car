@@ -4,7 +4,8 @@ import type {
   RewardCardsData,
   RewardCatalogData,
   RewardCatalogItem,
-  RewardRedemption,
+  RewardRedemptionData,
+  RewardRedemptionQuote,
   RewardTier,
   RewardsSummary,
 } from "./model";
@@ -323,6 +324,29 @@ export const rewardsMock: RewardsApi = {
       ),
     } satisfies RewardCatalogData;
   },
+  async getRedemptionQuote(userId, itemId) {
+    await delay();
+    if (userId === MOCK_FAILURE_USER_ID || itemId === MOCK_FAILURE_ITEM_ID) {
+      throw new AppError("network", "rewards.unavailable");
+    }
+    const item = CATALOG_ITEMS.find(({ id }) => id === itemId);
+    if (!item) throw new AppError("not_found", "rewards.cardUnavailable");
+    const { balance, tierPoints } = MOCK_POINTS_SUMMARY;
+    if (balance < item.pointsCost) {
+      throw new AppError("validation", "rewards.insufficientPoints", 400);
+    }
+    const tier = rewardsOverview({
+      tierPoints,
+      balance,
+      tiers: tiersFor(await getLocale()),
+    }).current;
+    return {
+      balanceBefore: balance,
+      pointsCost: item.pointsCost,
+      balanceAfter: balance - item.pointsCost,
+      tierName: tier.name,
+    } satisfies RewardRedemptionQuote;
+  },
   async redeem(userId, itemId) {
     await delay();
     if (userId === MOCK_FAILURE_USER_ID || itemId === MOCK_FAILURE_ITEM_ID) {
@@ -341,11 +365,6 @@ export const rewardsMock: RewardsApi = {
     const expiresAt = new Date(
       Date.now() + item.validityDays * 24 * 60 * 60 * 1000,
     ).toISOString();
-    const tier = rewardsOverview({
-      tierPoints,
-      balance,
-      tiers: tiersFor("en"),
-    }).current;
     return ok({
       card: {
         id: `redeemed-${item.id}`,
@@ -358,8 +377,6 @@ export const rewardsMock: RewardsApi = {
       balanceBefore: balance,
       balanceAfter: balance - item.pointsCost,
       tierPoints,
-      tierId: tier.id,
-      tierName: tier.name,
-    } satisfies RewardRedemption);
+    } satisfies RewardRedemptionData);
   },
 };

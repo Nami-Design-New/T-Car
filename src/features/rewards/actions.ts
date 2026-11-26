@@ -15,7 +15,8 @@ import {
   REWARD_CARD_FILTERS,
   type RewardCard,
   type RewardCardFilter,
-  type RewardRedemption,
+  type RewardRedemptionData,
+  type RewardRedemptionQuote,
 } from "./model";
 
 export async function getRewardCardsPageAction(
@@ -44,7 +45,7 @@ export async function getRewardCardsPageAction(
 /** Redeems a server-owned catalog item; only its id crosses from the client. */
 export async function redeemRewardAction(
   itemId: string,
-): Promise<ActionResult<RewardRedemption>> {
+): Promise<ActionResult<RewardRedemptionData>> {
   try {
     const session = await auth();
     if (!session?.user?.id) throw new AppError("unauthorized");
@@ -60,6 +61,29 @@ export async function redeemRewardAction(
     return toActionResult(result);
   } catch (error) {
     reportError(error, { scope: "rewards.redeem" });
+    return toActionResult(fail(error));
+  }
+}
+
+/** E11 preview for the confirm dialog; it spends nothing. */
+export async function getRedemptionQuoteAction(
+  itemId: string,
+): Promise<ActionResult<RewardRedemptionQuote>> {
+  try {
+    const session = await auth();
+    if (!session?.user?.id) throw new AppError("unauthorized");
+    if (
+      typeof itemId !== "string" ||
+      itemId.length === 0 ||
+      itemId.length > 100
+    ) {
+      throw new AppError("validation", "rewards.cardUnavailable");
+    }
+    return toActionResult(
+      ok(await rewardsApi.getRedemptionQuote(session.user.id, itemId)),
+    );
+  } catch (error) {
+    reportError(error, { scope: "rewards.quote" });
     return toActionResult(fail(error));
   }
 }

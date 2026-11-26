@@ -4,13 +4,15 @@ import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { useErrorMessage } from "@/shared/hooks/useErrorMessage";
+import { useNotify } from "@/shared/hooks/useNotify";
 import { fromActionResult } from "@/shared/lib/result";
 import { StateCard } from "@/shared/ui/StateCard";
-import { redeemRewardAction } from "../actions";
+import { getRedemptionQuoteAction, redeemRewardAction } from "../actions";
 import type {
   RewardCatalogData,
   RewardCatalogItem,
   RewardRedemption,
+  RewardRedemptionQuote,
 } from "../model";
 import CatalogCard from "./CatalogCard";
 import RedeemableBalanceCard from "./RedeemableBalanceCard";
@@ -25,7 +27,11 @@ export default function CatalogRedemption({ data }: Props) {
   const t = useTranslations("rewards.catalog");
   const router = useRouter();
   const errorMessage = useErrorMessage();
+  const notify = useNotify();
   const [selected, setSelected] = useState<RewardCatalogItem | null>(null);
+  const [quote, setQuote] = useState<RewardRedemptionQuote | null>(null);
+  const [quoteLoading, setQuoteLoading] = useState(false);
+  const [quoteError, setQuoteError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [receipt, setReceipt] = useState<RewardRedemption | null>(null);
@@ -35,6 +41,8 @@ export default function CatalogRedemption({ data }: Props) {
   const restoreFocusRef = useRef(false);
   // Guards a double click before the pending state re-renders the button.
   const pendingRef = useRef(false);
+  // Drops a quote response that arrives after its dialog closed.
+  const quoteRequestRef = useRef(0);
 
   useEffect(() => {
     if (selected || receipt || !restoreFocusRef.current) return;
@@ -42,16 +50,45 @@ export default function CatalogRedemption({ data }: Props) {
     openerRef.current?.focus();
   }, [selected, receipt]);
 
+  const loadQuote = async (itemId: string) => {
+    const request = ++quoteRequestRef.current;
+    setQuoteLoading(true);
+    try {
+      const result = fromActionResult(await getRedemptionQuoteAction(itemId));
+      if (request !== quoteRequestRef.current) return;
+      if (!result.ok) {
+        if (result.error.kind === "validation") {
+          notify.error(result.error.serverMessage);
+        }
+        setQuoteError(errorMessage(result.error));
+        return;
+      }
+      setQuote(result.data);
+    } catch (caught) {
+      if (request !== quoteRequestRef.current) return;
+      setQuoteError(errorMessage(caught));
+    } finally {
+      if (request === quoteRequestRef.current) setQuoteLoading(false);
+    }
+  };
+
   const open = (item: RewardCatalogItem, opener: HTMLButtonElement) => {
     openerRef.current = opener;
     setError(null);
+    setQuote(null);
+    setQuoteError(null);
     setSelected(item);
+    void loadQuote(item.id);
   };
 
   const close = () => {
     if (pendingRef.current) return;
+    quoteRequestRef.current++;
     restoreFocusRef.current = true;
     setSelected(null);
+    setQuote(null);
+    setQuoteError(null);
+    setQuoteLoading(false);
     setError(null);
   };
 
@@ -61,16 +98,20 @@ export default function CatalogRedemption({ data }: Props) {
   };
 
   const confirm = async () => {
-    if (!selected || pendingRef.current) return;
+    if (!selected || !quote || pendingRef.current) return;
     pendingRef.current = true;
     setPending(true);
     setError(null);
     try {
       const result = fromActionResult(await redeemRewardAction(selected.id));
       if (result.ok) {
-        setReceipt(result.data);
+        setReceipt({ ...result.data, tierName: quote.tierName });
         setSelected(null);
+        setQuote(null);
         router.refresh();
+      } else if (result.error.kind === "validation") {
+        // Backend 400/422: show its own localized text and keep the dialog.
+        notify.error(result.error.serverMessage);
       } else {
         setError(errorMessage(result.error));
       }
@@ -104,9 +145,10 @@ export default function CatalogRedemption({ data }: Props) {
       )}
       <RedemptionConfirmDialog
         item={selected}
-        balance={data.balance}
+        quote={quote}
+        quoteLoading={quoteLoading}
         pending={pending}
-        error={error}
+        error={error ?? quoteError}
         onClose={close}
         onConfirm={confirm}
       />

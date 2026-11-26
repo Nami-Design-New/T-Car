@@ -1,12 +1,11 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { AppError } from "@/shared/lib/errors";
 
-const { get } = vi.hoisted(() => ({ get: vi.fn() }));
+const { get, post } = vi.hoisted(() => ({ get: vi.fn(), post: vi.fn() }));
 vi.mock("server-only", () => ({}));
-vi.mock("@/services/http/server", () => ({ serverHttp: { get } }));
+vi.mock("@/services/http/server", () => ({ serverHttp: { get, post } }));
 
 import { rewardsApi } from "./api";
-import { rewardsMock } from "./api.mock";
 import { rewardsOverview } from "./model";
 
 const envelope = (data: unknown) => ({ data, message: "OK", code: 200 });
@@ -40,7 +39,10 @@ const currentDto = {
 };
 
 describe("rewardsApi live package reads", () => {
-  beforeEach(() => get.mockReset());
+  beforeEach(() => {
+    get.mockReset();
+    post.mockReset();
+  });
 
   it("builds the overview and road from E7 alone without duplicating the current tier", async () => {
     get.mockResolvedValueOnce(
@@ -350,7 +352,138 @@ describe("rewardsApi live package reads", () => {
     );
   });
 
-  it("keeps redemption on its mock for the next fraction", () => {
-    expect(rewardsApi.redeem).toBe(rewardsMock.redeem);
+  it("reads E11 with the card id and the current tier name", async () => {
+    get.mockImplementation((path: string) =>
+      Promise.resolve(
+        path === "/replace-points/quote"
+          ? envelope({
+              points_count_before: 4000,
+              replace_points: 1000,
+              points_count_after: 3000,
+            })
+          : envelope({
+              ...currentDto,
+              level_points: 12000,
+              can_replaced_points: 4000,
+              current_package: { ...packageDto, current_package: true },
+            }),
+      ),
+    );
+
+    await expect(
+      rewardsApi.getRedemptionQuote("user-1", "5"),
+    ).resolves.toEqual({
+      balanceBefore: 4000,
+      pointsCost: 1000,
+      balanceAfter: 3000,
+      tierName: packageDto.name,
+    });
+    expect(get).toHaveBeenCalledWith("/replace-points/quote", {
+      query: { discount_card_id: "5" },
+    });
+    expect(get).toHaveBeenCalledWith("/packages/current");
+  });
+
+  it("rejects a malformed E11 quote", async () => {
+    get.mockImplementation((path: string) =>
+      Promise.resolve(
+        path === "/replace-points/quote"
+          ? envelope({
+              points_count_before: 4000,
+              replace_points: "1000",
+              points_count_after: 3000,
+            })
+          : envelope(currentDto),
+      ),
+    );
+
+    await expect(
+      rewardsApi.getRedemptionQuote("user-1", "5"),
+    ).rejects.toEqual(new AppError("server"));
+  });
+
+  it("propagates E11's not-enough-points error unchanged", async () => {
+    const error = new AppError("validation", undefined, 400, undefined, {
+      serverMessage:
+        "You do not have enough replaceable points for this discount card.",
+    });
+    get.mockImplementation((path: string) =>
+      path === "/replace-points/quote"
+        ? Promise.reject(error)
+        : Promise.resolve(envelope(currentDto)),
+    );
+
+    await expect(
+      rewardsApi.getRedemptionQuote("user-1", "5"),
+    ).rejects.toBe(error);
+  });
+
+  it("redeems with E12 POST and maps the new card and balances", async () => {
+    post.mockResolvedValueOnce({
+      ...envelope({
+        level_points: 12000,
+        can_replaced_points: 3000,
+        last_replaced_points: 1000,
+        discount_card: {
+          id: 42,
+          discount_card_id: 5,
+          code: "TCAR-42",
+          discount_value: 50,
+          points_count: 1000,
+          status: "active",
+          expire_at: "2027-01-18 10:00:00",
+          used_at: null,
+          order_id: null,
+        },
+      }),
+      message: "Card redeemed",
+    });
+
+    await expect(rewardsApi.redeem("user-1", "5")).resolves.toEqual({
+      ok: true,
+      message: "Card redeemed",
+      data: {
+        card: {
+          id: "42",
+          code: "TCAR-42",
+          discountAmount: 50,
+          status: "active",
+          expiresAt: "2027-01-18T10:00:00+03:00",
+        },
+        pointsCost: 1000,
+        balanceBefore: 4000,
+        balanceAfter: 3000,
+        tierPoints: 12000,
+      },
+    });
+    expect(post).toHaveBeenCalledWith("/replace-points", {
+      discount_card_id: 5,
+    });
+  });
+
+  it("returns E12 validation failures and malformed data as a failed Result", async () => {
+    const error = new AppError("validation", undefined, 400, undefined, {
+      serverMessage:
+        "You do not have enough replaceable points for this discount card.",
+    });
+    post.mockRejectedValueOnce(error);
+    await expect(rewardsApi.redeem("user-1", "5")).resolves.toMatchObject({
+      ok: false,
+      error: { kind: "validation", serverMessage: error.serverMessage },
+    });
+
+    post.mockResolvedValueOnce(envelope({ level_points: 12000 }));
+    await expect(rewardsApi.redeem("user-1", "5")).resolves.toMatchObject({
+      ok: false,
+      error: { kind: "server" },
+    });
+
+    await expect(
+      rewardsApi.redeem("user-1", "discount-50"),
+    ).resolves.toMatchObject({
+      ok: false,
+      error: { kind: "validation", code: "rewards.cardUnavailable" },
+    });
+    expect(post).toHaveBeenCalledTimes(2);
   });
 });

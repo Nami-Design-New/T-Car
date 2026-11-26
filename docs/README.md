@@ -799,10 +799,19 @@ costs, and the per-card `can_replace` flag come from the API (the flag controls
 the redeem button); the documented 90-day validity remains fixed.
 The TEST response has four cards costing 1,000–6,000 points and a zero balance,
 so none is redeemable for that customer. My cards and redemption remain on
-their mocks for R9–R10. Typecheck, lint (one existing warning), and 68
+  their mocks for R9–R10. Typecheck, lint (one existing warning), and 68
 rewards-focused tests pass. Production build and signed-in route smoke remain
 pending under the user's skip-build instruction; the full suite is reserved
 for before merge.
+
+Rewards API fraction R10 (in progress, 2026-11-26): the catalog confirmation
+loads the redemption quote and submits redemption through a Server Action;
+validation errors keep the dialog open. Points and referrals pagination now
+expect the top-level shape described in the backend response to B2. Typecheck,
+lint (one existing warning), 180 focused tests, and production build pass.
+Unauthenticated catalog, points, and referral-history routes redirect to sign-in
+in both locales. Signed-in route smoke and live redemption remain pending; the
+POST redemption and revised pagination contracts still require live verification.
 
 **Rewards API, fraction R9 (2026-11-25, branch `feature/rewards-tiers`),
 implementation ready:** My Cards reads E10 `GET /my-discount-cards` with a

@@ -85,19 +85,21 @@ describe("referralsApi.getHistory", () => {
     referal_rewords_count: 3,
     applied_referal_rewords_count: 2,
     referal_points: 1000,
-    pagination: {
-      current_page: 2,
-      last_page: 3,
-      per_page: 10,
-      total: 21,
-      from: 11,
-      to: 20,
-    },
   };
+  const pagination = {
+    current_page: 2,
+    last_page: 3,
+    per_page: 10,
+    total: 21,
+    from: 11,
+    to: 20,
+  };
+  /** A success response with pagination beside `data` (B2 answer). */
+  const page = (payload: unknown) => ({ ...envelope(payload), pagination });
 
-  it("maps the observed nested page, counts, and statuses", async () => {
+  it("maps the observed page, counts, and statuses", async () => {
     get.mockResolvedValueOnce(
-      envelope({
+      page({
         ...data,
         referal_rewords: [
           invite,
@@ -145,22 +147,25 @@ describe("referralsApi.getHistory", () => {
   });
 
   it.each([
-    ["malformed item", { ...data, referal_rewords: [{ ...invite, id: "1" }] }],
+    [
+      "malformed item",
+      page({ ...data, referal_rewords: [{ ...invite, id: "1" }] }),
+    ],
     [
       "unknown status",
-      { ...data, referal_rewords: [{ ...invite, status: "other" }] },
+      page({ ...data, referal_rewords: [{ ...invite, status: "other" }] }),
     ],
-    ["missing pagination", { ...data, pagination: undefined }],
-    ["bad count", { ...data, referal_rewords_count: "3" }],
-  ])("rejects %s", async (_name, payload) => {
-    get.mockResolvedValueOnce(envelope(payload));
+    ["missing pagination", envelope(data)],
+    ["bad count", page({ ...data, referal_rewords_count: "3" })],
+  ])("rejects %s", async (_name, response) => {
+    get.mockResolvedValueOnce(response);
     await expect(referralsApi.getHistory("user-1", 1)).rejects.toEqual(
       new AppError("server"),
     );
   });
 
   it("rejects a non-success envelope", async () => {
-    get.mockResolvedValueOnce({ ...envelope(data), code: 422 });
+    get.mockResolvedValueOnce({ ...page(data), code: 422 });
     await expect(referralsApi.getHistory("user-1", 1)).rejects.toEqual(
       new AppError("server"),
     );

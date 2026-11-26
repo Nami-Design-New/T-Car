@@ -2,12 +2,14 @@ import { useFormatter, useTranslations } from "next-intl";
 import { FiInfo } from "react-icons/fi";
 import { Button } from "@/shared/ui/Button";
 import { Dialog } from "@/shared/ui/Dialog";
-import type { RewardCatalogItem } from "../model";
+import type { RewardCatalogItem, RewardRedemptionQuote } from "../model";
 import RewardTicket from "./RewardTicket";
 
 interface Props {
   item: RewardCatalogItem | null;
-  balance: number;
+  /** E11's preview; null until it arrives (or when it failed). */
+  quote: RewardRedemptionQuote | null;
+  quoteLoading: boolean;
   pending: boolean;
   error: string | null;
   onClose: () => void;
@@ -16,7 +18,8 @@ interface Props {
 
 export default function RedemptionConfirmDialog({
   item,
-  balance,
+  quote,
+  quoteLoading,
   pending,
   error,
   onClose,
@@ -25,7 +28,15 @@ export default function RedemptionConfirmDialog({
   const t = useTranslations("rewards.redemption");
   const format = useFormatter();
   if (!item) return null;
-  const balanceAfter = balance - item.pointsCost;
+  const amount = (value: number | undefined) =>
+    value === undefined ? (
+      <span
+        className="inline-block h-3 w-12 animate-pulse rounded bg-neutral-200"
+        aria-hidden="true"
+      />
+    ) : (
+      t("pointsAmount", { amount: format.number(value) })
+    );
 
   return (
     <Dialog
@@ -65,20 +76,18 @@ export default function RedemptionConfirmDialog({
         <dl className="m-0 flex flex-col rounded-lg bg-neutral-50 px-4 py-1 text-sm">
           <div className="flex items-center justify-between gap-3 py-2">
             <dt className="text-text-subtle">{t("balanceBefore")}</dt>
-            <dd className="m-0 font-semibold">
-              {t("pointsAmount", { amount: format.number(balance) })}
-            </dd>
+            <dd className="m-0 font-semibold">{amount(quote?.balanceBefore)}</dd>
           </div>
           <div className="flex items-center justify-between gap-3 py-2">
             <dt className="text-text-subtle">{t("cost")}</dt>
             <dd className="m-0 font-semibold text-red-600">
-              {t("costAmount", { amount: format.number(item.pointsCost) })}
+              {t("costAmount", { amount: format.number(quote?.pointsCost ?? item.pointsCost) })}
             </dd>
           </div>
           <div className="border-stroke-light flex items-center justify-between gap-3 border-t py-2.5">
             <dt className="font-bold">{t("balanceAfter")}</dt>
             <dd className="text-action-primary m-0 text-base font-bold">
-              {t("pointsAmount", { amount: format.number(balanceAfter) })}
+              {amount(quote?.balanceAfter)}
             </dd>
           </div>
         </dl>
@@ -101,6 +110,7 @@ export default function RedemptionConfirmDialog({
           size="lg"
           className="w-full"
           loading={pending}
+          disabled={!quote || quoteLoading}
           onClick={onConfirm}
         >
           {t("confirm")}

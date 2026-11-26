@@ -1,8 +1,8 @@
 # Rewards, points, and referrals API
 
-Last updated: 2026-11-25
+Last updated: 2026-11-26
 Base URL: `https://admin.t-car.app/api/user` (TEST, `NEXT_PUBLIC_API_URL`)
-Status: R0–R8 done; R9 (my cards) implementation ready; R10–R12 open.
+Status: R0–R9 done; R10 (redemption) implementation in progress; R11–R12 open.
 Branch `feature/rewards-tiers`.
 
 Sources: Bruno `User Application/Setting/referal and points` (12 requests),
@@ -40,11 +40,11 @@ thresholds; whether this change was intentional is a backend/product follow-up
 | Below the first tier | `current_package` is `null` below the first `start_points`. The app keeps its current rule and shows the first tier as current (backend ask B4). |
 | Balances | `level_points` = tier points (`tierPoints`); `can_replaced_points` = spendable balance (`balance`). Redemption changes only the balance. |
 | Envelope | HTTP 200 for every outcome except 401; the real status is the body `code`. Reads throw `AppError`; `404` → `null` → `notFound()`. Writes return `Result`; backend 422/400 messages are toasted with `useNotify()` and keep the dialog open. |
-| Pagination | `points`, `referal-rewords`: `data.pagination`. `my-discount-cards`: top-level `pagination` beside `data` (the wallet / bank-accounts shape). Both map to `ApiPagination`. |
+| Pagination | Beside `data` for every paginated endpoint (`points`, `referal-rewords`, `my-discount-cards`), per the backend answer to B2. |
 | Filtering | Done by the API (`filter` query param), not on the client. |
 | Referral code at sign-up | In scope: live `verify-referal-code` check plus `referal_code` sent with `completeProfile`. |
 | Booking-complete points | In scope (R11); the screen still needs a design reference. |
-| Redemption | `replace-points/quote` feeds the confirm dialog; `replace-points` redeems. Both are GET (backend ask B1). |
+| Redemption | `replace-points/quote` (GET) feeds the confirm dialog; `replace-points` (POST, JSON `discount_card_id`) redeems, per the backend answer to B1. |
 
 ## 2. Endpoints
 
@@ -64,7 +64,7 @@ All need the bearer token (sent by `serverHttp`) except
 | E9 | GET | `/discount-cards` | — | Catalog |
 | E10 | GET | `/my-discount-cards` | `filter` = `active \| used \| expired` (omit for all), `per_page`, `page` | My cards |
 | E11 | GET | `/replace-points/quote` | `discount_card_id` | Redemption confirm dialog |
-| E12 | GET | `/replace-points` | `discount_card_id` | Redemption (write) |
+| E12 | POST | `/replace-points` | JSON `{ discount_card_id }` | Redemption (write) |
 | E13 | GET | `/booking/{order}/complete-booking-rewords` | — | Booking-complete screen |
 
 ## 3. Observed DTOs
@@ -85,6 +85,7 @@ interface ReferalInfoDto {
 ### 3.2 E2 `GET /referal-rewords` (observed, one pending invite)
 
 ```ts
+// data: the fields below; pagination sits beside data (B2 answer)
 interface ReferalRewordsDto {
   referal_rewords: {
     id: number;
@@ -97,7 +98,6 @@ interface ReferalRewordsDto {
   referal_rewords_count: number;
   applied_referal_rewords_count: number;
   referal_points: number;
-  pagination: ApiPagination;
 }
 ```
 
@@ -112,6 +112,7 @@ interface ReferalRewordsDto {
 ### 3.4 E5 `GET /points` (envelope observed; transaction shape from Bruno)
 
 ```ts
+// data: the fields below; pagination sits beside data (B2 answer)
 interface PointsDto {
   level_points: number;
   can_replaced_points: number;
@@ -127,7 +128,6 @@ interface PointsDto {
     discount_value: number | null;
     date: string;                     // "Y-m-d H:i:s"
   }[];
-  pagination: ApiPagination;
 }
 ```
 
@@ -213,8 +213,9 @@ interface MyDiscountCardDto {
 | Not enough points (observed on E11) | `code: 400`, "You do not have enough replaceable points for this discount card." |
 | Missing id / unknown id (observed) | `code: 422`, "Select a discount card." / "The selected discount card does not exist." |
 
-E12 has not been called: it spends points. Its first live call needs a
-customer with points and the user's approval.
+E12 is `POST /replace-points` with JSON `{ discount_card_id }` (backend
+answer to B1). It has not been called: it spends points. Its first live call
+needs a customer with points and the user's approval.
 
 ### 3.9 E13 `GET /booking/{order}/complete-booking-rewords`
 
@@ -254,7 +255,7 @@ below this table identifies the pages affected by each fraction.
 | R7 — Live tiers **Done (2026-11-25, `f631352`)** | The overview reads E7 only: `current_package` for hero/perks and deduplicated `other_packages` for the road. The account layout's unused `/points` summary request was removed; points history still reads `/points` on its own page. All-tiers reads E6 + E7; detail also reads E8 (`404` → `notFound()`). Cards and redemption remain mocked. | DTO guards map API names, icon URLs, three colours, point ranges, perks, and E7 balances; the first tier is current below its start points. E8 supplies the selected detail and maps 404 to `null`. Typecheck, lint (one existing warning), and 65 rewards-focused tests pass, including E7-only overview, current-tier deduplication, unknown-id route, and API-colour gradients. A live TEST probe confirmed E6/E7/E8 fields in `ar` and `en` and E8 body-code 404; it found changed package thresholds (B13). Production build and signed-in route smoke remain pending under the user's skip-build instruction. |
 | R8 — Catalog **Done (2026-11-25, `df1cffe`)** | E9 supplies four cards and the redeemable balance in one response; each item maps its numeric id, discount value, point cost, and `can_replace` flag (which controls the redeem button), with documented 90-day validity. My cards and redemption remain mocked for R9–R10. | A live TEST E9 probe returned card ids 5–8, discounts 50–300, costs 1,000–6,000, and zero redeemable points. Typecheck, lint (one existing warning), and 68 rewards-focused tests pass, including E9 mapping, empty catalog, malformed data, and transport errors. Production build and signed-in route smoke remain pending under the user's skip-build instruction. |
 | R9 — My cards **Implementation ready (2026-11-25)** | E10 with server filter and pagination, page size 10; E9 supplies the balance. `/account/rewards/cards?filter=active\|used\|expired` preserves the selected filter in the URL, and a Server Action loads later pages. This fraction also corrected R8 to use E9's per-card `can_replace` instead of comparing the balance. | TEST returned an empty E10 list for all four filters, with `pagination` at the response top level. The mapper validates the Bruno row shape and dates; typecheck, lint (one existing warning), and 74 rewards-focused tests pass. Route smoke remains pending; production build is skipped at the user's direction. |
-| R10 — Redemption | Confirm dialog reads E11; confirm calls E12 in a Server Action returning `ActionResult`; 400/422 toasted, dialog stays open. | Insufficient-points path verified live; success path verified once with the user's approval on a customer with points. |
+| R10 — Redemption **Implementation in progress (2026-11-26)** | Confirm dialog reads E11; confirm calls E12 in a Server Action returning `ActionResult`; 400/422 toasted, dialog stays open. Points and referrals use B2's top-level pagination shape. | Typecheck, lint (one existing warning), 180 focused tests, and production build pass. Unauthenticated affected routes redirect to sign-in in both locales. Signed-in route smoke and live verification of the revised contracts remain pending. E11 insufficient points was observed; E12 success requires a customer with points and approval. |
 | R11 — Booking-complete points | E13 on the completed-booking screen (design reference needed). | Earned points shown for a completed booking; 404 handled. |
 | R12 — Remove production mocks | No production caller uses a rewards, points, or referrals mock; mocks stay for tests. | Grep shows mocks imported only from tests. |
 
@@ -282,8 +283,8 @@ Routes below omit the locale prefix; the same page files serve `/ar` and `/en`.
 
 | # | Ask |
 | --- | --- |
-| B1 | `replace-points` spends points but is a GET (prefetch / retry can redeem twice). Make it a POST; the quote can stay GET. |
-| B2 | Pagination sits inside `data` for `/points` and `/referal-rewords` but beside `data` for `/my-discount-cards`. Pick one. |
+| B1 | `replace-points` spends points but was a GET (prefetch / retry can redeem twice). **Answered 2026-11-26: it will be `POST /replace-points` with JSON `{ discount_card_id }`; the quote stays GET.** The app uses POST. |
+| B2 | Pagination sat inside `data` for `/points` and `/referal-rewords` but beside `data` for `/my-discount-cards`. **Answered 2026-11-26: pagination will be beside `data` for all three.** The app reads the top-level `pagination` only (switched in R10). |
 | B3 | Package names have one untranslated field; the English API returns the Arabic name. Add `name_ar` / `name_en` (or translate `name` from `Accept-Language`). |
 | B4 | Below the first package `current_package` is `null`. Either start the first package at 0 or confirm the app should show the first package as current. |
 | B5 | Perks have no description or icon; the design shows both. Add a description, or confirm the app maps `key` to an icon and drops the description. |

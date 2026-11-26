@@ -1,22 +1,30 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { AppError } from "@/shared/lib/errors";
 import { fail, ok } from "@/shared/lib/result";
-import { getRewardCardsPageAction, redeemRewardAction } from "./actions";
+import {
+  getRedemptionQuoteAction,
+  getRewardCardsPageAction,
+  redeemRewardAction,
+} from "./actions";
 
-const { authMock, redeemMock, cardsPageMock, reportErrorMock } = vi.hoisted(
-  () => ({
+const { authMock, redeemMock, cardsPageMock, quoteMock, reportErrorMock } =
+  vi.hoisted(() => ({
     authMock: vi.fn(),
     redeemMock: vi.fn(),
     cardsPageMock: vi.fn(),
+    quoteMock: vi.fn(),
     reportErrorMock: vi.fn(),
-  }),
-);
+  }));
 
 vi.mock("@/shared/lib/report", () => ({ reportError: reportErrorMock }));
 
 vi.mock("@/auth", () => ({ auth: authMock }));
 vi.mock("./api", () => ({
-  rewardsApi: { redeem: redeemMock, getCardsPage: cardsPageMock },
+  rewardsApi: {
+    redeem: redeemMock,
+    getCardsPage: cardsPageMock,
+    getRedemptionQuote: quoteMock,
+  },
 }));
 
 describe("getRewardCardsPageAction", () => {
@@ -53,6 +61,69 @@ describe("getRewardCardsPageAction", () => {
   });
 });
 
+describe("getRedemptionQuoteAction", () => {
+  beforeEach(() => {
+    authMock.mockReset();
+    quoteMock.mockReset();
+    reportErrorMock.mockReset();
+    authMock.mockResolvedValue({ user: { id: "customer-1" } });
+  });
+
+  it("passes the card id and authenticated user to E11 and serializes the quote", async () => {
+    const quote = {
+      balanceBefore: 4000,
+      pointsCost: 1000,
+      balanceAfter: 3000,
+      tierName: "Gold",
+    };
+    quoteMock.mockResolvedValue(quote);
+
+    await expect(getRedemptionQuoteAction("5")).resolves.toEqual({
+      ok: true,
+      data: quote,
+    });
+    expect(quoteMock).toHaveBeenCalledWith("customer-1", "5");
+  });
+
+  it("rejects a missing session or an invalid id before calling the service", async () => {
+    authMock.mockResolvedValue(null);
+    await expect(getRedemptionQuoteAction("5")).resolves.toMatchObject({
+      ok: false,
+      error: { kind: "unauthorized" },
+    });
+
+    authMock.mockResolvedValue({ user: { id: "customer-1" } });
+    await expect(getRedemptionQuoteAction("")).resolves.toMatchObject({
+      ok: false,
+      error: { kind: "validation", code: "rewards.cardUnavailable" },
+    });
+    expect(quoteMock).not.toHaveBeenCalled();
+  });
+
+  it("serializes a validation error with the backend message", async () => {
+    quoteMock.mockRejectedValue(
+      new AppError("validation", undefined, 400, undefined, {
+        serverMessage: "You do not have enough replaceable points.",
+      }),
+    );
+
+    const result = await getRedemptionQuoteAction("5");
+
+    expect(result).toMatchObject({
+      ok: false,
+      error: {
+        kind: "validation",
+        status: 400,
+        serverMessage: "You do not have enough replaceable points.",
+      },
+    });
+    if (!result.ok) expect(result.error).not.toBeInstanceOf(AppError);
+    expect(reportErrorMock).toHaveBeenCalledWith(expect.any(AppError), {
+      scope: "rewards.quote",
+    });
+  });
+});
+
 describe("redeemRewardAction", () => {
   beforeEach(() => {
     authMock.mockReset();
@@ -73,8 +144,6 @@ describe("redeemRewardAction", () => {
       balanceBefore: 4000,
       balanceAfter: 3000,
       tierPoints: 12000,
-      tierId: "3",
-      tierName: "Gold",
     };
     redeemMock.mockResolvedValue(ok(receipt));
 

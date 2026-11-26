@@ -3,15 +3,24 @@ import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { ActionResult } from "@/shared/lib/result";
 import { renderWithIntl } from "@/shared/test/render";
-import type { RewardCatalogData, RewardRedemption } from "../model";
+import type {
+  RewardCatalogData,
+  RewardRedemption,
+  RewardRedemptionQuote,
+} from "../model";
 
-const { redeemRewardAction, router } = vi.hoisted(() => ({
-  redeemRewardAction:
-    vi.fn<(itemId: string) => Promise<ActionResult<RewardRedemption>>>(),
-  router: { refresh: vi.fn() },
-}));
+const { redeemRewardAction, getRedemptionQuoteAction, notify, router } =
+  vi.hoisted(() => ({
+    redeemRewardAction:
+      vi.fn<(itemId: string) => Promise<ActionResult<RewardRedemption>>>(),
+    getRedemptionQuoteAction:
+      vi.fn<(itemId: string) => Promise<ActionResult<RewardRedemptionQuote>>>(),
+    notify: { success: vi.fn(), error: vi.fn() },
+    router: { refresh: vi.fn() },
+  }));
 
-vi.mock("../actions", () => ({ redeemRewardAction }));
+vi.mock("../actions", () => ({ redeemRewardAction, getRedemptionQuoteAction }));
+vi.mock("@/shared/hooks/useNotify", () => ({ useNotify: () => notify }));
 vi.mock("@/i18n/navigation", () => ({
   Link: ({ href, ...props }: React.ComponentProps<"a"> & { href: string }) => (
     <a href={href} {...props} />
@@ -57,23 +66,39 @@ const receipt: RewardRedemption = {
   balanceBefore: 4000,
   balanceAfter: 3000,
   tierPoints: 12000,
-  tierId: "3",
+  tierName: "Gold",
+};
+
+const quote: RewardRedemptionQuote = {
+  balanceBefore: 4000,
+  pointsCost: 1000,
+  balanceAfter: 3000,
   tierName: "Gold",
 };
 
 beforeEach(() => {
   vi.clearAllMocks();
+  getRedemptionQuoteAction.mockResolvedValue({ ok: true, data: quote });
 });
 
-function openRedemption(balance = 4000) {
+async function openRedemption(balance = 4000) {
   const user = userEvent.setup();
+  getRedemptionQuoteAction.mockResolvedValue({
+    ok: true,
+    data: {
+      balanceBefore: balance,
+      pointsCost: 1000,
+      balanceAfter: balance - 1000,
+      tierName: "Gold",
+    },
+  });
   renderWithIntl(<CatalogPage data={{ balance, items }} />);
-  return {
-    user,
-    redeem: screen.getByRole("button", {
-      name: "Redeem the 50 SAR discount card",
-    }),
-  };
+  const redeem = screen.getByRole("button", {
+    name: "Redeem the 50 SAR discount card",
+  });
+  await user.click(redeem);
+  await screen.findByText("4,000 points");
+  return { user, redeem };
 }
 
 describe("CatalogPage", () => {
@@ -143,9 +168,7 @@ describe("CatalogPage", () => {
   });
 
   it("opens the confirmation with the balance before, the cost and the balance after", async () => {
-    const { user, redeem } = openRedemption();
-
-    await user.click(redeem);
+    const { user } = await openRedemption();
 
     const dialog = screen.getByRole("dialog", { name: "Confirm redemption" });
     expect(within(dialog).getByText("4,000 points")).toBeInTheDocument();
@@ -156,11 +179,59 @@ describe("CatalogPage", () => {
     ).toBeInTheDocument();
   });
 
+  it("keeps Confirm disabled until the quote arrives", async () => {
+    let resolve!: (result: ActionResult<RewardRedemptionQuote>) => void;
+    getRedemptionQuoteAction.mockReturnValue(
+      new Promise((done) => {
+        resolve = done;
+      }),
+    );
+    const user = userEvent.setup();
+    renderWithIntl(<CatalogPage data={{ balance: 4000, items }} />);
+
+    await user.click(
+      screen.getByRole("button", { name: "Redeem the 50 SAR discount card" }),
+    );
+
+    const dialog = screen.getByRole("dialog", { name: "Confirm redemption" });
+    const confirm = within(dialog).getByRole("button", {
+      name: "Confirm redemption",
+    });
+    expect(confirm).toBeDisabled();
+
+    resolve({ ok: true, data: quote });
+
+    await waitFor(() => expect(confirm).toBeEnabled());
+  });
+
+  it("toasts the quote's validation message and keeps Confirm disabled", async () => {
+    const serverMessage =
+      "You do not have enough replaceable points for this discount card.";
+    getRedemptionQuoteAction.mockResolvedValue({
+      ok: false,
+      error: { kind: "validation", serverMessage },
+    });
+    const user = userEvent.setup();
+    renderWithIntl(<CatalogPage data={{ balance: 4000, items }} />);
+
+    await user.click(
+      screen.getByRole("button", { name: "Redeem the 50 SAR discount card" }),
+    );
+
+    const dialog = screen.getByRole("dialog", { name: "Confirm redemption" });
+    expect(await within(dialog).findByRole("alert")).toHaveTextContent(
+      "Check the details you entered and try again.",
+    );
+    expect(notify.error).toHaveBeenCalledWith(serverMessage);
+    expect(
+      within(dialog).getByRole("button", { name: "Confirm redemption" }),
+    ).toBeDisabled();
+  });
+
   it("opens the success dialog with the new card and links, and closing it returns to the catalog", async () => {
     redeemRewardAction.mockResolvedValue({ ok: true, data: receipt });
-    const { user, redeem } = openRedemption();
+    const { user, redeem } = await openRedemption();
 
-    await user.click(redeem);
     await user.click(
       within(screen.getByRole("dialog")).getByRole("button", {
         name: "Confirm redemption",
@@ -205,9 +276,8 @@ describe("CatalogPage", () => {
         resolve = done;
       }),
     );
-    const { user, redeem } = openRedemption();
+    const { user } = await openRedemption();
 
-    await user.click(redeem);
     const dialog = screen.getByRole("dialog");
     const confirm = within(dialog).getByRole("button", {
       name: "Confirm redemption",
@@ -234,9 +304,8 @@ describe("CatalogPage", () => {
       ok: false,
       error: { kind: "network", code: "rewards.unavailable" },
     });
-    const { user, redeem } = openRedemption();
+    const { user } = await openRedemption();
 
-    await user.click(redeem);
     await user.click(
       within(screen.getByRole("dialog")).getByRole("button", {
         name: "Confirm redemption",
@@ -255,9 +324,8 @@ describe("CatalogPage", () => {
       ok: false,
       error: { kind: "conflict", code: "rewards.insufficientPoints" },
     });
-    const { user, redeem } = openRedemption();
+    const { user } = await openRedemption();
 
-    await user.click(redeem);
     await user.click(
       within(screen.getByRole("dialog")).getByRole("button", {
         name: "Confirm redemption",
@@ -274,10 +342,34 @@ describe("CatalogPage", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("closes the dialog on Cancel without redeeming", async () => {
-    const { user, redeem } = openRedemption();
+  it("toasts a backend validation failure and keeps the dialog open", async () => {
+    const serverMessage =
+      "You do not have enough replaceable points for this discount card.";
+    redeemRewardAction.mockResolvedValue({
+      ok: false,
+      error: { kind: "validation", serverMessage },
+    });
+    const { user } = await openRedemption();
 
-    await user.click(redeem);
+    await user.click(
+      within(screen.getByRole("dialog")).getByRole("button", {
+        name: "Confirm redemption",
+      }),
+    );
+
+    expect(notify.error).toHaveBeenCalledWith(serverMessage);
+    expect(
+      screen.getByRole("dialog", { name: "Confirm redemption" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("heading", { name: "Redeemed successfully!" }),
+    ).not.toBeInTheDocument();
+    expect(router.refresh).not.toHaveBeenCalled();
+  });
+
+  it("closes the dialog on Cancel without redeeming", async () => {
+    const { user } = await openRedemption();
+
     await user.click(
       within(screen.getByRole("dialog")).getByRole("button", {
         name: "Cancel",

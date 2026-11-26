@@ -82,14 +82,24 @@ export interface RewardCatalogData {
   items: RewardCatalogItem[];
 }
 
-export interface RewardRedemption {
+export interface RewardRedemptionData {
   card: RewardCard;
   pointsCost: number;
   balanceBefore: number;
   balanceAfter: number;
   tierPoints: number;
+}
+
+/** E11's preview, plus the current tier name shown on the success screen. */
+export interface RewardRedemptionQuote {
+  balanceBefore: number;
+  pointsCost: number;
+  balanceAfter: number;
+  tierName: string;
+}
+
+export interface RewardRedemption extends RewardRedemptionData {
   /** Unchanged by redemption; shown on the success screen. */
-  tierId: string;
   tierName: string;
 }
 

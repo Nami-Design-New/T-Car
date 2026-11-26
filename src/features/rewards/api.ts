@@ -4,8 +4,7 @@ import { isApiEnvelope, type ApiEnvelope } from "@/services/http/envelope";
 import { serverHttp } from "@/services/http/server";
 import { AppError } from "@/shared/lib/errors";
 import { isPaginationDto, toPage, type Page } from "@/shared/lib/pagination";
-import type { Result } from "@/shared/lib/result";
-import { rewardsMock } from "./api.mock";
+import { fail, ok, type Result } from "@/shared/lib/result";
 import {
   REWARD_CARD_FILTERS,
   type RewardCard,
@@ -13,7 +12,8 @@ import {
   type RewardCardsData,
   type RewardCatalogData,
   type RewardCatalogItem,
-  type RewardRedemption,
+  type RewardRedemptionData,
+  type RewardRedemptionQuote,
   type RewardRoadTier,
   type RewardTier,
   type RewardsHomeData,
@@ -31,7 +31,14 @@ export interface RewardsApi {
     filter: RewardCardFilter,
   ): Promise<Page<RewardCard>>;
   getCatalog(userId: string): Promise<RewardCatalogData>;
-  redeem(userId: string, itemId: string): Promise<Result<RewardRedemption>>;
+  getRedemptionQuote(
+    userId: string,
+    itemId: string,
+  ): Promise<RewardRedemptionQuote>;
+  redeem(
+    userId: string,
+    itemId: string,
+  ): Promise<Result<RewardRedemptionData>>;
 }
 
 interface PackageDto {
@@ -233,6 +240,77 @@ export function mapRewardCardsPageResponse(
   return toPage(response.data.map(toRewardCard), response.pagination);
 }
 
+interface RedemptionQuoteDto {
+  points_count_before: number;
+  replace_points: number;
+  points_count_after: number;
+}
+
+interface RedeemDto {
+  level_points: number;
+  can_replaced_points: number;
+  last_replaced_points: number;
+  discount_card: MyDiscountCardDto;
+}
+
+function isRedemptionQuoteDto(value: unknown): value is RedemptionQuoteDto {
+  return (
+    isRecord(value) &&
+    isCount(value.points_count_before) &&
+    isCount(value.replace_points) &&
+    isCount(value.points_count_after)
+  );
+}
+
+function isRedeemDto(value: unknown): value is RedeemDto {
+  return (
+    isRecord(value) &&
+    isCount(value.level_points) &&
+    isCount(value.can_replaced_points) &&
+    isCount(value.last_replaced_points) &&
+    isMyDiscountCardDto(value.discount_card)
+  );
+}
+
+/** E11 previews the redemption without spending anything. */
+export function mapRedemptionQuoteResponse(response: unknown): {
+  balanceBefore: number;
+  pointsCost: number;
+  balanceAfter: number;
+} {
+  if (
+    !isApiEnvelope(response) ||
+    response.code !== 200 ||
+    !isRedemptionQuoteDto(response.data)
+  ) {
+    throw new AppError("server");
+  }
+  return {
+    balanceBefore: response.data.points_count_before,
+    pointsCost: response.data.replace_points,
+    balanceAfter: response.data.points_count_after,
+  };
+}
+
+/** E12 spends the points and returns the new card and both balances. */
+export function mapRedeemResponse(response: unknown): RewardRedemptionData {
+  if (
+    !isApiEnvelope(response) ||
+    response.code !== 200 ||
+    !isRedeemDto(response.data)
+  ) {
+    throw new AppError("server");
+  }
+  const data = response.data;
+  return {
+    card: toRewardCard(data.discount_card),
+    pointsCost: data.last_replaced_points,
+    balanceBefore: data.can_replaced_points + data.last_replaced_points,
+    balanceAfter: data.can_replaced_points,
+    tierPoints: data.level_points,
+  };
+}
+
 /** E9 owns both the catalog and the customer's redeemable balance. */
 export function mapRewardCatalogResponse(response: unknown): RewardCatalogData {
   if (
@@ -391,6 +469,45 @@ async function getCards(
   return { balance: catalog.balance, page };
 }
 
+/** E11 previews the card; E7 supplies the tier name the success screen shows. */
+async function getRedemptionQuote(
+  userId: string,
+  itemId: string,
+): Promise<RewardRedemptionQuote> {
+  const [quoteResponse, home] = await Promise.all([
+    serverHttp.get<ApiEnvelope<unknown>>("/replace-points/quote", {
+      query: { discount_card_id: itemId },
+    }),
+    getHome(userId),
+  ]);
+  return {
+    ...mapRedemptionQuoteResponse(quoteResponse),
+    tierName: home.currentTier?.name ?? home.roadTiers[0]?.name ?? "",
+  };
+}
+
+/** E12 spends the points; 400/422 arrive as a validation AppError. */
+async function redeem(
+  _userId: string,
+  itemId: string,
+): Promise<Result<RewardRedemptionData>> {
+  if (!/^\d+$/.test(itemId)) {
+    return fail(new AppError("validation", "rewards.cardUnavailable"));
+  }
+  try {
+    const response = await serverHttp.post<ApiEnvelope<unknown>>(
+      "/replace-points",
+      { discount_card_id: Number(itemId) },
+    );
+    return ok(
+      mapRedeemResponse(response),
+      isApiEnvelope(response) ? response.message : undefined,
+    );
+  } catch (error) {
+    return fail(error);
+  }
+}
+
 /** E8 returns one full package; a body-code 404 is handled by serverHttp. */
 export function mapRewardTierResponse(response: unknown): RewardTier {
   if (
@@ -434,5 +551,6 @@ export const rewardsApi: RewardsApi = {
   getCards,
   getCardsPage,
   getCatalog,
-  redeem: rewardsMock.redeem,
+  getRedemptionQuote,
+  redeem,
 };
