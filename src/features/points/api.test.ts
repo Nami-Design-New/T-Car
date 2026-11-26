@@ -123,11 +123,12 @@ describe("pointsApi", () => {
       }),
     ],
     ["missing pagination", envelope(data)],
-  ])("rejects %s", async (_name, response) => {
+  ])("tolerates %s", async (_name, response) => {
     get.mockResolvedValueOnce(response);
-    await expect(pointsApi.getPoints("user-1", 1, "all")).rejects.toEqual(
-      new AppError("server"),
-    );
+    const result = await pointsApi.getPoints("user-1", 1, "all");
+    expect(result.page.items).toHaveLength(1);
+    expect(Number.isFinite(result.page.items[0].amount)).toBe(true);
+    expect(result.page.lastPage).toBeGreaterThanOrEqual(result.page.page);
   });
 
   it("propagates a 401 unchanged", async () => {

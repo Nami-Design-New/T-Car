@@ -3,7 +3,8 @@ import "server-only";
 import { isApiEnvelope, type ApiEnvelope } from "@/services/http/envelope";
 import { serverHttp } from "@/services/http/server";
 import { AppError } from "@/shared/lib/errors";
-import { isPaginationDto, toPage, type Page } from "@/shared/lib/pagination";
+import type { Page } from "@/shared/lib/pagination";
+import { apiCount, apiData, apiList, apiObject, apiPage, apiText } from "@/shared/lib/api-values";
 import { fail, ok, type Result } from "@/shared/lib/result";
 import {
   REWARD_CARD_FILTERS,
@@ -91,124 +92,94 @@ interface MyDiscountCardDto {
   order_id: number | null;
 }
 
-const isRecord = (value: unknown): value is Record<string, unknown> =>
-  typeof value === "object" && value !== null && !Array.isArray(value);
-const isCount = (value: unknown): value is number =>
-  typeof value === "number" && Number.isInteger(value) && value >= 0;
-const isText = (value: unknown): value is string =>
-  typeof value === "string" && value.trim().length > 0;
-const isColor = (value: unknown): value is string =>
-  typeof value === "string" && /^#[0-9a-f]{6}$/i.test(value);
-const isIconUrl = (value: unknown): value is string =>
-  isText(value) &&
-  ((value.startsWith("/") && !value.startsWith("//")) ||
-    /^https:\/\//i.test(value));
+const DEFAULT_COLOR = "#9ca3af";
+const DEFAULT_ICON = "/images/rewards/badge-bronze.webp";
 
-function isFeatureDto(value: unknown): value is PackageDto["features"][number] {
-  return (
-    isRecord(value) &&
-    isText(value.key) &&
-    isText(value.title)
-  );
+function apiIcon(value: unknown): string {
+  const url = apiText(value);
+  return (url.startsWith("/") && !url.startsWith("//")) || /^https:\/\//i.test(url)
+    ? url
+    : DEFAULT_ICON;
 }
 
-function isPackageDto(value: unknown): value is PackageDto {
-  return (
-    isRecord(value) &&
-    isCount(value.id) &&
-    isText(value.name) &&
-    isIconUrl(value.icon_url) &&
-    isCount(value.start_points) &&
-    isCount(value.end_points) &&
-    value.end_points >= value.start_points &&
-    isColor(value.high_color) &&
-    isColor(value.medium_color) &&
-    isColor(value.low_color) &&
-    typeof value.current_package === "boolean" &&
-    Array.isArray(value.features) &&
-    value.features.every(isFeatureDto)
-  );
+function toPackageDto(value: unknown): PackageDto {
+  const dto = apiObject(value);
+  const start = apiCount(dto.start_points);
+  return {
+    id: apiCount(dto.id),
+    name: apiText(dto.name),
+    icon_url: apiIcon(dto.icon_url),
+    start_points: start,
+    end_points: Math.max(start, apiCount(dto.end_points)),
+    high_color: apiText(dto.high_color) || DEFAULT_COLOR,
+    medium_color: apiText(dto.medium_color) || DEFAULT_COLOR,
+    low_color: apiText(dto.low_color) || DEFAULT_COLOR,
+    current_package: dto.current_package === true,
+    features: apiList(dto.features).map((value) => {
+      const feature = apiObject(value);
+      return { key: apiText(feature.key), title: apiText(feature.title) };
+    }),
+  };
 }
 
-function isOtherPackageDto(
-  value: unknown,
-): value is CurrentPackageDto["other_packages"][number] {
-  return (
-    isRecord(value) &&
-    isCount(value.id) &&
-    isText(value.name) &&
-    isIconUrl(value.icon_url) &&
-    isCount(value.start_points) &&
-    ([value.high_color, value.medium_color, value.low_color].every(
-      (color) => color === undefined,
-    ) ||
-      [value.high_color, value.medium_color, value.low_color].every(isColor))
-  );
+function toCurrentPackageDto(value: unknown): CurrentPackageDto {
+  const dto = apiObject(value);
+  return {
+    level_points: apiCount(dto.level_points),
+    can_replaced_points: apiCount(dto.can_replaced_points),
+    current_package: dto.current_package ? toPackageDto(dto.current_package) : null,
+    other_packages: apiList(dto.other_packages).map((value) => {
+      const other = apiObject(value);
+      return {
+        id: apiCount(other.id),
+        name: apiText(other.name),
+        icon_url: apiIcon(other.icon_url),
+        start_points: apiCount(other.start_points),
+        high_color: apiText(other.high_color) || undefined,
+        medium_color: apiText(other.medium_color) || undefined,
+        low_color: apiText(other.low_color) || undefined,
+      };
+    }),
+  };
 }
 
-function isCurrentPackageDto(value: unknown): value is CurrentPackageDto {
-  return (
-    isRecord(value) &&
-    isCount(value.level_points) &&
-    isCount(value.can_replaced_points) &&
-    (value.current_package === null || isPackageDto(value.current_package)) &&
-    Array.isArray(value.other_packages) &&
-    value.other_packages.every(isOtherPackageDto)
-  );
+function toDiscountCardsDto(value: unknown): DiscountCardsDto {
+  const dto = apiObject(value);
+  return {
+    can_replaced_points: apiCount(dto.can_replaced_points),
+    discount_cards: apiList(dto.discount_cards).map((value) => {
+      const card = apiObject(value);
+      return {
+        id: apiCount(card.id),
+        discount_value: apiCount(card.discount_value),
+        points_count: apiCount(card.points_count),
+        can_replace:
+          card.can_replace === true &&
+          apiCount(card.id) > 0 &&
+          apiCount(card.points_count) > 0,
+      };
+    }),
+  };
 }
 
-function isDiscountCardDto(
-  value: unknown,
-): value is DiscountCardsDto["discount_cards"][number] {
-  return (
-    isRecord(value) &&
-    isCount(value.id) &&
-    isCount(value.discount_value) &&
-    isCount(value.points_count) &&
-    typeof value.can_replace === "boolean"
-  );
-}
-
-function isDiscountCardsDto(value: unknown): value is DiscountCardsDto {
-  return (
-    isRecord(value) &&
-    isCount(value.can_replaced_points) &&
-    Array.isArray(value.discount_cards) &&
-    value.discount_cards.every(isDiscountCardDto)
-  );
-}
-
-function isBackendDate(value: unknown): value is string {
-  if (typeof value !== "string") return false;
-  const date = value.includes(" ") ? value.replace(" ", "T") + "+03:00" : value;
-  return (
-    (/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(value) ||
-      /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})$/.test(
-        value,
-      )) &&
-    Number.isFinite(Date.parse(date))
-  );
-}
-
-function isMyDiscountCardDto(value: unknown): value is MyDiscountCardDto {
-  return (
-    isRecord(value) &&
-    isCount(value.id) &&
-    isCount(value.discount_card_id) &&
-    isText(value.code) &&
-    isCount(value.discount_value) &&
-    isCount(value.points_count) &&
-    (value.status === "active" ||
-      value.status === "used" ||
-      value.status === "expired") &&
-    isBackendDate(value.expire_at) &&
-    (value.used_at === null || isBackendDate(value.used_at)) &&
-    (value.order_id === null || isCount(value.order_id))
-  );
+function toMyDiscountCardDto(value: unknown): MyDiscountCardDto {
+  const dto = apiObject(value);
+  return {
+    id: apiCount(dto.id),
+    discount_card_id: apiCount(dto.discount_card_id),
+    code: apiText(dto.code),
+    discount_value: apiCount(dto.discount_value),
+    points_count: apiCount(dto.points_count),
+    status: dto.status === "used" || dto.status === "expired" ? dto.status : "active",
+    expire_at: apiText(dto.expire_at),
+    used_at: apiText(dto.used_at) || null,
+    order_id: dto.order_id == null ? null : apiCount(dto.order_id),
+  };
 }
 
 function toBackendDate(value: string): string {
-  return value.includes(" ") ? value.replace(" ", "T") + "+03:00" : value;
+  const date = value.includes(" ") ? value.replace(" ", "T") + "+03:00" : value;
+  return Number.isFinite(Date.parse(date)) ? date : "";
 }
 
 function toRewardCard(dto: MyDiscountCardDto): RewardCard {
@@ -226,48 +197,11 @@ function toRewardCard(dto: MyDiscountCardDto): RewardCard {
 export function mapRewardCardsPageResponse(
   response: unknown,
 ): Page<RewardCard> {
-  if (
-    !isApiEnvelope(response) ||
-    response.code !== 200 ||
-    !Array.isArray(response.data) ||
-    !response.data.every(isMyDiscountCardDto) ||
-    !isRecord(response) ||
-    !isPaginationDto(response.pagination)
-  ) {
-    throw new AppError("server");
-  }
-  return toPage(response.data.map(toRewardCard), response.pagination);
-}
-
-interface RedemptionQuoteDto {
-  points_count_before: number;
-  replace_points: number;
-  points_count_after: number;
-}
-
-interface RedeemDto {
-  level_points: number;
-  can_replaced_points: number;
-  last_replaced_points: number;
-  discount_card: MyDiscountCardDto;
-}
-
-function isRedemptionQuoteDto(value: unknown): value is RedemptionQuoteDto {
-  return (
-    isRecord(value) &&
-    isCount(value.points_count_before) &&
-    isCount(value.replace_points) &&
-    isCount(value.points_count_after)
-  );
-}
-
-function isRedeemDto(value: unknown): value is RedeemDto {
-  return (
-    isRecord(value) &&
-    isCount(value.level_points) &&
-    isCount(value.can_replaced_points) &&
-    isCount(value.last_replaced_points) &&
-    isMyDiscountCardDto(value.discount_card)
+  return apiPage(
+    apiList(apiObject(response).data).map((card) =>
+      toRewardCard(toMyDiscountCardDto(card)),
+    ),
+    response,
   );
 }
 
@@ -277,51 +211,37 @@ export function mapRedemptionQuoteResponse(response: unknown): {
   pointsCost: number;
   balanceAfter: number;
 } {
-  if (
-    !isApiEnvelope(response) ||
-    response.code !== 200 ||
-    !isRedemptionQuoteDto(response.data)
-  ) {
-    throw new AppError("server");
-  }
+  const data = apiData(response);
+  // A missing cost cannot be displayed as a safe confirmation of a purchase.
+  if (apiCount(data.replace_points) === 0) throw new AppError("server");
   return {
-    balanceBefore: response.data.points_count_before,
-    pointsCost: response.data.replace_points,
-    balanceAfter: response.data.points_count_after,
+    balanceBefore: apiCount(data.points_count_before),
+    pointsCost: apiCount(data.replace_points),
+    balanceAfter: apiCount(data.points_count_after),
   };
 }
 
 /** E12 spends the points and returns the new card and both balances. */
 export function mapRedeemResponse(response: unknown): RewardRedemptionData {
-  if (
-    !isApiEnvelope(response) ||
-    response.code !== 200 ||
-    !isRedeemDto(response.data)
-  ) {
+  const data = apiData(response);
+  // Never report a successful redemption without an issued card.
+  if (apiCount(apiObject(data.discount_card).id) === 0)
     throw new AppError("server");
-  }
-  const data = response.data;
   return {
-    card: toRewardCard(data.discount_card),
-    pointsCost: data.last_replaced_points,
-    balanceBefore: data.can_replaced_points + data.last_replaced_points,
-    balanceAfter: data.can_replaced_points,
-    tierPoints: data.level_points,
+    card: toRewardCard(toMyDiscountCardDto(data.discount_card)),
+    pointsCost: apiCount(data.last_replaced_points),
+    balanceBefore: apiCount(data.can_replaced_points) + apiCount(data.last_replaced_points),
+    balanceAfter: apiCount(data.can_replaced_points),
+    tierPoints: apiCount(data.level_points),
   };
 }
 
 /** E9 owns both the catalog and the customer's redeemable balance. */
 export function mapRewardCatalogResponse(response: unknown): RewardCatalogData {
-  if (
-    !isApiEnvelope(response) ||
-    response.code !== 200 ||
-    !isDiscountCardsDto(response.data)
-  ) {
-    throw new AppError("server");
-  }
+  const data = toDiscountCardsDto(apiData(response));
   return {
-    balance: response.data.can_replaced_points,
-    items: response.data.discount_cards.map((card): RewardCatalogItem => ({
+    balance: data.can_replaced_points,
+    items: data.discount_cards.map((card): RewardCatalogItem => ({
       id: String(card.id),
       discountAmount: card.discount_value,
       pointsCost: card.points_count,
@@ -353,6 +273,16 @@ const NEUTRAL_ROAD_COLORS = {
   low: "#9ca3af",
 };
 
+const EMPTY_TIER: RewardTier = {
+  id: "0",
+  name: "—",
+  iconUrl: DEFAULT_ICON,
+  colors: NEUTRAL_ROAD_COLORS,
+  startPoints: 0,
+  endPoints: 0,
+  perks: [],
+};
+
 function toRoadTier(
   dto: CurrentPackageDto["other_packages"][number],
 ): RewardRoadTier {
@@ -361,7 +291,7 @@ function toRoadTier(
     name: dto.name,
     iconUrl: dto.icon_url,
     startPoints: dto.start_points,
-    colors: dto.high_color
+    colors: dto.high_color && dto.medium_color && dto.low_color
       ? {
           high: dto.high_color,
           medium: dto.medium_color!,
@@ -373,14 +303,7 @@ function toRoadTier(
 
 /** E7 alone supplies the rewards overview and the entire tier road. */
 export function mapRewardsHomeResponse(response: unknown): RewardsHomeData {
-  if (
-    !isApiEnvelope(response) ||
-    response.code !== 200 ||
-    !isCurrentPackageDto(response.data)
-  ) {
-    throw new AppError("server");
-  }
-  const data = response.data;
+  const data = toCurrentPackageDto(apiData(response));
   const currentTier = data.current_package
     ? toRewardTier(data.current_package)
     : null;
@@ -391,7 +314,7 @@ export function mapRewardsHomeResponse(response: unknown): RewardsHomeData {
     }),
   );
   if (currentTier) road.set(currentTier.id, currentTier);
-  if (road.size === 0) throw new AppError("server");
+  if (road.size === 0) road.set("0", EMPTY_TIER);
   return {
     tierPoints: data.level_points,
     balance: data.can_replaced_points,
@@ -405,22 +328,12 @@ export function mapRewardsSummaryResponse(
   packagesResponse: unknown,
   currentResponse: unknown,
 ): RewardsSummary {
-  if (
-    !isApiEnvelope(packagesResponse) ||
-    packagesResponse.code !== 200 ||
-    !Array.isArray(packagesResponse.data) ||
-    packagesResponse.data.length === 0 ||
-    !packagesResponse.data.every(isPackageDto) ||
-    !isApiEnvelope(currentResponse) ||
-    currentResponse.code !== 200 ||
-    !isCurrentPackageDto(currentResponse.data)
-  ) {
-    throw new AppError("server");
-  }
+  const current = toCurrentPackageDto(apiData(currentResponse));
+  const tiers = apiList(apiObject(packagesResponse).data).map(toPackageDto).map(toRewardTier);
   return {
-    tierPoints: currentResponse.data.level_points,
-    balance: currentResponse.data.can_replaced_points,
-    tiers: packagesResponse.data.map(toRewardTier),
+    tierPoints: current.level_points,
+    balance: current.can_replaced_points,
+    tiers: tiers.length ? tiers : [EMPTY_TIER],
   };
 }
 
@@ -509,14 +422,7 @@ async function redeem(
 
 /** E8 returns one full package; a body-code 404 is handled by serverHttp. */
 export function mapRewardTierResponse(response: unknown): RewardTier {
-  if (
-    !isApiEnvelope(response) ||
-    response.code !== 200 ||
-    !isPackageDto(response.data)
-  ) {
-    throw new AppError("server");
-  }
-  return toRewardTier(response.data);
+  return toRewardTier(toPackageDto(apiData(response)));
 }
 
 async function getSummary(_userId: string): Promise<RewardsSummary> {

@@ -1,9 +1,9 @@
 import "server-only";
 
-import { isApiEnvelope, type ApiEnvelope } from "@/services/http/envelope";
+import type { ApiEnvelope } from "@/services/http/envelope";
 import { publicServerHttp, serverHttp } from "@/services/http/server";
 import { AppError } from "@/shared/lib/errors";
-import { isPaginationDto, toPage } from "@/shared/lib/pagination";
+import { apiCount, apiData, apiId, apiList, apiObject, apiPage, apiText } from "@/shared/lib/api-values";
 import type {
   ReferralCodeCheck,
   ReferralHistory,
@@ -18,97 +18,36 @@ export interface ReferralsApi {
   checkCode(code: string): Promise<ReferralCodeCheck>;
 }
 
-interface ReferalInfoDto {
-  referal_code: string;
-  referal_reword_value: number;
-}
-
-function isReferalInfoDto(value: unknown): value is ReferalInfoDto {
-  return (
-    typeof value === "object" &&
-    value !== null &&
-    "referal_code" in value &&
-    typeof value.referal_code === "string" &&
-    value.referal_code.trim() !== "" &&
-    "referal_reword_value" in value &&
-    typeof value.referal_reword_value === "number" &&
-    Number.isFinite(value.referal_reword_value) &&
-    value.referal_reword_value >= 0
-  );
-}
-
-function toReferralProgram(dto: ReferalInfoDto): ReferralProgram {
-  return { code: dto.referal_code, rewardPoints: dto.referal_reword_value };
-}
-
 async function getProgram(): Promise<ReferralProgram> {
   const response = await serverHttp.get<ApiEnvelope<unknown>>("/referal-info");
-  if (!isApiEnvelope(response) || !isReferalInfoDto(response.data)) {
-    throw new AppError("server");
-  }
-  return toReferralProgram(response.data);
-}
-
-interface ReferalRewordDto {
-  id: number;
-  user_name: string;
-  points: number | null;
-  status: "pending" | "applied";
-  joint_at: string;
-  first_order_at: string | null;
-}
-
-const isRecord = (value: unknown): value is Record<string, unknown> =>
-  typeof value === "object" && value !== null && !Array.isArray(value);
-
-const isCount = (value: unknown): value is number =>
-  typeof value === "number" && Number.isInteger(value) && value >= 0;
-
-function isReferalRewordDto(value: unknown): value is ReferalRewordDto {
-  return (
-    isRecord(value) &&
-    isCount(value.id) &&
-    typeof value.user_name === "string" &&
-    (value.points === null || isCount(value.points)) &&
-    (value.status === "pending" || value.status === "applied") &&
-    typeof value.joint_at === "string" &&
-    (value.first_order_at === null || typeof value.first_order_at === "string")
-  );
-}
-
-function toReferralInvite(dto: ReferalRewordDto): ReferralInvite {
+  const data = apiData(response);
   return {
-    id: String(dto.id),
-    friendName: dto.user_name,
-    joinedAt: dto.joint_at,
-    firstBookingAt: dto.first_order_at,
-    rewardPoints: dto.points,
+    code: apiText(data.referal_code),
+    rewardPoints: apiCount(data.referal_reword_value),
+  };
+}
+
+function toReferralInvite(value: unknown, index: number): ReferralInvite {
+  const dto = apiObject(value);
+  return {
+    id: apiId(dto.id, `invite-${index}`),
+    friendName: apiText(dto.user_name),
+    joinedAt: apiText(dto.joint_at),
+    firstBookingAt: apiText(dto.first_order_at) || null,
+    rewardPoints: dto.points == null ? null : apiCount(dto.points),
     status: dto.status === "applied" ? "rewarded" : "pending",
   };
 }
 
-/** Validates the live counts, invite rows, and top-level pagination. */
+/** Maps the fields the history screen uses, tolerating changed response fields. */
 export function mapReferralHistoryResponse(value: unknown): ReferralHistory {
-  if (!isApiEnvelope(value) || value.code !== 200 || !isRecord(value.data)) {
-    throw new AppError("server");
-  }
-  const data = value.data;
-  const pagination = (value as { pagination?: unknown }).pagination;
-  if (
-    !Array.isArray(data.referal_rewords) ||
-    !data.referal_rewords.every(isReferalRewordDto) ||
-    !isCount(data.referal_rewords_count) ||
-    !isCount(data.applied_referal_rewords_count) ||
-    !isCount(data.referal_points) ||
-    !isPaginationDto(pagination)
-  ) {
-    throw new AppError("server");
-  }
+  const data = apiData(value);
+  const invites = apiList(data.referal_rewords).map(toReferralInvite);
   return {
-    totalPoints: data.referal_points,
-    invitedCount: data.referal_rewords_count,
-    completedCount: data.applied_referal_rewords_count,
-    page: toPage(data.referal_rewords.map(toReferralInvite), pagination),
+    totalPoints: apiCount(data.referal_points),
+    invitedCount: apiCount(data.referal_rewords_count) || invites.length,
+    completedCount: apiCount(data.applied_referal_rewords_count),
+    page: apiPage(invites, value),
   };
 }
 
@@ -132,20 +71,12 @@ async function checkCode(code: string): Promise<ReferralCodeCheck> {
       "/auth/verify-referal-code",
       { referal_code: code },
     );
-    if (
-      !isApiEnvelope(response) ||
-      response.code !== 200 ||
-      !isRecord(response.data) ||
-      response.data.valid !== true ||
-      (response.data.referrer_name !== null &&
-        typeof response.data.referrer_name !== "string")
-    ) {
-      throw new AppError("server");
-    }
+    const data = apiData(response);
+    if (data.valid !== true) return { valid: false };
     // A blank name is shown as no name (the no-name hint and banner).
     return {
       valid: true,
-      inviterName: response.data.referrer_name?.trim() || null,
+      inviterName: apiText(data.referrer_name).trim() || null,
     };
   } catch (error) {
     if (

@@ -57,11 +57,12 @@ describe("referralsApi.getProgram", () => {
       "non-finite reward",
       envelope({ referal_code: "TCAR-T2FZ", referal_reword_value: Infinity }),
     ],
-  ])("rejects %s as a server error", async (_case, response) => {
+  ])("tolerates %s", async (_case, response) => {
     get.mockResolvedValueOnce(response);
-    await expect(referralsApi.getProgram("user-1")).rejects.toEqual(
-      new AppError("server"),
-    );
+    const program = await referralsApi.getProgram("user-1");
+    expect(typeof program.code).toBe("string");
+    expect(Number.isFinite(program.rewardPoints)).toBe(true);
+    expect(program.rewardPoints).toBeGreaterThanOrEqual(0);
   });
 
   it("propagates an unauthorized transport error unchanged", async () => {
@@ -157,18 +158,18 @@ describe("referralsApi.getHistory", () => {
     ],
     ["missing pagination", envelope(data)],
     ["bad count", page({ ...data, referal_rewords_count: "3" })],
-  ])("rejects %s", async (_name, response) => {
+  ])("tolerates %s", async (_name, response) => {
     get.mockResolvedValueOnce(response);
-    await expect(referralsApi.getHistory("user-1", 1)).rejects.toEqual(
-      new AppError("server"),
-    );
+    const history = await referralsApi.getHistory("user-1", 1);
+    expect(history.page.items).toHaveLength(1);
+    expect(history.page.lastPage).toBeGreaterThanOrEqual(history.page.page);
   });
 
-  it("rejects a non-success envelope", async () => {
+  it("does not inspect the transport outcome again", async () => {
     get.mockResolvedValueOnce({ ...page(data), code: 422 });
-    await expect(referralsApi.getHistory("user-1", 1)).rejects.toEqual(
-      new AppError("server"),
-    );
+    await expect(referralsApi.getHistory("user-1", 1)).resolves.toMatchObject({
+      invitedCount: 3,
+    });
   });
 
   it("propagates a 401 unchanged", async () => {
@@ -227,10 +228,10 @@ describe("referralsApi.checkCode", () => {
     envelope({ valid: false, referrer_name: null }),
     envelope({ valid: true, referrer_name: 3 }),
     { data: { valid: true, referrer_name: null }, code: 200 },
-  ])("rejects a malformed success", async (response) => {
+  ])("tolerates a changed success payload", async (response) => {
     post.mockResolvedValueOnce(response);
-    await expect(referralsApi.checkCode("TCAR-T2FZ")).rejects.toEqual(
-      new AppError("server"),
+    await expect(referralsApi.checkCode("TCAR-T2FZ")).resolves.toHaveProperty(
+      "valid",
     );
   });
 
