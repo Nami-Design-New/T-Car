@@ -859,6 +859,20 @@ open, as does the separate R11 integration. Typecheck, lint (one existing
 warning), all 1,143 tests, and production build pass; unauthenticated affected
 routes redirect to sign-in in both locales.
 
+Rewards API DTO tolerance (one fraction, 2026-11-26, branch `development`,
+awaiting commit approval): referral, points, and rewards reads map the fields
+their screens use without rejecting a whole response for missing or changed DTO
+fields. Lists, counts, dates, icons, and pagination receive safe fallbacks.
+Unknown catalog costs disable redemption; a quote without a positive cost or a
+redemption without an issued card still returns an error rather than presenting
+a misleading successful purchase. Transport errors, including 401 and backend
+validation, retain their existing handling. Typecheck, lint (one pre-existing
+booking-modal warning), all 1,158 tests, and production build pass. On
+`next start`, unauthenticated referral, points, rewards, cards, catalog, and tier
+routes redirect to sign-in with `next` preserved in both locales. Signed-in
+HTML and an unknown tier's `NEXT_NOT_FOUND` remain untested without a session;
+the existing API test covers a backend 404 for an unknown tier.
+
 **Rewards API, fraction R9 (2026-11-25, branch `feature/rewards-tiers`),
 implementation ready:** My Cards reads E10 `GET /my-discount-cards` with a
 server filter and page size 10; the filter is kept in the URL and later pages

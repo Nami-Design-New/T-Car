@@ -179,18 +179,18 @@ describe("rewardsApi live package reads", () => {
     expect(get).toHaveBeenCalledTimes(1);
   });
 
-  it("rejects malformed package data and an empty catalog", async () => {
+  it("keeps rewards usable with changed package fields or an empty catalog", async () => {
     for (const packages of [[], [{ ...packageDto, high_color: "red" }]]) {
       get.mockImplementation((path: string) =>
         Promise.resolve(envelope(path === "/packages" ? packages : currentDto)),
       );
-      await expect(rewardsApi.getSummary("user-1")).rejects.toEqual(
-        new AppError("server"),
-      );
+      const summary = await rewardsApi.getSummary("user-1");
+      expect(summary.tiers).toHaveLength(1);
+      expect(summary.tiers[0].colors.high).toBeTruthy();
     }
   });
 
-  it("rejects malformed E7 balances", async () => {
+  it("defaults a changed E7 balance", async () => {
     get.mockImplementation((path: string) =>
       Promise.resolve(
         envelope(
@@ -200,9 +200,9 @@ describe("rewardsApi live package reads", () => {
         ),
       ),
     );
-    await expect(rewardsApi.getSummary("user-1")).rejects.toEqual(
-      new AppError("server"),
-    );
+    await expect(rewardsApi.getSummary("user-1")).resolves.toMatchObject({
+      balance: 0,
+    });
   });
 
   it("propagates a transport 401 unchanged", async () => {
@@ -250,7 +250,7 @@ describe("rewardsApi live package reads", () => {
     expect(get).toHaveBeenCalledWith("/discount-cards");
   });
 
-  it("accepts an empty E9 catalog and rejects malformed card data", async () => {
+  it("accepts an empty E9 catalog and disables cards with an unknown cost", async () => {
     get.mockResolvedValueOnce(
       envelope({ can_replaced_points: 0, discount_cards: [] }),
     );
@@ -271,18 +271,18 @@ describe("rewardsApi live package reads", () => {
         ],
       }),
     );
-    await expect(rewardsApi.getCatalog("user-1")).rejects.toEqual(
-      new AppError("server"),
-    );
+    await expect(rewardsApi.getCatalog("user-1")).resolves.toMatchObject({
+      items: [{ id: "5", pointsCost: 0, canReplace: false }],
+    });
     get.mockResolvedValueOnce(
       envelope({
         can_replaced_points: 0,
         discount_cards: [{ id: 5, discount_value: 50, points_count: 1000 }],
       }),
     );
-    await expect(rewardsApi.getCatalog("user-1")).rejects.toEqual(
-      new AppError("server"),
-    );
+    await expect(rewardsApi.getCatalog("user-1")).resolves.toMatchObject({
+      items: [{ id: "5", canReplace: false }],
+    });
   });
 
   it("propagates E9 transport errors unchanged", async () => {
@@ -358,16 +358,16 @@ describe("rewardsApi live package reads", () => {
     });
   });
 
-  it("rejects malformed E10 rows and pagination", async () => {
+  it("tolerates changed E10 rows and pagination", async () => {
     const pagination = { current_page: 1, last_page: 1, total: 1 };
     get.mockResolvedValueOnce({ ...envelope([{ id: 1 }]), pagination });
     await expect(
       rewardsApi.getCardsPage("user-1", 1, "active"),
-    ).rejects.toEqual(new AppError("server"));
+    ).resolves.toMatchObject({ items: [{ id: "1", code: "" }] });
     get.mockResolvedValueOnce({ ...envelope([]), pagination: null });
-    await expect(rewardsApi.getCardsPage("user-1", 1, "all")).rejects.toEqual(
-      new AppError("server"),
-    );
+    await expect(rewardsApi.getCardsPage("user-1", 1, "all")).resolves.toEqual({
+      items: [], page: 1, lastPage: 1, total: 0,
+    });
   });
 
   it("reads E11 with the card id and the current tier name", async () => {

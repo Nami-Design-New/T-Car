@@ -14,8 +14,12 @@ export default function InviteRow({ invite }: { invite: ReferralInvite }) {
   const t = useTranslations("account.referrals.history");
   const format = useFormatter();
   const status = referralInviteStatus(invite);
-  const date = (value: string) =>
-    format.dateTime(new Date(value.replace(" ", "T")), DATE_FORMAT);
+  const date = (value: string) => {
+    const parsed = new Date(value.replace(" ", "T"));
+    return Number.isFinite(parsed.getTime())
+      ? format.dateTime(parsed, DATE_FORMAT)
+      : "—";
+  };
 
   return (
     <li className="bg-surface-elevated p-ds-5 flex flex-col gap-y-1.5 rounded-lg">
