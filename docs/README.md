@@ -739,6 +739,7 @@ describe the guest case.
 | `account` (profile, notifications) |         Yes          |                                               Yes (scoped to the session user)                                                | Yes (Server Actions: save, phone change send and verify, license upload, delete, notification read/delete/token registration) | Profile reads, edits, and phone OTP requests use the live API; phone verification is unavailable until P5, and license and delete writes remain mocked. The profile tab composes separate profile, phone, license, and deletion flows with shared pending-action coordination. Routes per section with a shared layout and `AccountNav`; the loyalty points summary is shown in the account layout and `/account/points` owns the points history view. Notifications now own their live API in `features/notifications`: typed `GET /notifications` and `/notifications/unread-count`, read/read-all/delete/delete-all actions, and `POST /firebase-token`. The server layout reads only the lightweight count for the header badge. The browser registers the Firebase service worker, stores its web FCM token after permission, and refreshes on foreground messages; background delivery needs Firebase's web-push/VAPID configuration in the deployed project. Common success/failure results now use `shared/ui/Dialog`. Profile save and change/verify phone use RHF + Zod (`validation.ts`) with the schemas re-parsed in the actions (doc 9 fraction 2). License upload uses RHF + Zod (doc 9 fraction 3); left: opening the license details is still a TODO, and remaining dialogs                                                                                                                                                                                                                |
 | `layout`                           |         Yes          |                                                              n/a                                                              |                                                              n/a                                                              | The header shell and footer render on the server; mobile navigation uses a fixed bottom bar for account, bookings, rewards, and More (Figma account, booking, and gift icons); More opens an accessible modal side drawer with header links and language control; NAV_LINKS marks the current home-page hash with aria-current. The user menu uses `Menu`. Left: trimming the client messages (doc 2 step 7), the language switcher on `Menu`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | `settings` (VIP data)              |         Yes          | Yes: `GET /settings` sends the token when signed in and maps the VIP fields |                                                              n/a                                                              | Data fraction done (5f4e944); the account banner uses the personalized package name and WhatsApp number when `is_vip` is true. |
+| `rewards` (tier details)           |         Yes          | Yes: tier detail data through `features/rewards/queries.ts` |                                                              n/a                                                              | Earning guidance is in a dialog opened from the bottom of every tier detail page; this UI fraction is done. |
 
 **Rewards API (branch `feature/rewards-api`), fraction R0 (2026-11-25), done:**
 The referral, points, tier (package), and discount-card endpoints are probed on
@@ -1009,10 +1010,20 @@ Figma's mixed screens; Bronze has a welcome perk. Perks have localized title,
 optional description, and icon data in the stateless rewards mock. Silver
 cashback and Gold delivery descriptions use the owner's "every four bookings,
 the fifth…" rule. Diamond descriptions are our own because Figma has none. The
-earning rules on locked tiers are static localized copy pending an API
-contract. The `AccountPageTitle`
+earning rules are static localized copy pending an API contract. The
+`AccountPageTitle`
 names `/account/rewards/tiers` and `/account/rewards/tiers/[tier]` from their
 own route titles.
+
+**Rewards tier earning dialog fraction (2026-11-26, branch
+`feature/rewards-tiers`), done:** The static
+"How to earn points?" rows moved from the locked-tier page into a shared
+dialog. Its underlined info trigger sits at the bottom of every tier detail
+page, regardless of whether the tier is reached, current, or locked. The
+dialog uses the existing three localized `PerkRow` designs and closes by
+Escape, close button, or backdrop. Focused tier tests, typecheck, lint (one
+existing warning), production build, and signed-out route smoke pass; a
+signed-in visual check remains open.
 
 **Rewards fraction RW3 (2026-11-24, branch `feature/rewards`), done:**
 `/account/rewards/cards` shows the points balance, history link, and discount

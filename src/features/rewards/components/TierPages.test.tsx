@@ -1,4 +1,5 @@
 import { screen, within } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import { renderWithIntl } from "@/shared/test/render";
 import type { RewardsSummary } from "../model";
@@ -109,18 +110,25 @@ describe("reward tier pages", () => {
     expect(screen.getByText("Unlocks at Gold")).toBeInTheDocument();
     expect(screen.getByText("Locked")).toBeInTheDocument();
   });
-  it("shows earning guidance before locked perks", () => {
+  it("opens earning guidance in a dialog from a locked tier", async () => {
+    const user = userEvent.setup();
     renderWithIntl(<TierDetailPage summary={summary} tierId="3" />);
-    expect(screen.getByText("How to earn points")).toBeInTheDocument();
+    expect(screen.queryByText("Invite a friend")).not.toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "How to earn points" }));
+    const dialog = screen.getByRole("dialog", { name: "How to earn points" });
     expect(
-      screen.getByRole("link", { name: /Invite a friend/ }),
+      within(dialog).getByRole("link", { name: /Invite a friend/ }),
     ).toHaveAttribute("href", "/account/referrals");
+    expect(within(dialog).getByText("Complete a trip")).toBeInTheDocument();
+    expect(within(dialog).getByText("Rate your experience")).toBeInTheDocument();
     expect(screen.getByText("Gold benefit")).toBeInTheDocument();
     expect(
       screen.getByText("/ 10,000 tier points").parentElement,
     ).toHaveTextContent(/5,000\s*\/ 10,000 tier points/);
     expect(screen.getByText("5,000 points to Gold")).toBeInTheDocument();
     expect(screen.getByText("Locked")).toBeInTheDocument();
+    await user.keyboard("{Escape}");
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
   });
   it("uses neutral copy for a reached tier with no perks", () => {
     renderWithIntl(
@@ -140,14 +148,16 @@ describe("reward tier pages", () => {
     ).not.toBeInTheDocument();
     expect(screen.getByText("This tier has no perks")).toBeInTheDocument();
     expect(screen.queryByText(/Collect 5,000 points/)).not.toBeInTheDocument();
-    expect(screen.queryByText("How to earn points")).not.toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "How to earn points" }),
+    ).toBeInTheDocument();
   });
   it("shows the Bronze welcome perk with an unlocked check", () => {
     renderWithIntl(<TierDetailPage summary={summary} tierId="1" />);
     expect(screen.getByText("توك بديت يا وحش")).toBeInTheDocument();
     expect(screen.getByText("Unlocked")).toBeInTheDocument();
   });
-  it("shows unlocked perks for a reached tier without earning guidance", () => {
+  it("offers the earning dialog on a reached tier", () => {
     renderWithIntl(
       <TierDetailPage
         summary={{ ...summary, tierPoints: 12000 }}
@@ -157,9 +167,11 @@ describe("reward tier pages", () => {
     expect(screen.getByText("Tier reached")).toBeInTheDocument();
     expect(screen.getByText("From 5,000 points")).toBeInTheDocument();
     expect(screen.getByText("Unlocked")).toBeInTheDocument();
-    expect(screen.queryByText("How to earn points")).not.toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "How to earn points" }),
+    ).toBeInTheDocument();
   });
-  it("does not show an unlock section for the current top tier", () => {
+  it("offers the earning dialog on the current top tier", () => {
     renderWithIntl(
       <TierDetailPage
         summary={{ ...summary, tierPoints: 25000 }}
@@ -167,5 +179,8 @@ describe("reward tier pages", () => {
       />,
     );
     expect(screen.queryByText(/Unlocks at/)).not.toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "How to earn points" }),
+    ).toBeInTheDocument();
   });
 });

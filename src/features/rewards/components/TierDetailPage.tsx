@@ -1,5 +1,4 @@
 import { useTranslations } from "next-intl";
-import { FiShare2 } from "react-icons/fi";
 import { Link } from "@/i18n/navigation";
 import { cn } from "@/shared/lib/cn";
 import {
@@ -9,6 +8,7 @@ import {
 import PerkRow from "./PerkRow";
 import PerkIcon from "./PerkIcon";
 import TierHero from "./TierHero";
+import EarnPointsDialog from "./EarnPointsDialog";
 
 interface Props {
   summary: RewardsSummary;
@@ -18,27 +18,6 @@ interface Props {
 export default function TierDetailPage({ summary, tierId }: Props) {
   const t = useTranslations("rewards");
   const view = rewardTierView(summary, tierId);
-  const earn = [
-    {
-      id: "earn-trip",
-      icon: <PerkIcon perkKey="free_delivery_every_bookings" />,
-      title: t("detail.earn.tripTitle"),
-      description: t("detail.earn.tripDescription"),
-    },
-    {
-      id: "earn-review",
-      icon: <PerkIcon perkKey="bronze_welcome" />,
-      title: t("detail.earn.reviewTitle"),
-      description: t("detail.earn.reviewDescription"),
-    },
-    {
-      id: "earn-invite",
-      icon: <FiShare2 aria-hidden="true" />,
-      title: t("detail.earn.inviteTitle"),
-      description: t("detail.earn.inviteDescription"),
-      href: "/account/referrals",
-    },
-  ];
   const perksSection = (
     <section className="flex flex-col gap-3">
       <h2 className="m-0 text-base font-bold">
@@ -109,21 +88,6 @@ export default function TierDetailPage({ summary, tierId }: Props) {
         state={view.state}
         href={null}
       />
-      {view.state === "locked" && (
-        <section className="flex flex-col gap-3">
-          <h2 className="m-0 text-[17px] font-bold">{t("detail.earnTitle")}</h2>
-          {earn.map((perk) => (
-            <PerkRow
-              key={perk.id}
-              title={perk.title}
-              description={perk.description}
-              icon={perk.icon}
-              unlocked
-              href={perk.href}
-            />
-          ))}
-        </section>
-      )}
       {perksSection}
       {view.state === "current" && view.next && view.next.perks.length > 0 && (
         <section className="flex flex-col gap-3">
@@ -140,6 +104,7 @@ export default function TierDetailPage({ summary, tierId }: Props) {
           ))}
         </section>
       )}
+      <EarnPointsDialog />
     </section>
   );
 }
