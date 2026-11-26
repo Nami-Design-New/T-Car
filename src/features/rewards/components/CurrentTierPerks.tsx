@@ -1,12 +1,12 @@
 import { useTranslations } from "next-intl";
 import { FiChevronRight, FiStar } from "react-icons/fi";
 import { Link } from "@/i18n/navigation";
-import type { RewardTier } from "../model";
+import type { RewardRoadTier, RewardTier } from "../model";
 import PerkIcon from "./PerkIcon";
 
 interface Props {
-  currentTier: RewardTier;
-  nextTier: RewardTier | null;
+  currentTier: Pick<RewardTier, "id" | "perks">;
+  nextTier: RewardRoadTier | null;
 }
 
 export default function CurrentTierPerks({ currentTier, nextTier }: Props) {
@@ -37,8 +37,8 @@ export default function CurrentTierPerks({ currentTier, nextTier }: Props) {
             <p className="text-text-subtle mt-0.5 text-[10px]">
               {nextTier
                 ? t("perks.emptyDescription", {
-                    threshold: nextTier.threshold,
-                    tier: t(`tiers.${nextTier.id}`),
+                    threshold: nextTier.startPoints,
+                    tier: nextTier.name,
                   })
                 : t("perks.topTierDescription")}
             </p>
@@ -48,19 +48,14 @@ export default function CurrentTierPerks({ currentTier, nextTier }: Props) {
         <ul className="m-0 grid list-none gap-2 p-0 sm:grid-cols-2">
           {currentTier.perks.map((perk) => (
             <li
-              key={perk.id}
+              key={perk.key}
               className="border-stroke-light bg-surface-elevated flex items-center gap-3 rounded-lg border p-3"
             >
               <span className="bg-surface-card-primary text-action-primary grid size-10 shrink-0 place-items-center rounded-md text-xl">
-                <PerkIcon icon={perk.icon} />
+                <PerkIcon perkKey={perk.key} />
               </span>
               <span>
                 <strong className="block text-[13px]">{perk.title}</strong>
-                {perk.description && (
-                  <span className="text-text-subtle text-[11px]">
-                    {perk.description}
-                  </span>
-                )}
               </span>
             </li>
           ))}

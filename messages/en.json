@@ -32,6 +32,12 @@
     }
   },
   "account": {
+    "vip": {
+      "title": "Dedicated VIP support",
+      "packageDescription": "Exclusive to {package} members · Available 24 hours",
+      "description": "Dedicated support · Available 24 hours",
+      "contactWhatsApp": "Contact VIP support on WhatsApp"
+    },
     "title": "My account",
     "back": "Back",
     "nav": {
@@ -224,7 +230,7 @@
       "currentTier": "Your current tier",
       "higherTier": "Higher tier",
       "ofTierPoints": "/ {threshold} tier points",
-      "pointsToNext": "{points} points to {tier, select, bronze {Bronze} silver {Silver} gold {Gold} diamond {Diamond} other {the next tier}}",
+      "pointsToNext": "{points} points to {tier}",
       "topTier": "Highest tier reached"
     },
     "balance": {
@@ -285,7 +291,7 @@
       "successTitle": "Redeemed successfully!",
       "successDescription": "The card was added to My cards. Use the code at checkout on your next booking.",
       "balanceAfterAmount": "Redeemable balance: {amount} points",
-      "tierPointsUnchanged": "Your {tier, select, bronze {Bronze} silver {Silver} gold {Gold} diamond {Diamond} other {}} tier stays the same · {amount} tier points",
+      "tierPointsUnchanged": "Your {tier} tier stays the same · {amount} tier points",
       "viewCards": "View my cards",
       "backToRewards": "Back to rewards"
     },
@@ -322,7 +328,7 @@
       "fromPoints": "From {points} points",
       "requires": "Requires {points}",
       "state": { "current": "Your current tier", "reached": "Tier reached" },
-      "progress": "{points} / {threshold} points to {tier, select, bronze {Bronze} silver {Silver} gold {Gold} diamond {Diamond} other {the next tier}}",
+      "progress": "{points} / {threshold} points to {tier}",
       "info": "Redeeming points only reduces your available balance. Tier points never decrease, and your tier stays the same."
     },
     "perkState": {
@@ -335,8 +341,8 @@
     "detail": {
       "tierNavigation": "Reward tiers",
       "currentPerks": "Your perks",
-      "tierPerks": "{tier, select, bronze {Bronze} silver {Silver} gold {Gold} diamond {Diamond} other {Tier}} perks",
-      "unlocksAt": "Unlocks at {tier, select, bronze {Bronze} silver {Silver} gold {Gold} diamond {Diamond} other {the next tier}}",
+      "tierPerks": "{tier} perks",
+      "unlocksAt": "Unlocks at {tier}",
       "earnTitle": "How to earn points",
       "earn": {
         "tripTitle": "Complete a trip",
@@ -813,6 +819,7 @@
       "paymentMethodRequired": "Choose a payment method",
       "carRequired": "Choose a car",
       "termsRequired": "Accept the terms and conditions to continue",
+      "couponRequired": "Enter a discount code.",
       "carUnavailable": "This car is not available for that long. Choose a shorter rental or another car."
     },
     "cities": {
@@ -1207,6 +1214,12 @@
       "orderTime": "Order time",
       "priceDetails": "Price details",
       "dailyPrice": "Daily price",
+      "couponPlaceholder": "Have a discount code?",
+      "checkCoupon": "Verify code",
+      "checkingCoupon": "Checking...",
+      "couponApplied": "Applied",
+      "couponAppliedMessage": "Discount code applied to this booking.",
+      "couponRequired": "Enter a discount code.",
       "days": "Number of days",
       "day": "days",
       "subtotal": "Subtotal",
@@ -1390,5 +1403,16 @@
     "empty": {
       "title": "No bank accounts added"
     }
+  },
+  "bookingReward": {
+    "header": "Booking complete",
+    "title": "Your booking is complete",
+    "description": "{points} points were added to each balance after completing your booking",
+    "redeemable": "Redeemable balance",
+    "tier": "Tier points",
+    "tierBalance": "Tier points: {points} points",
+    "redeemableBalance": "Redeemable balance: {points} points",
+    "viewRewards": "View rewards balance",
+    "redeem": "Redeem points"
   }
 }

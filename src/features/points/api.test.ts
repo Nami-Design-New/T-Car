@@ -23,34 +23,36 @@ const data = {
   can_replaced_points: 4000,
   last_replaced_points: 0,
   transactions: [transaction],
-  pagination: {
-    current_page: 1,
-    last_page: 2,
-    per_page: 10,
-    total: 11,
-    from: 1,
-    to: 10,
-  },
+};
+const pagination = {
+  current_page: 1,
+  last_page: 2,
+  per_page: 10,
+  total: 11,
+  from: 1,
+  to: 10,
 };
 const envelope = (payload: unknown) => ({
   data: payload,
   message: "OK",
   code: 200,
 });
+/** A success response with pagination beside `data` (B2 answer). */
+const page = (payload: unknown) => ({ ...envelope(payload), pagination });
 
 describe("pointsApi", () => {
   it.each([
     ["all", 1, { page: 1, per_page: 10 }],
     ["earned", 2, { page: 2, per_page: 10, filter: "earned" }],
     ["spent", 3, { page: 3, per_page: 10, filter: "used" }],
-  ] as const)("requests %s page %i", async (filter, page, query) => {
-    get.mockResolvedValueOnce(envelope(data));
-    await pointsApi.getPoints("user-1", page, filter);
+  ] as const)("requests %s page %i", async (filter, pageNumber, query) => {
+    get.mockResolvedValueOnce(page(data));
+    await pointsApi.getPoints("user-1", pageNumber, filter);
     expect(get).toHaveBeenCalledWith("/points", { query });
   });
 
   it("maps balances, a signed amount, and Riyadh time", async () => {
-    get.mockResolvedValueOnce(envelope(data));
+    get.mockResolvedValueOnce(page(data));
     await expect(pointsApi.getPoints("user-1", 1, "all")).resolves.toEqual({
       summary: { tierPoints: 12000, balance: 4000, lastRedemption: null },
       page: {
@@ -78,7 +80,7 @@ describe("pointsApi", () => {
     ["replace", "redemption", null, 50],
   ] as const)("maps %s", async (pointType, kind, orderId, discountValue) => {
     get.mockResolvedValueOnce(
-      envelope({
+      page({
         ...data,
         transactions: [
           {
@@ -101,7 +103,7 @@ describe("pointsApi", () => {
 
   it("maps missing order and discount links to nullable source fields", async () => {
     get.mockResolvedValueOnce(
-      envelope({ ...data, transactions: [{ ...transaction, order_id: null }] }),
+      page({ ...data, transactions: [{ ...transaction, order_id: null }] }),
     );
     expect(
       (await pointsApi.getPoints("user-1", 1, "all")).page.items[0].source,
@@ -111,18 +113,18 @@ describe("pointsApi", () => {
   it.each([
     [
       "malformed item",
-      { ...data, transactions: [{ ...transaction, points: "200" }] },
+      page({ ...data, transactions: [{ ...transaction, points: "200" }] }),
     ],
     [
       "bad date",
-      {
+      page({
         ...data,
         transactions: [{ ...transaction, date: "2026-02-30 12:18:04" }],
-      },
+      }),
     ],
-    ["missing pagination", { ...data, pagination: undefined }],
-  ])("rejects %s", async (_name, payload) => {
-    get.mockResolvedValueOnce(envelope(payload));
+    ["missing pagination", envelope(data)],
+  ])("rejects %s", async (_name, response) => {
+    get.mockResolvedValueOnce(response);
     await expect(pointsApi.getPoints("user-1", 1, "all")).rejects.toEqual(
       new AppError("server"),
     );
@@ -135,7 +137,7 @@ describe("pointsApi", () => {
   });
 
   it("reads the summary with per_page=1", async () => {
-    get.mockResolvedValueOnce(envelope(data));
+    get.mockResolvedValueOnce(page(data));
     await expect(pointsApi.getSummary("user-1")).resolves.toEqual({
       tierPoints: 12000,
       balance: 4000,

@@ -1,26 +1,21 @@
-export type RewardTierId = "bronze" | "silver" | "gold" | "diamond";
+import type { Page } from "@/shared/lib/pagination";
 
-export type RewardPerkIcon =
-  | "calendar"
-  | "percent"
-  | "card"
-  | "tag"
-  | "car"
-  | "support"
-  | "gift"
-  | "sparkle";
 export interface RewardPerk {
-  id: string;
+  key: string;
   title: string;
-  description?: string;
-  icon: RewardPerkIcon;
 }
 
-export interface RewardTier {
-  id: RewardTierId;
-  /** Lifetime tier points required to reach this tier. */
-  threshold: number;
-  /** Backend-owned, already-localized perk copy. */
+export interface RewardRoadTier {
+  id: string;
+  name: string;
+  iconUrl: string;
+  colors: { high: string; medium: string; low: string };
+  startPoints: number;
+}
+
+export interface RewardTier extends RewardRoadTier {
+  /** Lifetime tier points required to enter and finish this tier. */
+  endPoints: number;
   perks: RewardPerk[];
 }
 
@@ -32,6 +27,14 @@ export interface RewardsSummary {
   tiers: RewardTier[];
 }
 
+/** The overview uses E7's current package and road list, without E6. */
+export interface RewardsHomeData {
+  tierPoints: number;
+  balance: number;
+  currentTier: RewardTier | null;
+  roadTiers: RewardRoadTier[];
+}
+
 export type RewardCardStatus = "active" | "used" | "expired";
 export type RewardCardFilter = "all" | RewardCardStatus;
 export const REWARD_CARD_FILTERS: RewardCardFilter[] = [
@@ -40,6 +43,13 @@ export const REWARD_CARD_FILTERS: RewardCardFilter[] = [
   "used",
   "expired",
 ];
+
+export function parseRewardCardFilter(value: unknown): RewardCardFilter {
+  return typeof value === "string" &&
+    REWARD_CARD_FILTERS.includes(value as RewardCardFilter)
+    ? (value as RewardCardFilter)
+    : "all";
+}
 
 export interface RewardCard {
   id: string;
@@ -53,13 +63,15 @@ export interface RewardCard {
 
 export interface RewardCardsData {
   balance: number;
-  cards: RewardCard[];
+  page: Page<RewardCard>;
 }
 
 export interface RewardCatalogItem {
   id: string;
   discountAmount: number;
   pointsCost: number;
+  /** The E9 per-card eligibility decision controls the redeem button. */
+  canReplace: boolean;
   /** Days the redeemed card stays valid, counted from redemption. */
   validityDays: number;
 }
@@ -69,44 +81,44 @@ export interface RewardCatalogData {
   items: RewardCatalogItem[];
 }
 
-export interface RewardRedemption {
+export interface RewardRedemptionData {
   card: RewardCard;
   pointsCost: number;
   balanceBefore: number;
   balanceAfter: number;
   tierPoints: number;
+}
+
+/** E11's preview, plus the current tier name shown on the success screen. */
+export interface RewardRedemptionQuote {
+  balanceBefore: number;
+  pointsCost: number;
+  balanceAfter: number;
+  tierName: string;
+}
+
+export interface RewardRedemption extends RewardRedemptionData {
   /** Unchanged by redemption; shown on the success screen. */
-  tierId: RewardTierId;
-}
-
-export function canAffordReward(
-  balance: number,
-  item: RewardCatalogItem,
-): boolean {
-  return balance >= item.pointsCost;
-}
-
-export function matchesRewardCardFilter(
-  card: RewardCard,
-  filter: RewardCardFilter,
-): boolean {
-  return filter === "all" || card.status === filter;
+  tierName: string;
 }
 
 export type RewardTierState = "reached" | "current" | "locked";
 
-export interface RewardsOverview {
+export interface TierOverview<T extends RewardRoadTier> {
   /** Every tier, lowest threshold first. */
-  tiers: { tier: RewardTier; state: RewardTierState }[];
-  current: RewardTier;
+  tiers: { tier: T; state: RewardTierState }[];
+  current: T;
   /** Null at the top tier. */
-  next: RewardTier | null;
+  next: T | null;
   /** 0–100: tier points against the next tier's threshold, as Figma shows it. */
   progress: number;
   pointsToNext: number;
   /** 0–100 along the tier road, at the car between the current and next tier. */
   roadPosition: number;
 }
+
+export type RewardsOverview = TierOverview<RewardTier>;
+export type RewardsHomeOverview = TierOverview<RewardRoadTier>;
 
 export interface RewardTierView {
   tier: RewardTier;
@@ -119,18 +131,9 @@ export interface RewardTierView {
 
 const clampPercent = (value: number) => Math.min(100, Math.max(0, value));
 
-export function isRewardTierId(value: string): value is RewardTierId {
-  return (
-    value === "bronze" ||
-    value === "silver" ||
-    value === "gold" ||
-    value === "diamond"
-  );
-}
-
 export function rewardTierView(
   summary: RewardsSummary,
-  tierId: RewardTierId,
+  tierId: string,
 ): RewardTierView {
   const overview = rewardsOverview(summary);
   const index = overview.tiers.findIndex(({ tier }) => tier.id === tierId);
@@ -146,28 +149,36 @@ export function rewardTierView(
         ? overview.progress
         : state === "reached"
           ? 100
-          : clampPercent((summary.tierPoints / tier.threshold) * 100),
+          : clampPercent((summary.tierPoints / tier.startPoints) * 100),
     pointsLeft:
       state === "current"
         ? overview.pointsToNext
         : state === "reached"
           ? 0
-          : Math.max(0, tier.threshold - summary.tierPoints),
+          : Math.max(0, tier.startPoints - summary.tierPoints),
     tiers: overview.tiers,
   };
 }
 
 /**
  * Everything the overview shows, from one sorted copy of the tiers. A customer
- * below the first threshold is shown at the first tier (Bronze).
+ * below the first threshold is shown at the first tier.
  */
-export function rewardsOverview(summary: RewardsSummary): RewardsOverview {
-  const sorted = [...summary.tiers].sort((a, b) => a.threshold - b.threshold);
+function tierOverview<T extends RewardRoadTier>(
+  tiers: T[],
+  tierPoints: number,
+  currentId?: string | null,
+): TierOverview<T> {
+  const sorted = [...tiers].sort((a, b) => a.startPoints - b.startPoints);
   if (sorted.length === 0) throw new Error("Rewards require at least one tier");
 
-  const { tierPoints } = summary;
-  const reached = sorted.filter((tier) => tierPoints >= tier.threshold).length;
-  const currentIndex = Math.max(0, reached - 1);
+  const reached = sorted.filter(
+    (tier) => tierPoints >= tier.startPoints,
+  ).length;
+  const matchedIndex =
+    currentId == null ? -1 : sorted.findIndex((tier) => tier.id === currentId);
+  const currentIndex =
+    matchedIndex >= 0 ? matchedIndex : Math.max(0, reached - 1);
   const current = sorted[currentIndex];
   const next = sorted[currentIndex + 1] ?? null;
 
@@ -183,8 +194,8 @@ export function rewardsOverview(summary: RewardsSummary): RewardsOverview {
     })),
     current,
     next,
-    progress: next ? clampPercent((tierPoints / next.threshold) * 100) : 100,
-    pointsToNext: next ? Math.max(0, next.threshold - tierPoints) : 0,
+    progress: next ? clampPercent((tierPoints / next.startPoints) * 100) : 100,
+    pointsToNext: next ? Math.max(0, next.startPoints - tierPoints) : 0,
     roadPosition:
       sorted.length === 1
         ? 100
@@ -192,4 +203,14 @@ export function rewardsOverview(summary: RewardsSummary): RewardsOverview {
             (sorted.length - 1)) *
           100,
   };
+}
+
+export function rewardsOverview(summary: RewardsSummary): RewardsOverview {
+  return tierOverview(summary.tiers, summary.tierPoints);
+}
+
+export function rewardsHomeOverview(
+  data: RewardsHomeData,
+): RewardsHomeOverview {
+  return tierOverview(data.roadTiers, data.tierPoints, data.currentTier?.id);
 }

@@ -85,6 +85,12 @@ export interface AppSettings {
   companySizes: CompanySize[];
   contact: ContactSettings;
   links: SiteLinks;
+  /** The signed-in customer's VIP status; false for a guest or an absent flag. */
+  isVip: boolean;
+  /** Localized package name, e.g. "الذهبية"; absent for a guest. */
+  vipPackages: string | null;
+  /** WhatsApp contact for VIP support, when supplied by settings. */
+  whatsappNumber: string | null;
   bookingTypes?: Partial<Record<BookingType, boolean>>;
   priceFilterRange?: PriceFilterRange;
   mapDefaultPosition?: MapDefaultPosition;
@@ -94,3 +100,8 @@ export interface AppSettings {
 export type SiteSettings = Pick<AppSettings, "contact" | "links"> & {
   priceFilterRange: PriceFilterRange;
 };
+
+export type VipSettings = Pick<
+  AppSettings,
+  "isVip" | "vipPackages" | "whatsappNumber"
+>;

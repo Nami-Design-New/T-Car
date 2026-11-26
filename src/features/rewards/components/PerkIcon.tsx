@@ -8,29 +8,31 @@ import {
   FiGift,
   FiStar,
 } from "react-icons/fi";
-import type { RewardPerkIcon } from "../model";
-
 interface Props {
-  icon: RewardPerkIcon;
+  perkKey: string;
 }
 
-export default function PerkIcon({ icon }: Props) {
-  switch (icon) {
-    case "calendar":
+export default function PerkIcon({ perkKey }: Props) {
+  switch (perkKey) {
+    case "monthly_points":
+    case "points_every_days":
       return <FiCalendar aria-hidden="true" />;
-    case "percent":
+    case "monthly_contract_discount":
       return <FiPercent aria-hidden="true" />;
-    case "card":
+    case "booking_wallet_refund":
       return <FiCreditCard aria-hidden="true" />;
-    case "tag":
+    case "monthly_discount_code":
       return <FiTag aria-hidden="true" />;
-    case "car":
+    case "free_delivery_every_bookings":
+    case "free_delivery_pickup_all":
       return <PiCarProfile aria-hidden="true" />;
-    case "support":
+    case "vip_support_24h":
       return <FiHeadphones aria-hidden="true" />;
-    case "gift":
+    case "diamond_offers":
       return <FiGift aria-hidden="true" />;
-    case "sparkle":
+    case "bronze_welcome":
       return <FiStar aria-hidden="true" />;
+    default:
+      return <FiGift aria-hidden="true" />;
   }
 }

@@ -1,5 +1,63 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { rewardsMock } from "./api.mock";
+
+vi.mock("next-intl/server", () => ({ getLocale: async () => "en" }));
+
+describe("rewardsMock.getSummary", () => {
+  it("returns API-shaped packages with data-owned names, icons, colours and perk keys", async () => {
+    const summary = await rewardsMock.getSummary("customer-1");
+    expect(summary.tiers[0]).toMatchObject({
+      id: "1",
+      name: "Bronze",
+      iconUrl: "/images/rewards/badge-bronze.webp",
+      colors: { high: "#F3C29B", medium: "#C8794A", low: "#7A3E1D" },
+      startPoints: 1000,
+      endPoints: 4999,
+      perks: [{ key: "bronze_welcome", title: "You've just started, champ!" }],
+    });
+    expect(summary.tiers[0].perks[0]).not.toHaveProperty("description");
+  });
+});
+
+describe("rewardsMock.getRedemptionQuote", () => {
+  it("previews the balance change and the current tier without spending", async () => {
+    const before = await rewardsMock.getCatalog("customer-1");
+    const quote = await rewardsMock.getRedemptionQuote(
+      "customer-1",
+      "discount-100",
+    );
+    const after = await rewardsMock.getCatalog("customer-1");
+
+    expect(quote).toEqual({
+      balanceBefore: 4000,
+      pointsCost: 1900,
+      balanceAfter: 2100,
+      tierName: "Gold",
+    });
+    expect(after.balance).toBe(before.balance);
+  });
+
+  it("rejects an unknown card, the documented failure, and the expensive card", async () => {
+    await expect(
+      rewardsMock.getRedemptionQuote("customer-1", "unknown"),
+    ).rejects.toMatchObject({
+      kind: "not_found",
+      code: "rewards.cardUnavailable",
+    });
+    await expect(
+      rewardsMock.getRedemptionQuote("rewards-failure", "discount-50"),
+    ).rejects.toMatchObject({ kind: "network", code: "rewards.unavailable" });
+    await expect(
+      rewardsMock.getRedemptionQuote("customer-1", "discount-failure"),
+    ).rejects.toMatchObject({ kind: "network", code: "rewards.unavailable" });
+    await expect(
+      rewardsMock.getRedemptionQuote("customer-1", "discount-300"),
+    ).rejects.toMatchObject({
+      kind: "validation",
+      code: "rewards.insufficientPoints",
+    });
+  });
+});
 
 describe("rewardsMock.redeem", () => {
   it("returns a receipt without mutating the server-side mock balance", async () => {
@@ -20,7 +78,6 @@ describe("rewardsMock.redeem", () => {
         balanceBefore: 4000,
         balanceAfter: 3000,
         tierPoints: 12000,
-        tierId: "gold",
       },
     });
     expect(after.balance).toBe(before.balance);

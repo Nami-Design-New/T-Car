@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useLocale, useTranslations } from "next-intl";
@@ -9,7 +10,12 @@ import { Dialog } from "@/shared/ui/Dialog";
 import { Button } from "@/shared/ui/Button";
 import { FormCheckbox } from "@/shared/ui/Form";
 import { Price } from "@/shared/ui/Price";
-import { useFieldErrorMessage } from "@/shared/hooks/useErrorMessage";
+import {
+  useErrorMessage,
+  useFieldErrorMessage,
+} from "@/shared/hooks/useErrorMessage";
+import { useNotify } from "@/shared/hooks/useNotify";
+import type { Result } from "@/shared/lib/result";
 import type { BookingDetails, Order } from "@/features/orders";
 import { bookingTermsSchema, type BookingTermsValues } from "../validation";
 import Image from "next/image";
@@ -34,6 +40,7 @@ interface Props {
   rating: number;
   booking: BookingDetails;
   draft?: Order;
+  onApplyCoupon?: (code: string) => Promise<Result<Order>>;
   selectedAddons?: { id: string; title: string; price: number }[];
 }
 
@@ -51,11 +58,46 @@ export default function BookingConfirmModal({
   rating,
   booking,
   draft,
+  onApplyCoupon,
   selectedAddons = [],
 }: Props) {
   const t = useTranslations("booking.confirm");
   const locale = useLocale();
   const fieldError = useFieldErrorMessage();
+  const errorMessage = useErrorMessage();
+  const notify = useNotify();
+  const [couponCode, setCouponCode] = useState(draft?.couponCode ?? "");
+  const [couponError, setCouponError] = useState<string | null>(null);
+  const [applyingCoupon, setApplyingCoupon] = useState(false);
+  const couponApplied = Boolean(
+    draft?.couponCode && couponCode.trim() === draft.couponCode && !couponError,
+  );
+  const applyCoupon = async () => {
+    if (!onApplyCoupon || applyingCoupon || couponApplied) return;
+    const code = couponCode.trim();
+    if (!code) {
+      setCouponError(t("couponRequired"));
+      return;
+    }
+    setApplyingCoupon(true);
+    setCouponError(null);
+    try {
+      const result = await onApplyCoupon(code);
+      if (result.ok) {
+        if (result.message) notify.success(result.message);
+      } else {
+        const message =
+          result.error.serverMessage ?? errorMessage(result.error);
+        setCouponError(message);
+        if (result.error.kind === "validation" && result.error.serverMessage)
+          notify.error(result.error.serverMessage);
+      }
+    } catch (error) {
+      setCouponError(errorMessage(error));
+    } finally {
+      setApplyingCoupon(false);
+    }
+  };
   const {
     register,
     handleSubmit,
@@ -204,6 +246,82 @@ export default function BookingConfirmModal({
                   {t("priceDetails")}
                 </h3>
 
+                {draft && onApplyCoupon && (
+                  <div className="mb-3">
+                    <div
+                      className={cn(
+                        "flex min-h-16 items-center gap-2 rounded-xl border bg-surface-elevated p-2.5 focus-within:border-action-primary",
+                        couponError
+                          ? "border-status-error"
+                          : couponApplied
+                            ? "border-status-success"
+                            : "border-stroke-light",
+                      )}
+                    >
+                      <label htmlFor="booking-coupon" className="sr-only">
+                        {t("couponPlaceholder")}
+                      </label>
+                      <input
+                        id="booking-coupon"
+                        type="text"
+                        value={couponCode}
+                        maxLength={50}
+                        onChange={(event) => {
+                          setCouponCode(event.target.value);
+                          setCouponError(null);
+                        }}
+                        onKeyDown={(event) => {
+                          if (event.key === "Enter") {
+                            event.preventDefault();
+                            void applyCoupon();
+                          }
+                        }}
+                        placeholder={t("couponPlaceholder")}
+                        aria-invalid={Boolean(couponError)}
+                        aria-describedby={
+                          couponError ? "booking-coupon-error" : undefined
+                        }
+                        className="min-w-0 flex-1 appearance-none border-0 bg-transparent px-2 text-start text-base text-text-primary shadow-none outline-none placeholder:text-text-subtle focus:border-0 focus:outline-none focus:ring-0"
+                      />
+                      <Button
+                        type="button"
+                        onClick={applyCoupon}
+                        disabled={applyingCoupon || couponApplied}
+                        className={cn(
+                          "h-11 min-w-36 shrink-0 !rounded-full px-4 text-base",
+                          couponApplied &&
+                            "border-status-success bg-status-success text-white opacity-100",
+                        )}
+                      >
+                        {couponApplied ? (
+                          <>
+                            <span aria-hidden="true">✓</span>
+                            {t("couponApplied")}
+                          </>
+                        ) : applyingCoupon ? (
+                          t("checkingCoupon")
+                        ) : (
+                          t("checkCoupon")
+                        )}
+                      </Button>
+                    </div>
+                    {couponApplied && (
+                      <p role="status" className="mt-1 text-sm text-status-success">
+                        {t("couponAppliedMessage")}
+                      </p>
+                    )}
+                    {couponError && (
+                      <p
+                        id="booking-coupon-error"
+                        role="alert"
+                        className="mt-1 text-sm text-status-error"
+                      >
+                        {couponError}
+                      </p>
+                    )}
+                  </div>
+                )}
+
                 <div className="flex flex-col gap-0">
                   <PriceRow
                     label={t("dailyPrice")}
@@ -296,6 +414,7 @@ export default function BookingConfirmModal({
             <div className="flex flex-col gap-2.5 rounded-xl border-t border-stroke-light bg-surface-elevated p-2.5">
               <Button
                 type="submit"
+                disabled={applyingCoupon}
                 className="h-10.5 w-full rounded-sm text-md"
               >
                 {t("continuePayment")}

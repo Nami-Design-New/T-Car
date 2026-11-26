@@ -489,7 +489,7 @@ national number is sent), company name, email, and a company size. It posts to
 `company_size_id` (Bruno's `size` is rejected) and `sendJoinRequestAction`.
 Success is a toast and the dialog closes; a backend 422 is a toast and keeps
 the dialog and the input; other failures are inline. The sizes come from the new
-shared **`features/settings`** feature (`GET /settings`, public): `api.ts`
+shared **`features/settings`** feature (`GET /settings`, guest-capable): `api.ts`
 (server-only `settingsApi`, maps only the fields in use: `companySizes`),
 `queries.ts` (`getSettings`, React `cache`, for server components),
 `actions.ts` (`getSettingsAction`, for client components), and `index.ts`
@@ -543,6 +543,32 @@ coordinates are currently unused by the application.
 `getSiteSettings()`. The 5–55 bounds apply to URL parsing and filtering, and the
 range inputs show the shared SAR mark. A missing value or settings read failure
 uses the observed 5–55 default.
+
+**Settings API expansion, VIP data fraction (2026-11-26, branch
+`feature/rewards-tiers`), done:** `GET /settings` now uses the
+server HTTP client: guests send no bearer token, while signed-in customers send
+their session token. The read uses `no-store` because the response can contain
+customer-specific VIP data. `AppSettings` maps `is_vip`, `vip_packages`, and
+`whatsapp_number`; absent or malformed flags default to false, and an unusable
+number becomes null. TEST currently returns `false`, `null`, and `null`, so the
+non-null package shape was subsequently supplied by product as a localized
+string. The account banner and coupon flow are separate fractions. Settings
+tests (11), typecheck, lint (one existing warning), production build, and guest
+HTML smoke in both locales pass; the
+account profile redirects guests to sign-in and an unknown car ID renders
+`NEXT_NOT_FOUND`. Authenticated VIP response rendering remains unverified.
+
+**My Account VIP banner fraction (2026-11-26, branch `feature/rewards-tiers`,
+commit `cb7bf07`), done:** The account sections read personalized VIP
+settings on the server and show the reference banner above their navigation when
+`is_vip` is true. The localized package name appears in the subtitle. A usable
+`whatsapp_number` makes the whole banner a `wa.me` link without a prefilled
+message; otherwise the banner remains informational. The Arabic element order
+starts with the support icon on the right, followed by the text and the left
+chevron; English mirrors it. Focused tests (16), typecheck, lint (one existing
+warning), and production build pass. Guest account routes redirect to sign-in
+in both locales, and an unknown car ID renders `NEXT_NOT_FOUND`. Signed-in
+rendering still needs a TEST customer with `is_vip: true`.
 
 **Phase 1 import-boundary remediation (2026-10-20):** The account shell now receives points data from its App Router section layout and imports the summary card through `features/points/index.ts`. The root layout now supplies the authenticated notifications count to the layout feature. `MapLocationModal` and `LocationData` now live in `shared/ui` and `shared/lib`, respectively, with every caller using that shared API. Rental search now consumes the cars feature only through its public index; that index no longer exposes the server-only `getOffices` read, which the home route imports directly. The initial lint audit is reduced from nine to two boundary errors; both remaining violations are in wallet's bank-account action dependency.
 
@@ -706,12 +732,14 @@ describe the guest case.
 | `wallet`, `bank-accounts`          |         Yes          | Yes: live API (wallet W0–W9, bank accounts B0–B7); reads through `queries.ts` / Server Actions, writes through Server Actions |                                                              Yes                                                              | Fractions 1–3 complete: wallet and bank-account form, confirmation, and result states use shared dialogs. User-scoped reads and writes are on the live API (docs/api/wallet-api.md, docs/api/bank-accounts-api.md); left: the backend follow-ups listed there. Form validation fractions 4–5 add RHF + Zod amount and bank-account rules, re-parsed by the actions                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | `my-bookings`                      |         Yes          |                                                              Yes                                                              |                                                     Yes (Server Actions)                                                      | Fraction 4 complete: extend, cancel, review, and result dialogs use shared Dialog primitives. Form-validation fraction 8 adds RHF + Zod to review, extend, and edit. Data and actions now live in `orders` (booking API O1). Left: `router.refresh()` after an action once the API keeps state                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | `car-details`, `booking`           |         Yes          |                                                              Yes                                                              |                                                        Yes (checkout)                                                         | Fraction 5 complete: daily booking, confirmation, payment, and booking result dialogs use shared primitives. Booking data and the checkout action now live in `orders` (booking API O1). Left: keep a failed edit request open inside `BookingDailyModal` and migrate remaining booking-flow details                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
-| `orders` (booking data)            |         Yes          |          List (E6) and details (E7): live API; writes: mock until their fraction; reads through `orders/queries.ts`           |                                                     Yes (Server Actions)                                                      | Booking API O1–O7 (`docs/api/booking-api.md`): owns every booking read and write for `booking` and `my-bookings`. The active/past list reads the live paginated `GET /booking`; booking details read `GET /booking/{id}`, including the API price rows, locations, terms, and action rules; checkout step 1 reads live availability and step 2 creates the live draft and renders its confirmation data; the card labels monthly prices "/ month" and asks a customer without a driving license to upload one before booking. Checkout step 3 reads E3 (methods, wallet balance) and pays with E5: the wallet alone, one method, or both; a gateway opens in a new tab watched by the shared `usePaymentWindow`. Cancel reads E8 with `is_quote=1`, confirms with `is_quote=0`, refreshes the details page, and shows the backend success message in its result dialog; its confirmed-cancellation response is validated separately because it omits the detail-only `branch` field. API 422s keep the dialog open. Left: O8–O12 (O9a in progress)                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| `orders` (booking data)            |         Yes          |          List (E6) and details (E7): live API; writes: mock until their fraction; reads through `orders/queries.ts`           |                                                     Yes (Server Actions)                                                      | Booking API O1–O7 (`docs/api/booking-api.md`): owns every booking read and write for `booking` and `my-bookings`. The active/past list reads the live paginated `GET /booking`; booking details read `GET /booking/{id}`, including the API price rows, locations, terms, and action rules; checkout step 1 reads live availability and step 2 creates the live draft and renders its confirmation data; the card labels monthly prices "/ month" and asks a customer without a driving license to upload one before booking. Checkout step 3 reads E3 (methods, wallet balance) and pays with E5: the wallet alone, one method, or both; a gateway opens in a new tab watched by the shared `usePaymentWindow`. Cancel reads E8 with `is_quote=1`, confirms with `is_quote=0`, refreshes the details page, and shows the backend success message in its result dialog; its confirmed-cancellation response is validated separately because it omits the detail-only `branch` field. API 422s keep the dialog open. Left: O8–O12 (O9a in progress) Coupon code and discount are mapped from the order DTO; E4 applies a coupon to the draft, updates server-priced totals in confirmation and payment, shows the field above price details, and sends the applied `code` with E5 payment. |
 | `cars`, `cities`                   |         Yes          |                                                              Yes                                                              |                                                              n/a                                                              | Fraction 6 complete: the same `CarFilters` surface serves the hero drawer, `/cars`, and city listings. It preserves the hero's selected URL filters when navigating to `/cars`; `/cars` and each city listing keep independent, URL-backed state on their own routes. City listings use the same office-grouped `CarOfficeRow` swipers as `/cars`. City API integration ([cities API](api/cities-api.md)) is complete through C7: city pages route by id; after hydration their first city-car request reads the saved guest location, shows row skeletons, and sends `region`, `latitude`, and `longitude` only as a complete tuple. `/city-cars` currently requests one company per page. The city filter uses live brand, type, service, and company lookups, sending indexed ID arrays through the browser proxy. A city car with its per-car `availability` opens the shared booking and delivery flow, then its details with the selected context; swipes do not open that flow. On `/cars` reached through the rental tabs flow (a complete `type` + choice + location in the URL, `readRentalContext` in `rental-search/model.ts`), a car that offers that booking and delivery type opens its details directly with the same context instead of running the flow again; a car that does not offer it still opens the flow. Remaining follow-ups: integrate the `/cars` and home filter surfaces with their own real listing contracts, and confirm TEST's zero car-price records with the backend. |
 | `home`, `rental-search`            |         Yes          |                                                  Yes (FAQs, search options)                                                   |                                               Yes (Server Action: contact form)                                               | Fraction 7 complete: pickup type, branch, airport, station, map, and country dialogs use shared `Dialog`. FAQ content comes from public `GET /faqs`; the Hero, partners, support, apps, contacts, join-us, and footer copy come from localized public `GET /home` through `features/home/queries.ts`; the partner logos come from public `GET /partners` (replacing the cars-mock offices); the Why Us copy and background come from `GET /home` (`data.why_us`) and its cards from public `GET /why-us`. Contact details still come from `/settings`; FAQ entries and car/city lists keep their dedicated sources.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | `auth`                             |         Yes          |                                                Live API (NextAuth + `authApi`)                                                |                                                     Yes (Server Actions)                                                      | Live API, A0–A8 and A11 ([Auth-API.md](api/Auth-API.md) §5): OTP request and verification, profile completion, location, and logout call the backend; the session starts after the register step; the mock (`features/auth/api.mock.ts`) is for tests only. The forms use RHF + Zod with server re-parse. A rejected token (401) clears the session and reopens sign-in with `next`. Left: verify logout revocation live (the TEST server's TLS handshake failed); the dead-token redirect on account pages is verified with a forced 401 only, because account reads are still mocks; open backend questions Q1, Q3, Q6, Q7, Q9–Q11 (HTTP status for errors, `current_step: null`, field errors, untranslated keys, OTP limits, countries, phone normalization) and the backend record of terms consent (Q8)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 | `account` (profile, notifications) |         Yes          |                                               Yes (scoped to the session user)                                                | Yes (Server Actions: save, phone change send and verify, license upload, delete, notification read/delete/token registration) | Profile reads, edits, and phone OTP requests use the live API; phone verification is unavailable until P5, and license and delete writes remain mocked. The profile tab composes separate profile, phone, license, and deletion flows with shared pending-action coordination. Routes per section with a shared layout and `AccountNav`; the loyalty points summary is shown in the account layout and `/account/points` owns the points history view. Notifications now own their live API in `features/notifications`: typed `GET /notifications` and `/notifications/unread-count`, read/read-all/delete/delete-all actions, and `POST /firebase-token`. The server layout reads only the lightweight count for the header badge. The browser registers the Firebase service worker, stores its web FCM token after permission, and refreshes on foreground messages; background delivery needs Firebase's web-push/VAPID configuration in the deployed project. Common success/failure results now use `shared/ui/Dialog`. Profile save and change/verify phone use RHF + Zod (`validation.ts`) with the schemas re-parsed in the actions (doc 9 fraction 2). License upload uses RHF + Zod (doc 9 fraction 3); left: opening the license details is still a TODO, and remaining dialogs                                                                                                                                                                                                                |
 | `layout`                           |         Yes          |                                                              n/a                                                              |                                                              n/a                                                              | The header shell and footer render on the server; mobile navigation uses a fixed bottom bar for account, bookings, rewards, and More (Figma account, booking, and gift icons); More opens an accessible modal side drawer with header links and language control; NAV_LINKS marks the current home-page hash with aria-current. The user menu uses `Menu`. Left: trimming the client messages (doc 2 step 7), the language switcher on `Menu`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| `settings` (VIP data)              |         Yes          | Yes: `GET /settings` sends the token when signed in and maps the VIP fields |                                                              n/a                                                              | Data fraction done (5f4e944); the account banner uses the personalized package name and WhatsApp number when `is_vip` is true. |
+| `rewards` (tier details)           |         Yes          | Yes: tier detail data through `features/rewards/queries.ts` |                                                              n/a                                                              | Earning guidance is in a dialog opened from the bottom of every tier detail page; this UI fraction is done. Live E7 feature perks use `key` and `title`; any backend `code` is ignored (2026-11-26 follow-up, awaiting commit). |
 
 **Rewards API (branch `feature/rewards-api`), fraction R0 (2026-11-25), done:**
 The referral, points, tier (package), and discount-card endpoints are probed on
@@ -760,6 +788,91 @@ production build pass. On `next start`, unauthenticated requests for all three
 filters in `ar` and `en` redirect to sign-in with the filter preserved. A
 signed-in HTML check remains open because no authenticated session was available.
 
+**Rewards API, fraction R6 (2026-11-25, branch `feature/rewards-tiers`),
+done in `43ca0d7`:** The rewards model and mock now use API-shaped packages:
+string IDs, backend-owned names and icon URLs, three colours, start/end points,
+and perks keyed by the API. Tier badges and heroes use the package icon and
+colour gradient; perk icons come from the key with a fallback for new keys.
+Tier links use `/account/rewards/tiers/[id]`, and the tier navigation and road
+allow more than four packages. Perk descriptions were removed because E6–E8 do
+not supply them. The rewards API remains on the mock until R7. Typecheck, lint
+(one existing warning), and 49 focused tests pass, including an arbitrary fifth
+package and an unknown-id `NEXT_NOT_FOUND` route test. The production build and
+`next start` smoke check were skipped at the user's direction after a stale
+`.next` cache blocked page-data collection; a full test suite is reserved for
+before merge.
+
+**Rewards API, fraction R7 (2026-11-25, branch `feature/rewards-tiers`),
+done in `f631352`:** The rewards overview reads only `GET /packages/current`:
+its full `current_package` supplies the hero and perks, while `other_packages`
+supplies the tier road. TEST includes the current tier in `other_packages`, so
+the mapper deduplicates it; a missing colour triplet uses a neutral badge
+gradient. The account section layout no longer makes an unused `/points`
+summary request; points history still reads `/points` on its own page. The
+all-tiers page reads E6 `/packages` plus E7 balances, and the
+detail page also reads E8 `/packages/{id}` (`404` → `notFound()`). The existing
+rule still shows the first tier as current below its start points. Cards,
+catalog, and redemption stay on their mocks for R8–R10. Typecheck, lint (one
+existing warning), and 65 rewards-focused tests pass, including API-shaped
+colours driving both gradients. A live TEST probe confirmed E6, E7, E8, and
+E8's 404 in `ar` and `en`; TEST package thresholds have changed since the
+design seed (backend/product ask B13).
+Production build and signed-in route smoke remain pending after the user's
+instruction to skip the build while the `.next` cache issue is unresolved.
+R7 follow-up (2026-11-26, awaiting commit approval): live E7 features can omit
+`code`; the rewards perk model now uses only `key` and `title`. The shared
+package guard ignores any API feature `code` across rewards home, all-tiers
+summary, and tier details.
+
+**Rewards API, fraction R8 (2026-11-25, branch `feature/rewards-tiers`),
+done in `df1cffe`:** The catalog reads E9 `GET /discount-cards` for its
+four cards and redeemable balance in one request. IDs, discount values, point
+costs, and the per-card `can_replace` flag come from the API (the flag controls
+the redeem button); the documented 90-day validity remains fixed.
+The TEST response has four cards costing 1,000–6,000 points and a zero balance,
+so none is redeemable for that customer. My cards and redemption remain on
+  their mocks for R9–R10. Typecheck, lint (one existing warning), and 68
+rewards-focused tests pass. Production build and signed-in route smoke remain
+pending under the user's skip-build instruction; the full suite is reserved
+for before merge.
+
+Rewards API fraction R10 (in progress, 2026-11-26): the catalog confirmation
+loads the redemption quote and submits redemption through a Server Action;
+validation errors keep the dialog open. Points and referrals pagination now
+expect the top-level shape described in the backend response to B2. Typecheck,
+lint (one existing warning), 180 focused tests, and production build pass.
+Unauthenticated catalog, points, and referral-history routes redirect to sign-in
+in both locales. Signed-in route smoke and live redemption remain pending; the
+POST redemption and revised pagination contracts still require live verification.
+
+Rewards API fraction R11: the booking-completion points dialog has been prepared
+as an isolated design from the supplied reference. It is not connected to a
+route or API; integration is deferred at the user's request. Typecheck, lint
+(one existing warning), two dialog tests, and production build pass. The
+unauthenticated booking route redirects to sign-in in both locales.
+
+Rewards API fraction R12: the rewards, points, and referrals production APIs
+already use their live implementations. A source audit found no production
+imports of their mocks; the rewards mock remains referenced by its tests and
+the points and referrals mocks have no callers. Signed-in route smoke remains
+open, as does the separate R11 integration. Typecheck, lint (one existing
+warning), all 1,143 tests, and production build pass; unauthenticated affected
+routes redirect to sign-in in both locales.
+
+**Rewards API, fraction R9 (2026-11-25, branch `feature/rewards-tiers`),
+implementation ready:** My Cards reads E10 `GET /my-discount-cards` with a
+server filter and page size 10; the filter is kept in the URL and later pages
+load through a Server Action and `InfiniteList`. The page obtains the
+redeemable balance from E9, since E10 does not include it. The E10 mapper
+validates card states, dates, and top-level pagination. TEST returned an empty
+list for all, active, used, and expired filters. The populated card shape is
+still based on Bruno because that account has no redeemed cards. The same
+fraction corrected R8: a fresh E9 response carries `can_replace` per card, and
+that backend flag now decides whether each catalog card can be redeemed.
+Typecheck, lint (one existing warning), and 74 rewards-focused tests pass.
+Production build and signed-in route smoke remain pending under the user's
+skip-build instruction.
+
 Notifications API integration (2026-11-12): `features/notifications` now owns
 the live paginated `GET /notifications` read and uses `InfiniteList` for later
 pages. Its Server Actions cover read/read-all, delete/delete-all, and browser
@@ -806,6 +919,14 @@ now in `shared/hooks` and also used by the wallet top-up. O7 (cancel) is done; O
 context now selects the feature-owned monthly modal and sends E1 `count`; its
 draft and payment wiring remains behind O5/O6. The remaining plan integrates
 checkout, cancel, extend, and rate (O4–O12).
+Coupon work (2026-11-26, branch `feature/rewards-tiers`), awaiting commit
+approval: P5 is reopened. The read fraction retains `coupon_code` and
+`coupon_discount` from the live order DTO. The E4 write and confirmation UI
+fraction applies a code to an unpaid draft, maps the returned pricing fields,
+shows an applied state until the code is edited, and updates the confirmation
+and payment amounts. TEST draft 405 confirmed
+E4 success; its response omits `branch`, so the existing draft retains its
+other details. E5 sends the applied coupon as multipart `code`. These fractions require separate commits.
 Airport and station flow follow-up (2026-11-10): choosing the pickup point now
 opens the matching car results without a customer-map step; the car-details
 read omits a stale customer location so the backend selects the airport or
@@ -817,7 +938,7 @@ station use `delivery_type=from_airport` / `from_station`; their location comes
 from the saved browser location, and when local storage has no usable location,
 all location parameters are omitted.
 The user answered Q1–Q6, Q9, Q11 and P1–P6, P8 on 2026-11-08 (§8.1: all
-booking types, no points, no coupon, wallet with or without one method). Open
+booking types, no points, wallet with or without one method; coupons reopened 2026-11-26). Open
 items are listed in §8.2 / §8.3 with the fraction that settles each. Booking
 writes and checkout reads still run on the mock in
 `features/orders/api.mock.ts` until their named fractions.
@@ -901,10 +1022,20 @@ Figma's mixed screens; Bronze has a welcome perk. Perks have localized title,
 optional description, and icon data in the stateless rewards mock. Silver
 cashback and Gold delivery descriptions use the owner's "every four bookings,
 the fifth…" rule. Diamond descriptions are our own because Figma has none. The
-earning rules on locked tiers are static localized copy pending an API
-contract. The `AccountPageTitle`
+earning rules are static localized copy pending an API contract. The
+`AccountPageTitle`
 names `/account/rewards/tiers` and `/account/rewards/tiers/[tier]` from their
 own route titles.
+
+**Rewards tier earning dialog fraction (2026-11-26, branch
+`feature/rewards-tiers`), done:** The static
+"How to earn points?" rows moved from the locked-tier page into a shared
+dialog. Its underlined info trigger sits at the bottom of every tier detail
+page, regardless of whether the tier is reached, current, or locked. The
+dialog uses the existing three localized `PerkRow` designs and closes by
+Escape, close button, or backdrop. Focused tier tests, typecheck, lint (one
+existing warning), production build, and signed-out route smoke pass; a
+signed-in visual check remains open.
 
 **Rewards fraction RW3 (2026-11-24, branch `feature/rewards`), done:**
 `/account/rewards/cards` shows the points balance, history link, and discount

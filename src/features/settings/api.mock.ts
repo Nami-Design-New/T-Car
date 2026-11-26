@@ -23,6 +23,9 @@ export const MOCK_SETTINGS: AppSettings = {
     termsUrl: "https://t-car.app/user/terms?locale=en",
     privacyUrl: "https://t-car.app/user/privacy?locale=en",
   },
+  isVip: false,
+  vipPackages: null,
+  whatsappNumber: null,
   bookingTypes: {
     daily: true,
     monthly: true,

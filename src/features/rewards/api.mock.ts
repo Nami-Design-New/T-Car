@@ -1,10 +1,11 @@
 import { getLocale } from "next-intl/server";
 import type {
+  RewardCard,
   RewardCardsData,
   RewardCatalogData,
   RewardCatalogItem,
-  RewardPerk,
-  RewardRedemption,
+  RewardRedemptionData,
+  RewardRedemptionQuote,
   RewardTier,
   RewardsSummary,
 } from "./model";
@@ -23,9 +24,10 @@ const MOCK_POINTS_SUMMARY = { tierPoints: 12000, balance: 4000 };
 type PerkCopy = [
   title: string,
   description: string | undefined,
-  icon: RewardPerk["icon"],
+  oldIcon: string,
 ];
-const PERKS: Record<"ar" | "en", Record<RewardTier["id"], PerkCopy[]>> = {
+type MockTierKey = "bronze" | "silver" | "gold" | "diamond";
+const PERKS: Record<"ar" | "en", Record<MockTierKey, PerkCopy[]>> = {
   ar: {
     bronze: [["توك بديت يا وحش", undefined, "sparkle"]],
     silver: [
@@ -124,17 +126,50 @@ const PERKS: Record<"ar" | "en", Record<RewardTier["id"], PerkCopy[]>> = {
   },
 };
 
+const TIER_NAMES: Record<"ar" | "en", Record<MockTierKey, string>> = {
+  ar: {
+    bronze: "البرونزية",
+    silver: "الفضية",
+    gold: "الذهبية",
+    diamond: "الماسية",
+  },
+  en: { bronze: "Bronze", silver: "Silver", gold: "Gold", diamond: "Diamond" },
+};
+const TIER_KEYS: Record<MockTierKey, string[]> = {
+  bronze: ["bronze_welcome"],
+  silver: [
+    "monthly_points",
+    "monthly_contract_discount",
+    "booking_wallet_refund",
+  ],
+  gold: [
+    "monthly_discount_code",
+    "points_every_days",
+    "free_delivery_every_bookings",
+  ],
+  diamond: ["vip_support_24h", "free_delivery_pickup_all", "diamond_offers"],
+};
+const TIER_COLORS: Record<MockTierKey, RewardTier["colors"]> = {
+  bronze: { high: "#F3C29B", medium: "#C8794A", low: "#7A3E1D" },
+  silver: { high: "#F3C29B", medium: "#C8794A", low: "#7A3E1D" },
+  gold: { high: "#F7DB8D", medium: "#D9A21B", low: "#8B5A09" },
+  diamond: { high: "#B9DDFF", medium: "#5596DD", low: "#174A8B" },
+};
+
 const tiersFor = (locale: string): RewardTier[] => {
+  const language = locale === "ar" ? "ar" : "en";
   const copy = locale === "ar" ? PERKS.ar : PERKS.en;
   return (["bronze", "silver", "gold", "diamond"] as const).map(
-    (id, index) => ({
-      id,
-      threshold: [1000, 5000, 10000, 20000][index],
-      perks: copy[id].map(([title, description, icon], perkIndex) => ({
-        id: `${id}-${perkIndex + 1}`,
+    (key, index) => ({
+      id: String(index + 1),
+      name: TIER_NAMES[language][key],
+      iconUrl: `/images/rewards/badge-${key}.webp`,
+      colors: TIER_COLORS[key],
+      startPoints: [1000, 5000, 10000, 20000][index],
+      endPoints: [4999, 9999, 19999, 999999][index],
+      perks: copy[key].map(([title], perkIndex) => ({
+        key: TIER_KEYS[key][perkIndex],
         title,
-        ...(description ? { description } : {}),
-        icon,
       })),
     }),
   );
@@ -151,13 +186,14 @@ const MOCK_FAILURE_USER_ID = "rewards-failure";
 const MOCK_FAILURE_ITEM_ID = "discount-failure";
 type MockCatalogItem = RewardCatalogItem & { code: string };
 // The 300 SAR card costs more than the mock balance (4,000), so the catalog
-// always shows one unaffordable card and `redeem` answers it with
-// `rewards.insufficientPoints`.
+// always shows one card the API flags as unaffordable and `redeem` answers it
+// with `rewards.insufficientPoints`.
 const CATALOG_ITEMS: MockCatalogItem[] = [
   {
     id: "discount-50",
     discountAmount: 50,
     pointsCost: 1000,
+    canReplace: true,
     validityDays: 90,
     code: "TCAR-305-Q9LD",
   },
@@ -165,6 +201,7 @@ const CATALOG_ITEMS: MockCatalogItem[] = [
     id: "discount-100",
     discountAmount: 100,
     pointsCost: 1900,
+    canReplace: true,
     validityDays: 90,
     code: "TCAR-100-N7KL",
   },
@@ -172,6 +209,7 @@ const CATALOG_ITEMS: MockCatalogItem[] = [
     id: "discount-200",
     discountAmount: 200,
     pointsCost: 3800,
+    canReplace: true,
     validityDays: 90,
     code: "TCAR-200-P4RM",
   },
@@ -179,6 +217,7 @@ const CATALOG_ITEMS: MockCatalogItem[] = [
     id: "discount-300",
     discountAmount: 300,
     pointsCost: 6000,
+    canReplace: false,
     validityDays: 90,
     code: "TCAR-300-H6TW",
   },
@@ -188,6 +227,20 @@ const CATALOG_ITEMS: MockCatalogItem[] = [
 // The real API localizes perks from Accept-Language (sent by services/http);
 // the mock reads the request locale itself so the interface stays the same.
 export const rewardsMock: RewardsApi = {
+  async getHome(userId) {
+    await delay();
+    if (userId === MOCK_FAILURE_USER_ID) {
+      throw new AppError("network", "rewards.unavailable");
+    }
+    const { tierPoints, balance } = MOCK_POINTS_SUMMARY;
+    const tiers = tiersFor(await getLocale());
+    return {
+      tierPoints,
+      balance,
+      currentTier: rewardsOverview({ tierPoints, balance, tiers }).current,
+      roadTiers: tiers,
+    };
+  },
   async getSummary(userId) {
     await delay();
     if (userId === MOCK_FAILURE_USER_ID) {
@@ -200,38 +253,57 @@ export const rewardsMock: RewardsApi = {
       tiers: tiersFor(await getLocale()),
     } satisfies RewardsSummary;
   },
-  async getCards(userId) {
+  async getTier(userId, id) {
     await delay();
     if (userId === MOCK_FAILURE_USER_ID) {
       throw new AppError("network", "rewards.unavailable");
     }
+    return tiersFor(await getLocale()).find((tier) => tier.id === id) ?? null;
+  },
+  async getCards(userId, filter) {
     return {
       balance: MOCK_POINTS_SUMMARY.balance,
-      cards: [
-        {
-          id: "card-active",
-          code: "TCAR-30S-Q9LD",
-          discountAmount: 50,
-          status: "active",
-          expiresAt: "2027-01-18T00:00:00.000Z",
-        },
-        {
-          id: "card-used",
-          code: "TCAR-962-M2PA",
-          discountAmount: 50,
-          status: "used",
-          usedAt: "2026-10-20T00:00:00.000Z",
-          bookingId: "2363",
-        },
-        {
-          id: "card-expired",
-          code: "TCAR-418-X5RB",
-          discountAmount: 50,
-          status: "expired",
-          expiresAt: "2026-09-30T00:00:00.000Z",
-        },
-      ],
+      page: await rewardsMock.getCardsPage(userId, 1, filter),
     } satisfies RewardCardsData;
+  },
+  async getCardsPage(userId, page, filter) {
+    await delay();
+    if (userId === MOCK_FAILURE_USER_ID) {
+      throw new AppError("network", "rewards.unavailable");
+    }
+    const cards = [
+      {
+        id: "card-active",
+        code: "TCAR-30S-Q9LD",
+        discountAmount: 50,
+        status: "active",
+        expiresAt: "2027-01-18T00:00:00.000Z",
+      },
+      {
+        id: "card-used",
+        code: "TCAR-962-M2PA",
+        discountAmount: 50,
+        status: "used",
+        usedAt: "2026-10-20T00:00:00.000Z",
+        bookingId: "2363",
+      },
+      {
+        id: "card-expired",
+        code: "TCAR-418-X5RB",
+        discountAmount: 50,
+        status: "expired",
+        expiresAt: "2026-09-30T00:00:00.000Z",
+      },
+    ] satisfies RewardCard[];
+    const filtered = cards.filter(
+      (card) => filter === "all" || card.status === filter,
+    );
+    return {
+      items: page === 1 ? filtered : [],
+      page,
+      lastPage: 1,
+      total: filtered.length,
+    };
   },
   async getCatalog(userId) {
     await delay();
@@ -241,14 +313,38 @@ export const rewardsMock: RewardsApi = {
     return {
       balance: MOCK_POINTS_SUMMARY.balance,
       items: CATALOG_ITEMS.map(
-        ({ id, discountAmount, pointsCost, validityDays }) => ({
+        ({ id, discountAmount, pointsCost, canReplace, validityDays }) => ({
           id,
           discountAmount,
           pointsCost,
+          canReplace,
           validityDays,
         }),
       ),
     } satisfies RewardCatalogData;
+  },
+  async getRedemptionQuote(userId, itemId) {
+    await delay();
+    if (userId === MOCK_FAILURE_USER_ID || itemId === MOCK_FAILURE_ITEM_ID) {
+      throw new AppError("network", "rewards.unavailable");
+    }
+    const item = CATALOG_ITEMS.find(({ id }) => id === itemId);
+    if (!item) throw new AppError("not_found", "rewards.cardUnavailable");
+    const { balance, tierPoints } = MOCK_POINTS_SUMMARY;
+    if (balance < item.pointsCost) {
+      throw new AppError("validation", "rewards.insufficientPoints", 400);
+    }
+    const tier = rewardsOverview({
+      tierPoints,
+      balance,
+      tiers: tiersFor(await getLocale()),
+    }).current;
+    return {
+      balanceBefore: balance,
+      pointsCost: item.pointsCost,
+      balanceAfter: balance - item.pointsCost,
+      tierName: tier.name,
+    } satisfies RewardRedemptionQuote;
   },
   async redeem(userId, itemId) {
     await delay();
@@ -268,11 +364,6 @@ export const rewardsMock: RewardsApi = {
     const expiresAt = new Date(
       Date.now() + item.validityDays * 24 * 60 * 60 * 1000,
     ).toISOString();
-    const tierId = rewardsOverview({
-      tierPoints,
-      balance,
-      tiers: tiersFor("en"),
-    }).current.id;
     return ok({
       card: {
         id: `redeemed-${item.id}`,
@@ -285,7 +376,6 @@ export const rewardsMock: RewardsApi = {
       balanceBefore: balance,
       balanceAfter: balance - item.pointsCost,
       tierPoints,
-      tierId,
-    } satisfies RewardRedemption);
+    } satisfies RewardRedemptionData);
   },
 };

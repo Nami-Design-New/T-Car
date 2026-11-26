@@ -1,6 +1,17 @@
-import { MyCardsPage } from "@/features/rewards";
+import { MyCardsPage, parseRewardCardFilter } from "@/features/rewards";
 import { getRewardCards } from "@/features/rewards/queries";
 
-export default async function RewardCardsRoute() {
-  return <MyCardsPage data={await getRewardCards()} />;
+interface Props {
+  searchParams: Promise<{ filter?: string | string[] }>;
+}
+
+export default async function RewardCardsRoute({ searchParams }: Props) {
+  const filter = parseRewardCardFilter((await searchParams).filter);
+  return (
+    <MyCardsPage
+      key={filter}
+      data={await getRewardCards(filter)}
+      filter={filter}
+    />
+  );
 }

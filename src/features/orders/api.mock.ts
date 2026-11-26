@@ -137,6 +137,8 @@ export const MOCK_ORDERS: Order[] = MOCK_ORDER_LIST.map((item) => ({
   serviceFee: 100,
   completionFee: 25,
   discount: 0,
+  couponCode: null,
+  couponDiscount: 0,
   additionalServicesCost: 0,
   totalPrice: 2625,
   taxValue: 262.5,
@@ -400,6 +402,26 @@ export const bookingsMock: BookingsApi = {
       });
     }
     return findOrder("1");
+  },
+
+  async applyCoupon(orderId, code) {
+    await delay();
+    const order = findOrder(orderId);
+    if (code === "INVALID")
+      return fail(new AppError("validation", undefined, 422, undefined, {
+        serverMessage: "This coupon code is not valid.",
+      }));
+    return ok({
+      carPrice: order.carPrice, price: order.price, count: order.count,
+      deliveryFee: order.deliveryFee, serviceFee: order.serviceFee,
+      completionFee: order.completionFee, discount: order.discount,
+      couponCode: code, couponDiscount: 10,
+      additionalServicesCost: order.additionalServicesCost,
+      totalPrice: order.totalPrice, taxValue: order.taxValue,
+      finalPrice: order.finalPrice - 10, taxRate: order.taxRate,
+      taxRateType: order.taxRateType, serviceFeeRate: order.serviceFeeRate,
+      serviceFeeRateType: order.serviceFeeRateType,
+    });
   },
 
   async getPaymentOptions(orderId) {

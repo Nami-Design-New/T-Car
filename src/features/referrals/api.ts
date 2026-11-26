@@ -87,19 +87,20 @@ function toReferralInvite(dto: ReferalRewordDto): ReferralInvite {
   };
 }
 
-/** Validates the live counts, invite rows, and nested pagination. */
+/** Validates the live counts, invite rows, and top-level pagination. */
 export function mapReferralHistoryResponse(value: unknown): ReferralHistory {
   if (!isApiEnvelope(value) || value.code !== 200 || !isRecord(value.data)) {
     throw new AppError("server");
   }
   const data = value.data;
+  const pagination = (value as { pagination?: unknown }).pagination;
   if (
     !Array.isArray(data.referal_rewords) ||
     !data.referal_rewords.every(isReferalRewordDto) ||
     !isCount(data.referal_rewords_count) ||
     !isCount(data.applied_referal_rewords_count) ||
     !isCount(data.referal_points) ||
-    !isPaginationDto(data.pagination)
+    !isPaginationDto(pagination)
   ) {
     throw new AppError("server");
   }
@@ -107,7 +108,7 @@ export function mapReferralHistoryResponse(value: unknown): ReferralHistory {
     totalPoints: data.referal_points,
     invitedCount: data.referal_rewords_count,
     completedCount: data.applied_referal_rewords_count,
-    page: toPage(data.referal_rewords.map(toReferralInvite), data.pagination),
+    page: toPage(data.referal_rewords.map(toReferralInvite), pagination),
   };
 }
 

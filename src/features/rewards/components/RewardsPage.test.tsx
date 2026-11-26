@@ -3,7 +3,7 @@ import { NextIntlClientProvider } from "next-intl";
 import { describe, expect, it, vi } from "vitest";
 import { renderWithIntl } from "@/shared/test/render";
 import arMessages from "../../../../messages/ar.json";
-import type { RewardsSummary } from "../model";
+import { rewardsOverview, type RewardsSummary } from "../model";
 import RewardsPage from "./RewardsPage";
 
 vi.mock("@/i18n/navigation", () => ({
@@ -14,58 +14,78 @@ vi.mock("@/i18n/navigation", () => ({
 
 const tiers: RewardsSummary["tiers"] = [
   {
-    id: "bronze",
-    threshold: 1000,
+    id: "1",
+    name: "Bronze",
+    iconUrl: "/images/rewards/badge-bronze.webp",
+    colors: { high: "#F3C29B", medium: "#C8794A", low: "#7A3E1D" },
+    startPoints: 1000,
+    endPoints: 4999,
     perks: [
       {
-        id: "bronze-1",
+        key: "bronze_welcome",
         title: "You've just started, champ!",
-        icon: "sparkle",
       },
     ],
   },
   {
-    id: "silver",
-    threshold: 5000,
+    id: "2",
+    name: "Silver",
+    iconUrl: "/images/rewards/badge-silver.webp",
+    colors: { high: "#F3C29B", medium: "#C8794A", low: "#7A3E1D" },
+    startPoints: 5000,
+    endPoints: 9999,
     perks: [
       {
-        id: "silver-1",
+        key: "monthly_points",
         title: "100 bonus points every month",
-        description: "Added automatically",
-        icon: "calendar",
       },
     ],
   },
   {
-    id: "gold",
-    threshold: 10000,
+    id: "3",
+    name: "Gold",
+    iconUrl: "/images/rewards/badge-gold.webp",
+    colors: { high: "#F7DB8D", medium: "#D9A21B", low: "#8B5A09" },
+    startPoints: 10000,
+    endPoints: 19999,
     perks: [
       {
-        id: "gold-1",
+        key: "monthly_discount_code",
         title: "Monthly discount code",
-        description: "Monthly",
-        icon: "tag",
       },
     ],
   },
   {
-    id: "diamond",
-    threshold: 20000,
+    id: "4",
+    name: "Diamond",
+    iconUrl: "/images/rewards/badge-diamond.webp",
+    colors: { high: "#B9DDFF", medium: "#5596DD", low: "#174A8B" },
+    startPoints: 20000,
+    endPoints: 999999,
     perks: [
       {
-        id: "diamond-1",
+        key: "vip_support_24h",
         title: "24/7 VIP support",
-        description: "Always",
-        icon: "support",
       },
     ],
   },
 ];
 
+const home = (
+  tierPoints: number,
+  balance: number,
+  roadTiers = tiers,
+) => ({
+  tierPoints,
+  balance,
+  currentTier: rewardsOverview({ tierPoints, balance, tiers: roadTiers }).current,
+  roadTiers,
+});
+
 describe("RewardsPage", () => {
   it("renders the current tier, progress, balance, perks, and destinations", () => {
     renderWithIntl(
-      <RewardsPage summary={{ tierPoints: 5000, balance: 5000, tiers }} />,
+      <RewardsPage data={home(5000, 5000)} />,
     );
 
     expect(screen.getAllByText("Silver")).toHaveLength(2);
@@ -85,10 +105,9 @@ describe("RewardsPage", () => {
     expect(
       screen.getByText("100 bonus points every month"),
     ).toBeInTheDocument();
-    expect(screen.getByText("Added automatically")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "View all" })).toHaveAttribute(
       "href",
-      "/account/rewards/tiers/silver",
+      "/account/rewards/tiers/2",
     );
     expect(screen.getByRole("link", { name: "Redeem points" })).toHaveAttribute(
       "href",
@@ -113,13 +132,13 @@ describe("RewardsPage", () => {
   it("shows the just-started state when the current tier has no perks", () => {
     renderWithIntl(
       <RewardsPage
-        summary={{
-          tierPoints: 1000,
-          balance: 1000,
-          tiers: tiers.map((tier) =>
-            tier.id === "bronze" ? { ...tier, perks: [] } : tier,
+        data={home(
+          1000,
+          1000,
+          tiers.map((tier) =>
+            tier.id === "1" ? { ...tier, perks: [] } : tier,
           ),
-        }}
+        )}
       />,
     );
 
@@ -131,7 +150,7 @@ describe("RewardsPage", () => {
 
   it("centres the road car between the current and next packages", () => {
     renderWithIntl(
-      <RewardsPage summary={{ tierPoints: 12000, balance: 12000, tiers }} />,
+      <RewardsPage data={home(12000, 12000)} />,
     );
 
     expect(screen.getByAltText("car").parentElement).toHaveStyle({
@@ -144,14 +163,14 @@ describe("RewardsPage", () => {
 
   it("shows the English Bronze welcome perk on the overview", () => {
     renderWithIntl(
-      <RewardsPage summary={{ tierPoints: 1000, balance: 1000, tiers }} />,
+      <RewardsPage data={home(1000, 1000)} />,
     );
     expect(screen.getByText("You've just started, champ!")).toBeInTheDocument();
   });
 
   it("renders the top tier as complete without a next-tier chip", () => {
     renderWithIntl(
-      <RewardsPage summary={{ tierPoints: 25000, balance: 5000, tiers }} />,
+      <RewardsPage data={home(25000, 5000)} />,
     );
 
     expect(screen.getAllByText("Diamond")).toHaveLength(2);
@@ -160,13 +179,62 @@ describe("RewardsPage", () => {
     expect(screen.queryByText(/points to/)).not.toBeInTheDocument();
   });
 
+  it("renders an extra API-shaped tier and unknown perk key", () => {
+    const extra = {
+      ...tiers[3],
+      id: "73",
+      name: "Platinum",
+      iconUrl: "/custom-platinum.webp",
+      startPoints: 30000,
+      endPoints: 49999,
+      perks: [{ key: "future_perk", title: "A new benefit" }],
+    };
+    const { container } = renderWithIntl(
+      <RewardsPage data={home(32000, 5000, [...tiers, extra])} />,
+    );
+    expect(screen.getAllByText("Platinum")).toHaveLength(2);
+    expect(screen.getByText("A new benefit")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "View all" })).toHaveAttribute(
+      "href",
+      "/account/rewards/tiers/73",
+    );
+    expect(container.querySelector('img[src="/custom-platinum.webp"]')).toBeInTheDocument();
+  });
+
+  it("uses package colours for the hero and badge gradients", () => {
+    const colors = { high: "#112233", medium: "#445566", low: "#778899" };
+    const customTiers = tiers.map((tier) =>
+      tier.id === "2" ? { ...tier, colors } : tier,
+    );
+    renderWithIntl(
+      <RewardsPage
+        data={home(5000, 5000, customTiers)}
+      />,
+    );
+    const hero = screen.getByRole("link", { name: /Your current tier\s*Silver/ });
+    expect(hero).toHaveStyle({
+      background: "linear-gradient(150deg, #112233 14%, #445566 52%, #778899 88%)",
+    });
+    expect(hero.querySelector('[style*="clip-path"]')).toHaveStyle({
+      background: "linear-gradient(150deg, #112233, #445566, #778899)",
+    });
+  });
+
   it("names the next tier with the Arabic preposition", () => {
     render(
       <NextIntlClientProvider locale="ar" messages={arMessages}>
-        <RewardsPage summary={{ tierPoints: 5000, balance: 5000, tiers }} />
+        <RewardsPage
+          data={home(
+            5000,
+            5000,
+            tiers.map((tier) =>
+              tier.id === "3" ? { ...tier, name: "الذهبية" } : tier,
+            ),
+          )}
+        />
       </NextIntlClientProvider>,
     );
 
-    expect(screen.getByText(/نقطة للذهبية$/)).toBeInTheDocument();
+    expect(screen.getByText(/نقطة للوصول إلى الذهبية/)).toBeInTheDocument();
   });
 });

@@ -20,7 +20,8 @@ import type {
   PaymentChoice,
   BookingServiceSelection,
 } from "@/features/orders";
-import { ok, type Result } from "@/shared/lib/result";
+import { fromActionResult, ok, type Result } from "@/shared/lib/result";
+import { applyCouponAction } from "@/features/orders";
 const RiyalIcon = ICONS.riyal;
 
 import { Button } from "@/shared/ui/Button";
@@ -160,7 +161,7 @@ export default function CarBookingCard({
     // pop-up. Only a gateway method can need it. No `noopener`: the payment
     // page reports back through `window.opener`.
     const tab = choice.paymentMethodId ? window.open("", "_blank") : null;
-    const result = await payOrder(draft.id, choice);
+    const result = await payOrder(draft.id, choice, draft.couponCode ?? undefined);
     if (!result.ok) {
       tab?.close();
       // R5: the backend 422 message is a toast; the sheet stays open.
@@ -330,6 +331,13 @@ export default function CarBookingCard({
           rating={rating}
           booking={booking}
           draft={draft}
+          onApplyCoupon={async (code) => {
+            const result = fromActionResult(await applyCouponAction(draft.id, code));
+            if (!result.ok) return result;
+            const updatedDraft = { ...draft, ...result.data };
+            setDraft(updatedDraft);
+            return ok(updatedDraft, result.message);
+          }}
           selectedAddons={selectedAddons}
         />
       )}

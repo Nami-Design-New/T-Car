@@ -4,11 +4,11 @@ import { cn } from "@/shared/lib/cn";
 import { useFormatter, useTranslations } from "next-intl";
 import Image from "next/image";
 import { FiChevronRight } from "react-icons/fi";
-import type { RewardsOverview } from "../model";
+import type { RewardRoadTier, RewardTierState } from "../model";
 import TierBadge from "./TierBadge";
 
 interface Props {
-  tiers: RewardsOverview["tiers"];
+  tiers: { tier: RewardRoadTier; state: RewardTierState }[];
   roadPosition: number;
 }
 
@@ -33,8 +33,8 @@ export default function TierRoad({ tiers, roadPosition }: Props) {
         </Link>
       </div>
 
-      <div className="border-stroke-light bg-surface-elevated rounded-lg border px-4 pt-4 pb-3">
-        <div className="relative">
+      <div className="border-stroke-light bg-surface-elevated overflow-x-auto rounded-lg border px-4 pt-4 pb-3">
+        <div className="relative" style={{ minWidth: tiers.length * 72 }}>
           {/* Badge centre is 28px down (56px badge); the 6px road centres on it. */}
           <div
             className="border-stroke-light absolute top-6.25 h-1.5 overflow-hidden rounded-full border bg-neutral-100"
@@ -74,7 +74,7 @@ export default function TierRoad({ tiers, roadPosition }: Props) {
                 key={tier.id}
                 className="flex min-w-0 flex-col items-center text-center"
               >
-                <TierBadge tier={tier.id} size={56} state={state} />
+                <TierBadge tier={tier} size={56} state={state} />
                 <strong
                   className={cn(
                     "mt-1.5 text-xs",
@@ -82,11 +82,11 @@ export default function TierRoad({ tiers, roadPosition }: Props) {
                     state === "locked" && "text-text-subtle",
                   )}
                 >
-                  {t(`tiers.${tier.id}`)}
+                  {tier.name}
                   <span className="sr-only"> ({t(`road.state.${state}`)})</span>
                 </strong>
                 <span className="text-text-subtle mt-0.5 text-[10px]">
-                  {format.number(tier.threshold)}
+                  {format.number(tier.startPoints)}
                 </span>
               </li>
             ))}
