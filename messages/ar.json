@@ -1388,5 +1388,16 @@
     "empty": {
       "title": "لا توجد حسابات بنكية مضافة"
     }
+  },
+  "bookingReward": {
+    "header": "اكتمال الحجز",
+    "title": "اكتمل حجزك",
+    "description": "أضيفت {points} نقطة إلى كل رصيد بعد اكتمال الحجز",
+    "redeemable": "رصيد الاستبدال",
+    "tier": "نقاط المستوى",
+    "tierBalance": "نقاط المستوى: {points} نقطة",
+    "redeemableBalance": "رصيد الاستبدال: {points} نقطة",
+    "viewRewards": "عرض رصيد المكافآت",
+    "redeem": "استبدال النقاط"
   }
 }

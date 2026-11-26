@@ -813,6 +813,12 @@ Unauthenticated catalog, points, and referral-history routes redirect to sign-in
 in both locales. Signed-in route smoke and live redemption remain pending; the
 POST redemption and revised pagination contracts still require live verification.
 
+Rewards API fraction R11: the booking-completion points dialog has been prepared
+as an isolated design from the supplied reference. It is not connected to a
+route or API; integration is deferred at the user's request. Typecheck, lint
+(one existing warning), two dialog tests, and production build pass. The
+unauthenticated booking route redirects to sign-in in both locales.
+
 **Rewards API, fraction R9 (2026-11-25, branch `feature/rewards-tiers`),
 implementation ready:** My Cards reads E10 `GET /my-discount-cards` with a
 server filter and page size 10; the filter is kept in the URL and later pages

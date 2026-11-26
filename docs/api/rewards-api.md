@@ -43,7 +43,7 @@ thresholds; whether this change was intentional is a backend/product follow-up
 | Pagination | Beside `data` for every paginated endpoint (`points`, `referal-rewords`, `my-discount-cards`), per the backend answer to B2. |
 | Filtering | Done by the API (`filter` query param), not on the client. |
 | Referral code at sign-up | In scope: live `verify-referal-code` check plus `referal_code` sent with `completeProfile`. |
-| Booking-complete points | In scope (R11); the screen still needs a design reference. |
+| Booking-complete points | In scope (R11); the supplied reference has been prepared as an isolated design, with integration deferred. |
 | Redemption | `replace-points/quote` (GET) feeds the confirm dialog; `replace-points` (POST, JSON `discount_card_id`) redeems, per the backend answer to B1. |
 
 ## 2. Endpoints
@@ -256,7 +256,7 @@ below this table identifies the pages affected by each fraction.
 | R8 — Catalog **Done (2026-11-25, `df1cffe`)** | E9 supplies four cards and the redeemable balance in one response; each item maps its numeric id, discount value, point cost, and `can_replace` flag (which controls the redeem button), with documented 90-day validity. My cards and redemption remain mocked for R9–R10. | A live TEST E9 probe returned card ids 5–8, discounts 50–300, costs 1,000–6,000, and zero redeemable points. Typecheck, lint (one existing warning), and 68 rewards-focused tests pass, including E9 mapping, empty catalog, malformed data, and transport errors. Production build and signed-in route smoke remain pending under the user's skip-build instruction. |
 | R9 — My cards **Implementation ready (2026-11-25)** | E10 with server filter and pagination, page size 10; E9 supplies the balance. `/account/rewards/cards?filter=active\|used\|expired` preserves the selected filter in the URL, and a Server Action loads later pages. This fraction also corrected R8 to use E9's per-card `can_replace` instead of comparing the balance. | TEST returned an empty E10 list for all four filters, with `pagination` at the response top level. The mapper validates the Bruno row shape and dates; typecheck, lint (one existing warning), and 74 rewards-focused tests pass. Route smoke remains pending; production build is skipped at the user's direction. |
 | R10 — Redemption **Implementation in progress (2026-11-26)** | Confirm dialog reads E11; confirm calls E12 in a Server Action returning `ActionResult`; 400/422 toasted, dialog stays open. Points and referrals use B2's top-level pagination shape. | Typecheck, lint (one existing warning), 180 focused tests, and production build pass. Unauthenticated affected routes redirect to sign-in in both locales. Signed-in route smoke and live verification of the revised contracts remain pending. E11 insufficient points was observed; E12 success requires a customer with points and approval. |
-| R11 — Booking-complete points | E13 on the completed-booking screen (design reference needed). | Earned points shown for a completed booking; 404 handled. |
+| R11 — Booking-complete points **Design only** | A standalone dialog reflects the supplied reference; it is not connected to a route or E13 at the user's request. | Integration, earned points from E13, 404 handling, and live verification remain open. |
 | R12 — Remove production mocks | No production caller uses a rewards, points, or referrals mock; mocks stay for tests. | Grep shows mocks imported only from tests. |
 
 ### Pages affected by each fraction

@@ -1390,5 +1390,16 @@
     "empty": {
       "title": "No bank accounts added"
     }
+  },
+  "bookingReward": {
+    "header": "Booking complete",
+    "title": "Your booking is complete",
+    "description": "{points} points were added to each balance after completing your booking",
+    "redeemable": "Redeemable balance",
+    "tier": "Tier points",
+    "tierBalance": "Tier points: {points} points",
+    "redeemableBalance": "Redeemable balance: {points} points",
+    "viewRewards": "View rewards balance",
+    "redeem": "Redeem points"
   }
 }
