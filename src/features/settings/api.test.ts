@@ -4,7 +4,7 @@ import { AppError } from "@/shared/lib/errors";
 const { get } = vi.hoisted(() => ({ get: vi.fn() }));
 
 vi.mock("server-only", () => ({}));
-vi.mock("@/services/http/server", () => ({ publicServerHttp: { get } }));
+vi.mock("@/services/http/server", () => ({ serverHttp: { get } }));
 
 import { mapSettings, settingsApi } from "./api";
 
@@ -59,6 +59,9 @@ describe("settings mapping", () => {
         termsUrl: "https://t-car.app/user/terms?locale=en",
         privacyUrl: "https://t-car.app/user/privacy?locale=en",
       },
+      isVip: false,
+      vipPackages: null,
+      whatsappNumber: null,
       bookingTypes: {
         daily: true,
         monthly: false,
@@ -76,6 +79,9 @@ describe("settings mapping", () => {
       companySizes: [],
       contact: {},
       links: {},
+      isVip: false,
+      vipPackages: null,
+      whatsappNumber: null,
       bookingTypes: undefined,
       priceFilterRange: undefined,
       mapDefaultPosition: undefined,
@@ -112,6 +118,30 @@ describe("settings mapping", () => {
     expect(companySizes).toHaveLength(2);
   });
 
+  it("keeps VIP data for the signed-in account and validates its contact number", () => {
+    const packages = [{ name: "Diamond", benefit: "24-hour support" }];
+    const vip = mapSettings({
+      ...settings,
+      data: {
+        ...settings.data,
+        is_vip: true,
+        vip_packages: packages,
+        whatsapp_number: "+966 50 000 0000",
+      },
+    });
+    expect(vip).toMatchObject({
+      isVip: true,
+      vipPackages: packages,
+      whatsappNumber: "+966 50 000 0000",
+    });
+    const malformed = mapSettings({
+      ...settings,
+      data: { ...settings.data, is_vip: "true", whatsapp_number: "invalid" },
+    });
+    expect(malformed.isVip).toBe(false);
+    expect(malformed.whatsappNumber).toBeNull();
+  });
+
   it("throws a server AppError for malformed settings", () => {
     for (const value of [
       null,
@@ -127,12 +157,12 @@ describe("settings mapping", () => {
 });
 
 describe("settingsApi.getSettings", () => {
-  it("reads the public endpoint", async () => {
+  it("reads the personalized endpoint without caching its response", async () => {
     get.mockResolvedValue(settings);
     await expect(settingsApi.getSettings()).resolves.toMatchObject({
       companySizes: [{ id: "1" }, { id: "2" }],
     });
-    expect(get).toHaveBeenCalledWith("/settings");
+    expect(get).toHaveBeenCalledWith("/settings", { cache: "no-store" });
   });
 
   it("preserves the client's errors", async () => {

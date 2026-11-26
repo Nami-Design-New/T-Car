@@ -85,6 +85,12 @@ export interface AppSettings {
   companySizes: CompanySize[];
   contact: ContactSettings;
   links: SiteLinks;
+  /** The signed-in customer's VIP status; false for a guest or an absent flag. */
+  isVip: boolean;
+  /** Shape is not established while TEST returns null; preserve it for the banner. */
+  vipPackages: unknown | null;
+  /** WhatsApp contact for VIP support, when supplied by settings. */
+  whatsappNumber: string | null;
   bookingTypes?: Partial<Record<BookingType, boolean>>;
   priceFilterRange?: PriceFilterRange;
   mapDefaultPosition?: MapDefaultPosition;

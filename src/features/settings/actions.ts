@@ -10,7 +10,7 @@ import {
 import type { AppSettings } from "./model";
 import { getSettings } from "./queries";
 
-/** The app settings for client components (GET /settings is public). */
+/** The app settings for client components (personalized when signed in). */
 export async function getSettingsAction(): Promise<ActionResult<AppSettings>> {
   try {
     return toActionResult(ok(await getSettings()));

@@ -1,6 +1,6 @@
 import "server-only";
 import { isApiEnvelope, type ApiEnvelope } from "@/services/http/envelope";
-import { publicServerHttp } from "@/services/http/server";
+import { serverHttp } from "@/services/http/server";
 import { AppError } from "@/shared/lib/errors";
 import type {
   AppSettings,
@@ -61,6 +61,11 @@ function toContact(data: Record<string, unknown>): ContactSettings {
     instagram: link(data.instagram_link),
     twitter: link(data.twitter_link),
   };
+}
+
+function toWhatsappNumber(value: unknown): string | null {
+  const number = text(value);
+  return number && /^\+?[\d\s-]{6,20}$/.test(number) ? number : null;
 }
 
 const BOOKING_TYPE_FIELDS = {
@@ -125,16 +130,19 @@ export function mapSettings(value: unknown): AppSettings {
       termsUrl: link(settingsData.terms_url),
       privacyUrl: link(settingsData.privacy_policy_url),
     },
+    isVip: settingsData.is_vip === true,
+    vipPackages: settingsData.vip_packages ?? null,
+    whatsappNumber: toWhatsappNumber(settingsData.whatsapp_number),
     bookingTypes: toBookingTypes(settingsData),
     priceFilterRange: toPriceFilterRange(settingsData),
     mapDefaultPosition: toMapDefaultPosition(settingsData),
   };
 }
 
-/** GET /settings is public: no token (docs/api/contact-join-us-api.md R2). */
+/** GET /settings accepts guests and personalizes the response when signed in. */
 async function getSettings(): Promise<AppSettings> {
   const response =
-    await publicServerHttp.get<ApiEnvelope<unknown>>("/settings");
+    await serverHttp.get<ApiEnvelope<unknown>>("/settings", { cache: "no-store" });
   return mapSettings(response);
 }
 
