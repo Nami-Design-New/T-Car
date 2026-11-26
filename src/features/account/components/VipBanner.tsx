@@ -18,17 +18,20 @@ export default function VipBanner({
   if (!isVip) return null;
 
   const digits = whatsappNumber?.replace(/\D/g, "");
-  const href = digits && digits.length >= 6 && digits.length <= 15
-    ? `https://wa.me/${digits}`
-    : null;
+  const href =
+    digits && digits.length >= 6 && digits.length <= 15
+      ? `https://wa.me/${digits}`
+      : null;
   const content = (
     <>
       <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-white/15 max-sm:size-10">
         <FiHeadphones className="size-5" aria-hidden="true" />
       </span>
       <span className="min-w-0 flex-1 text-start">
-        <span className="block text-base font-bold leading-6">{title}</span>
-        <span className="block text-sm leading-5 text-white/85">{description}</span>
+        <span className="block text-base leading-6 font-bold">{title}</span>
+        <span className="block text-sm leading-5 text-white/85">
+          {description}
+        </span>
       </span>
       {href && (
         <FiChevronRight
@@ -47,7 +50,7 @@ export default function VipBanner({
       target="_blank"
       rel="noopener noreferrer"
       aria-label={contactLabel}
-      className={`${className} transition-opacity hover:opacity-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-action-primary`}
+      className={`${className} focus-visible:outline-action-primary transition-opacity hover:opacity-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2`}
     >
       {content}
     </a>

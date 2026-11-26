@@ -17,10 +17,9 @@ describe("VipBanner", () => {
 
     expect(screen.getByText(props.title)).toBeInTheDocument();
     expect(screen.getByText(props.description)).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: props.contactLabel })).toHaveAttribute(
-      "href",
-      "https://wa.me/955555555111",
-    );
+    expect(
+      screen.getByRole("link", { name: props.contactLabel }),
+    ).toHaveAttribute("href", "https://wa.me/955555555111");
   });
 
   it("does not show the banner when the customer is not VIP", () => {

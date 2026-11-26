@@ -3,7 +3,7 @@
 Last updated: 2026-11-26
 
 Base URL: `https://t-car.app/api/user`  
-Status: partly integrated. Settings now maps contact, page links, Join Us sizes, booking switches, price bounds, map defaults, and VIP response fields. The VIP banner is a separate UI fraction.
+Status: partly integrated. Settings maps contact, page links, Join Us sizes, booking switches, price bounds, map defaults, and VIP response fields. The VIP banner uses the personalized fields in My Account.
 
 Sources: Bruno `User Application/Setting/setting.yml`, live requests on
 2026-11-02 (English and Arabic, no token), the user's 2026-11-26
@@ -55,7 +55,7 @@ interface SettingsDto {
   phone: string;          // "+201151305555" (test data)
   email: string;          // "momen@gmail.com" (test data)
   is_vip: boolean;        // TEST guest response on 2026-11-26: false
-  vip_packages: unknown | null; // TEST currently null; non-null shape unverified
+  vip_packages: string | null; // localized package name, e.g. "الذهبية"
   whatsapp_number: string | null; // TEST currently null
   facebook_link: string;  // test data: all three point to the admin page
   instagram_link: string;
@@ -69,7 +69,8 @@ interface SettingsDto {
 The 2026-11-02 guest response was identical in English and Arabic except the
 three page URLs (`?locale=`) and the message. The 2026-11-26 TEST guest response
 has `is_vip: false`, `vip_packages: null`, and `whatsapp_number: null`.
-An authenticated non-null VIP response has not yet been observed.
+The user supplied a non-null `vip_packages` example ("الذهبية") and a WhatsApp
+number; a signed-in TEST response has not yet been observed.
 
 ## 3. Already in use
 
@@ -78,7 +79,7 @@ An authenticated non-null VIP response has not yet been observed.
 | `company_sizes` | `AppSettings.companySizes` | Join Us size select (`getSettingsAction`) |
 | `email`, `phone`, `facebook_link`, `instagram_link`, `twitter_link` | `AppSettings.contact` | Home Contact card, footer (`getSiteSettings`, props) |
 | `about_us_url`, `terms_url`, `privacy_policy_url` | `AppSettings.links` | Footer (About us, terms, privacy), register form consent (`useSiteLinksStore`) |
-| `is_vip`, `vip_packages`, `whatsapp_number` | `AppSettings.isVip`, `vipPackages`, `whatsappNumber` | Mapped for the planned My Account VIP banner; no UI caller yet |
+| `is_vip`, `vip_packages`, `whatsapp_number` | `AppSettings.isVip`, `vipPackages`, `whatsappNumber` | My Account VIP banner (signed-in settings read) |
 
 The mapper keeps each of these optional: an unusable value is left out
 instead of failing the whole settings read.
@@ -95,7 +96,7 @@ verified per `AGENTS.md`.
 | S1 | `daily_booking_showing`, `monthly_booking_showing`, `station_booking_showing`, `airport_booking_showing`, `international_booking_showing` | `features/rental-search/components/RentalTabs.tsx`: fixed list of five `RentalType` tabs in the home Hero | Implemented (2026-11-02): `getBookingTypeAvailability()` reads the switches on the server and passes them to `Hero` / `RentalTabs`; disabled tabs are hidden. Missing flags or settings read failures keep all tabs available. `/cars` and `/cities/[slug]` call `notFound()` for direct searches using a disabled known type. |
 | S2 | `min_filter_price`, `max_filter_price` | `PRICE_MIN = 100`, `PRICE_MAX = 30000`, defined twice: `features/cars/hooks/useUrlCarFilters.ts` and `features/cars/searchParams.ts`; used by `CarFilters` (price slider) and the URL parsing | Use the API bounds 5â€“55 as the allowed minimum and maximum. Remove the `$` display and render the price with the SAR `Price` component. |
 | S3 | `latitude`, `longitude`, `region`, `distance` | `shared/ui/MapLocationModal/MapLocationModal.tsx`: fixed center `24.7136, 46.6753` (Riyadh). The guest location (`shared/lib/guest-location.ts`) has no default. No search radius in the app. | Use `latitude` / `longitude` as the map default center. Do not use `region` or `distance` for now (Q3 and Q5). |
-| S4 | `is_vip`, `vip_packages`, `whatsapp_number` | No VIP banner; `/settings` used the anonymous client | Data fraction ready (2026-11-26): send bearer when signed in, map the three fields, and avoid caching a customer-specific response. The banner follows in a separate UI fraction. |
+| S4 | `is_vip`, `vip_packages`, `whatsapp_number` | No VIP banner; `/settings` used the anonymous client | Data fraction done (5f4e944, 2026-11-26): send bearer when signed in, map the three fields, and avoid caching a customer-specific response. UI fraction: show the package name and WhatsApp link in My Account when `is_vip` is true. |
 | ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â | `app_icon_url`, `splash_image_url` | Not applicable | Mobile app assets; the web app keeps its own icon (`src/app/icon.svg`). Not planned. |
 
 The response also contains `rewards_screen_showing`, but the web app has no points/rewards section in scope; this switch is documented as observed and is not planned for web integration.
