@@ -16,6 +16,7 @@ import { FormInput } from "@/shared/ui/Form";
 import { registerFormSchema, type RegisterFormValues } from "../validation";
 import { BackButton } from "@/shared/ui/BackButton/BackButton";
 import { useSiteLinks } from "@/features/settings";
+import { ReferralCodeField, referralCodeAllowsSubmit, useReferralCodeStore } from "@/features/referrals";
 
 type Props = {
   onBack: () => void;
@@ -70,7 +71,13 @@ export default function RegisterForm({
 
   const submit = handleSubmit(async (values) => {
     if (loading) return;
-    const error = await onSubmit(values);
+    // A typed code must be checked (or dropped) before sending the profile.
+    if (!referralCodeAllowsSubmit()) return;
+    const { code, status } = useReferralCodeStore.getState();
+    const error = await onSubmit({
+      ...values,
+      ...(status === "valid" ? { referralCode: code } : {}),
+    });
     if (error && !applyFieldErrors(error, setError, FIELDS)) {
       setError("root.server", {
         type: error.kind,
@@ -129,6 +136,8 @@ export default function RegisterForm({
           error={fieldError(errors.birthDate?.message)}
           {...register("birthDate")}
         />
+
+        <ReferralCodeField />
       </div>
       {/* Consent is implied by continuing; the API has no terms field (Auth-API.md Q8). */}
       {/* The texts are the backend's pages (GET /settings); a new tab keeps the form. */}

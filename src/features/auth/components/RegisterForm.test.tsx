@@ -3,12 +3,19 @@ import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { AppError } from '@/shared/lib/errors';
 import { renderWithIntl } from '@/shared/test/render';
+import { resetReferralCode } from '@/features/referrals';
 import { useSiteLinksStore } from '@/features/settings';
 import type { RegisterFormValues } from '../validation';
 import RegisterForm from './RegisterForm';
 
 // The settings index also exports a Server Action (server code); only the provider is used here.
 vi.mock('@/features/settings/actions', () => ({ getSettingsAction: vi.fn() }));
+vi.mock('@/features/referrals/actions', () => ({
+  checkReferralCodeAction: vi.fn(async () => ({
+    ok: true,
+    data: { valid: true, inviterName: 'Ahmed' },
+  })),
+}));
 
 // BackButton uses the locale-aware navigation, which needs the app router.
 vi.mock('@/i18n/navigation', () => ({
@@ -21,7 +28,10 @@ vi.mock('@/i18n/navigation', () => ({
 }));
 
 // The site links live in a module store: start every test without them.
-afterEach(() => useSiteLinksStore.setState({ links: {} }));
+afterEach(() => {
+  useSiteLinksStore.setState({ links: {} });
+  resetReferralCode();
+});
 
 function renderForm(overrides: Partial<React.ComponentProps<typeof RegisterForm>> = {}) {
   const onSubmit = vi.fn<(values: RegisterFormValues) => Promise<AppError | undefined>>(
@@ -92,6 +102,45 @@ describe('RegisterForm', () => {
         birthDate: '1990-05-17',
       })
     );
+  });
+
+  it('waits for a typed invite code to be checked, then sends it', async () => {
+    const form = renderForm();
+    await fillValid(form);
+    const code = screen.getByRole('textbox', { name: 'Invite code (optional)' });
+    await form.user.type(code, 'TCAR-A7K9');
+    await form.user.click(form.submit);
+
+    expect(code).toHaveAccessibleDescription(
+      'Check the code first, or continue without an invite code.'
+    );
+    expect(form.onSubmit).not.toHaveBeenCalled();
+
+    await form.user.click(screen.getByRole('button', { name: 'Check code' }));
+    await screen.findByRole('button', { name: 'Change code' });
+    await form.user.click(form.submit);
+
+    await waitFor(() =>
+      expect(form.onSubmit).toHaveBeenCalledWith({
+        fullName: 'Ahmed Abdullah',
+        email: 'ahmed@domain.com',
+        birthDate: '1990-05-17',
+        referralCode: 'TCAR-A7K9',
+      })
+    );
+  });
+
+  it('omits a code unless the store says it is valid', async () => {
+    const form = renderForm();
+    await fillValid(form);
+    await form.user.type(screen.getByRole('textbox', { name: 'Invite code (optional)' }), 'TCAR-A7K0');
+    await form.user.click(screen.getByRole('button', { name: 'Continue without an invite code' }));
+    await form.user.click(form.submit);
+    await waitFor(() => expect(form.onSubmit).toHaveBeenCalledWith({
+      fullName: 'Ahmed Abdullah',
+      email: 'ahmed@domain.com',
+      birthDate: '1990-05-17',
+    }));
   });
 
   it('keeps the values and maps a server field error', async () => {

@@ -1,4 +1,5 @@
 export {
+  applyCouponAction,
   checkAvailabilityAction,
   cancelBookingAction,
   getCancelQuoteAction,
@@ -45,6 +46,7 @@ export type {
   BookingReviewInput,
   BookingReviewResult,
   CreateDraftRequest,
+  CouponPricing,
   ExtensionQuote,
   PendingExtension,
   PaymentChoice,
@@ -65,6 +67,7 @@ export type {
   OrderStatusTone,
 } from "./model";
 export {
+  applyCouponSchema,
   availabilitySchema,
   bookingEditSchema,
   modificationRequestSchema,

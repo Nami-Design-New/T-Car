@@ -27,6 +27,8 @@ export interface PaymentChoice {
 /** E5 input. Never carries points (R13). */
 export interface PayOrderRequest extends PaymentChoice {
   orderId: string;
+  /** Applied E4 coupon, repeated as E5 multipart `code`. */
+  code?: string;
 }
 
 /** E12 input. Pays the difference after the admin approves a modification. */
@@ -376,6 +378,8 @@ export interface Order {
   serviceFee: number;
   completionFee: number;
   discount: number;
+  couponCode: string | null;
+  couponDiscount: number;
   additionalServicesCost: number;
   totalPrice: number;
   taxValue: number;
@@ -402,6 +406,27 @@ export interface Order {
 }
 
 export type OrderStatusTone = "primary" | "warning" | "success" | "error";
+/** E4 changes these server-owned prices on an existing unpaid draft. */
+export type CouponPricing = Pick<
+  Order,
+  | "carPrice"
+  | "price"
+  | "count"
+  | "deliveryFee"
+  | "serviceFee"
+  | "completionFee"
+  | "discount"
+  | "couponCode"
+  | "couponDiscount"
+  | "additionalServicesCost"
+  | "totalPrice"
+  | "taxValue"
+  | "finalPrice"
+  | "taxRate"
+  | "taxRateType"
+  | "serviceFeeRate"
+  | "serviceFeeRateType"
+>;
 export type OrderListTab = "active" | "past";
 
 const PAST_ORDER_STATUSES: readonly OrderStatus[] = [

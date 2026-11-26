@@ -7,6 +7,7 @@ const {
   payOrder,
   checkAvailability,
   createDraft,
+  applyCoupon,
   extendBooking,
   requestBookingEdit,
   getCancelQuote,
@@ -18,6 +19,7 @@ const {
   payOrder: vi.fn(),
   checkAvailability: vi.fn(),
   createDraft: vi.fn(),
+  applyCoupon: vi.fn(),
   extendBooking: vi.fn(),
   requestBookingEdit: vi.fn(),
   getCancelQuote: vi.fn(),
@@ -32,6 +34,7 @@ vi.mock("./api", () => ({
     getPaymentOptions,
     payOrder,
     createDraft,
+    applyCoupon,
     extendBooking,
     requestBookingEdit,
     getCancelQuote,
@@ -46,6 +49,7 @@ import {
   getPaymentOptionsAction,
   payOrderAction,
   createDraftAction,
+  applyCouponAction,
   extendBookingAction,
   requestBookingEditAction,
   getCancelQuoteAction,
@@ -204,6 +208,15 @@ describe("payOrderAction", () => {
     expect(payOrder).toHaveBeenCalledWith(request);
   });
 
+  it("forwards the applied coupon code with the payment", async () => {
+    payOrder.mockResolvedValue({ ok: true, data: { kind: "paid" } });
+    await payOrderAction({ ...request, code: " TCAR-GXH3-623U " });
+    expect(payOrder).toHaveBeenCalledWith({
+      ...request,
+      code: "TCAR-GXH3-623U",
+    });
+  });
+
   it("preserves a backend 422 message", async () => {
     payOrder.mockResolvedValue({
       ok: false,
@@ -323,6 +336,27 @@ describe("createDraftAction", () => {
         serverMessage: "The car is not available for the selected days.",
       },
     });
+  });
+});
+
+describe("applyCouponAction", () => {
+  it("validates the draft and code before calling E4", async () => {
+    await expect(applyCouponAction("405", "   ")).resolves.toMatchObject({ ok: false });
+    expect(applyCoupon).not.toHaveBeenCalled();
+  });
+
+  it("returns the updated server prices and success message", async () => {
+    applyCoupon.mockResolvedValue({
+      ok: true,
+      data: { couponCode: "TCAR-GXH3-623U", couponDiscount: 32, finalPrice: 55.35 },
+      message: "Coupon applied.",
+    });
+    await expect(applyCouponAction("405", " TCAR-GXH3-623U ")).resolves.toMatchObject({
+      ok: true,
+      data: { finalPrice: 55.35 },
+      message: "Coupon applied.",
+    });
+    expect(applyCoupon).toHaveBeenCalledWith("405", "TCAR-GXH3-623U");
   });
 });
 

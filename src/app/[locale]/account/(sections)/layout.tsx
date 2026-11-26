@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { AccountLayout } from "@/features/account";
-import { getPoints } from "@/features/points/queries";
+import { getVipSettings } from "@/features/settings/queries";
 
 /**
  * The account sections share the title and the section links. Booking details
@@ -11,7 +11,6 @@ export default async function SectionsLayout({
 }: {
   children: ReactNode;
 }) {
-  const { summary } = await getPoints();
-
-  return <AccountLayout pointsSummary={summary}>{children}</AccountLayout>;
+  const vip = await getVipSettings();
+  return <AccountLayout vip={vip}>{children}</AccountLayout>;
 }

@@ -203,6 +203,21 @@ describe("authApi.completeProfile", () => {
     expect(sessionPost).not.toHaveBeenCalled();
   });
 
+  it("adds referal_code only when supplied", async () => {
+    tokenPost.mockResolvedValue({
+      data: { user: profileUser, current_step: "location" },
+      message: "Profile updated successfully.",
+      code: 200,
+    });
+    await authApi.completeProfile({ ...input, referralCode: "TCAR-8NC1" }, "pending-token");
+    expect(tokenPost).toHaveBeenCalledWith("/complete-profile", {
+      name: "Test",
+      email: "api.test@example.com",
+      birth_date: "2000-12-12",
+      referal_code: "TCAR-8NC1",
+    });
+  });
+
   it("passes a revoked token (401) through", async () => {
     const error = new AppError("unauthorized", undefined, 401);
     tokenPost.mockRejectedValue(error);

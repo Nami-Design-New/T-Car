@@ -6,6 +6,8 @@ export const ACCOUNT_TABS = [
   "wallet",
   "bank-accounts",
   "notifications",
+  "referrals",
+  "rewards",
 ] as const;
 
 export type AccountTab = (typeof ACCOUNT_TABS)[number];

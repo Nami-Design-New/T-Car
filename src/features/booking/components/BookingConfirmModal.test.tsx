@@ -1,8 +1,11 @@
 import { screen } from "@testing-library/react";
+import { useState } from "react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import { renderWithIntl } from "@/shared/test/render";
 import type { BookingDetails, Order } from "@/features/orders";
+import { AppError } from "@/shared/lib/errors";
+import { fail, ok } from "@/shared/lib/result";
 import BookingConfirmModal from "./BookingConfirmModal";
 
 vi.mock("@/i18n/navigation", () => ({
@@ -82,6 +85,8 @@ function draft(): Order {
     serviceFee: 9,
     completionFee: 3,
     discount: 110,
+    couponCode: null,
+    couponDiscount: 0,
     additionalServicesCost: 10,
     totalPrice: 112,
     taxValue: 11.2,
@@ -194,5 +199,89 @@ describe("BookingConfirmModal", () => {
     expect(
       screen.queryByText("Return the car on time."),
     ).not.toBeInTheDocument();
+  });
+
+  it("keeps an invalid coupon and its backend error in the confirmation dialog", async () => {
+    const user = userEvent.setup();
+    const onApplyCoupon = vi.fn().mockResolvedValue(
+      fail(new AppError("validation", undefined, 422, undefined, {
+        serverMessage: "This coupon code is not valid.",
+      })),
+    );
+    renderWithIntl(
+      <BookingConfirmModal
+        open
+        onClose={vi.fn()}
+        onBack={vi.fn()}
+        onContinue={vi.fn()}
+        carName="Creta"
+        carBrand="Hyundai"
+        carYear={2024}
+        carImage="https://example.com/creta.jpg"
+        showroom="Riyadh branch"
+        rating={4.5}
+        booking={booking()}
+        draft={draft()}
+        onApplyCoupon={onApplyCoupon}
+      />,
+    );
+
+    await user.type(screen.getByRole("textbox", { name: "Have a discount code?" }), "INVALID");
+    await user.click(screen.getByRole("button", { name: "Verify code" }));
+
+    expect(onApplyCoupon).toHaveBeenCalledWith("INVALID");
+    expect(await screen.findByRole("alert")).toHaveTextContent("This coupon code is not valid.");
+    expect(screen.getByRole("textbox", { name: "Have a discount code?" })).toHaveValue("INVALID");
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
+  });
+
+  it("shows server-priced totals after a successful coupon", async () => {
+    const user = userEvent.setup();
+    const applyCoupon = vi.fn(async (order: Order, code: string) =>
+      ok({ ...order, couponCode: code, couponDiscount: 32, finalPrice: 55.35 }),
+    );
+    function Harness() {
+      const [order, setOrder] = useState(draft());
+      return (
+        <BookingConfirmModal
+          open
+          onClose={vi.fn()}
+          onBack={vi.fn()}
+          onContinue={vi.fn()}
+          carName="Creta"
+          carBrand="Hyundai"
+          carYear={2024}
+          carImage="https://example.com/creta.jpg"
+          showroom="Riyadh branch"
+          rating={4.5}
+          booking={booking()}
+          draft={order}
+          onApplyCoupon={async (code) => {
+            const result = await applyCoupon(order, code);
+            if (result.ok) setOrder(result.data);
+            return result;
+          }}
+        />
+      );
+    }
+    renderWithIntl(<Harness />);
+
+    await user.type(screen.getByRole("textbox", { name: "Have a discount code?" }), "TCAR-GXH3-623U");
+    await user.click(screen.getByRole("button", { name: "Verify code" }));
+
+    expect(await screen.findByText("55.35")).toBeInTheDocument();
+    expect(screen.queryByText("123.2")).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Applied" })).toBeDisabled();
+    expect(screen.getByRole("status")).toHaveTextContent(
+      "Discount code applied to this booking.",
+    );
+    expect(applyCoupon).toHaveBeenCalledOnce();
+
+    await user.type(
+      screen.getByRole("textbox", { name: "Have a discount code?" }),
+      "2",
+    );
+    expect(screen.getByRole("button", { name: "Verify code" })).toBeEnabled();
+    expect(screen.queryByRole("status")).not.toBeInTheDocument();
   });
 });

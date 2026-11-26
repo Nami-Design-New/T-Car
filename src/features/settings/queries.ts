@@ -9,12 +9,24 @@ import {
   type AppSettings,
   type BookingTypeAvailability,
   type SiteSettings,
+  type VipSettings,
 } from "./model";
 
 /** The app settings for server components; read once per request. */
 export const getSettings = cache((): Promise<AppSettings> =>
   settingsApi.getSettings(),
 );
+
+/** VIP details for the account banner; unavailable settings hide the banner. */
+export async function getVipSettings(): Promise<VipSettings> {
+  try {
+    const { isVip, vipPackages, whatsappNumber } = await getSettings();
+    return { isVip, vipPackages, whatsappNumber };
+  } catch (error) {
+    reportError(error, { scope: "settings.vip" });
+    return { isVip: false, vipPackages: null, whatsappNumber: null };
+  }
+}
 
 /** Booking switches; a missing setting keeps its option available. */
 export async function getBookingTypeAvailability(): Promise<BookingTypeAvailability> {

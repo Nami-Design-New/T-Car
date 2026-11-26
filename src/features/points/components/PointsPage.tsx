@@ -1,131 +1,243 @@
 "use client";
 
-import Image from "next/image";
-import { useLocale, useTranslations } from "next-intl";
-import { useState } from "react";
+import { useFormatter, useTranslations } from "next-intl";
+import { useCallback, type ReactNode } from "react";
+import { FiArrowDown, FiArrowUp } from "react-icons/fi";
+import { Link, useRouter } from "@/i18n/navigation";
+import { usePaginatedList } from "@/shared/hooks/usePaginatedList";
 import { cn } from "@/shared/lib/cn";
-import { POINTS_ICONS } from "@/shared/config/assets";
-import type { PointsData, PointsFilter, PointsTransaction } from "../model";
+import { fromActionResult } from "@/shared/lib/result";
+import { InfiniteList } from "@/shared/ui/InfiniteList";
+import { StateCard } from "@/shared/ui/StateCard";
+import {
+  POINTS_FILTERS,
+  POINTS_TIME_ZONE,
+  groupPointsTransactions,
+  pointsSourceHref,
+  type PointsData,
+  type PointsFilter,
+  type PointsTransaction,
+} from "../model";
+import { getPointsPageAction } from "../actions";
 
 interface Props {
   data: PointsData;
+  filter: PointsFilter;
 }
 
-const FILTERS: PointsFilter[] = ["all", "earned", "spent"];
-
-export default function PointsPage({ data }: Props) {
+/** "Points history": the balances, a filter, and every movement by month. */
+export default function PointsPage({ data, filter }: Props) {
   const t = useTranslations("account.points");
-  const locale = useLocale();
-  const [filter, setFilter] = useState<PointsFilter>("all");
-  const transactions = data.transactions.filter(
-    (transaction) => filter === "all" || transaction.type === filter,
+  const format = useFormatter();
+  const router = useRouter();
+  const fetchPage = useCallback(
+    async (page: number) => fromActionResult(await getPointsPageAction(page, filter)),
+    [filter],
   );
+  const transactions = usePaginatedList(fetchPage, {
+    initialPage: data.page,
+    scope: "points.history",
+  });
+  const groups = groupPointsTransactions(transactions.items);
+  const { summary } = data;
 
   return (
-    <section className="points-page min-h-140 overflow-hidden rounded-xl bg-[linear-gradient(214deg,#f6faff_0%,#eff6fe_100%)] text-text-primary max-md:min-h-[calc(100vh-160px)]">
-      <header className="points-page__header flex items-center justify-between px-5 pb-2 pt-4.5 max-md:px-4">
-        <h1 className="m-0 text-xl font-bold">{t("historyTitle")}</h1>
-      </header>
-
-      <div className="points-page__summary px-5 pb-5 pt-7.5 text-center max-md:py-6">
-        <h2 className="m-0 text-[clamp(2.25rem,5vw,3rem)] font-bold leading-[1.2] text-action-primary">
-          {data.summary.balance}{" "}
-          <span className="text-[0.8em]">{t("unit")}</span>
-        </h2>
-        <p className="mt-3.5 text-xs text-text-subtle">
-          {t("expiresAt", { date: formatDate(data.summary.expiresAt, locale) })}
-        </p>
-      </div>
+    <section className="flex flex-col gap-6">
+      <dl className="m-0 grid grid-cols-3 gap-3 max-sm:gap-2">
+        <Stat label={t("stats.tierPoints")} tone="tier">
+          {format.number(summary.tierPoints)}
+        </Stat>
+        <Stat label={t("stats.balance")} tone="balance">
+          {format.number(summary.balance)}
+        </Stat>
+        <Stat label={t("stats.lastRedemption")} tone="balance">
+          {summary.lastRedemption === null
+            ? "—"
+            : format.number(summary.lastRedemption)}
+        </Stat>
+      </dl>
 
       <div
-        className="points-page__filters flex justify-around border-y border-stroke-heavy/55 bg-surface-elevated/70"
+        className="flex rounded-xl bg-neutral-100 p-1 md:self-start"
         role="tablist"
         aria-label={t("filtersLabel")}
       >
-        {FILTERS.map((item) => (
+        {POINTS_FILTERS.map((item) => (
           <button
             key={item}
             type="button"
             role="tab"
             aria-selected={filter === item}
             className={cn(
-              "points-page__filter relative min-w-27.5 cursor-pointer border-0 bg-transparent px-4 pb-3 pt-3.5 text-sm font-inherit text-text-subtle max-md:min-w-0 max-md:flex-1 max-md:px-2",
-              filter === item && "font-bold text-action-primary",
+              "text-text-subtle min-w-28 flex-1 cursor-pointer rounded-lg border-0 bg-transparent px-4 py-2.5 text-sm font-semibold transition-colors max-md:min-w-0",
+              filter === item &&
+                "text-action-primary bg-white shadow-[0_2px_6px_rgba(0,0,0,0.08)]",
             )}
-            onClick={() => setFilter(item)}
+            onClick={() => router.replace(
+              item === "all" ? "/account/points" : `/account/points?filter=${item}`,
+              { scroll: false },
+            )}
           >
             {t(`filters.${item}`)}
-            {filter === item && (
-              <span className="absolute inset-x-4 bottom-0 h-1 rounded-full bg-action-primary max-md:inset-x-2" />
-            )}
           </button>
         ))}
       </div>
 
-      <ul className="points-page__transactions m-0 list-none px-5 max-md:px-4">
-        {transactions.map((transaction) => (
-          <TransactionRow
-            key={transaction.id}
-            transaction={transaction}
-            locale={locale}
-            t={t}
+      <InfiniteList
+        key={filter}
+        loading={transactions.loading}
+        hasMore={transactions.hasMore}
+        isEmpty={transactions.items.length === 0}
+        error={transactions.error ?? undefined}
+        onLoadMore={transactions.loadMore}
+        onRetry={transactions.retry}
+        className="flex flex-col gap-6"
+      >
+        {groups.map((group) => {
+          const title =
+            group.kind === "latest"
+              ? t("latest")
+              : format.dateTime(new Date(group.month), {
+                  month: "long",
+                  year: "numeric",
+                  numberingSystem: "latn",
+                  timeZone: "UTC",
+                });
+          return (
+            <section
+              key={group.kind === "latest" ? "latest" : group.month}
+              className="flex flex-col gap-3"
+            >
+              <h2 className="text-text-subtle m-0 text-base font-bold">
+                {title}
+              </h2>
+              <ul className="m-0 flex list-none flex-col gap-2 p-0">
+                {group.transactions.map((transaction) => (
+                  <TransactionRow
+                    key={transaction.id}
+                    transaction={transaction}
+                  />
+                ))}
+              </ul>
+            </section>
+          );
+        })}
+        <InfiniteList.Loading className="mt-3">
+          <div className="bg-surface-elevated h-20 animate-pulse rounded-xl" />
+        </InfiniteList.Loading>
+        <InfiniteList.Error />
+        <InfiniteList.Empty>
+          <StateCard
+            icon="gift"
+            title={t(`empty.${filter}.title`)}
+            description={t(`empty.${filter}.description`)}
           />
-        ))}
-      </ul>
+        </InfiniteList.Empty>
+      </InfiniteList>
     </section>
   );
 }
 
-function TransactionRow({
-  transaction,
-  locale,
-  t,
+function Stat({
+  label,
+  tone,
+  children,
 }: {
-  transaction: PointsTransaction;
-  locale: string;
-  t: ReturnType<typeof useTranslations<"account.points">>;
+  label: string;
+  tone: "tier" | "balance";
+  children: ReactNode;
 }) {
-  const icon = POINTS_ICONS[transaction.type];
-
   return (
-    <li className="points-transaction flex min-h-18.5 items-center gap-3.5 border-b border-stroke-heavy/55">
-      <div className="points-transaction__content flex min-w-0 flex-1 flex-col items-end gap-1">
-        <strong className="text-[0.9rem] font-bold">
-          {t(`transaction.${transaction.type}`)}
-        </strong>
-        <span className="text-xs text-text-subtle">
-          {formatDate(transaction.createdAt, locale)}
-        </span>
-      </div>
-      <span
+    <div className="border-stroke-light bg-surface-elevated flex min-w-0 flex-col gap-1.5 rounded-xl border p-4 max-sm:p-3">
+      <dt className="text-text-subtle flex items-center gap-1.5 text-sm max-sm:text-xs">
+        <span
+          className={cn(
+            "size-2 shrink-0 rounded-full",
+            tone === "tier" ? "bg-success-700" : "bg-action-primary",
+          )}
+          aria-hidden="true"
+        />
+        <span className="truncate">{label}</span>
+      </dt>
+      <dd
         className={cn(
-          "points-transaction__icon grid size-9 place-items-center rounded-full bg-surface-card-primary",
-          transaction.type === "spent" && "bg-success-100",
-          transaction.type === "expired" && "bg-neutral-200",
+          "m-0 text-[clamp(1.25rem,3vw,1.75rem)] leading-tight font-bold",
+          tone === "tier" ? "text-success-700" : "text-action-primary",
         )}
       >
-        <Image src={icon.src} alt="" width={icon.width} height={icon.height} />
-      </span>
-      <span
-        className={cn(
-          "points-transaction__amount min-w-18 text-base font-bold text-text-subtle",
-          transaction.type === "earned" && "text-action-primary",
-          transaction.type === "spent" && "text-success-700",
-        )}
-        dir="ltr"
-      >
-        {transaction.amount > 0 ? "+" : ""}
-        {transaction.amount}
-      </span>
-    </li>
+        {children}
+      </dd>
+    </div>
   );
 }
 
-function formatDate(value: string, locale: string) {
-  return new Intl.DateTimeFormat(locale === "ar" ? "ar-SA" : "en-US", {
-    day: "numeric",
+function TransactionRow({ transaction }: { transaction: PointsTransaction }) {
+  const format = useFormatter();
+  const { type, source } = transaction;
+  const href = pointsSourceHref(source);
+  const date = new Date(transaction.createdAt);
+  const when = `${format.dateTime(date, {
+    day: "2-digit",
     month: "long",
     year: "numeric",
     numberingSystem: "latn",
-  }).format(new Date(value));
+    timeZone: POINTS_TIME_ZONE,
+  })} · ${format.dateTime(date, {
+    hour: "2-digit",
+    minute: "2-digit",
+    numberingSystem: "latn",
+    timeZone: POINTS_TIME_ZONE,
+  })}`;
+  const Icon = type === "earned" ? FiArrowUp : FiArrowDown;
+  // A real minus sign, and the sign before the number in both directions.
+  const amount = `${transaction.amount > 0 ? "+" : "−"}${format.number(Math.abs(transaction.amount))}`;
+
+  const content = (
+    <>
+      <span
+        className={cn(
+          "grid size-12 shrink-0 place-items-center rounded-full text-xl max-sm:size-10",
+          type === "earned" && "bg-success-100 text-success-700",
+          type === "used" && "bg-surface-card-primary text-action-primary",
+        )}
+        aria-hidden="true"
+      >
+        <Icon />
+      </span>
+      <span className="flex min-w-0 flex-1 flex-col gap-1">
+        <strong className="text-base">{transaction.title}</strong>
+        <span className="text-text-subtle text-sm">{when}</span>
+      </span>
+      <span
+        className={cn(
+          "shrink-0 text-lg font-bold",
+          type === "earned" && "text-success-700",
+          type === "used" && "text-action-primary",
+        )}
+        dir="ltr"
+      >
+        {amount}
+      </span>
+    </>
+  );
+  const rowClasses =
+    "border-stroke-light bg-surface-elevated flex items-center gap-4 rounded-xl border p-4 max-sm:gap-3 max-sm:p-3";
+
+  return (
+    <li>
+      {href ? (
+        <Link
+          href={href}
+          className={cn(
+            rowClasses,
+            "text-text-primary hover:border-action-primary no-underline transition-colors",
+          )}
+        >
+          {content}
+        </Link>
+      ) : (
+        <div className={rowClasses}>{content}</div>
+      )}
+    </li>
+  );
 }

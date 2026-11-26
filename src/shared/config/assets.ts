@@ -10,6 +10,7 @@ export const ICONS = {
   minus: { src: "/icons/mins.svg", width: 12, height: 12 },
   plus: { src: "/icons/plus.svg", width: 12, height: 12 },
   deliveryCar: { src: "/icons/delivery-car.svg", width: 24, height: 24 },
+  gift: { src: "/icons/gift.svg", width: 24, height: 24 },
   money: { src: "/icons/money.svg", width: 24, height: 24 },
   coin: { src: "/icons/coin.webp", width: 24, height: 24 },
   balance: { src: "/icons/balance.webp", width: 24, height: 24 },
@@ -82,6 +83,17 @@ export const ICONS = {
     width: 16,
     height: 16,
   },
+  car: {
+    src: "/icons/car.svg",
+    width: 14,
+    height: 14,
+  },
+} as const;
+
+/** Line icons of the state cards (Figma Rw-Icon/gift, Rw-Icon/info). */
+export const STATE_ICONS = {
+  gift: { src: "/icons/states/gift.svg", width: 48, height: 48 },
+  info: { src: "/icons/states/info.svg", width: 40, height: 40 },
 } as const;
 
 export const POINTS_ICONS = {
@@ -89,6 +101,32 @@ export const POINTS_ICONS = {
   earned: { src: "/icons/gift-points-blue.svg", width: 20, height: 20 },
   spent: { src: "/icons/gift-points -green.svg", width: 20, height: 20 },
   expired: { src: "/icons/gift-points-gray.svg", width: 20, height: 20 },
+} as const;
+
+export const REWARDS_ASSETS = {
+  glowCurrent: {
+    src: "/images/rewards/glow-current.svg",
+    width: 68,
+    height: 68,
+  },
+  decor: {
+    ringOne: {
+      src: "/images/rewards/decor-ring-1.svg",
+      width: 260,
+      height: 260,
+    },
+    ringTwo: {
+      src: "/images/rewards/decor-ring-2.svg",
+      width: 180,
+      height: 180,
+    },
+    ringThree: {
+      src: "/images/rewards/decor-ring-3.svg",
+      width: 220,
+      height: 220,
+    },
+    lane: { src: "/images/rewards/decor-lane.svg", width: 240, height: 40 },
+  },
 } as const;
 
 export const RENTAL_ICONS = {
@@ -124,6 +162,11 @@ export const IMAGES = {
   appStore: { src: "/images/app/app-store.webp", width: 160, height: 48 },
   googlePlay: { src: "/images/app/google-play.webp", width: 160, height: 48 },
   gift: { src: "/images/illustrations/gift.webp", width: 48, height: 37 },
+  referralGift: {
+    src: "/images/illustrations/referral-gift.webp",
+    width: 320,
+    height: 320,
+  },
   /** A country without a flag image in GET /countries. */
   flagPlaceholder: {
     src: "/images/placeholders/flag.svg",

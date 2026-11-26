@@ -32,6 +32,12 @@
     }
   },
   "account": {
+    "vip": {
+      "title": "Dedicated VIP support",
+      "packageDescription": "Exclusive to {package} members · Available 24 hours",
+      "description": "Dedicated support · Available 24 hours",
+      "contactWhatsApp": "Contact VIP support on WhatsApp"
+    },
     "title": "My account",
     "back": "Back",
     "nav": {
@@ -40,25 +46,120 @@
       "bookings": "My bookings",
       "wallet": "Wallet",
       "bankAccounts": "Bank accounts",
-      "notifications": "Notifications"
+      "notifications": "Notifications",
+      "referrals": "Invite a friend",
+      "rewards": "Rewards"
+    },
+    "rewards": {
+      "allTiers": { "title": "Reward tiers" },
+      "detail": { "title": "Tier perks" },
+      "cards": { "title": "My cards" },
+      "catalog": { "title": "Redeem points" }
+    },
+    "loadError": {
+      "description": "Check your internet connection and try again.",
+      "retry": "Try again"
+    },
+    "referrals": {
+      "heroTitle": "A trip that starts with a friend, and a reward for you",
+      "unavailableTitle": "Your invite code could not be loaded",
+      "heroReward": "Earn {points} points",
+      "heroDescription": "When your friend completes their first booking with your invite code.",
+      "codeLabel": "Your invite code",
+      "copy": "Copy",
+      "copied": "Copied",
+      "codeCopied": "Invite code copied",
+      "copyFailed": "Copying is not available in this browser. Select the code and copy it.",
+      "share": "Share invite",
+      "howTitle": "How do you get the reward?",
+      "steps": {
+        "share": {
+          "title": "Share your code",
+          "description": "Send the invite to a friend who has not signed up before."
+        },
+        "signUp": {
+          "title": "Your friend signs up",
+          "description": "They enter the code when creating their account."
+        },
+        "earn": {
+          "title": "Your points are added",
+          "description": "{points} points after their first eligible booking."
+        }
+      },
+      "historyLink": "My invites",
+      "history": {
+        "title": "My invites",
+        "unavailableTitle": "Your invite history could not be loaded",
+        "totalLabel": "Rewards from your invites",
+        "points": "{points} points",
+        "counts": "{invited, plural, one {# invite} other {# invites}} · {completed} completed",
+        "pointsHistory": "View points history",
+        "latest": "Latest invites",
+        "columns": {
+          "friend": "Friend",
+          "joinedAt": "Joined",
+          "firstBookingAt": "First booking",
+          "reward": "Reward"
+        },
+        "pending": "Waiting for first booking",
+        "rewarded": "+{points} points",
+        "emptyTitle": "Your first invite starts here",
+        "emptyDescription": "No friend has signed up with your code yet. Share it now and follow your rewards here.",
+        "inviteAction": "Invite a friend"
+      },
+      "termsLink": "Invite reward terms",
+      "shareDialog": {
+        "title": "Share the invite",
+        "description": "Send the code to your friend to use when creating their account.",
+        "message": "Try T-Car for your next trip! Enter my invite code when you create your account:",
+        "whatsapp": "WhatsApp",
+        "copyMessage": "Copy invite message",
+        "messageCopied": "Invite message copied",
+        "copyFailed": "Copying is not available in this browser. Select the message and copy it.",
+        "moreOptions": "More sharing options"
+      },
+      "termsDialog": {
+        "title": "Invite reward terms",
+        "items": {
+          "reward": "{points} points are added to your balance after your friend completes their first eligible booking.",
+          "newUser": "Your friend must be a new user and enter the invite code before creating their account.",
+          "oneCode": "An account can be linked to one invite code only, and you cannot use your own code.",
+          "eligibleBooking": "Signing up alone or a cancelled booking does not earn a reward."
+        },
+        "confirm": "Got it"
+      }
     },
     "points": {
       "title": "Loyalty points",
       "historyTitle": "Points history",
+      "unavailableTitle": "Your points could not be loaded",
       "unit": "points",
       "cardDescription": "Earn loyalty points by booking more cars and use them for payment.",
-      "expiresAt": "{date} points expire",
-      "back": "Back to account",
       "filtersLabel": "Points history filters",
       "filters": {
         "all": "All",
         "earned": "Earned",
-        "spent": "Spent"
+        "spent": "Used"
       },
-      "transaction": {
-        "earned": "Earned",
-        "spent": "Used for payment",
-        "expired": "Expired points"
+      "stats": {
+        "tierPoints": "Tier points",
+        "balance": "Available to redeem",
+        "lastRedemption": "Last redemption"
+      },
+      "latest": "Latest activity",
+      "empty": {
+        "all": {
+          "title": "No points activity yet",
+          "description": "Points you earn from bookings and invites, and the points you use, will show here."
+        },
+        "earned": {
+          "title": "You have not earned points yet",
+          "description": "Complete a booking or invite a friend to start earning points."
+        },
+        "spent": {
+          "title": "You have not used points yet",
+          "description": "Points you redeem for rewards will show here."
+        }
       }
     },
     "profile": {
@@ -117,6 +218,143 @@
       "unreadCount": "{count, plural, =0 {No unread notifications} one {# unread notification} other {# unread notifications}}"
     }
   },
+  "rewards": {
+    "unavailableTitle": "Your rewards could not be loaded",
+    "tiers": {
+      "bronze": "Bronze",
+      "silver": "Silver",
+      "gold": "Gold",
+      "diamond": "Diamond"
+    },
+    "hero": {
+      "currentTier": "Your current tier",
+      "higherTier": "Higher tier",
+      "ofTierPoints": "/ {threshold} tier points",
+      "pointsToNext": "{points} points to {tier}",
+      "topTier": "Highest tier reached"
+    },
+    "balance": {
+      "label": "Available to redeem",
+      "unit": "points"
+    },
+    "cards": {
+      "filtersLabel": "My cards filters",
+      "filters": {
+        "all": "All",
+        "active": "Active",
+        "used": "Used",
+        "expired": "Expired"
+      },
+      "status": {
+        "active": "Active",
+        "used": "Used",
+        "expired": "Expired"
+      },
+      "validUntil": "Valid until {date}",
+      "usedOn": "Used on booking #{booking} · {date}",
+      "expiredOn": "Expired on {date}",
+      "copyCode": "Copy code {code}",
+      "copied": "Code copied",
+      "copyFailed": "Copying is not available in this browser. Select the code and copy it.",
+      "empty": {
+        "all": { "title": "No cards yet", "description": "Redeem points to get a discount card." },
+        "active": { "title": "No active cards", "description": "Your active discount cards will appear here." },
+        "used": { "title": "No used cards", "description": "Cards you use on bookings will appear here." },
+        "expired": { "title": "No expired cards", "description": "Expired discount cards will appear here." }
+      }
+    },
+    "catalog": {
+      "discountTitle": "Discount card",
+      "discountTitleAccessible": "Discount card worth {amount} Saudi riyals",
+      "discountUnit": "off",
+      "availableNow": "On any booking · Available now",
+      "points": "points",
+      "affordable": "Enough points to redeem",
+      "insufficientPoints": "Not enough points",
+      "redeemCard": "Redeem the {amount} SAR discount card",
+      "emptyTitle": "No cards available",
+      "emptyDescription": "Discount cards will appear here when available."
+    },
+    "redemption": {
+      "confirmTitle": "Confirm redemption",
+      "confirmDescription": "Review the details before points are taken from your balance",
+      "new": "New",
+      "validForDays": "Valid for {days} days from redemption",
+      "balanceBefore": "Redeemable balance before",
+      "cost": "Card cost",
+      "balanceAfter": "Remaining after redemption",
+      "pointsAmount": "{amount} points",
+      "costAmount": "−{amount} points",
+      "tierPointsNote": "Redemption only uses your redeemable balance. Your tier points and tier are not affected.",
+      "confirm": "Confirm redemption",
+      "cancel": "Cancel",
+      "successTitle": "Redeemed successfully!",
+      "successDescription": "The card was added to My cards. Use the code at checkout on your next booking.",
+      "balanceAfterAmount": "Redeemable balance: {amount} points",
+      "tierPointsUnchanged": "Your {tier} tier stays the same · {amount} tier points",
+      "viewCards": "View my cards",
+      "backToRewards": "Back to rewards"
+    },
+    "actions": {
+      "label": "Reward actions",
+      "redeem": "Redeem points",
+      "cards": "My cards",
+      "history": "Points history"
+    },
+    "road": {
+      "title": "Your journey through the tiers",
+      "viewTiers": "View tiers",
+      "state": {
+        "reached": "reached",
+        "current": "your tier",
+        "locked": "locked"
+      }
+    },
+    "convert": {
+      "title": "Turn your points into cards",
+      "subtitle": "Discount cards for your upcoming bookings",
+      "action": "Redeem now"
+    },
+    "perks": {
+      "title": "Your current tier benefits",
+      "viewAll": "View all",
+      "emptyTitle": "You have just started!",
+      "emptyDescription": "Collect {threshold, number} points to unlock {tier} benefits",
+      "topTierDescription": "You have unlocked every available tier benefit."
+    },
+    "allTiers": {
+      "introTitle": "Earn points on every trip and move up a tier",
+      "introDescription": "Points are added after a booking is completed. Your tier grows with tier points; redemption only reduces your available balance.",
+      "fromPoints": "From {points} points",
+      "requires": "Requires {points}",
+      "state": { "current": "Your current tier", "reached": "Tier reached" },
+      "progress": "{points} / {threshold} points to {tier}",
+      "info": "Redeeming points only reduces your available balance. Tier points never decrease, and your tier stays the same."
+    },
+    "perkState": {
+      "locked": "Locked",
+      "unlocked": "Unlocked"
+    },
+    "tierPage": {
+      "noPerks": "This tier has no perks"
+    },
+    "detail": {
+      "tierNavigation": "Reward tiers",
+      "currentPerks": "Your perks",
+      "tierPerks": "{tier} perks",
+      "unlocksAt": "Unlocks at {tier}",
+      "earnTitle": "How to earn points",
+      "earn": {
+        "tripTitle": "Complete a trip",
+        "tripDescription": "1 point for every SAR 1 spent on a rental",
+        "reviewTitle": "Rate your experience",
+        "reviewDescription": "+50 points after each completed trip",
+        "inviteTitle": "Invite a friend",
+        "inviteDescription": "+500 points when your friend completes their first booking"
+      }
+    },
+    "info": "Points are added to your redeemable balance only after a booking is completed. Redeeming points does not affect your tier."
+  },
   "auth": {
     "location": {
       "title": "Set your location"
@@ -154,6 +392,30 @@
       "birthDateLabel": "Date of birth",
       "consent": "By continuing, you agree to the app's <terms>Terms and Conditions</terms> and <privacy>Privacy Policy</privacy>.",
       "submit": "Create account"
+    },
+    "referral": {
+      "label": "Invite code (optional)",
+      "placeholder": "Enter invite code",
+      "hint": {
+        "empty": "Got a code from a friend? Add it here or continue without it.",
+        "entered": "Check the code before creating your account.",
+        "checking": "Checking the invite code…",
+        "valid": "{name}'s invite is applied. Finish creating your account.",
+        "validNoName": "The invite code is applied. Finish creating your account.",
+        "invalid": "This code is not valid. Check it and try again.",
+        "network": "We couldn't check the code. Check your connection and try again.",
+        "unchecked": "Check the code first, or continue without an invite code."
+      },
+      "actions": {
+        "check": "Check code",
+        "checking": "Checking…",
+        "change": "Change code",
+        "recheck": "Check again",
+        "retry": "Try again",
+        "skip": "Continue without an invite code"
+      },
+      "banner": "Invite from {name} · Your code is ready: <code></code>",
+      "bannerNoName": "Your invite code is ready: <code></code>"
     }
   },
   "hero": {
@@ -503,8 +765,16 @@
     "rate_limited": "Too many attempts. Wait a moment and try again.",
     "server": "Something went wrong on our side. Try again shortly.",
     "unknown": "An unexpected error occurred.",
+    "referrals": {
+      "unavailable": "Your invite code could not be loaded. Check your internet connection and try again."
+    },
     "points": {
       "unavailable": "Your points are temporarily unavailable. Try again shortly."
+    },
+    "rewards": {
+      "unavailable": "Your rewards are temporarily unavailable. Try again shortly.",
+      "cardUnavailable": "This discount card is no longer available.",
+      "insufficientPoints": "You do not have enough points for this card."
     },
     "wallet": {
       "topUpRejected": "The top-up was rejected.",
@@ -549,6 +819,7 @@
       "paymentMethodRequired": "Choose a payment method",
       "carRequired": "Choose a car",
       "termsRequired": "Accept the terms and conditions to continue",
+      "couponRequired": "Enter a discount code.",
       "carUnavailable": "This car is not available for that long. Choose a shorter rental or another car."
     },
     "cities": {
@@ -603,7 +874,8 @@
       "birthDateRequired": "Date of birth is required.",
       "invalidBirthDate": "Enter a valid date of birth that is not in the future.",
       "underAge": "You must be at least 18 years old.",
-      "invalidLocation": "Choose a valid location on the map."
+      "invalidLocation": "Choose a valid location on the map.",
+      "invalidReferralCode": "Enter a valid invite code."
     }
   },
   "citiesPage": {
@@ -942,6 +1214,12 @@
       "orderTime": "Order time",
       "priceDetails": "Price details",
       "dailyPrice": "Daily price",
+      "couponPlaceholder": "Have a discount code?",
+      "checkCoupon": "Verify code",
+      "checkingCoupon": "Checking...",
+      "couponApplied": "Applied",
+      "couponAppliedMessage": "Discount code applied to this booking.",
+      "couponRequired": "Enter a discount code.",
       "days": "Number of days",
       "day": "days",
       "subtotal": "Subtotal",
@@ -1125,5 +1403,16 @@
     "empty": {
       "title": "No bank accounts added"
     }
+  },
+  "bookingReward": {
+    "header": "Booking complete",
+    "title": "Your booking is complete",
+    "description": "{points} points were added to each balance after completing your booking",
+    "redeemable": "Redeemable balance",
+    "tier": "Tier points",
+    "tierBalance": "Tier points: {points} points",
+    "redeemableBalance": "Redeemable balance: {points} points",
+    "viewRewards": "View rewards balance",
+    "redeem": "Redeem points"
   }
 }

@@ -83,6 +83,18 @@ Ask the user before: any `git commit` (and which branch it goes on); deleting `B
 - **Styles**: no new rules in `main.scss`; feature styles go in
   `features/<x>/<x>.scss`, component styles next to the component (doc 8
   step 6 plan).
+- **Figma and RTL**: Figma screens are drawn in Arabic (RTL). Components
+  match Figma exactly (sizes, spacing, colours, per-state styles, element
+  order); only page-level web adaptations (e.g. tabs that merge two mobile
+  screens) are allowed. Read element order right to left: the right-most
+  element in the Figma frame comes first in the DOM (the `start` side), so
+  Arabic matches Figma and English mirrors it. Figma's exported code is laid
+  out left to right, so do not copy its element order. Use logical properties
+  (`ms`/`me`/`ps`/`pe`/`start`/`end`/`inset-s`, `text-start`) and `rtl:`
+  variants for anything with a direction (chevrons `rtl:scale-x-[-1]`,
+  gradients `rtl:bg-gradient-to-l`, progress fills from the start edge).
+  Check icon-before/after-text order in pills, chips, links and list rows
+  against the screenshot, in both `ar` and `en`, before reporting.
 - **API integration is a later, separate phase**: every `services/*.api.ts`
   stays on its mock; note integration needs as follow-ups instead of wiring
   endpoints.
@@ -95,11 +107,14 @@ Ask the user before: any `git commit` (and which branch it goes on); deleting `B
   throwaway probe routes normally and delete them after use.
 - `notFound()` under the root streaming `loading.tsx` returns HTTP 200; the
   404 page renders in the browser. Known, documented in doc 3.
-- Vitest sometimes fails every file at once in `vitest.setup.ts` with "failed to
-  find the current suite" ("no tests"), with jsdom setup taking most of the run.
-  Seen right after a build or a server stop; the cause is not established. It is
-  not a test failure: run `npm run test` again with nothing else running (tests
-  first, then build and start the server).
+- Vitest fails every file at once in `vitest.setup.ts` with "failed to find the
+  current suite" ("no tests") when it runs from a lowercase drive path
+  (`f:\myProjects\T-Car`, or Git Bash `/f/...`), probably because Vitest gets loaded
+  twice under two path spellings. It is not a test failure. Run tests from the uppercase path,
+  e.g. PowerShell `Set-Location F:\myProjects\T-Car; npm run test`.
+- `next dev` and `next build` share `.next` (Next 15): stop the dev server before
+  `npx next build`. With the dev server and Figma open the build workers can
+  also run out of Windows commit memory ("Zone Allocation failed").
 - `features/orders/index.ts` re-exports Server Actions, so UI tests that import
   it (directly or through another feature) reach `@/auth` (NextAuth, which
   Node cannot load under Vitest) and `server-only`. `vitest.setup.ts` mocks

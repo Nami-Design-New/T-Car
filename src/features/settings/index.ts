@@ -20,4 +20,5 @@ export type {
   PriceFilterRange,
   SiteLinks,
   SiteSettings,
+  VipSettings,
 } from "./model";

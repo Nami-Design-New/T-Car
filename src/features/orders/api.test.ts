@@ -366,9 +366,24 @@ describe("order details API", () => {
       },
       branch: { id: "3", latitude: 24.7136, longitude: 46.6753 },
       price: 90,
+      couponCode: null,
+      couponDiscount: 0,
       finalPrice: 123.2,
       pendingExtensionId: null,
     });
+  });
+
+  it("preserves an applied coupon and the backend discount amount", () => {
+    const order = mapOrderResponse({
+      ...orderResponse,
+      data: {
+        ...orderResponse.data,
+        coupon_code: "GOLD-50",
+        coupon_discount: 50,
+      },
+    });
+    expect(order.couponCode).toBe("GOLD-50");
+    expect(order.couponDiscount).toBe(50);
   });
 
   it("rejects an OrderDto with a missing field", () => {
@@ -486,6 +501,48 @@ describe("order details API", () => {
     });
 
     await expect(bookingsApi.getOrder("99999999")).rejects.toBe(notFound);
+  });
+});
+
+describe("apply coupon API (E4)", () => {
+  beforeEach(() => post.mockReset());
+
+  it("sends multipart code and returns the server-priced draft", async () => {
+    post.mockResolvedValue({
+      ...orderResponse,
+      message: "Coupon applied.",
+      data: {
+        ...orderResponse.data,
+        id: 405,
+        branch: undefined,
+        coupon_code: "TCAR-GXH3-623U",
+        coupon_discount: 32,
+        final_price: 55.35,
+      },
+    });
+
+    const result = await bookingsApi.applyCoupon("405", "TCAR-GXH3-623U");
+
+    expect(post).toHaveBeenCalledOnce();
+    expect(post.mock.calls[0][0]).toBe("/booking/405/apply-coupon");
+    expect(post.mock.calls[0][1]).toBeInstanceOf(FormData);
+    expect(post.mock.calls[0][1].get("code")).toBe("TCAR-GXH3-623U");
+    expect(result).toMatchObject({
+      ok: true,
+      message: "Coupon applied.",
+      data: { couponCode: "TCAR-GXH3-623U", couponDiscount: 32, finalPrice: 55.35 },
+    });
+  });
+
+  it("returns the backend validation error without discarding the draft", async () => {
+    post.mockImplementationOnce(async () => {
+      throw new AppError("validation", undefined, 422, undefined, {
+        serverMessage: "This coupon code is not valid.",
+      });
+    });
+
+    const result = await bookingsApi.applyCoupon("405", "INVALID");
+    expect(result).toMatchObject({ ok: false, error: { kind: "validation", status: 422 } });
   });
 });
 
@@ -620,6 +677,17 @@ describe("pay API (E5)", () => {
     expect(Object.fromEntries(walletOnly.entries())).toEqual({
       order_id: "226",
       use_wallet: "1",
+    });
+    const withCoupon = toPayFormData({
+      orderId: "405",
+      useWallet: false,
+      paymentMethodId: "6",
+      code: "TCAR-GXH3-623U",
+    });
+    expect(Object.fromEntries(withCoupon.entries())).toEqual({
+      order_id: "405",
+      payment_method_id: "6",
+      code: "TCAR-GXH3-623U",
     });
   });
 

@@ -17,10 +17,11 @@ export function usePayOrder() {
     async (
       orderId: string,
       choice: PaymentChoice,
+      code?: string,
     ): Promise<Result<PayOrderResult>> => {
       setSubmitting(true);
       try {
-        return fromActionResult(await payOrderAction({ orderId, ...choice }));
+        return fromActionResult(await payOrderAction({ orderId, ...choice, code }));
       } catch (error) {
         reportError(error, { scope: "booking.pay", orderId });
         return fail(error);

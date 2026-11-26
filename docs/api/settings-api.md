@@ -1,26 +1,24 @@
 # Settings API (`GET /settings`)
 
-Last updated: 2026-11-02  
+Last updated: 2026-11-26
+
 Base URL: `https://t-car.app/api/user`  
-Status: partly integrated. The contact details, the about / terms / privacy
-links, and the Join Us company sizes are in use (`features/settings`, Contact
-Us / Join Us branch C3ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Å“C4). The rest of the response is **planned, not
-implemented** (Ãƒâ€šÃ‚Â§4ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Å“Ãƒâ€šÃ‚Â§5). This document is a plan only: no code change.
+Status: partly integrated. Settings maps contact, page links, Join Us sizes, booking switches, price bounds, map defaults, and VIP response fields. The VIP banner uses the personalized fields in My Account.
 
 Sources: Bruno `User Application/Setting/setting.yml`, live requests on
-2026-11-02 (English and Arabic, no token), and the current code.
-
-> `docs/api/` is ignored by Git, like the other API docs. This file stays local.
+2026-11-02 (English and Arabic, no token), the user's 2026-11-26
+authenticated-settings contract, a 2026-11-26 guest TEST probe, and the current code.
 
 ## 1. Request
 
 | Method | Path | Auth | Headers |
 | ------ | ---- | ---- | ------- |
-| `GET` | `/settings` | **Public** (no token) | `Accept: application/json`, `Accept-Language: en \| ar` |
+| `GET` | `/settings` | Optional bearer token when signed in; none for guests | `Accept: application/json`, `Accept-Language: en \| ar` |
 
 Success: HTTP 200 / body `code: 200`. Message: `Settings retrieved
 successfully.` / `ÃƒËœÃ‚ÂªÃƒâ„¢Ã¢â‚¬Â¦ ÃƒËœÃ‚Â¬Ãƒâ„¢Ã¢â‚¬Å¾ÃƒËœÃ‚Â¨ ÃƒËœÃ‚Â§Ãƒâ„¢Ã¢â‚¬Å¾ÃƒËœÃ‚Â¥ÃƒËœÃ‚Â¹ÃƒËœÃ‚Â¯ÃƒËœÃ‚Â§ÃƒËœÃ‚Â¯ÃƒËœÃ‚Â§ÃƒËœÃ‚Âª ÃƒËœÃ‚Â¨Ãƒâ„¢Ã¢â‚¬Â ÃƒËœÃ‚Â¬ÃƒËœÃ‚Â§ÃƒËœÃ‚Â­.`. The app reads it on the server
-through `publicServerHttp`, once per request (`getSettings`, React `cache`).
+through `serverHttp`, once per request (`getSettings`, React `cache`). The
+request uses `no-store` because a signed-in response may vary by customer.
 
 ## 2. Response (observed 2026-11-02)
 
@@ -56,6 +54,9 @@ interface SettingsDto {
   // Contact
   phone: string;          // "+201151305555" (test data)
   email: string;          // "momen@gmail.com" (test data)
+  is_vip: boolean;        // TEST guest response on 2026-11-26: false
+  vip_packages: string | null; // localized package name, e.g. "الذهبية"
+  whatsapp_number: string | null; // TEST currently null
   facebook_link: string;  // test data: all three point to the admin page
   instagram_link: string;
   twitter_link: string;
@@ -65,8 +66,11 @@ interface SettingsDto {
 }
 ```
 
-Every value above was identical in English and Arabic except the three page
-URLs (`?locale=`) and the message.
+The 2026-11-02 guest response was identical in English and Arabic except the
+three page URLs (`?locale=`) and the message. The 2026-11-26 TEST guest response
+has `is_vip: false`, `vip_packages: null`, and `whatsapp_number: null`.
+The user supplied a non-null `vip_packages` example ("الذهبية") and a WhatsApp
+number; a signed-in TEST response has not yet been observed.
 
 ## 3. Already in use
 
@@ -75,13 +79,14 @@ URLs (`?locale=`) and the message.
 | `company_sizes` | `AppSettings.companySizes` | Join Us size select (`getSettingsAction`) |
 | `email`, `phone`, `facebook_link`, `instagram_link`, `twitter_link` | `AppSettings.contact` | Home Contact card, footer (`getSiteSettings`, props) |
 | `about_us_url`, `terms_url`, `privacy_policy_url` | `AppSettings.links` | Footer (About us, terms, privacy), register form consent (`useSiteLinksStore`) |
+| `is_vip`, `vip_packages`, `whatsapp_number` | `AppSettings.isVip`, `vipPackages`, `whatsappNumber` | My Account VIP banner (signed-in settings read) |
 
 The mapper keeps each of these optional: an unusable value is left out
 instead of failing the whole settings read.
 
-## 4. Planned (not implemented)
+## 4. Feature fractions
 
-Each row is one fraction on a new branch, in the order listed. Each adds its
+Each row is one fraction on the branch chosen for that work. Each adds its
 fields to `AppSettings` and `mapSettings` (optional, so a missing value never
 breaks the read), follows the state rules in doc 1 Ãƒâ€šÃ‚Â§1.5 item 10, and is
 verified per `AGENTS.md`.
@@ -91,6 +96,7 @@ verified per `AGENTS.md`.
 | S1 | `daily_booking_showing`, `monthly_booking_showing`, `station_booking_showing`, `airport_booking_showing`, `international_booking_showing` | `features/rental-search/components/RentalTabs.tsx`: fixed list of five `RentalType` tabs in the home Hero | Implemented (2026-11-02): `getBookingTypeAvailability()` reads the switches on the server and passes them to `Hero` / `RentalTabs`; disabled tabs are hidden. Missing flags or settings read failures keep all tabs available. `/cars` and `/cities/[slug]` call `notFound()` for direct searches using a disabled known type. |
 | S2 | `min_filter_price`, `max_filter_price` | `PRICE_MIN = 100`, `PRICE_MAX = 30000`, defined twice: `features/cars/hooks/useUrlCarFilters.ts` and `features/cars/searchParams.ts`; used by `CarFilters` (price slider) and the URL parsing | Use the API bounds 5â€“55 as the allowed minimum and maximum. Remove the `$` display and render the price with the SAR `Price` component. |
 | S3 | `latitude`, `longitude`, `region`, `distance` | `shared/ui/MapLocationModal/MapLocationModal.tsx`: fixed center `24.7136, 46.6753` (Riyadh). The guest location (`shared/lib/guest-location.ts`) has no default. No search radius in the app. | Use `latitude` / `longitude` as the map default center. Do not use `region` or `distance` for now (Q3 and Q5). |
+| S4 | `is_vip`, `vip_packages`, `whatsapp_number` | No VIP banner; `/settings` used the anonymous client | Data fraction done (5f4e944, 2026-11-26): send bearer when signed in, map the three fields, and avoid caching a customer-specific response. UI fraction: show the package name and WhatsApp link in My Account when `is_vip` is true. |
 | ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â | `app_icon_url`, `splash_image_url` | Not applicable | Mobile app assets; the web app keeps its own icon (`src/app/icon.svg`). Not planned. |
 
 The response also contains `rewards_screen_showing`, but the web app has no points/rewards section in scope; this switch is documented as observed and is not planned for web integration.

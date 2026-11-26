@@ -67,6 +67,8 @@ const ORDER: Order = {
   serviceFee: 9,
   completionFee: 3,
   discount: 5,
+  couponCode: null,
+  couponDiscount: 0,
   additionalServicesCost: 0,
   totalPrice: 112,
   taxValue: 11.2,
